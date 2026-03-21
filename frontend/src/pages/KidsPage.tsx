@@ -94,7 +94,7 @@ export default function KidsPage() {
           return <QuadSection key="quad" />;
         }
         if (section.type === 'overlay') {
-          const { type: _t, priority: _p, ...props } = section;
+          const { type: _type, priority: _priority, ...props } = section;
           return <OverlaySection key={`overlay-${i}`} {...props} />;
         }
         if (section.type === 'three-col') {

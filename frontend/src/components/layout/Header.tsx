@@ -41,6 +41,8 @@ export function Header() {
   }, []);
 
   useEffect(() => {
+    // Reset UI state on navigation — intentional synchronous setState
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileOpen(false);
     setActiveDropdown(null);
   }, [location.pathname]);
