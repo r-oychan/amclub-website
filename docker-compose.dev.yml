@@ -1,0 +1,58 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: amclub-postgres
+    environment:
+      POSTGRES_DB: amclub_strapi
+      POSTGRES_USER: strapi
+      POSTGRES_PASSWORD: strapi_dev_password
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U strapi -d amclub_strapi']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  cms:
+    build:
+      context: .
+      dockerfile: Dockerfile.cms
+      target: dev
+    container_name: amclub-cms
+    command: npm run develop
+    ports:
+      - '1337:1337'
+    environment:
+      HOST: 0.0.0.0
+      PORT: 1337
+      DATABASE_CLIENT: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: amclub_strapi
+      DATABASE_USERNAME: strapi
+      DATABASE_PASSWORD: strapi_dev_password
+      DATABASE_SSL: 'false'
+      APP_KEYS: 30wALgscSlbs2PJPI22Fww==,7qRsOvN8yREKltufWbz2Hg==,eXONAjxcb7Nre2zG49ARkA==,vIN0jlSEqPCpSE2QY7gFBA==
+      API_TOKEN_SALT: lF/8Kksppx3otnkjobL7iw==
+      ADMIN_JWT_SECRET: 0O3FHk5023GyCaJMbW6hOw==
+      TRANSFER_TOKEN_SALT: yXO7mPpj2dX8zJ5Tp4cJDA==
+      ENCRYPTION_KEY: 14XiH8Zx9mUmoQ4sg7lJ6Q==
+      JWT_SECRET: +yjQJnUysUKAqMT0ykvIEg==
+    volumes:
+      - ./cms/src:/app/src
+      - ./cms/config:/app/config
+      - ./media:/app/public/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q -O /dev/null http://127.0.0.1:1337/_health']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:

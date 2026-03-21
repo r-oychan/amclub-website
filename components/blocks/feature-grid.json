@@ -1,0 +1,29 @@
+{
+  "collectionName": "components_blocks_feature_grids",
+  "info": {
+    "displayName": "Feature Grid",
+    "icon": "apps",
+    "description": "Grid of feature cards with icon, heading and description"
+  },
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "heading": {
+      "type": "string"
+    },
+    "body": {
+      "type": "text"
+    },
+    "features": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.feature-item"
+    },
+    "cta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.link"
+    }
+  }
+}

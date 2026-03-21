@@ -1,0 +1,43 @@
+# Multi-stage Dockerfile for Strapi v5 CMS
+FROM node:20-alpine AS base
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+
+# Install dependencies
+FROM base AS deps
+COPY cms/package.json cms/package-lock.json* ./
+RUN npm ci
+
+# Development (used by docker-compose.dev.yml)
+FROM base AS dev
+COPY --from=deps /app/node_modules ./node_modules
+COPY cms/ .
+EXPOSE 1337
+CMD ["npm", "run", "develop"]
+
+# Build
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY cms/ .
+ENV NODE_ENV=production
+RUN npm run build
+
+# Production
+FROM base AS runner
+WORKDIR /app
+ENV NODE_ENV=production
+
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/config ./config
+COPY --from=builder /app/database ./database
+COPY --from=builder /app/src ./src
+
+# Uploads should be mounted externally (e.g., -v uploads:/app/public/uploads)
+VOLUME /app/public/uploads
+
+EXPOSE 1337
+CMD ["npm", "run", "start"]

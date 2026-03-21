@@ -1,0 +1,648 @@
+{
+  "sourceUrl": "https://tactesting.framer.website/home",
+  "extractedAt": "2026-03-05T00:00:00Z",
+  "pages": [
+    {
+      "path": "/home",
+      "title": "Singapore American Club | Home",
+      "sections": [
+        {
+          "sectionId": "home-hero",
+          "componentType": "hero",
+          "content": {
+            "heading": "A Home Away From Home",
+            "subheading": "Thrive in a vibrant community with a unique American and Canadian culture.",
+            "cta": { "label": "Request for a Club Tour", "href": "#" },
+            "backgroundImage": "https://framerusercontent.com/images/cEQ0tbJZ9iABZ7aowxb1DaK4U.jpg"
+          }
+        },
+        {
+          "sectionId": "home-about",
+          "componentType": "text-block",
+          "content": {
+            "label": "About Us",
+            "heading": "Blending American Traditions with Singaporean Charm",
+            "funFact": "Did You Know? The idea of forming a social club for Americans was first mooted in 1932?",
+            "cta": { "label": "Discover Our Story", "href": "/about" }
+          }
+        },
+        {
+          "sectionId": "home-stats",
+          "componentType": "stats-counter",
+          "content": {
+            "stats": [
+              { "value": "11,000+", "label": "Members" },
+              { "value": "90+", "label": "Nationalities" },
+              { "value": "77+", "label": "Years of Heritage" }
+            ]
+          }
+        },
+        {
+          "sectionId": "home-events",
+          "componentType": "card-grid",
+          "content": {
+            "label": "Events",
+            "heading": "From memorable moments to unforgettable evenings - Your club calendar awaits",
+            "cta": { "label": "View Featured Club Events", "href": "/whats-on" },
+            "items": [
+              { "category": "Dining", "title": "Nostalgic Flavors of Singapore", "date": "DEC 4", "image": "https://framerusercontent.com/images/RjIIikrBuOoQmOLuWXcoR6GFkOE.jpeg" },
+              { "category": "Fitness & Wellness", "title": "Pedal to Victory! A Spin Bike Time Challenge", "date": "NOV 5", "image": "https://framerusercontent.com/images/ToMfql1ukRrZhj1CjpLEOHmCb4.jpeg" },
+              { "category": "Kids", "title": "Scarily Fun Friday Nights for the Kids!", "date": "OCT 19", "image": "https://framerusercontent.com/images/JkrDtEpbLxJMTiPrF9mJYWb3YQ.jpeg" },
+              { "category": "Dining", "title": "Smokin' Sundays at Grillhouse", "date": "OCT 11", "image": "https://framerusercontent.com/images/PlDsZH1QChc2aIXh0p9duml4TC0.jpeg" },
+              { "category": "Dining", "title": "Kanonkop Wine Dinner", "date": "OCT 22", "image": "https://framerusercontent.com/images/0YNsQiaf0KR8LDUah35vR09jfwc.jpg" },
+              { "category": "Dining", "title": "Get Your Green Fix Salad Bar Buffet", "date": "OCT 30", "image": "https://framerusercontent.com/images/rNT1Hh6hiX6cJHoJGmlFogBGWmU.jpg" },
+              { "category": "Kids", "title": "National Football League 2025 Live Screening", "date": "DEC 20", "image": "https://framerusercontent.com/images/MlqKdegxMYfk5tpETtAaDIaV2w.jpg" },
+              { "category": "Member Engagement", "title": "Classic & Contemporary: A Cocktail Masterclass Series", "date": "NOV 7", "image": "https://framerusercontent.com/images/A9M0VHDW2FE6UoaFatzINqucGp0.jpg" },
+              { "category": "Fitness & Wellness", "title": "Adult Team Tennis Challenge 2025", "date": "DEC 30", "image": "https://framerusercontent.com/images/FZCLsivFTgvRBOrZD71tlU6pVRc.jpg" }
+            ]
+          }
+        },
+        {
+          "sectionId": "home-services",
+          "componentType": "feature-grid",
+          "content": {
+            "label": "Services",
+            "heading": "From shared experiences to lasting bonds - it all starts here",
+            "cta": { "label": "Explore Membership", "href": "/membership" },
+            "items": [
+              { "heading": "The Perfect Club Experience for the Whole Family", "description": "From pool time to playtime, dining to downtime — there's something for everyone in the family to enjoy." },
+              { "heading": "Business Done Right. Leisure Done Better.", "description": "Connect, meet, or recharge — the Club makes balancing work and leisure effortless." },
+              { "heading": "Everyday Concierge, the Club Way", "description": "A welcoming smile, a helping hand. Enjoy seamless support with a personal touch." }
+            ]
+          }
+        },
+        {
+          "sectionId": "home-experience",
+          "componentType": "tabs",
+          "content": {
+            "label": "Experience",
+            "heading": "Dine. Drink. Unwind. All in one unforgettable club.",
+            "items": [
+              { "label": "Dining & Retail", "href": "/dining", "image": "https://framerusercontent.com/images/ALiDWPH3U3VnmiEzcoEet6lPIk.jpeg" },
+              { "label": "Fitness & Wellness", "href": "/fitness", "image": "https://framerusercontent.com/images/FfQ1mhhWwbjsMQKiahq8SzaqLs.jpeg" },
+              { "label": "Kids", "href": "/kids", "image": "https://framerusercontent.com/images/DytJIjZnqDf7hE6r7WyfxUrNjU.jpeg" }
+            ]
+          }
+        },
+        {
+          "sectionId": "home-moments",
+          "componentType": "testimonial",
+          "content": {
+            "label": "Moments",
+            "heading": "Moments that matter, captured and shared by you",
+            "cta": { "label": "Follow Our Socials", "href": "#" },
+            "items": [
+              { "name": "Ronald Williams", "quote": "Abuzz with Independence Day cheer on July 1", "cta": "Watch More" },
+              { "name": "Sarah Grey", "quote": "A multitude of culinary experience for your tastebuds", "cta": "Watch More" },
+              { "name": "Matthew Hallen", "quote": "Fantastic evening of glitz, glamor and giving", "cta": "Watch More" },
+              { "name": "Joseph Gunner", "quote": "Abuzz with Independence Day cheer on July 1", "cta": "Watch More" }
+            ]
+          }
+        },
+        {
+          "sectionId": "home-faq",
+          "componentType": "faq",
+          "content": {
+            "label": "FAQ",
+            "heading": "Your Questions, Answered",
+            "cta": { "label": "View All FAQ", "href": "#" },
+            "items": [
+              { "question": "What types of membership do you offer?", "answer": "<Placeholder>" },
+              { "question": "What facilities and services are included?", "answer": "<Placeholder>" },
+              { "question": "Is membership transferable?", "answer": "<Placeholder>" },
+              { "question": "Can I upgrade or change my membership type?", "answer": "<Placeholder>" }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "path": "/about",
+      "title": "About the Club",
+      "sections": [
+        {
+          "sectionId": "about-hero",
+          "componentType": "hero",
+          "content": {
+            "heading": "About the Club",
+            "subheading": "77 Years of Heritage, Community and Connection"
+          }
+        },
+        {
+          "sectionId": "about-history",
+          "componentType": "text-block",
+          "content": {
+            "body": "Since 1948, The American Club has been Singapore's cherished sanctuary in the heart of Orchard, where generations of Members from over 60 nations come together to build lifelong friendships, celebrate shared moments, and enjoy a true home away from home.",
+            "timeline": "In 2000, the Club's Fitness & Leisure expanded its offerings with more fitness options, including more Aquatics classes and adult recreational and fitness classes. The Club has now evolved to become true home away from home destination for Members, local and overseas alike."
+          }
+        },
+        {
+          "sectionId": "about-stats",
+          "componentType": "stats-counter",
+          "content": {
+            "label": "The Club Today",
+            "stats": [
+              { "value": "11,000+", "label": "Members" },
+              { "value": "90+", "label": "Nationalities" },
+              { "value": "77+", "label": "Years of Heritage" },
+              { "value": "25", "label": "Committees" }
+            ]
+          }
+        },
+        {
+          "sectionId": "about-vision-mission",
+          "componentType": "text-block",
+          "content": {
+            "vision": "A world class Club offering Members a \"home away from home\" with excellent service and facilities.",
+            "mission": "To be the Members' Club and employer of choice in Singapore, striving to continuously improve Member engagement and satisfaction, while embracing our unique American and Canadian cultures within our Singaporean community."
+          }
+        },
+        {
+          "sectionId": "about-governance",
+          "componentType": "text-block",
+          "content": {
+            "heading": "Club Governance",
+            "body": "The governance structure of the Club is that it is member-owned. There are 25 committees which provide plenty of opportunities to get involved as a volunteer. The committees support the Club management through strategic counsel and policy making.\n\nOnly the General Committee (GC) has approval power.\n\nEach year at the Annual General Meeting (AGM) in November, six spots are available for election/re-election for a two-year tenure. From the GC, the Executive Committee (EXCO) is formed each year in April.",
+            "ctas": [
+              { "label": "Volunteer Interest Form", "href": "#" },
+              { "label": "Committee List", "href": "#" },
+              { "label": "Volunteer Code of Conduct", "href": "#" }
+            ]
+          }
+        },
+        {
+          "sectionId": "about-committee",
+          "componentType": "team-grid",
+          "content": {
+            "heading": "General Committee",
+            "members": [
+              { "name": "Daniel Gewirtz", "role": "President" },
+              { "name": "Tessa Pang", "role": "Secretary" },
+              { "name": "Alisha Barnes", "role": "Secretary" },
+              { "name": "Terry Kim", "role": "Treasurer" },
+              { "name": "Charles Santos", "role": "Member at Large" },
+              { "name": "Kate Park", "role": "Member at Large" },
+              { "name": "Kenny Liu", "role": "Member at Large" },
+              { "name": "Marcella Sullivan", "role": "Member at Large" },
+              { "name": "Michael Schindler", "role": "Member at Large" },
+              { "name": "Ngiam Siew Wei", "role": "Member at Large" },
+              { "name": "Priyanka Bhalla", "role": "Member at Large" },
+              { "name": "Ted Teo", "role": "Member at Large" },
+              { "name": "Michelle Reeb", "role": "American Association of Singapore Representative" },
+              { "name": "Autumn Vavoso", "role": "American Women's Association Representative" },
+              { "name": "Sandra Johnson", "role": "Canadian Association of Singapore Representative" }
+            ]
+          }
+        },
+        {
+          "sectionId": "about-sustainability",
+          "componentType": "feature-grid",
+          "content": {
+            "heading": "Club Advocacy",
+            "subheading": "Everyday is Earth Day at the Club",
+            "body": "At The American Club, we are committed to enhancing sustainability and expanding environmentally-friendly practices.",
+            "items": [
+              "Meat alternatives on the Club's restaurant menus",
+              "Biodegradable straws in all restaurants",
+              "Recycling and sorting bins are located throughout the Club",
+              "Food takeaway packaging are made from sustainable materials",
+              "Sale of reusable tumblers and coffee cups at Central",
+              "All lighting fixtures have been replaced with LED bulbs that are energy efficient and emit less heat"
+            ]
+          }
+        },
+        {
+          "sectionId": "about-management",
+          "componentType": "team-grid",
+          "content": {
+            "heading": "Club Management",
+            "members": [
+              {
+                "name": "Christine Kaelbel-Sheares",
+                "role": "General Manager",
+                "bio": "Christine is a seasoned executive with a diverse global leadership experience. She has held key roles in prestigious hotels in Singapore and the United States."
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "path": "/dining",
+      "title": "Dining & Retail",
+      "sections": [
+        {
+          "sectionId": "dining-hero",
+          "componentType": "hero",
+          "content": {
+            "heading": "Dining & Retail",
+            "subheading": "Drink for leisure. Eat for pleasure."
+          }
+        },
+        {
+          "sectionId": "dining-venues",
+          "componentType": "card-grid",
+          "content": {
+            "items": [
+              {
+                "name": "Central",
+                "type": "Café",
+                "description": "Your favorite coffee, sandwich and chatter spot.",
+                "ctas": [{ "label": "Read More" }, { "label": "View Menu" }]
+              },
+              {
+                "name": "The 2nd Floor",
+                "type": "Casual Premium Fine Dining",
+                "dressCode": "Smart Casual",
+                "description": "Experience the best of both worlds, where East and West create a fine dining experience.",
+                "ctas": [{ "label": "Read More" }, { "label": "View Menu" }]
+              },
+              {
+                "name": "Tradewinds",
+                "type": "International",
+                "description": "All-day casual dining featuring an international menu with flavors from America to Singapore.",
+                "ctas": [{ "label": "Read More" }, { "label": "View Menu" }]
+              },
+              {
+                "name": "Grillhouse & Tiki Bar",
+                "type": "American BBQ & Grill",
+                "description": "The home of American BBQ, pizza and beer at a poolside setting.",
+                "ctas": [{ "label": "Read More" }, { "label": "View Menu" }, { "label": "Opening Hours" }]
+              },
+              {
+                "name": "The Gourmet Pantry",
+                "type": "Wine & Gourmet Store",
+                "description": "A curated destination for modern tastemakers – offering exceptional wines, artisanal bites, and beautifully crafted tableware.",
+                "ctas": [{ "label": "Read More" }, { "label": "View Menu" }]
+              },
+              {
+                "name": "Union Bar",
+                "type": "American Bar Food",
+                "description": "Kick back after work at this classic American sports bar",
+                "ctas": [{ "label": "Read More" }, { "label": "View Menu" }]
+              }
+            ]
+          }
+        },
+        {
+          "sectionId": "dining-promotions",
+          "componentType": "cta-banner",
+          "content": {
+            "heading": "Discover What's Cooking @ The Club",
+            "subheading": "Browse the latest dining experiences and seasonal highlights.",
+            "cta": { "label": "View All Dining Promotions" }
+          }
+        },
+        {
+          "sectionId": "dining-delivery",
+          "componentType": "card-grid",
+          "content": {
+            "heading": "Club Favorites, Straight to Your Door",
+            "subheading": "Savor your favorite Club dishes and curated wines from the comfort of home, with delivery and takeaway services at your fingertips.",
+            "items": [
+              { "name": "TAC2Go!", "description": "Savor your Club favorites in the comforts of your own home.", "cta": "Order Now" },
+              { "name": "Bottles2Go!", "description": "Bringing the Club's cellar to your home with a curated range of premium wines.", "cta": "Order Now" },
+              { "name": "Essentials", "description": "Your one-stop shop for everyday essentials, seasonal treats, and laundry services—all in one convenient spot.", "ctas": ["Essentials2Go!", "Retail Store & Laundry Services"] }
+            ]
+          }
+        },
+        {
+          "sectionId": "dining-membership-cta",
+          "componentType": "cta-banner",
+          "content": {
+            "heading": "Savor the Experience",
+            "body": "Become a Member to explore our restaurants, where a variety of cuisines and thoughtfully crafted dining experiences await to delight every palate.",
+            "ctas": [{ "label": "Explore Membership", "href": "/membership" }, { "label": "Book a Club Tour" }]
+          }
+        }
+      ]
+    },
+    {
+      "path": "/fitness",
+      "title": "Fitness & Wellness",
+      "sections": [
+        {
+          "sectionId": "fitness-hero",
+          "componentType": "hero",
+          "content": {
+            "heading": "Fitness & Wellness",
+            "subheading": "Fitness, movement, and wellness experiences that fit seamlessly into your lifestyle."
+          }
+        },
+        {
+          "sectionId": "fitness-facilities",
+          "componentType": "card-grid",
+          "content": {
+            "items": [
+              { "name": "sên Spa", "description": "Step away from the everyday and immerse yourself in a retreat where you can unwind, relax, and rejuvenate your mind and body.", "ctas": ["Learn More", "View Menu"] },
+              { "name": "Aquatics", "description": "From leisure to competitive swimming, dive into the Club's Aquatics programs and embrace an active lifestyle.", "ctas": ["Learn More", "View Our Aquatics Programs"] },
+              { "name": "Gym", "description": "Whether you have been training for years or trying to get started, get the right support for your fitness journey", "ctas": ["Private Trainings", "Group Fitness Class", "Pilates", "Learn More"] },
+              { "name": "Tennis", "description": "Experience the thrill of tennis on the Club's four state-of-the-art artificial grass courts.", "ctas": ["Learn More", "Group Fitness Programs"] },
+              { "name": "Golf Activities", "description": "Tee Off & Connect", "ctas": ["Explore"] },
+              { "name": "Multi-purpose Court", "description": "Pickleball & More", "ctas": ["Explore"] },
+              { "name": "Squash", "description": "Your Squash Experience Starts Here", "ctas": ["Explore"] },
+              { "name": "The Bowling Alley", "description": "Strike up some fun at The Bowling Alley, where friendly competition and good times roll together.", "ctas": ["Learn More"] }
+            ]
+          }
+        },
+        {
+          "sectionId": "fitness-membership-cta",
+          "componentType": "cta-banner",
+          "content": {
+            "heading": "Kickstart Your Fitness & Wellness Journey",
+            "body": "Join as a Member and enjoy unlimited access to fitness facilities, energizing group classes, and indulgent spa experiences.",
+            "ctas": [{ "label": "Explore Membership", "href": "/membership" }, { "label": "Book a Club Tour" }]
+          }
+        }
+      ]
+    },
+    {
+      "path": "/kids",
+      "title": "Kids",
+      "sections": [
+        {
+          "sectionId": "kids-hero",
+          "componentType": "hero",
+          "content": {
+            "heading": "Kids",
+            "subheading": "Learn and play without limits."
+          }
+        },
+        {
+          "sectionId": "kids-facilities",
+          "componentType": "card-grid",
+          "content": {
+            "items": [
+              { "name": "The Quad Poolside", "description": "A safe, imaginative play space perfect for curious kids below 6 years old.", "ctas": ["Learn More"] },
+              { "name": "The Quad", "description": "A dynamic play zone packed with arcade games, interactive challenges, and endless fun for kids 6 years old and above.", "ctas": ["Learn More"] },
+              { "name": "The Quad Studios", "description": "Where learning meets celebration – home to kids' recreational classes and a versatile party space for their most special moments.", "ctas": ["Learn More"] },
+              { "name": "The Hangout", "description": "An outdoor chill zone for kids and teens – designed for laid-back fun with friends, featuring pool and foosball tables, comfy lounge chairs.", "ctas": ["Learn More"] },
+              { "name": "Kids' Parties", "description": "From games to giggles, we plan it all so you can enjoy the fun.", "ctas": ["Learn More"] }
+            ]
+          }
+        },
+        {
+          "sectionId": "kids-programs",
+          "componentType": "card-grid",
+          "content": {
+            "heading": "Where Learning Meets Fun, All Year Long",
+            "subheading": "From signature seasonal camps to after-school enrichment classes, children can dive into sports, arts, dance, and STEM.",
+            "items": [
+              { "name": "Seasonal Camps", "description": "A mix of sports, arts, STEM fun, and outdoor adventures, all designed to spark curiosity and new friendships.", "ctas": ["Explore"] },
+              { "name": "Recreational Classes", "description": "Curated arts, sports, and enrichment classes crafted for curious young learners.", "ctas": ["Explore"] }
+            ]
+          }
+        },
+        {
+          "sectionId": "kids-safety",
+          "componentType": "feature-grid",
+          "content": {
+            "heading": "Your Child's Safety Is Our Priority",
+            "body": "All instructors and supervisors are certified professionals, and low child-to-staff ratios ensure personalized attention and close supervision.",
+            "items": [
+              { "heading": "Trained & Certified Team Members" },
+              { "heading": "Dedicated Attention & Supervision" },
+              { "heading": "Safe & Secure Environment" }
+            ]
+          }
+        },
+        {
+          "sectionId": "kids-membership-cta",
+          "componentType": "cta-banner",
+          "content": {
+            "heading": "Where Kids Learn, Play & Belong",
+            "body": "Join The American Club and give your children access to world-class facilities, enriching programs, and a community that values family and friendship.",
+            "ctas": [{ "label": "Explore Membership", "href": "/membership" }, { "label": "Book a Club Tour" }]
+          }
+        }
+      ]
+    },
+    {
+      "path": "/event-spaces",
+      "title": "Private Events & Catering",
+      "sections": [
+        {
+          "sectionId": "events-hero",
+          "componentType": "hero",
+          "content": {
+            "heading": "Host Your Next Event with Us",
+            "subheading": "From weddings and business milestones to meaningful moments with your loved ones, we create experiences that are thoughtfully planned and well executed."
+          }
+        },
+        {
+          "sectionId": "events-packages",
+          "componentType": "card-grid",
+          "content": {
+            "heading": "Private Event Packages",
+            "subheading": "Carefully curated venues with customizable packages for every occasion.",
+            "cta": { "label": "Make an Enquiry" },
+            "items": [
+              {
+                "name": "Wedding Celebrations",
+                "tagline": "Your Day. Your Way. Perfectly Executed",
+                "serviceFeatures": ["Custom wedding cake", "Professional photography"],
+                "venues": ["The Galbraith Ballroom", "The 2nd Floor"],
+                "cta": "View Packages"
+              },
+              {
+                "name": "Corporate Functions",
+                "tagline": "Blend professionalism with hospitality",
+                "serviceFeatures": ["Video conferencing", "Stage, podium, AV support", "Coffee breaks & lunch"],
+                "venues": ["The Galbraith Ballroom", "Thinkspace Meeting Rooms", "The Bowling Alley"],
+                "cta": "View Packages"
+              },
+              {
+                "name": "Parties",
+                "tagline": "Birthdays, Anniversaries & Milestones",
+                "serviceFeatures": ["Customized Menus", "Full Bar Service", "Professional event staff", "Dietary Flexibility"],
+                "venues": ["The Galbraith Ballroom", "The Bowling Alley", "The Quad Studios"],
+                "cta": "View Packages"
+              }
+            ]
+          }
+        },
+        {
+          "sectionId": "events-venues",
+          "componentType": "card-grid",
+          "content": {
+            "heading": "Distinctive Event Spaces",
+            "subheading": "Four curated venues, each with a distinct character.",
+            "items": [
+              { "name": "The Galbraith Ballroom", "capacity": "3400 SQM", "description": "A versatile, beautifully designed venue that adapts effortlessly to any occasion.", "ctas": ["Learn More"] },
+              { "name": "Thinkspace", "capacity": "Meeting Rooms: 2-16 pax, Events Space: up to 40 pax", "description": "A dedicated space for Members who need more than just a workspace. Featuring libraries, quiet focus areas, meeting rooms.", "ctas": ["Learn More"] },
+              { "name": "The Bowling Alley", "capacity": "Up to 50 pax", "description": "Flexible venue for corporate events and private celebrations.", "ctas": ["Learn More"] },
+              { "name": "The Quad Studios", "capacity": "Up to 50 pax", "description": "A vibrant, youth-focused venue for kids' parties and celebrations.", "ctas": ["Kids' Party Packages"] }
+            ]
+          }
+        },
+        {
+          "sectionId": "events-catering",
+          "componentType": "feature-grid",
+          "content": {
+            "heading": "Off-site Catering Services",
+            "body": "Bring The American Club's signature dishes and service to your chosen venue.",
+            "ctas": [{ "label": "View Menu" }, { "label": "Enquire Now" }],
+            "serviceStyles": ["Plated Seated Dinners", "Buffet Stations", "Cocktail Receptions", "Family-style Service"],
+            "culinaryExpertise": ["American Favorites", "Contemporary Asian"],
+            "dietaryConsiderations": ["Vegetarian", "Gluten-free Options", "Allergen Protocols", "Menu Customization"]
+          }
+        },
+        {
+          "sectionId": "events-membership-cta",
+          "componentType": "cta-banner",
+          "content": {
+            "heading": "Plan Your Next Event With Us",
+            "body": "Our Club membership opens the door to exceptional event spaces, thoughtfully curated experiences, and seamless off-site catering.",
+            "ctas": [{ "label": "Explore Membership", "href": "/membership" }, { "label": "Book a Club Tour" }]
+          }
+        }
+      ]
+    },
+    {
+      "path": "/membership",
+      "title": "Membership",
+      "sections": [
+        {
+          "sectionId": "membership-hero",
+          "componentType": "hero",
+          "content": {
+            "heading": "Membership",
+            "subheading": "A diverse, close-knit community founded on the values of freedom, inclusivity and friendship."
+          }
+        },
+        {
+          "sectionId": "membership-join",
+          "componentType": "cta-banner",
+          "content": {
+            "heading": "Join Our Community",
+            "body": "The American Club is more than a social club – it's a welcoming community where Members and their families connect, unwind, and belong.",
+            "cta": { "label": "Start Your Application" }
+          }
+        },
+        {
+          "sectionId": "membership-home",
+          "componentType": "text-block",
+          "content": {
+            "heading": "A Home Away From Home",
+            "body": "Designed for American, Canadian and international families in Singapore, the Club offers a seamless blend of comfort, culture, and convenience."
+          }
+        },
+        {
+          "sectionId": "membership-benefits",
+          "componentType": "feature-grid",
+          "content": {
+            "items": [
+              { "heading": "World-class Facilities", "description": "The Club offers thoughtfully designed facilities and amenities for every lifestyle." },
+              { "heading": "Exceptional Dining", "description": "Savor American comfort food and classic favorites, complemented by diverse dining concepts and seasonal menus across the Club." },
+              { "heading": "Signature Events", "description": "Enjoy a vibrant calendar of American, Canadian, and local celebrations that bring the feeling of home to life all year round." },
+              { "heading": "Where Kids Thrive", "description": "Engaging kids' camps, enrichment classes, youth activities and spaces that support learning, play, and friendship." },
+              { "heading": "Community & Connection", "description": "Build meaningful relationships through shared experiences, multi-generational programming, and a strong sense of belonging." },
+              { "heading": "150+ Reciprocal Clubs", "description": "Your membership extends worldwide, with reciprocal clubs offering the same warm welcome wherever your travels take you." }
+            ]
+          }
+        },
+        {
+          "sectionId": "membership-types",
+          "componentType": "cta-banner",
+          "content": {
+            "heading": "Find the Right Membership for You",
+            "body": "The American Club offers a range of membership options. Membership is open to individuals aged 21 and above.",
+            "ctas": [{ "label": "Membership Types & Joining Fees" }, { "label": "Book a Club Tour" }]
+          }
+        },
+        {
+          "sectionId": "membership-programs",
+          "componentType": "card-grid",
+          "content": {
+            "items": [
+              { "name": "Refer & Be Rewarded", "description": "Extend the privilege of membership to your family and friends, and enjoy exclusive rewards through our referral program.", "cta": "Learn More" },
+              { "name": "The Eagle Rewards Program", "description": "A tiered rewards experience that offers elevated recognition and privileges as you enjoy more of the Club.", "cta": "Learn More" },
+              { "name": "Reciprocal Clubs", "description": "Enjoy privileged access to over 150 distinguished private clubs worldwide.", "cta": "Learn More" }
+            ]
+          }
+        },
+        {
+          "sectionId": "membership-faq",
+          "componentType": "faq",
+          "content": {
+            "heading": "Your Questions, Answered",
+            "subheading": "Everything you need to know about joining, including types, fees, and standard policies.",
+            "ctas": [{ "label": "View All FAQ" }, { "label": "Enquiries" }],
+            "items": [
+              { "question": "What types of membership do you offer?", "answer": "" },
+              { "question": "What facilities and services are included?", "answer": "" },
+              { "question": "Is membership transferable?", "answer": "" },
+              { "question": "Can I upgrade or change my membership type?", "answer": "" }
+            ]
+          }
+        },
+        {
+          "sectionId": "membership-final-cta",
+          "componentType": "cta-banner",
+          "content": {
+            "heading": "Begin Your Membership Journey",
+            "body": "Take the first step toward life at Singapore's premier social club.",
+            "ctas": [{ "label": "Start Your Application" }, { "label": "Book a Club Tour" }]
+          }
+        }
+      ]
+    },
+    {
+      "path": "/whats-on",
+      "title": "What's On",
+      "sections": [
+        {
+          "sectionId": "whatson-hero",
+          "componentType": "hero",
+          "content": {
+            "heading": "Where Community Comes Together",
+            "subheading": "Experience year-round events that bring our vibrant community together."
+          }
+        },
+        {
+          "sectionId": "whatson-filters",
+          "componentType": "tabs",
+          "content": {
+            "categories": ["Dining", "Kids", "Thinkspace", "Fitness & Wellness", "Member Engagement"]
+          }
+        },
+        {
+          "sectionId": "whatson-events",
+          "componentType": "card-grid",
+          "content": {
+            "heading": "Featured Club Events",
+            "cta": { "label": "Browse All Events" },
+            "items": [
+              { "category": "Dining", "title": "Smokin' Sundays at Grillhouse", "date": "OCT 11" },
+              { "category": "Kids", "title": "Scarily Fun Friday Nights for the Kids!", "date": "OCT 19" },
+              { "category": "Dining", "title": "Kanonkop Wine Dinner", "date": "OCT 22" },
+              { "category": "Dining", "title": "Get Your Green Fix Salad Bar Buffet", "date": "OCT 30" },
+              { "category": "Fitness & Wellness", "title": "Pedal to Victory! A Spin Bike Time Challenge", "date": "NOV 5" },
+              { "category": "Member Engagement", "title": "Classic & Contemporary: A Cocktail Masterclass Series", "date": "NOV 7" },
+              { "category": "Dining", "title": "Nostalgic Flavors of Singapore", "date": "DEC 4" },
+              { "category": "Kids", "title": "National Football League 2025 Live Screening", "date": "DEC 20" },
+              { "category": "Fitness & Wellness", "title": "Adult Team Tennis Challenge 2025", "date": "DEC 30" }
+            ]
+          }
+        },
+        {
+          "sectionId": "whatson-membership-cta",
+          "componentType": "cta-banner",
+          "content": {
+            "heading": "Join the Celebration",
+            "body": "Become a Member and enjoy access to exclusive events – from relaxed socials to our signature annual celebrations.",
+            "ctas": [{ "label": "Explore Membership", "href": "/membership" }, { "label": "Book a Tour" }]
+          }
+        }
+      ]
+    }
+  ],
+  "globalContent": {
+    "footer": {
+      "address": "10 Claymore Hill Singapore, 229573",
+      "phone": "+65 6737 3411",
+      "email": "info@amclub.org.sg",
+      "copyright": "© 2025 The American Club Singapore® All rights reserved."
+    }
+  }
+}

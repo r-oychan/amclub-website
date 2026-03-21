@@ -1,0 +1,77 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-primary: #001E62;
+  --color-primary-dark: #00164A;
+  --color-primary-light: rgba(0, 29, 97, 0.75);
+  --color-accent: #DF4661;
+  --color-secondary: #6BBBAE;
+  --color-bg: #F5F4F2;
+  --color-text-dark: #3F4452;
+  --color-text-light: rgba(255, 255, 255, 0.77);
+
+  --font-heading: 'Noto Serif', serif;
+  --font-body: 'Lato', sans-serif;
+
+  --breakpoint-xl: 75rem;
+  --breakpoint-2xl: 90rem;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--color-text-dark);
+  background-color: var(--color-bg);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* Typography classes from DESIGN.md spec */
+.heading-h1 {
+  font-family: var(--font-heading);
+  font-size: 2.4rem;
+  line-height: 1.0;
+  font-weight: 300;
+  font-style: italic;
+  letter-spacing: -0.04em;
+}
+
+.heading-h2-serif {
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  line-height: 1.1;
+  font-weight: 200;
+  font-style: italic;
+  letter-spacing: -0.04em;
+  font-feature-settings: "cv01", "cv05", "cv09", "cv11", "ss03";
+}
+
+@media (min-width: 640px) {
+  .heading-h1 {
+    font-size: 2.8rem;
+  }
+  .heading-h2-serif {
+    font-size: 2.4rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .heading-h1 {
+    font-size: 3.2rem;
+  }
+  .heading-h2-serif {
+    font-size: 3rem;
+  }
+}
+
+@media (min-width: 1200px) {
+  .heading-h2-serif {
+    font-size: 3.7rem;
+  }
+}

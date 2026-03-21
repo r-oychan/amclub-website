@@ -1,0 +1,449 @@
+{
+  "summary": {
+    "created": 13,
+    "skipped": 54,
+    "failed": 4,
+    "media_uploaded": 13
+  },
+  "entries": [
+    {
+      "contentType": "event-category",
+      "name": "Dining",
+      "status": "skipped"
+    },
+    {
+      "contentType": "event-category",
+      "name": "Fitness & Wellness",
+      "status": "skipped"
+    },
+    {
+      "contentType": "event-category",
+      "name": "Kids",
+      "status": "skipped"
+    },
+    {
+      "contentType": "event-category",
+      "name": "Member Engagement",
+      "status": "skipped"
+    },
+    {
+      "contentType": "event-category",
+      "name": "Thinkspace",
+      "status": "skipped"
+    },
+    {
+      "contentType": "event",
+      "name": "Nostalgic Flavors of Singapore",
+      "status": "skipped"
+    },
+    {
+      "contentType": "event",
+      "name": "Pedal to Victory! A Spin Bike Time Challenge",
+      "status": "failed",
+      "error": "API error"
+    },
+    {
+      "contentType": "event",
+      "name": "Scarily Fun Friday Nights for the Kids!",
+      "status": "failed",
+      "error": "API error"
+    },
+    {
+      "contentType": "event",
+      "name": "Smokin' Sundays at Grillhouse",
+      "status": "failed",
+      "error": "API error"
+    },
+    {
+      "contentType": "event",
+      "name": "Kanonkop Wine Dinner",
+      "status": "skipped"
+    },
+    {
+      "contentType": "event",
+      "name": "Get Your Green Fix Salad Bar Buffet",
+      "status": "skipped"
+    },
+    {
+      "contentType": "event",
+      "name": "National Football League 2025 Live Screening",
+      "status": "skipped"
+    },
+    {
+      "contentType": "event",
+      "name": "Classic & Contemporary: A Cocktail Masterclass Series",
+      "status": "created",
+      "documentId": "uxvnty7mlffptg5cok02ez0y"
+    },
+    {
+      "contentType": "event",
+      "name": "Adult Team Tennis Challenge 2025",
+      "status": "skipped"
+    },
+    {
+      "contentType": "restaurant",
+      "name": "Central",
+      "status": "skipped"
+    },
+    {
+      "contentType": "restaurant",
+      "name": "The 2nd Floor",
+      "status": "skipped"
+    },
+    {
+      "contentType": "restaurant",
+      "name": "Tradewinds",
+      "status": "skipped"
+    },
+    {
+      "contentType": "restaurant",
+      "name": "Grillhouse & Tiki Bar",
+      "status": "created",
+      "documentId": "d7zsi0r0u723t76vtj1hyxym"
+    },
+    {
+      "contentType": "restaurant",
+      "name": "The Gourmet Pantry",
+      "status": "skipped"
+    },
+    {
+      "contentType": "restaurant",
+      "name": "Union Bar",
+      "status": "skipped"
+    },
+    {
+      "contentType": "facility",
+      "name": "s\u00ean Spa",
+      "status": "failed",
+      "error": "API error"
+    },
+    {
+      "contentType": "facility",
+      "name": "Aquatics",
+      "status": "skipped"
+    },
+    {
+      "contentType": "facility",
+      "name": "Gym",
+      "status": "skipped"
+    },
+    {
+      "contentType": "facility",
+      "name": "Tennis",
+      "status": "skipped"
+    },
+    {
+      "contentType": "facility",
+      "name": "Golf Activities",
+      "status": "skipped"
+    },
+    {
+      "contentType": "facility",
+      "name": "Multi-purpose Court",
+      "status": "skipped"
+    },
+    {
+      "contentType": "facility",
+      "name": "Squash",
+      "status": "skipped"
+    },
+    {
+      "contentType": "facility",
+      "name": "The Bowling Alley",
+      "status": "skipped"
+    },
+    {
+      "contentType": "facility",
+      "name": "The Quad Poolside",
+      "status": "skipped"
+    },
+    {
+      "contentType": "facility",
+      "name": "The Quad",
+      "status": "skipped"
+    },
+    {
+      "contentType": "facility",
+      "name": "The Quad Studios",
+      "status": "skipped"
+    },
+    {
+      "contentType": "facility",
+      "name": "The Hangout",
+      "status": "skipped"
+    },
+    {
+      "contentType": "facility",
+      "name": "Kids' Parties",
+      "status": "created",
+      "documentId": "znbjfpomyycq7lvcwiexlht9"
+    },
+    {
+      "contentType": "venue",
+      "name": "The Galbraith Ballroom",
+      "status": "skipped"
+    },
+    {
+      "contentType": "venue",
+      "name": "Thinkspace",
+      "status": "skipped"
+    },
+    {
+      "contentType": "venue",
+      "name": "The Bowling Alley",
+      "status": "created",
+      "documentId": "m9jbu7vzvjkddjtrpwhm06i2"
+    },
+    {
+      "contentType": "venue",
+      "name": "The Quad Studios",
+      "status": "created",
+      "documentId": "j99ayb76s87czfo1i2b6uhcx"
+    },
+    {
+      "contentType": "committee-member",
+      "name": "Daniel Gewirtz",
+      "status": "skipped"
+    },
+    {
+      "contentType": "committee-member",
+      "name": "Tessa Pang",
+      "status": "skipped"
+    },
+    {
+      "contentType": "committee-member",
+      "name": "Alisha Barnes",
+      "status": "skipped"
+    },
+    {
+      "contentType": "committee-member",
+      "name": "Terry Kim",
+      "status": "skipped"
+    },
+    {
+      "contentType": "committee-member",
+      "name": "Charles Santos",
+      "status": "skipped"
+    },
+    {
+      "contentType": "committee-member",
+      "name": "Kate Park",
+      "status": "skipped"
+    },
+    {
+      "contentType": "committee-member",
+      "name": "Kenny Liu",
+      "status": "skipped"
+    },
+    {
+      "contentType": "committee-member",
+      "name": "Marcella Sullivan",
+      "status": "skipped"
+    },
+    {
+      "contentType": "committee-member",
+      "name": "Michael Schindler",
+      "status": "skipped"
+    },
+    {
+      "contentType": "committee-member",
+      "name": "Ngiam Siew Wei",
+      "status": "skipped"
+    },
+    {
+      "contentType": "committee-member",
+      "name": "Priyanka Bhalla",
+      "status": "skipped"
+    },
+    {
+      "contentType": "committee-member",
+      "name": "Ted Teo",
+      "status": "skipped"
+    },
+    {
+      "contentType": "committee-member",
+      "name": "Michelle Reeb",
+      "status": "skipped"
+    },
+    {
+      "contentType": "committee-member",
+      "name": "Autumn Vavoso",
+      "status": "skipped"
+    },
+    {
+      "contentType": "committee-member",
+      "name": "Sandra Johnson",
+      "status": "skipped"
+    },
+    {
+      "contentType": "committee-member",
+      "name": "Christine Kaelbel-Sheares",
+      "status": "skipped"
+    },
+    {
+      "contentType": "testimonial",
+      "name": "Ronald Williams",
+      "status": "skipped"
+    },
+    {
+      "contentType": "testimonial",
+      "name": "Sarah Grey",
+      "status": "skipped"
+    },
+    {
+      "contentType": "testimonial",
+      "name": "Matthew Hallen",
+      "status": "skipped"
+    },
+    {
+      "contentType": "testimonial",
+      "name": "Joseph Gunner",
+      "status": "skipped"
+    },
+    {
+      "contentType": "faq-item",
+      "name": "What types of membership do you offer?",
+      "status": "skipped"
+    },
+    {
+      "contentType": "faq-item",
+      "name": "What facilities and services are included?",
+      "status": "skipped"
+    },
+    {
+      "contentType": "faq-item",
+      "name": "Is membership transferable?",
+      "status": "skipped"
+    },
+    {
+      "contentType": "faq-item",
+      "name": "Can I upgrade or change my membership type?",
+      "status": "skipped"
+    },
+    {
+      "contentType": "home-page",
+      "name": "Singapore American Club | Home",
+      "status": "created",
+      "documentId": "h3841zg3sb4t8t9bk7gsxb02"
+    },
+    {
+      "contentType": "about-page",
+      "name": "About the Club",
+      "status": "created",
+      "documentId": "s6rsd0huc2ob702ig9g9ziq8"
+    },
+    {
+      "contentType": "dining-page",
+      "name": "Dining & Retail",
+      "status": "created",
+      "documentId": "evvhjgn3sq8lea9m9vw0ovgq"
+    },
+    {
+      "contentType": "fitness-page",
+      "name": "Fitness & Wellness",
+      "status": "created",
+      "documentId": "klm972dngimn1bkrpiqm59od"
+    },
+    {
+      "contentType": "kids-page",
+      "name": "Kids",
+      "status": "created",
+      "documentId": "s92665wnc6pabrvjlic2ambb"
+    },
+    {
+      "contentType": "event-spaces-page",
+      "name": "Private Events & Catering",
+      "status": "created",
+      "documentId": "qw68j3mrfquhba34hmxslwqk"
+    },
+    {
+      "contentType": "membership-page",
+      "name": "Membership",
+      "status": "created",
+      "documentId": "jdyigeedskepznlhacut0fre"
+    },
+    {
+      "contentType": "whats-on-page",
+      "name": "What's On",
+      "status": "created",
+      "documentId": "ov4r94r5t4upb6al8wuvdaeo"
+    },
+    {
+      "contentType": "footer",
+      "name": "Footer",
+      "status": "skipped"
+    },
+    {
+      "contentType": "header",
+      "name": "Header",
+      "status": "skipped"
+    }
+  ],
+  "media": [
+    {
+      "url": "https://framerusercontent.com/images/0YNsQiaf0KR8LDUah35vR09jfwc.jpg",
+      "status": "uploaded",
+      "strapiId": 1
+    },
+    {
+      "url": "https://framerusercontent.com/images/A9M0VHDW2FE6UoaFatzINqucGp0.jpg",
+      "status": "uploaded",
+      "strapiId": 2
+    },
+    {
+      "url": "https://framerusercontent.com/images/ALiDWPH3U3VnmiEzcoEet6lPIk.jpeg",
+      "status": "uploaded",
+      "strapiId": 3
+    },
+    {
+      "url": "https://framerusercontent.com/images/DytJIjZnqDf7hE6r7WyfxUrNjU.jpeg",
+      "status": "uploaded",
+      "strapiId": 4
+    },
+    {
+      "url": "https://framerusercontent.com/images/FZCLsivFTgvRBOrZD71tlU6pVRc.jpg",
+      "status": "uploaded",
+      "strapiId": 5
+    },
+    {
+      "url": "https://framerusercontent.com/images/FfQ1mhhWwbjsMQKiahq8SzaqLs.jpeg",
+      "status": "uploaded",
+      "strapiId": 6
+    },
+    {
+      "url": "https://framerusercontent.com/images/JkrDtEpbLxJMTiPrF9mJYWb3YQ.jpeg",
+      "status": "uploaded",
+      "strapiId": 7
+    },
+    {
+      "url": "https://framerusercontent.com/images/MlqKdegxMYfk5tpETtAaDIaV2w.jpg",
+      "status": "uploaded",
+      "strapiId": 8
+    },
+    {
+      "url": "https://framerusercontent.com/images/PlDsZH1QChc2aIXh0p9duml4TC0.jpeg",
+      "status": "uploaded",
+      "strapiId": 9
+    },
+    {
+      "url": "https://framerusercontent.com/images/RjIIikrBuOoQmOLuWXcoR6GFkOE.jpeg",
+      "status": "uploaded",
+      "strapiId": 10
+    },
+    {
+      "url": "https://framerusercontent.com/images/ToMfql1ukRrZhj1CjpLEOHmCb4.jpeg",
+      "status": "uploaded",
+      "strapiId": 11
+    },
+    {
+      "url": "https://framerusercontent.com/images/cEQ0tbJZ9iABZ7aowxb1DaK4U.jpg",
+      "status": "uploaded",
+      "strapiId": 12
+    },
+    {
+      "url": "https://framerusercontent.com/images/rNT1Hh6hiX6cJHoJGmlFogBGWmU.jpg",
+      "status": "uploaded",
+      "strapiId": 13
+    }
+  ]
+}

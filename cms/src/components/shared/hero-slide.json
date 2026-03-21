@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_shared_hero_slides",
+  "info": { "displayName": "Hero Slide", "icon": "picture" },
+  "attributes": {
+    "backgroundImage": { "type": "media", "multiple": false, "allowedTypes": ["images"], "required": true },
+    "title": { "type": "string" },
+    "titleColor": { "type": "string", "default": "#FFFFFF" },
+    "subtitle": { "type": "text" },
+    "subtitleColor": { "type": "string", "default": "#FFFFFF" },
+    "subtitleLink": { "type": "string" },
+    "cta": { "type": "component", "repeatable": false, "component": "shared.link" }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_blocks_testimonial_sliders",
+  "info": {
+    "displayName": "Testimonial Slider",
+    "icon": "quote",
+    "description": "Carousel of member testimonials"
+  },
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "heading": {
+      "type": "string"
+    },
+    "cta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.link"
+    },
+    "testimonials": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::testimonial.testimonial"
+    }
+  }
+}

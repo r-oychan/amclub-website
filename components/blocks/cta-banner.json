@@ -1,0 +1,30 @@
+{
+  "collectionName": "components_blocks_cta_banners",
+  "info": {
+    "displayName": "CTA Banner",
+    "icon": "cursor",
+    "description": "Call to action banner with heading, body, and buttons"
+  },
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "heading": {
+      "type": "string",
+      "required": true
+    },
+    "body": {
+      "type": "text"
+    },
+    "ctas": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link"
+    },
+    "variant": {
+      "type": "enumeration",
+      "enum": ["default", "dark", "accent"],
+      "default": "default"
+    }
+  }
+}

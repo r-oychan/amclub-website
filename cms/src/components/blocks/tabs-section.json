@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_blocks_tabs_sections",
+  "info": {
+    "displayName": "Tabs Section",
+    "icon": "layer",
+    "description": "Tabbed content section with image cards"
+  },
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "heading": {
+      "type": "string"
+    },
+    "tabs": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link"
+    }
+  }
+}

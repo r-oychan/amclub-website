@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_blocks_team_grids",
+  "info": {
+    "displayName": "Team Grid",
+    "icon": "user",
+    "description": "Grid of team/committee members"
+  },
+  "attributes": {
+    "heading": {
+      "type": "string"
+    },
+    "members": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::committee-member.committee-member"
+    }
+  }
+}

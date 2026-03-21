@@ -1,0 +1,27 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Temp / generated
+.migration-tmp/
+test-results/
+
+# IDE
+.idea/
+.vscode/
+*.sw?
+
+# Logs
+*.log

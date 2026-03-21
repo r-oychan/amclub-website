@@ -1,0 +1,35 @@
+{
+  "verifiedAt": "2026-03-05T00:00:00Z",
+  "source": "https://tactesting.framer.website/home",
+  "frontend": "http://localhost:5173",
+  "cms": "http://localhost:1337",
+  "pages": [
+    { "path": "/home", "status": "pass", "screenshot": "screenshots/built/home.png", "title": "renders correctly", "sections": 9 },
+    { "path": "/about", "status": "pass", "screenshot": "screenshots/built/about.png", "title": "renders correctly", "sections": 8 },
+    { "path": "/dining", "status": "pass", "screenshot": "screenshots/built/dining.png", "title": "renders correctly", "sections": 5 },
+    { "path": "/fitness", "status": "pass", "screenshot": "screenshots/built/fitness.png", "title": "renders correctly", "sections": 4 },
+    { "path": "/kids", "status": "pass", "screenshot": "screenshots/built/kids.png", "title": "renders correctly", "sections": 5 },
+    { "path": "/event-spaces", "status": "pass", "screenshot": "screenshots/built/event-spaces.png", "title": "renders correctly", "sections": 5 },
+    { "path": "/membership", "status": "pass", "screenshot": "screenshots/built/membership.png", "title": "renders correctly", "sections": 7 },
+    { "path": "/whats-on", "status": "pass", "screenshot": "screenshots/built/whats-on.png", "title": "renders correctly", "sections": 4 }
+  ],
+  "api": {
+    "events": { "status": "pass", "count": 9 },
+    "restaurants": { "status": "pass", "count": 6 },
+    "facilities": { "status": "pass", "count": 14 },
+    "committee-members": { "status": "pass", "count": 16 },
+    "testimonials": { "status": "pass", "count": 4 },
+    "faq-items": { "status": "pass", "count": 4 },
+    "venues": { "status": "pass", "count": 4 },
+    "header": { "status": "pass", "navItems": 7 },
+    "footer": { "status": "pass", "columns": 3 }
+  },
+  "summary": {
+    "pagesTotal": 8,
+    "pagesPassing": 8,
+    "apiEndpointsTotal": 9,
+    "apiEndpointsPassing": 9,
+    "contentItemsTotal": 64,
+    "contentItemsMigrated": 64
+  }
+}

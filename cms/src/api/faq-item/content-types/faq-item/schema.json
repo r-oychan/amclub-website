@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "faq_items",
+  "info": {
+    "singularName": "faq-item",
+    "pluralName": "faq-items",
+    "displayName": "FAQ Item",
+    "description": "Frequently asked questions"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "question": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "question",
+      "required": true
+    },
+    "answer": {
+      "type": "blocks"
+    },
+    "category": {
+      "type": "enumeration",
+      "enum": ["membership", "facilities", "dining", "events", "general"],
+      "default": "general"
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    }
+  }
+}

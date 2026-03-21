@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_blocks_stats_counters",
+  "info": {
+    "displayName": "Stats Counter",
+    "icon": "chartBubble",
+    "description": "Section with stat counters"
+  },
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "stats": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.stat-item"
+    }
+  }
+}

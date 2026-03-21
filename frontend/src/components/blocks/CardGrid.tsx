@@ -1,0 +1,133 @@
+import type { CardItem, CtaButton } from '../../lib/types';
+import { SectionHeader } from '../shared/SectionHeader';
+import { Button } from '../shared/Button';
+
+export function CardGrid({
+  label,
+  heading,
+  subheading,
+  items,
+  cta,
+  columns = 3,
+  variant = 'default',
+  dark = false,
+}: {
+  label?: string;
+  heading?: string;
+  subheading?: string;
+  items: CardItem[];
+  cta?: CtaButton;
+  columns?: 2 | 3 | 4;
+  variant?: 'default' | 'event' | 'venue' | 'delivery';
+  dark?: boolean;
+}) {
+  const colClass = {
+    2: 'md:grid-cols-2',
+    3: 'md:grid-cols-2 lg:grid-cols-3',
+    4: 'md:grid-cols-2 lg:grid-cols-4',
+  }[columns];
+
+  return (
+    <section className={`py-16 ${dark ? 'bg-primary text-white' : 'bg-bg'}`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Top accent line */}
+        <div className={`h-px ${dark ? 'bg-white/20' : 'bg-secondary/40'} mb-12 md:mb-16`} />
+
+        <SectionHeader label={label} heading={heading} cta={cta} dark={dark} />
+
+        {subheading && (
+          <p className={`max-w-2xl mb-8 ${dark ? 'text-white/70' : 'text-text-dark/70'}`}>
+            {subheading}
+          </p>
+        )}
+
+        {variant === 'event' ? (
+          <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory -mx-4 px-4">
+            {items.map((item, i) => (
+              <EventCard key={i} item={item} />
+            ))}
+          </div>
+        ) : (
+          <div className={`grid grid-cols-1 ${colClass} gap-8`}>
+            {items.map((item, i) => (
+              <DefaultCard key={i} item={item} variant={variant} />
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function EventCard({ item }: { item: CardItem }) {
+  return (
+    <div className="flex-shrink-0 w-72 snap-start rounded-xl overflow-hidden bg-white shadow-md hover:shadow-lg transition-shadow">
+      {item.image && (
+        <div className="h-44 overflow-hidden">
+          <img src={item.image} alt={item.title ?? ''} className="w-full h-full object-cover" />
+        </div>
+      )}
+      <div className="p-4">
+        {item.date && (
+          <span className="inline-block bg-accent text-white text-xs font-bold px-2 py-1 rounded mb-2">
+            {item.date}
+          </span>
+        )}
+        {item.category && (
+          <p className="text-xs text-secondary font-bold uppercase tracking-wide mb-1">{item.category}</p>
+        )}
+        <h3 className="font-heading text-sm font-bold text-primary leading-snug">{item.title}</h3>
+      </div>
+    </div>
+  );
+}
+
+function DefaultCard({ item, variant }: { item: CardItem; variant: string }) {
+  return (
+    <div className="rounded-xl overflow-hidden bg-white shadow-md hover:shadow-lg transition-shadow flex flex-col">
+      {item.image && (
+        <div className="h-52 overflow-hidden">
+          <img src={item.image} alt={item.name ?? item.title ?? ''} className="w-full h-full object-cover" />
+        </div>
+      )}
+      <div className="p-6 flex flex-col flex-1">
+        {item.category && (
+          <p className="text-xs text-secondary font-bold uppercase tracking-wide mb-1">{item.category}</p>
+        )}
+        <h3 className="font-heading text-xl font-bold text-primary mb-1">
+          {item.name ?? item.title}
+        </h3>
+        {item.type && <p className="text-xs text-accent font-semibold uppercase mb-2">{item.type}</p>}
+        {item.tagline && <p className="text-sm italic text-text-dark/70 mb-2">{item.tagline}</p>}
+        {item.capacity && <p className="text-xs text-text-dark/60 mb-2">{item.capacity}</p>}
+        {item.description && <p className="text-sm text-text-dark/80 mb-4 flex-1">{item.description}</p>}
+        {item.serviceFeatures && item.serviceFeatures.length > 0 && (
+          <ul className="text-xs text-text-dark/70 mb-3 space-y-1">
+            {item.serviceFeatures.map((f) => (
+              <li key={f} className="flex items-center gap-1">
+                <span className="text-secondary">&#10003;</span> {f}
+              </li>
+            ))}
+          </ul>
+        )}
+        {variant === 'venue' && item.venues && (
+          <p className="text-xs text-text-dark/60 mb-3">Venues: {item.venues.join(', ')}</p>
+        )}
+        {item.ctas && item.ctas.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-auto">
+            {item.ctas.map((c) => {
+              const label = typeof c === 'string' ? c : c.label;
+              const href = typeof c === 'string' ? undefined : c.href;
+              return (
+                <Button key={label} label={label} href={href} variant="secondary" className="text-xs px-4 py-2" />
+              );
+            })}
+          </div>
+        )}
+        {item.cta && !item.ctas && (
+          <Button label={item.cta} variant="secondary" className="text-xs px-4 py-2 mt-auto self-start" />
+        )}
+      </div>
+    </div>
+  );
+}

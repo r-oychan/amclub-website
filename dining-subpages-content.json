@@ -1,0 +1,327 @@
+{
+  "extractedAt": "2026-03-16T00:00:00Z",
+  "source": "https://tactesting.framer.website",
+  "extractionMethod": "Screenshots (Central, The 2nd Floor, Grillhouse) + existing content-inventory.json + subpages.ts data",
+  "notes": "WebFetch cannot render Framer's client-side JS. Pages for Tradewinds, Union Bar, The Gourmet Pantry, Uncorked, and Essentials were extracted from existing project data only (no Framer screenshots available). Content marked with [FROM SCREENSHOT] was read from Framer prototype screenshots. Content marked [FROM EXISTING DATA] was taken from subpages.ts or content-inventory.json. Items marked [NEEDS VERIFICATION] should be checked against the live Framer prototype.",
+  "pages": [
+    {
+      "name": "Central",
+      "slug": "central",
+      "type": "Café",
+      "path": "/dining/central",
+      "breadcrumb": "Dining & Retail / Central",
+      "description": "Have a cup of joe, bagels, pastries and salads at this contemporary café with counter service and self check-out kiosk. Customised cake orders must be placed at least 7 working days in advance.\n\nNo wet attire allowed in the café.",
+      "descriptionSource": "[FROM SCREENSHOT]",
+      "hours": "Daily: 7:00 a.m. – 7:00 p.m.",
+      "hoursSource": "[FROM SCREENSHOT]",
+      "level": "Level 1",
+      "phone": "6739 4359",
+      "email": "central@amclub.org.sg",
+      "dressCode": null,
+      "image": "https://framerusercontent.com/images/ALiDWPH3U3VnmiEzcoEet6lPIk.jpeg",
+      "imageNote": "[NEEDS VERIFICATION] - image shows woman at café counter selecting pastries",
+      "ctas": [
+        { "label": "View Menu", "href": "#", "icon": "arrow-right" },
+        { "label": "Promotions", "href": "#", "icon": "arrow-right" }
+      ],
+      "extraSections": [],
+      "gallery": {
+        "present": true,
+        "heading": "Photo Gallery",
+        "images": "[NEEDS VERIFICATION] - gallery section visible but no images loaded in screenshot"
+      },
+      "promoCards": null,
+      "faq": null
+    },
+    {
+      "name": "The 2nd Floor",
+      "slug": "the-2nd-floor",
+      "type": "Fusion Fine Dining",
+      "path": "/dining/the-2nd-floor",
+      "breadcrumb": "Dining & Retail / The 2nd Floor",
+      "description": "Amidst the plethora of fusion restaurants in Singapore, none is as exquisite as the award-winning The 2nd Floor. The first suggests the Chinese character for 2, \"èr\" (二). The Eastern menu is in perfect harmony with authentic Asian flavors and unique contemporary presentations.\n\nThe Western menu is an interpretation of the Modern American Steakhouse and combines rustic ambiance with fine dining fare. The restaurant showcased the Excellent Dining Venue award at the prestigious World of Chef par Excellence® Culinaire Competition.",
+      "descriptionSource": "[FROM SCREENSHOT]",
+      "hours": "Tuesday to Sunday:\nLunch: 11:30 a.m. – 2:30 p.m.\nDinner: 5:30 p.m. – 10:00 p.m.\nThe 2nd Floor is closed on Mondays.",
+      "hoursSource": "[FROM SCREENSHOT]",
+      "level": "Level 2",
+      "phone": "6739 4329",
+      "email": "2ndfloor@amclub.org.sg",
+      "dressCode": "Smart Casual",
+      "image": "https://framerusercontent.com/images/mVJDWpQ45XvCKY8vEOKrFiKZta0.jpg",
+      "imageNote": "Image shows two women dining/talking at the restaurant",
+      "ctas": [
+        { "label": "View Menu", "href": "#", "icon": "arrow-right" },
+        { "label": "Promotions", "href": "#", "icon": "arrow-right" }
+      ],
+      "extraSections": [
+        {
+          "title": "Wine Corkage Policy",
+          "content": "Enjoy complimentary corkage with every bottle purchased from our restaurant. Standard corkage is $30 per bottle."
+        },
+        {
+          "title": "Reservation",
+          "content": "Or contact The 2nd Floor at 6739-4329 or 2ndfloor@amclub.org.sg to make a reservation."
+        },
+        {
+          "title": "Reserve a Table",
+          "content": "[CTA button linking to reservation system]",
+          "ctas": [
+            { "label": "Reserve a Table", "href": "#" }
+          ]
+        },
+        {
+          "title": "Wine Corkage Policy",
+          "content": "Third-party wines: $40 per bottle.\nWines brought by Member for own consumption: $30 per bottle."
+        },
+        {
+          "title": "Cancellation Policy",
+          "content": "Reservations cancelled within 24 hours will incur a $35 per person 'No Consideration Fee' (complimentary or modified to ensure pax are not committed). Contact via phone for cancellation."
+        }
+      ],
+      "extraSectionsSource": "[FROM SCREENSHOT] - some text partially legible, may need verification",
+      "gallery": {
+        "present": true,
+        "heading": "Photo Gallery",
+        "images": "[NEEDS VERIFICATION]"
+      },
+      "promoCards": null,
+      "faq": {
+        "present": true,
+        "heading": "Your Questions, Answered",
+        "subheading": "Your frequently asked questions are listed below. If you can't find the answer here, don't hesitate to contact us.",
+        "items": [
+          { "question": "<Placeholder> What types of membership do you offer?", "answer": "" },
+          { "question": "<Placeholder> What facilities and services are included?", "answer": "" },
+          { "question": "<Placeholder> Is membership transferable?", "answer": "" },
+          { "question": "<Placeholder> Can I upgrade or change my membership type?", "answer": "" },
+          { "question": "<Placeholder> What types of membership do you offer?", "answer": "" }
+        ]
+      },
+      "faqNote": "[FROM SCREENSHOT] - FAQ section uses placeholder questions"
+    },
+    {
+      "name": "Tradewinds",
+      "slug": "tradewinds",
+      "type": "International",
+      "path": "/dining/tradewinds",
+      "breadcrumb": "Dining & Retail / Tradewinds",
+      "description": "All-day casual dining featuring an international menu with flavors from America to Singapore.",
+      "descriptionSource": "[FROM EXISTING DATA] - only listing-page description available. Full sub-page description NEEDS VERIFICATION from Framer prototype.",
+      "hours": "Sunday to Thursday: 8:00 a.m. – 9:00 p.m.\nFriday & Saturday: 8:00 a.m. – 10:00 p.m.",
+      "hoursSource": "[FROM EXISTING DATA]",
+      "level": "Level 1",
+      "phone": "6739 4326",
+      "email": "tradewinds@amclub.org.sg",
+      "dressCode": null,
+      "dressCodeNote": "[NEEDS VERIFICATION]",
+      "image": null,
+      "imageNote": "[NEEDS VERIFICATION] - no screenshot available",
+      "ctas": [
+        { "label": "View Menu", "href": "#" },
+        { "label": "Promotions", "href": "#" }
+      ],
+      "ctasNote": "[NEEDS VERIFICATION] - CTAs assumed to match other venue pages",
+      "extraSections": "[NEEDS VERIFICATION]",
+      "gallery": {
+        "present": "[NEEDS VERIFICATION]",
+        "heading": "Photo Gallery"
+      },
+      "promoCards": null,
+      "faq": null
+    },
+    {
+      "name": "Grillhouse & Tiki Bar",
+      "slug": "grillhouse",
+      "type": "American BBQ and Grill",
+      "path": "/dining/grillhouse",
+      "breadcrumb": "Dining & Retail / Central",
+      "breadcrumbNote": "[FROM SCREENSHOT] - breadcrumb shows 'Central' which appears to be a bug in the prototype; should be 'Grillhouse'",
+      "description": "Welcome to a casual poolside dining restaurant – perfect for families with children and swimmers looking to have a delicious meal.\n\nDevour authentic American cuisine featuring Texas-style BBQ, mouth-watering burgers, delicious pizzas and salads with ice-cold American beer and special Grillhouse shakes.",
+      "descriptionSource": "[FROM SCREENSHOT]",
+      "descriptionNote": "First paragraph has a 'Made in Framer' watermark partially obscuring text after 'delicious'",
+      "hours": null,
+      "hoursStructured": {
+        "grillhouse": {
+          "heading": "Grillhouse Operating Hours",
+          "sundayToThursday": "11:00 AM – 9:00 PM\nLast order at 8:30 p.m.",
+          "fridayAndSaturday": "11:00 AM – 9:30 PM\nLast order at 9:00 p.m."
+        },
+        "tikiBar": {
+          "heading": "Tiki Bar Operating Hours",
+          "fridayAndSaturday": "11:30 AM – 12:00 AM\nLast order at 11:30 p.m.",
+          "sundays": "11:30 AM – 11:00 PM\nLast order at 10:30 p.m."
+        }
+      },
+      "hoursSource": "[FROM SCREENSHOT]",
+      "level": "Level 1",
+      "phone": "6739 4357",
+      "email": "grillhouse@amclub.org.sg",
+      "dressCode": null,
+      "image": null,
+      "imageNote": "Screenshot shows family dining poolside photo (man and children eating)",
+      "ctas": [
+        { "label": "View Menu", "href": "#", "icon": "arrow-right" },
+        { "label": "Promotions", "href": "#", "icon": "arrow-right" }
+      ],
+      "extraSections": [],
+      "gallery": {
+        "present": true,
+        "heading": "Photo Gallery",
+        "images": "[NEEDS VERIFICATION]"
+      },
+      "promoCards": null,
+      "faq": null
+    },
+    {
+      "name": "Union Bar",
+      "slug": "union-bar",
+      "type": "American Bar Food",
+      "path": "/dining/union-bar",
+      "breadcrumb": "Dining & Retail / Union Bar",
+      "description": "Kick back after work at this classic American sports bar.",
+      "descriptionSource": "[FROM EXISTING DATA] - only listing-page description available. Full sub-page description NEEDS VERIFICATION from Framer prototype.",
+      "hours": null,
+      "hoursNote": "[NEEDS VERIFICATION] - no hours data available in existing sources",
+      "level": "Level 1",
+      "phone": null,
+      "phoneNote": "[NEEDS VERIFICATION]",
+      "email": null,
+      "emailNote": "[NEEDS VERIFICATION]",
+      "dressCode": null,
+      "dressCodeNote": "[NEEDS VERIFICATION]",
+      "image": null,
+      "imageNote": "[NEEDS VERIFICATION] - no screenshot available",
+      "ctas": [
+        { "label": "View Menu", "href": "#" },
+        { "label": "Promotions", "href": "#" }
+      ],
+      "ctasNote": "[NEEDS VERIFICATION]",
+      "extraSections": "[NEEDS VERIFICATION]",
+      "gallery": {
+        "present": "[NEEDS VERIFICATION]",
+        "heading": "Photo Gallery"
+      },
+      "promoCards": null,
+      "faq": null
+    },
+    {
+      "name": "The Gourmet Pantry",
+      "slug": "the-gourmet-pantry",
+      "type": "Wine & Gourmet Store",
+      "path": "/dining/the-gourmet-pantry",
+      "breadcrumb": "Dining & Retail / The Gourmet Pantry",
+      "description": "The Gourmet Pantry brings together an excellent selection of wines, featuring more than 100 American wine labels alongside over 300 international labels, thoughtfully curated for every occasion \u2013 from easy-drinking table wines to premium selections and celebratory bubblies.\n\nComplementing the wine collection is a distinctive range of homeware and table settings, making it a convenient, one-stop destination for both everyday needs and special moments.",
+      "descriptionSource": "[FROM EXISTING DATA - subpages.ts]",
+      "descriptionNote": "[NEEDS VERIFICATION] - this is the longest description in existing data but may not match the Framer prototype exactly",
+      "hours": "Monday to Thursday: 11:00 a.m. \u2013 8:00 p.m.\nFriday to Sunday: 10:00 a.m. \u2013 8:00 p.m.",
+      "hoursSource": "[FROM EXISTING DATA - subpages.ts]",
+      "level": "Level 1",
+      "phone": null,
+      "phoneNote": "[NEEDS VERIFICATION]",
+      "email": null,
+      "emailNote": "[NEEDS VERIFICATION]",
+      "dressCode": null,
+      "image": null,
+      "imageNote": "[NEEDS VERIFICATION] - dining listing page screenshot shows a photo of retail shelving/products for Essentials card which may relate",
+      "ctas": [
+        { "label": "View Menu", "href": "#" }
+      ],
+      "ctasSource": "[FROM EXISTING DATA - subpages.ts]",
+      "extraSections": "[NEEDS VERIFICATION]",
+      "gallery": {
+        "present": "[NEEDS VERIFICATION]",
+        "heading": "Photo Gallery"
+      },
+      "promoCards": null,
+      "faq": null
+    },
+    {
+      "name": "Uncorked",
+      "slug": "uncorked",
+      "type": "Wine Events",
+      "path": "/dining/uncorked",
+      "breadcrumb": "Dining & Retail / Uncorked",
+      "description": "Discover curated wine experiences and tastings at the Club.",
+      "descriptionSource": "[FROM EXISTING DATA - subpages.ts]",
+      "descriptionNote": "[NEEDS VERIFICATION] - this is a very brief placeholder description. The Framer prototype likely has much more content.",
+      "hours": null,
+      "hoursNote": "[NEEDS VERIFICATION]",
+      "level": null,
+      "phone": null,
+      "email": null,
+      "dressCode": null,
+      "image": null,
+      "imageNote": "[NEEDS VERIFICATION] - no screenshot available",
+      "ctas": [],
+      "ctasNote": "[NEEDS VERIFICATION]",
+      "extraSections": "[NEEDS VERIFICATION]",
+      "gallery": {
+        "present": "[NEEDS VERIFICATION]"
+      },
+      "promoCards": null,
+      "faq": null
+    },
+    {
+      "name": "Essentials",
+      "slug": "essentials",
+      "type": "Retail & Laundry",
+      "path": "/dining/essentials",
+      "breadcrumb": "Dining & Retail / Essentials",
+      "description": "Your one-stop shop for everyday essentials, seasonal treats, and laundry services—all in one convenient spot.",
+      "descriptionSource": "[FROM EXISTING DATA - content-inventory.json + subpages.ts]",
+      "descriptionNote": "[NEEDS VERIFICATION] - the Framer prototype likely has additional description paragraphs",
+      "hours": null,
+      "hoursNote": "[NEEDS VERIFICATION]",
+      "level": "Level 1",
+      "phone": null,
+      "phoneNote": "[NEEDS VERIFICATION]",
+      "email": null,
+      "emailNote": "[NEEDS VERIFICATION]",
+      "dressCode": null,
+      "image": null,
+      "imageNote": "Dining listing page shows retail store photo for Essentials",
+      "ctas": [
+        { "label": "Essentials2Go!", "href": "#" },
+        { "label": "Retail Store & Laundry Services", "href": "#" }
+      ],
+      "ctasSource": "[FROM EXISTING DATA - content-inventory.json]",
+      "extraSections": "[NEEDS VERIFICATION]",
+      "gallery": {
+        "present": "[NEEDS VERIFICATION]"
+      },
+      "promoCards": null,
+      "faq": null
+    }
+  ],
+  "commonPageStructure": {
+    "description": "Based on the 3 screenshots available, all dining sub-pages follow a consistent layout pattern",
+    "layout": {
+      "hero": "Split layout - left half has venue photo, right half has venue name in large italic heading font",
+      "breadcrumb": "Home / Dining & Retail / [Venue Name] at top",
+      "infoPanel": {
+        "typeLabel": "Category label above venue name (e.g. 'CAFÉ', 'FUSION FINE DINING', 'AMERICAN BBQ AND GRILL')",
+        "venueName": "Large heading in Noto Serif italic",
+        "ctas": "Row of CTA buttons: 'View Menu' and 'Promotions' with arrow icons",
+        "description": "Body text paragraphs below CTAs",
+        "openingHours": "Section with clock icon, heading 'Opening Hours', day groups and times",
+        "locationContact": "Section with location pin icon, heading 'Location & Contact', level, phone (with phone icon), email (with email icon)"
+      },
+      "additionalSections": "Venue-specific sections (e.g. Wine Corkage Policy, Reservation for The 2nd Floor; Tiki Bar Hours for Grillhouse)",
+      "gallery": "Photo Gallery section heading (placeholder in prototype)",
+      "faq": "Optional FAQ accordion section (seen on The 2nd Floor page)"
+    }
+  },
+  "imageUrls": {
+    "note": "Image URLs from Framer CDN - these would need to be downloaded and re-hosted",
+    "sources": {
+      "central": "https://framerusercontent.com/images/ALiDWPH3U3VnmiEzcoEet6lPIk.jpeg",
+      "the-2nd-floor": "[NEEDS VERIFICATION] - visible in screenshot but URL not extracted",
+      "grillhouse": "[NEEDS VERIFICATION] - visible in screenshot but URL not extracted",
+      "tradewinds": "[NEEDS VERIFICATION]",
+      "union-bar": "[NEEDS VERIFICATION]",
+      "the-gourmet-pantry": "[NEEDS VERIFICATION]",
+      "uncorked": "[NEEDS VERIFICATION]",
+      "essentials": "[NEEDS VERIFICATION]"
+    }
+  }
+}

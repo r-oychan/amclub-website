@@ -1,0 +1,414 @@
+{
+  "sourceUrl": "https://tactesting.framer.website/home",
+  "siteName": "The American Club Singapore",
+  "crawledAt": "2026-03-05T00:00:00Z",
+  "platform": "framer",
+  "designTokens": {
+    "colors": {
+      "primary": "#001E62",
+      "primaryDark": "#00164A",
+      "primaryLight": "rgba(0, 29, 97, 0.75)",
+      "accent": "#DF4661",
+      "secondary": "#6BBBAE",
+      "background": "#F5F4F2",
+      "white": "#FFFFFF",
+      "textDark": "#3F4452",
+      "textLight": "rgba(255, 255, 255, 0.77)"
+    },
+    "fonts": {
+      "heading": "Noto Serif, serif",
+      "body": "Lato, sans-serif"
+    }
+  },
+  "navigation": {
+    "type": "top-bar",
+    "logo": {
+      "src": "https://framerusercontent.com/images/jYpgpsEhknSxMZJWxquvCab3o.webp",
+      "alt": "The American Club Singapore"
+    },
+    "items": [
+      { "label": "Home", "href": "/home" },
+      { "label": "Dining & Retail", "href": "/dining" },
+      { "label": "Fitness & Wellness", "href": "/fitness" },
+      { "label": "Kids", "href": "/kids" },
+      { "label": "Private Events & Catering", "href": "/event-spaces" },
+      { "label": "Membership", "href": "/membership" },
+      { "label": "What's On", "href": "/whats-on" }
+    ],
+    "cta": { "label": "Member Login", "href": "#" }
+  },
+  "pages": [
+    {
+      "path": "/home",
+      "title": "Singapore American Club | Home",
+      "type": "unique",
+      "meta": {
+        "description": "Navigation For Testing",
+        "ogTitle": "Singapore American Club | Home"
+      },
+      "screenshot": "screenshots/home.png",
+      "sections": [
+        {
+          "id": "home-hero",
+          "componentType": "hero",
+          "description": "Full-width background image with overlay text 'A Home Away From Home' and CTA 'Request for a Club Tour'"
+        },
+        {
+          "id": "home-about",
+          "componentType": "text-block",
+          "description": "About Us section with heading 'Blending American Traditions with Singaporean Charm' and fun fact callout"
+        },
+        {
+          "id": "home-stats",
+          "componentType": "stats-counter",
+          "description": "Three stat counters: 11,000+ Members, 90+ Nationalities, 77+ Years of Heritage"
+        },
+        {
+          "id": "home-events",
+          "componentType": "card-grid",
+          "description": "Events carousel with date badges, category tags, event titles and images. Horizontal scrolling carousel with 9 event cards"
+        },
+        {
+          "id": "home-services",
+          "componentType": "feature-grid",
+          "description": "Three service cards: Family Experience, Business & Leisure, Everyday Concierge"
+        },
+        {
+          "id": "home-experience",
+          "componentType": "tabs",
+          "description": "Experience section with three large image cards for Dining & Retail, Fitness & Wellness, Kids"
+        },
+        {
+          "id": "home-moments",
+          "componentType": "testimonial",
+          "description": "Video testimonials carousel with member name, quote and 'Watch More' CTA. Members: Ronald Williams, Sarah Grey, Matthew Hallen, Joseph Gunner"
+        },
+        {
+          "id": "home-faq",
+          "componentType": "faq",
+          "description": "FAQ accordion with placeholder membership questions"
+        },
+        {
+          "id": "home-footer-cta",
+          "componentType": "cta-banner",
+          "description": "Enquiries section"
+        }
+      ]
+    },
+    {
+      "path": "/about",
+      "title": "About the Club",
+      "type": "unique",
+      "meta": {
+        "description": "",
+        "ogTitle": ""
+      },
+      "screenshot": "screenshots/about.png",
+      "sections": [
+        {
+          "id": "about-hero",
+          "componentType": "hero",
+          "description": "Hero with title 'About the Club' and subtitle '77 Years of Heritage, Community and Connection'"
+        },
+        {
+          "id": "about-history",
+          "componentType": "text-block",
+          "description": "History text about founding in 1948 and evolution"
+        },
+        {
+          "id": "about-stats",
+          "componentType": "stats-counter",
+          "description": "Stats: 11,000+ Members, 90+ Nationalities, 77+ Years, 25 Committees"
+        },
+        {
+          "id": "about-vision-mission",
+          "componentType": "text-block",
+          "description": "Vision and Mission statements"
+        },
+        {
+          "id": "about-governance",
+          "componentType": "text-block",
+          "description": "Club governance description and committee volunteer info"
+        },
+        {
+          "id": "about-committee",
+          "componentType": "team-grid",
+          "description": "General Committee members grid with photos, names and roles. 15 members listed including President, Secretary, Treasurer"
+        },
+        {
+          "id": "about-sustainability",
+          "componentType": "feature-grid",
+          "description": "Sustainability initiatives with checkmark list (6 green initiatives)"
+        },
+        {
+          "id": "about-management",
+          "componentType": "team-grid",
+          "description": "Club Management section featuring General Manager Christine Kaelbel-Sheares with bio"
+        }
+      ]
+    },
+    {
+      "path": "/dining",
+      "title": "Dining & Retail",
+      "type": "unique",
+      "meta": {
+        "description": "",
+        "ogTitle": ""
+      },
+      "screenshot": "screenshots/dining.png",
+      "sections": [
+        {
+          "id": "dining-hero",
+          "componentType": "hero",
+          "description": "Hero with title 'Dining & Retail' and tagline 'Drink for leisure. Eat for pleasure.'"
+        },
+        {
+          "id": "dining-venues",
+          "componentType": "card-grid",
+          "description": "Restaurant/bar cards with image, name, cuisine type, dress code, description and CTAs (Read More, View Menu). 6 venues: Central, The 2nd Floor, Tradewinds, Grillhouse & Tiki Bar, The Gourmet Pantry, Union Bar"
+        },
+        {
+          "id": "dining-promotions",
+          "componentType": "cta-banner",
+          "description": "CTA to view all dining promotions"
+        },
+        {
+          "id": "dining-delivery",
+          "componentType": "card-grid",
+          "description": "Delivery/takeaway cards: TAC2Go!, Bottles2Go!, Essentials"
+        },
+        {
+          "id": "dining-membership-cta",
+          "componentType": "cta-banner",
+          "description": "CTA to explore membership for dining access"
+        }
+      ]
+    },
+    {
+      "path": "/fitness",
+      "title": "Fitness & Wellness",
+      "type": "unique",
+      "meta": {
+        "description": "",
+        "ogTitle": ""
+      },
+      "screenshot": "screenshots/fitness.png",
+      "sections": [
+        {
+          "id": "fitness-hero",
+          "componentType": "hero",
+          "description": "Hero with title 'Fitness & Wellness' and tagline"
+        },
+        {
+          "id": "fitness-facilities",
+          "componentType": "card-grid",
+          "description": "Facility cards with image, name, description and CTAs. Facilities: sên Spa, Aquatics, Gym, Tennis, Golf Activities, Multi-purpose Court, Squash, The Bowling Alley"
+        },
+        {
+          "id": "fitness-activities",
+          "componentType": "cta-banner",
+          "description": "CTA to view all activities - 'Connect & Discover: Where hobbies become friendship'"
+        },
+        {
+          "id": "fitness-membership-cta",
+          "componentType": "cta-banner",
+          "description": "CTA to explore membership for fitness access"
+        }
+      ]
+    },
+    {
+      "path": "/kids",
+      "title": "Kids",
+      "type": "unique",
+      "meta": {
+        "description": "",
+        "ogTitle": ""
+      },
+      "screenshot": "screenshots/kids.png",
+      "sections": [
+        {
+          "id": "kids-hero",
+          "componentType": "hero",
+          "description": "Hero with title 'Kids' and tagline 'Learn and play without limits.'"
+        },
+        {
+          "id": "kids-facilities",
+          "componentType": "card-grid",
+          "description": "Facility cards: The Quad Poolside (under 6), The Quad (6+), The Quad Studios, The Hangout, Kids' Parties"
+        },
+        {
+          "id": "kids-programs",
+          "componentType": "card-grid",
+          "description": "Programs section: Seasonal Camps, Recreational Classes"
+        },
+        {
+          "id": "kids-safety",
+          "componentType": "feature-grid",
+          "description": "Safety section with 3 pillars: Trained team, dedicated supervision, safe environment"
+        },
+        {
+          "id": "kids-membership-cta",
+          "componentType": "cta-banner",
+          "description": "CTA to explore membership for kids facilities"
+        }
+      ]
+    },
+    {
+      "path": "/event-spaces",
+      "title": "Private Events & Catering",
+      "type": "unique",
+      "meta": {
+        "description": "",
+        "ogTitle": ""
+      },
+      "screenshot": "screenshots/event-spaces.png",
+      "sections": [
+        {
+          "id": "events-hero",
+          "componentType": "hero",
+          "description": "Hero with title 'Host Your Next Event with Us'"
+        },
+        {
+          "id": "events-packages",
+          "componentType": "card-grid",
+          "description": "Event package cards: Wedding Celebrations, Corporate Functions, Parties — each with service features, venues and CTA"
+        },
+        {
+          "id": "events-venues",
+          "componentType": "card-grid",
+          "description": "Venue cards: The Galbraith Ballroom (3400sqm), Thinkspace, The Bowling Alley (up to 50 pax), The Quad Studios (up to 50 pax)"
+        },
+        {
+          "id": "events-catering",
+          "componentType": "feature-grid",
+          "description": "Off-site catering section with service styles, culinary expertise, dietary considerations"
+        },
+        {
+          "id": "events-membership-cta",
+          "componentType": "cta-banner",
+          "description": "CTA to explore membership for event access"
+        }
+      ]
+    },
+    {
+      "path": "/membership",
+      "title": "Membership",
+      "type": "unique",
+      "meta": {
+        "description": "",
+        "ogTitle": ""
+      },
+      "screenshot": "screenshots/membership.png",
+      "sections": [
+        {
+          "id": "membership-hero",
+          "componentType": "hero",
+          "description": "Hero with title 'Membership' and tagline about community values"
+        },
+        {
+          "id": "membership-join",
+          "componentType": "cta-banner",
+          "description": "Join Our Community section with 'Start Your Application' CTA"
+        },
+        {
+          "id": "membership-benefits",
+          "componentType": "feature-grid",
+          "description": "6 benefit cards: World-class Facilities, Exceptional Dining, Signature Events, Kids programs, Community & Connection, 150+ Reciprocal Clubs"
+        },
+        {
+          "id": "membership-types",
+          "componentType": "cta-banner",
+          "description": "Find the Right Membership with link to types & joining fees"
+        },
+        {
+          "id": "membership-referral",
+          "componentType": "card-grid",
+          "description": "Three program cards: Refer & Be Rewarded, Eagle Rewards Program, Reciprocal Clubs"
+        },
+        {
+          "id": "membership-faq",
+          "componentType": "faq",
+          "description": "FAQ accordion with membership questions"
+        },
+        {
+          "id": "membership-cta",
+          "componentType": "cta-banner",
+          "description": "Final CTA to start application or book club tour"
+        }
+      ]
+    },
+    {
+      "path": "/whats-on",
+      "title": "What's On",
+      "type": "unique",
+      "meta": {
+        "description": "",
+        "ogTitle": ""
+      },
+      "screenshot": "screenshots/whats-on.png",
+      "sections": [
+        {
+          "id": "whatson-hero",
+          "componentType": "hero",
+          "description": "Hero with title 'Where Community Comes Together'"
+        },
+        {
+          "id": "whatson-filters",
+          "componentType": "tabs",
+          "description": "Category filter tabs: Dining, Kids, Thinkspace, Fitness & Wellness, Member Engagement"
+        },
+        {
+          "id": "whatson-events",
+          "componentType": "card-grid",
+          "description": "Event listing cards with date badges (month/day), category, title. 9 events listed with Browse All Events CTA"
+        },
+        {
+          "id": "whatson-membership-cta",
+          "componentType": "cta-banner",
+          "description": "CTA to explore membership for event access"
+        }
+      ]
+    }
+  ],
+  "globalComponents": {
+    "navigation": {
+      "type": "navigation",
+      "description": "Floating top navigation bar with logo, nav links (left: Home, Dining & Retail, Fitness & Wellness, Kids; right: Private Events & Catering, Membership, What's On), and Member Login CTA button"
+    },
+    "footer": {
+      "type": "footer",
+      "description": "Dark navy footer with club address, phone, email. Three columns: Explore the Club links, Member links, Legal links. Copyright notice.",
+      "contactInfo": {
+        "address": "10 Claymore Hill Singapore, 229573",
+        "phone": "+65 6737 3411",
+        "email": "info@amclub.org.sg"
+      },
+      "columns": [
+        {
+          "title": "Explore the Club",
+          "links": ["Dining & Retail", "Fitness & Wellness", "Kids", "Private Events & Catering", "Membership", "Events Calendar", "About Us", "Club News", "Gallery", "Advertising & Sponsorships", "Contact Us"]
+        },
+        {
+          "title": "Member",
+          "links": ["Login", "Reciprocal Clubs", "Refer a Friend", "Eagles Reward Program"]
+        },
+        {
+          "title": "Legal",
+          "links": ["Club Constitution", "Club By-Laws", "Data Protection", "Privacy Statement"]
+        }
+      ]
+    }
+  },
+  "componentInventory": {
+    "hero": { "count": 8, "pages": ["/home", "/about", "/dining", "/fitness", "/kids", "/event-spaces", "/membership", "/whats-on"] },
+    "stats-counter": { "count": 2, "pages": ["/home", "/about"] },
+    "card-grid": { "count": 9, "pages": ["/home", "/dining", "/fitness", "/kids", "/event-spaces", "/membership", "/whats-on"] },
+    "feature-grid": { "count": 5, "pages": ["/home", "/about", "/kids", "/event-spaces", "/membership"] },
+    "text-block": { "count": 3, "pages": ["/home", "/about"] },
+    "testimonial": { "count": 1, "pages": ["/home"] },
+    "faq": { "count": 2, "pages": ["/home", "/membership"] },
+    "cta-banner": { "count": 10, "pages": ["/home", "/dining", "/fitness", "/kids", "/event-spaces", "/membership", "/whats-on"] },
+    "tabs": { "count": 2, "pages": ["/home", "/whats-on"] },
+    "team-grid": { "count": 2, "pages": ["/about"] }
+  }
+}

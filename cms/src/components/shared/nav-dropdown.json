@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_shared_nav_dropdowns",
+  "info": {
+    "displayName": "Nav Dropdown",
+    "icon": "apps",
+    "description": "Navigation dropdown with optional columns"
+  },
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "href": {
+      "type": "string",
+      "required": true
+    },
+    "isExternal": {
+      "type": "boolean",
+      "default": false
+    },
+    "columns": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.nav-column"
+    }
+  }
+}

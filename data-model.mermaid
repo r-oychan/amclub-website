@@ -1,0 +1,146 @@
+erDiagram
+    %% === COLLECTION TYPES ===
+
+    Event {
+        string title
+        uid slug
+        text description
+        date date
+        media image
+        boolean featured
+        component seo
+    }
+
+    EventCategory {
+        string name
+        uid slug
+    }
+
+    Restaurant {
+        string name
+        uid slug
+        string cuisineType
+        string dressCode
+        text description
+        media image
+        string menuUrl
+        integer order
+        component seo
+    }
+
+    Facility {
+        string name
+        uid slug
+        text description
+        media image
+        enum category
+        string capacity
+        integer order
+        component seo
+    }
+
+    CommitteeMember {
+        string name
+        uid slug
+        string role
+        text bio
+        media photo
+        enum memberType
+        integer order
+    }
+
+    Testimonial {
+        string memberName
+        uid slug
+        text quote
+        media photo
+        string videoUrl
+        integer order
+    }
+
+    FaqItem {
+        string question
+        uid slug
+        blocks answer
+        enum category
+        integer order
+    }
+
+    Venue {
+        string name
+        uid slug
+        text description
+        string capacity
+        media image
+        integer order
+        component seo
+    }
+
+    %% === SINGLE TYPES (Pages) ===
+
+    HomePage {
+        string title
+        dynamiczone content
+        component seo
+    }
+
+    AboutPage {
+        string title
+        dynamiczone content
+        component seo
+    }
+
+    DiningPage {
+        string title
+        dynamiczone content
+        component seo
+    }
+
+    FitnessPage {
+        string title
+        dynamiczone content
+        component seo
+    }
+
+    KidsPage {
+        string title
+        dynamiczone content
+        component seo
+    }
+
+    EventSpacesPage {
+        string title
+        dynamiczone content
+        component seo
+    }
+
+    MembershipPage {
+        string title
+        dynamiczone content
+        component seo
+    }
+
+    WhatsOnPage {
+        string title
+        dynamiczone content
+        component seo
+    }
+
+    Header {
+        media logo
+        component navItems
+        component ctaButton
+    }
+
+    Footer {
+        media logo
+        text address
+        string phone
+        email email
+        component columns
+        string copyright
+    }
+
+    %% === RELATIONS ===
+
+    Event }o--|| EventCategory : "belongs to"

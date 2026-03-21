@@ -1,0 +1,45 @@
+{
+  "kind": "collectionType",
+  "collectionName": "committee_members",
+  "info": {
+    "singularName": "committee-member",
+    "pluralName": "committee-members",
+    "displayName": "Committee Member",
+    "description": "Club committee and management members"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "role": {
+      "type": "string",
+      "required": true
+    },
+    "bio": {
+      "type": "text"
+    },
+    "photo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "memberType": {
+      "type": "enumeration",
+      "enum": ["general-committee", "management"],
+      "default": "general-committee"
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    }
+  }
+}

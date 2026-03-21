@@ -1,0 +1,10 @@
+{
+  "collectionName": "components_shared_nav_columns",
+  "info": { "displayName": "Nav Column", "icon": "apps" },
+  "attributes": {
+    "heading": { "type": "string" },
+    "links": { "type": "component", "repeatable": true, "component": "shared.nav-item" },
+    "image": { "type": "media", "multiple": false, "allowedTypes": ["images"] },
+    "imageLink": { "type": "string" }
+  }
+}
