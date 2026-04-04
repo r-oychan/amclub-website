@@ -16,7 +16,7 @@ jobs:
     name: Deploy to Azure
     needs: ci
     runs-on: ubuntu-latest
-    environment: production
+    environment: dev
     env:
       AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
       AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_KEY }}
@@ -40,15 +40,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Pulumi Login (Azure Blob backend)
-        run: pulumi login azblob://state
-
       - name: Pulumi Up
         uses: pulumi/actions@v5
         with:
           command: up
           stack-name: dev
           work-dir: infra
+          cloud-url: azblob://state
         env:
           ARM_CLIENT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}
           ARM_CLIENT_SECRET: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}
@@ -63,13 +61,14 @@ jobs:
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "| Output | Value |" >> "$GITHUB_STEP_SUMMARY"
           echo "|--------|-------|" >> "$GITHUB_STEP_SUMMARY"
-          npx pulumi stack output --json | python3 -c "
+          pulumi stack output --json --stack dev --cwd . 2>/dev/null | python3 -c "
           import sys, json
           outputs = json.load(sys.stdin)
           for k, v in outputs.items():
               print(f'| {k} | \`{v}\` |')
-          " >> "$GITHUB_STEP_SUMMARY"
+          " >> "$GITHUB_STEP_SUMMARY" || echo "| - | Could not read outputs |" >> "$GITHUB_STEP_SUMMARY"
         env:
+          PULUMI_BACKEND_URL: azblob://state
           ARM_CLIENT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}
           ARM_CLIENT_SECRET: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}
           ARM_TENANT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}
