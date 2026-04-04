@@ -1,0 +1,185 @@
+{
+  "version": "1.0.0",
+  "sourceUrl": "https://example-agency.com",
+  "analyzedAt": "2026-03-05T10:30:00Z",
+  "siteMetadata": {
+    "title": "Acme Creative Agency",
+    "description": "We build brands that matter",
+    "language": "en",
+    "availableLanguages": ["en"],
+    "favicon": "https://example-agency.com/favicon.ico",
+    "isSPA": true,
+    "framework": "framer"
+  },
+  "designTokens": {
+    "colors": [
+      { "value": "#1a1a2e", "usage": "primary" },
+      { "value": "#e94560", "usage": "accent" },
+      { "value": "#f5f5f5", "usage": "background" },
+      { "value": "#333333", "usage": "text" },
+      { "value": "#ffffff", "usage": "background" }
+    ],
+    "fonts": [
+      { "family": "Inter", "weights": ["400", "500", "600", "700"], "usage": "body" },
+      { "family": "Playfair Display", "weights": ["700"], "usage": "heading" }
+    ],
+    "spacing": {
+      "sectionGap": "80px",
+      "cardGap": "24px",
+      "containerMaxWidth": "1200px"
+    },
+    "borderRadius": "8px"
+  },
+  "navigation": {
+    "primary": [
+      { "label": "Home", "href": "/" },
+      { "label": "Services", "href": "/services", "children": [
+        { "label": "Branding", "href": "/services/branding" },
+        { "label": "Web Design", "href": "/services/web-design" },
+        { "label": "Marketing", "href": "/services/marketing" }
+      ]},
+      { "label": "Work", "href": "/work" },
+      { "label": "Blog", "href": "/blog" },
+      { "label": "Contact", "href": "/contact" }
+    ],
+    "footer": [
+      {
+        "heading": "Services",
+        "items": [
+          { "label": "Branding", "href": "/services/branding" },
+          { "label": "Web Design", "href": "/services/web-design" }
+        ]
+      },
+      {
+        "heading": "Company",
+        "items": [
+          { "label": "About", "href": "/about" },
+          { "label": "Careers", "href": "/careers" }
+        ]
+      }
+    ],
+    "hasMobileMenu": true,
+    "hasLanguageSwitcher": false,
+    "hasSearch": false
+  },
+  "pages": [
+    {
+      "id": "home",
+      "path": "/",
+      "title": "Acme Creative Agency — We Build Brands That Matter",
+      "screenshot": "screenshots/home.png",
+      "seo": {
+        "metaTitle": "Acme Creative Agency — We Build Brands That Matter",
+        "metaDescription": "Full-service creative agency specializing in branding, web design, and digital marketing.",
+        "ogImage": "https://example-agency.com/og-home.jpg"
+      },
+      "sections": [
+        { "componentId": "hero-main", "order": 0 },
+        { "componentId": "logo-cloud-clients", "order": 1 },
+        { "componentId": "services-grid", "order": 2 },
+        { "componentId": "work-showcase", "order": 3 },
+        { "componentId": "testimonials", "order": 4 },
+        { "componentId": "cta-contact", "order": 5 }
+      ]
+    },
+    {
+      "id": "blog",
+      "path": "/blog",
+      "title": "Blog — Acme Creative Agency",
+      "screenshot": "screenshots/blog.png",
+      "seo": {
+        "metaTitle": "Blog — Acme Creative Agency",
+        "metaDescription": "Insights on branding, design, and marketing."
+      },
+      "sections": [
+        { "componentId": "blog-listing-cards", "order": 0 }
+      ]
+    },
+    {
+      "id": "blog-post-sample",
+      "path": "/blog/building-brand-identity",
+      "title": "Building a Brand Identity From Scratch",
+      "isTemplate": true,
+      "templateId": "blog-post",
+      "screenshot": "screenshots/blog-post-sample.png",
+      "seo": {
+        "metaTitle": "Building a Brand Identity From Scratch",
+        "metaDescription": "A step-by-step guide to creating a memorable brand.",
+        "jsonLdType": "Article"
+      },
+      "sections": [
+        { "componentId": "blog-post-hero", "order": 0 },
+        { "componentId": "blog-post-body", "order": 1 },
+        { "componentId": "blog-post-author", "order": 2 },
+        { "componentId": "related-posts", "order": 3 }
+      ]
+    }
+  ],
+  "templates": [
+    {
+      "id": "blog-post",
+      "name": "Blog Post",
+      "urlPattern": "/blog/:slug",
+      "instanceCount": 12,
+      "samplePageId": "blog-post-sample",
+      "sections": [
+        { "componentId": "blog-post-hero", "order": 0 },
+        { "componentId": "blog-post-body", "order": 1 },
+        { "componentId": "blog-post-author", "order": 2 },
+        { "componentId": "related-posts", "order": 3 }
+      ]
+    }
+  ],
+  "components": [
+    {
+      "id": "hero-main",
+      "type": "hero",
+      "name": "Homepage Hero",
+      "description": "Full-width hero with large heading, subheading, CTA button, and background image",
+      "appearsOn": ["home"],
+      "isGlobal": false,
+      "isCollection": false,
+      "fields": [
+        { "name": "heading", "type": "text", "required": true, "example": "We Build Brands That Matter" },
+        { "name": "subheading", "type": "text", "required": false, "example": "Full-service creative agency" },
+        { "name": "ctaText", "type": "text", "required": true, "example": "Get in Touch" },
+        { "name": "ctaLink", "type": "link", "required": true, "example": "/contact" },
+        { "name": "backgroundImage", "type": "image", "required": true }
+      ],
+      "hasAnimation": true,
+      "animationType": "fade-in"
+    },
+    {
+      "id": "blog-listing-cards",
+      "type": "blog-listing",
+      "name": "Blog Post Cards",
+      "description": "3-column grid of blog post cards with thumbnail, title, excerpt, and date",
+      "appearsOn": ["blog"],
+      "isGlobal": false,
+      "isCollection": true,
+      "collectionItemFields": [
+        { "name": "title", "type": "text", "required": true },
+        { "name": "slug", "type": "text", "required": true },
+        { "name": "excerpt", "type": "text", "required": true },
+        { "name": "thumbnail", "type": "image", "required": true },
+        { "name": "publishDate", "type": "date", "required": true },
+        { "name": "author", "type": "text", "required": true }
+      ]
+    }
+  ],
+  "globalElements": {
+    "header": { "componentId": "main-nav", "order": 0 },
+    "footer": { "componentId": "site-footer", "order": 0 },
+    "cookieBanner": true,
+    "chatWidget": false,
+    "backToTop": true
+  },
+  "paginationPatterns": [
+    {
+      "pageId": "blog",
+      "type": "numbered",
+      "urlPattern": "/blog?page={n}",
+      "totalPages": 4
+    }
+  ]
+}

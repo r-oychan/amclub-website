@@ -1,0 +1,276 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Verification Report",
+  "description": "Output of the site-verifier skill — comprehensive quality report for a built website.",
+  "type": "object",
+  "required": ["status", "timestamp", "frontendUrl", "pages", "siteWide", "summary"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["pass", "warn", "fail"],
+      "description": "Overall status. fail if any page fails, warn if any warns, pass otherwise."
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of when verification ran."
+    },
+    "frontendUrl": {
+      "type": "string",
+      "format": "uri",
+      "description": "Base URL of the frontend that was verified."
+    },
+    "cmsUrl": {
+      "type": ["string", "null"],
+      "format": "uri",
+      "description": "Base URL of the CMS, or null if not available."
+    },
+    "pages": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/PageResult"
+      },
+      "description": "Per-page verification results."
+    },
+    "siteWide": {
+      "type": "object",
+      "required": ["sitemapExists", "robotsTxtExists", "brokenLinks", "totalLinksChecked"],
+      "properties": {
+        "sitemapExists": {
+          "type": "boolean"
+        },
+        "robotsTxtExists": {
+          "type": "boolean"
+        },
+        "brokenLinks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/BrokenLink"
+          }
+        },
+        "totalLinksChecked": {
+          "type": "integer"
+        }
+      }
+    },
+    "apiChecks": {
+      "type": ["array", "null"],
+      "items": {
+        "$ref": "#/$defs/ApiCheck"
+      },
+      "description": "API endpoint verification results, or null if CMS not available."
+    },
+    "summary": {
+      "type": "object",
+      "required": ["totalPages", "passed", "warned", "failed", "issues"],
+      "properties": {
+        "totalPages": {
+          "type": "integer"
+        },
+        "passed": {
+          "type": "integer"
+        },
+        "warned": {
+          "type": "integer"
+        },
+        "failed": {
+          "type": "integer"
+        },
+        "issues": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Issue"
+          },
+          "description": "All issues found, sorted by severity (error first)."
+        }
+      }
+    }
+  },
+  "$defs": {
+    "PageResult": {
+      "type": "object",
+      "required": ["path", "status", "visual", "links", "seo", "accessibility"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Page path (e.g., '/', '/about')."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pass", "warn", "fail"]
+        },
+        "visual": {
+          "type": "object",
+          "required": ["status"],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["pass", "warn", "fail", "skipped"]
+            },
+            "mismatchPercentage": {
+              "type": ["number", "null"],
+              "minimum": 0,
+              "maximum": 100,
+              "description": "Percentage of pixels that differ from baseline."
+            },
+            "screenshots": {
+              "type": "object",
+              "properties": {
+                "baseline": {
+                  "type": ["string", "null"],
+                  "description": "Path to original baseline screenshot."
+                },
+                "current": {
+                  "type": "string",
+                  "description": "Path to newly captured screenshot."
+                },
+                "diff": {
+                  "type": ["string", "null"],
+                  "description": "Path to diff image, or null if no baseline."
+                }
+              }
+            },
+            "viewports": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "width": { "type": "integer" },
+                  "screenshotPath": { "type": "string" },
+                  "mismatchPercentage": { "type": ["number", "null"] }
+                }
+              }
+            }
+          }
+        },
+        "links": {
+          "type": "object",
+          "required": ["status", "total", "broken"],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["pass", "warn", "fail"]
+            },
+            "total": {
+              "type": "integer"
+            },
+            "broken": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/BrokenLink"
+              }
+            }
+          }
+        },
+        "seo": {
+          "type": "object",
+          "required": ["status", "checks"],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["pass", "warn", "fail"]
+            },
+            "checks": {
+              "type": "object",
+              "properties": {
+                "title": { "type": "boolean" },
+                "metaDescription": { "type": "boolean" },
+                "ogTitle": { "type": "boolean" },
+                "ogDescription": { "type": "boolean" },
+                "ogImage": { "type": "boolean" },
+                "canonical": { "type": "boolean" },
+                "jsonLd": { "type": "boolean" }
+              }
+            }
+          }
+        },
+        "accessibility": {
+          "type": "object",
+          "required": ["status"],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["pass", "warn", "fail"]
+            },
+            "imagesWithoutAlt": { "type": "integer" },
+            "headingSkips": { "type": "integer" },
+            "h1Count": { "type": "integer" },
+            "unlabeledInputs": { "type": "integer" }
+          }
+        },
+        "performance": {
+          "type": "object",
+          "properties": {
+            "domNodes": { "type": "integer" },
+            "imagesWithoutLazyLoad": { "type": "integer" },
+            "externalScripts": { "type": "integer" }
+          }
+        }
+      }
+    },
+    "BrokenLink": {
+      "type": "object",
+      "required": ["url", "statusCode", "foundOnPages"],
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "statusCode": {
+          "type": "integer"
+        },
+        "foundOnPages": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "ApiCheck": {
+      "type": "object",
+      "required": ["endpoint", "status", "statusCode"],
+      "properties": {
+        "endpoint": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pass", "fail"]
+        },
+        "statusCode": {
+          "type": "integer"
+        },
+        "hasDataKey": {
+          "type": "boolean"
+        },
+        "error": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "Issue": {
+      "type": "object",
+      "required": ["severity", "category", "message", "page"],
+      "properties": {
+        "severity": {
+          "type": "string",
+          "enum": ["error", "warning", "info"]
+        },
+        "category": {
+          "type": "string",
+          "enum": ["visual", "links", "seo", "accessibility", "performance", "api"]
+        },
+        "message": {
+          "type": "string",
+          "description": "Human-readable description of the issue."
+        },
+        "page": {
+          "type": "string",
+          "description": "Page path where the issue was found."
+        },
+        "details": {
+          "type": ["object", "string", "null"],
+          "description": "Additional context (e.g., broken URL, missing tag name)."
+        }
+      }
+    }
+  }
+}

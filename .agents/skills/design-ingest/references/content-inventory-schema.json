@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "content-inventory.schema.json",
+  "title": "Content Inventory",
+  "description": "All extractable content from a website, organized by page and component. Consumed by the content-migration skill to populate the CMS.",
+  "type": "object",
+  "required": ["version", "sourceUrl", "extractedAt", "pages"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "sourceUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "extractedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "pages": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/pageContent" }
+    },
+    "globalContent": {
+      "type": "object",
+      "description": "Content shared across all pages (header, footer, etc.)",
+      "properties": {
+        "siteName": { "type": "string" },
+        "logo": { "$ref": "#/$defs/imageContent" },
+        "headerContent": { "$ref": "#/$defs/sectionContent" },
+        "footerContent": { "$ref": "#/$defs/sectionContent" },
+        "socialLinks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "platform": { "type": "string" },
+              "url": { "type": "string", "format": "uri" }
+            }
+          }
+        },
+        "copyright": { "type": "string" }
+      }
+    },
+    "media": {
+      "type": "array",
+      "description": "Deduplicated list of all media assets found across the site",
+      "items": { "$ref": "#/$defs/mediaAsset" }
+    }
+  },
+  "$defs": {
+    "pageContent": {
+      "type": "object",
+      "required": ["pageId", "path", "title", "sections"],
+      "properties": {
+        "pageId": { "type": "string", "description": "Matches page.id in site-analysis.json" },
+        "path": { "type": "string" },
+        "title": { "type": "string" },
+        "seo": {
+          "type": "object",
+          "properties": {
+            "metaTitle": { "type": "string" },
+            "metaDescription": { "type": "string" },
+            "ogTitle": { "type": "string" },
+            "ogDescription": { "type": "string" },
+            "ogImage": { "type": "string" }
+          }
+        },
+        "sections": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/sectionContent" }
+        }
+      }
+    },
+    "sectionContent": {
+      "type": "object",
+      "required": ["componentId", "componentType"],
+      "properties": {
+        "componentId": { "type": "string", "description": "Matches component.id in site-analysis.json" },
+        "componentType": { "type": "string" },
+        "content": {
+          "type": "object",
+          "description": "Key-value pairs of extracted content. Keys match field names from the component definition.",
+          "additionalProperties": true
+        },
+        "items": {
+          "type": "array",
+          "description": "For collection components, the individual items",
+          "items": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Each item's field values. Keys match collectionItemFields from site-analysis.json."
+          }
+        }
+      }
+    },
+    "imageContent": {
+      "type": "object",
+      "properties": {
+        "src": { "type": "string", "format": "uri" },
+        "alt": { "type": "string" },
+        "width": { "type": "integer" },
+        "height": { "type": "integer" },
+        "caption": { "type": "string" }
+      },
+      "required": ["src"]
+    },
+    "mediaAsset": {
+      "type": "object",
+      "required": ["id", "type", "originalUrl"],
+      "properties": {
+        "id": { "type": "string", "description": "Unique media asset ID for deduplication" },
+        "type": { "type": "string", "enum": ["image", "video", "document", "other"] },
+        "originalUrl": { "type": "string", "format": "uri" },
+        "alt": { "type": "string" },
+        "width": { "type": "integer" },
+        "height": { "type": "integer" },
+        "mimeType": { "type": "string" },
+        "fileSize": { "type": "integer", "description": "File size in bytes if detectable" },
+        "usedOn": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Page IDs where this asset appears"
+        }
+      }
+    }
+  }
+}

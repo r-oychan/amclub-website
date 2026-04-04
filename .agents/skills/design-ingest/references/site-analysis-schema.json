@@ -1,0 +1,286 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "site-analysis.schema.json",
+  "title": "Site Analysis",
+  "description": "Structured analysis of a website mockup or live site, produced by the design-ingest skill. Consumed by cms-data-modeler, frontend-builder, and site-verifier.",
+  "type": "object",
+  "required": ["version", "sourceUrl", "analyzedAt", "pages", "navigation", "components"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "const": "1.0.0",
+      "description": "Schema version for forward compatibility"
+    },
+    "sourceUrl": {
+      "type": "string",
+      "format": "uri",
+      "description": "The original URL that was analyzed"
+    },
+    "analyzedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of when the analysis was performed"
+    },
+    "siteMetadata": {
+      "type": "object",
+      "description": "Global site-level metadata",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "language": { "type": "string", "description": "Primary language (ISO 639-1)" },
+        "availableLanguages": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "All detected languages"
+        },
+        "favicon": { "type": "string", "format": "uri" },
+        "isSPA": { "type": "boolean", "description": "Whether the site uses client-side routing" },
+        "framework": {
+          "type": "string",
+          "enum": ["react", "nextjs", "vue", "nuxt", "framer", "webflow", "wordpress", "static", "unknown"],
+          "description": "Detected frontend framework"
+        }
+      }
+    },
+    "designTokens": {
+      "type": "object",
+      "description": "Extracted design system tokens",
+      "properties": {
+        "colors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": { "type": "string", "description": "CSS color value" },
+              "usage": { "type": "string", "enum": ["primary", "secondary", "accent", "background", "text", "border", "other"] }
+            },
+            "required": ["value"]
+          }
+        },
+        "fonts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "family": { "type": "string" },
+              "weights": { "type": "array", "items": { "type": "string" } },
+              "usage": { "type": "string", "enum": ["heading", "body", "accent", "mono"] }
+            },
+            "required": ["family"]
+          }
+        },
+        "spacing": {
+          "type": "object",
+          "description": "Common spacing values detected",
+          "properties": {
+            "sectionGap": { "type": "string" },
+            "cardGap": { "type": "string" },
+            "containerMaxWidth": { "type": "string" }
+          }
+        },
+        "borderRadius": {
+          "type": "string",
+          "description": "Dominant border-radius value"
+        }
+      }
+    },
+    "navigation": {
+      "type": "object",
+      "description": "Site navigation structure",
+      "required": ["primary"],
+      "properties": {
+        "primary": {
+          "type": "array",
+          "description": "Primary navigation items (header/top nav)",
+          "items": { "$ref": "#/$defs/navItem" }
+        },
+        "footer": {
+          "type": "array",
+          "description": "Footer navigation groups",
+          "items": {
+            "type": "object",
+            "properties": {
+              "heading": { "type": "string" },
+              "items": { "type": "array", "items": { "$ref": "#/$defs/navItem" } }
+            }
+          }
+        },
+        "sidebar": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/navItem" }
+        },
+        "hasMobileMenu": { "type": "boolean" },
+        "hasLanguageSwitcher": { "type": "boolean" },
+        "hasSearch": { "type": "boolean" }
+      }
+    },
+    "pages": {
+      "type": "array",
+      "description": "All discovered pages",
+      "items": { "$ref": "#/$defs/page" }
+    },
+    "templates": {
+      "type": "array",
+      "description": "Detected page templates (shared layouts used by multiple pages)",
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "instanceCount", "samplePageId"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string", "description": "Human-readable name (e.g., 'Blog Post', 'Product Page')" },
+          "urlPattern": { "type": "string", "description": "URL pattern (e.g., '/blog/:slug')" },
+          "instanceCount": { "type": "integer", "minimum": 1 },
+          "samplePageId": { "type": "string", "description": "ID of the representative page analyzed in detail" },
+          "sections": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/sectionRef" }
+          }
+        }
+      }
+    },
+    "components": {
+      "type": "array",
+      "description": "Deduplicated inventory of all component types found across the site",
+      "items": { "$ref": "#/$defs/component" }
+    },
+    "globalElements": {
+      "type": "object",
+      "description": "Elements that appear on every page",
+      "properties": {
+        "header": { "$ref": "#/$defs/sectionRef" },
+        "footer": { "$ref": "#/$defs/sectionRef" },
+        "cookieBanner": { "type": "boolean" },
+        "chatWidget": { "type": "boolean" },
+        "backToTop": { "type": "boolean" }
+      }
+    },
+    "paginationPatterns": {
+      "type": "array",
+      "description": "Detected pagination patterns for content-migration to use",
+      "items": {
+        "type": "object",
+        "properties": {
+          "pageId": { "type": "string" },
+          "type": { "type": "string", "enum": ["numbered", "load-more", "infinite-scroll", "cursor"] },
+          "urlPattern": { "type": "string", "description": "URL pattern for pagination (e.g., '?page={n}')" },
+          "totalPages": { "type": "integer", "description": "Total pages if detectable" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "navItem": {
+      "type": "object",
+      "required": ["label", "href"],
+      "properties": {
+        "label": { "type": "string" },
+        "href": { "type": "string" },
+        "isExternal": { "type": "boolean" },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/navItem" }
+        }
+      }
+    },
+    "page": {
+      "type": "object",
+      "required": ["id", "path", "title", "sections"],
+      "properties": {
+        "id": { "type": "string", "description": "Unique page identifier (kebab-case slug)" },
+        "path": { "type": "string", "description": "URL path (e.g., '/about')" },
+        "title": { "type": "string" },
+        "isTemplate": { "type": "boolean", "description": "True if this page is an instance of a template" },
+        "templateId": { "type": "string", "description": "Reference to template if isTemplate is true" },
+        "screenshot": { "type": "string", "description": "Relative path to screenshot file" },
+        "seo": {
+          "type": "object",
+          "properties": {
+            "metaTitle": { "type": "string" },
+            "metaDescription": { "type": "string" },
+            "ogImage": { "type": "string" },
+            "canonical": { "type": "string" },
+            "jsonLdType": { "type": "string", "description": "Schema.org type if present" }
+          }
+        },
+        "sections": {
+          "type": "array",
+          "description": "Ordered list of sections on this page",
+          "items": { "$ref": "#/$defs/sectionRef" }
+        }
+      }
+    },
+    "sectionRef": {
+      "type": "object",
+      "description": "A reference to a component instance on a page",
+      "required": ["componentId", "order"],
+      "properties": {
+        "componentId": { "type": "string", "description": "References a component in the components array" },
+        "order": { "type": "integer", "minimum": 0, "description": "Display order on the page" },
+        "variant": { "type": "string", "description": "Visual variant if the component appears differently here" },
+        "notes": { "type": "string", "description": "Any special notes about this instance" }
+      }
+    },
+    "component": {
+      "type": "object",
+      "required": ["id", "type", "name"],
+      "properties": {
+        "id": { "type": "string", "description": "Unique component identifier" },
+        "type": {
+          "type": "string",
+          "enum": [
+            "hero", "navigation", "footer", "card-grid", "testimonial",
+            "cta-banner", "text-block", "image-gallery", "contact-form",
+            "faq", "pricing-table", "team-grid", "stats-counter",
+            "logo-cloud", "video-embed", "blog-listing", "sidebar",
+            "breadcrumb", "pagination", "map", "accordion", "tabs",
+            "timeline", "feature-grid", "custom"
+          ]
+        },
+        "name": { "type": "string", "description": "Human-readable name (e.g., 'Homepage Hero', 'Blog Post Cards')" },
+        "description": { "type": "string", "description": "What this component does and how it looks" },
+        "appearsOn": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Page IDs where this component appears"
+        },
+        "isGlobal": { "type": "boolean", "description": "True if appears on all pages (header, footer)" },
+        "isCollection": { "type": "boolean", "description": "True if renders a list of repeating items" },
+        "collectionItemFields": {
+          "type": "array",
+          "description": "Fields of each item in a collection component",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "type": { "type": "string", "enum": ["text", "richtext", "image", "link", "date", "number", "boolean", "email", "phone"] },
+              "required": { "type": "boolean" },
+              "example": { "type": "string" }
+            },
+            "required": ["name", "type"]
+          }
+        },
+        "fields": {
+          "type": "array",
+          "description": "Direct fields of this component (non-collection)",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "type": { "type": "string", "enum": ["text", "richtext", "image", "link", "date", "number", "boolean", "email", "phone", "media"] },
+              "required": { "type": "boolean" },
+              "example": { "type": "string" }
+            },
+            "required": ["name", "type"]
+          }
+        },
+        "hasAnimation": { "type": "boolean" },
+        "animationType": { "type": "string", "description": "Type of animation (fade-in, slide-up, parallax, etc.)" },
+        "cssClasses": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Relevant CSS classes from the mockup for reference"
+        }
+      }
+    }
+  }
+}
