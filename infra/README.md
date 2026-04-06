@@ -197,15 +197,53 @@ config:
 
 ## GitHub Actions CI/CD
 
-### Required Secrets
+### Setting Up Secrets (Automated)
 
-Go to **GitHub → Settings → Secrets and variables → Actions** and add:
+Use the script in `infra/scripts/setup-github-secrets.sh`. It creates the service
+principal, fetches Pulumi state credentials, and sets all 3 secrets on the GitHub
+environment in one step.
 
-| Secret | Value | Source |
-|---|---|---|
-| `AZURE_CREDENTIALS` | `{"clientId":"<appId>","clientSecret":"<password>","subscriptionId":"<sub>","tenantId":"<tenant>"}` | Step 4 output |
-| `AZURE_STORAGE_ACCOUNT` | Storage account name | Step 2 output |
-| `AZURE_STORAGE_KEY` | Storage account key | Step 2 output |
+```bash
+# First time (dev)
+bash infra/scripts/setup-github-secrets.sh dev
+
+# Client production environment
+az account set --subscription <CLIENT_SUB_ID>
+bash infra/scripts/setup-github-secrets.sh prod
+
+# Any other environment
+bash infra/scripts/setup-github-secrets.sh staging
+```
+
+The script auto-detects the GitHub repo from your git remote. You can pass it
+explicitly as a second argument: `bash setup-github-secrets.sh dev owner/repo`
+
+#### Prerequisites for the script
+
+- `az` — logged in to the target Azure subscription
+- `gh` — logged in with secrets write permission (`gh auth login`)
+- `python3`
+
+If you get a permissions error from `gh`:
+
+```bash
+gh auth refresh --scopes write:org,repo
+```
+
+---
+
+### Required Secrets (per GitHub environment)
+
+| Secret | Value |
+|---|---|
+| `AZURE_CREDENTIALS` | `{"clientId":"...","clientSecret":"...","subscriptionId":"...","tenantId":"..."}` |
+| `AZURE_STORAGE_ACCOUNT` | Pulumi state storage account name |
+| `AZURE_STORAGE_KEY` | Pulumi state storage account key |
+
+> The Pulumi state backend (`pulumi-state-rg`) is shared across all environments.
+> Each environment deploys to a different Azure subscription.
+
+---
 
 ### Pipelines
 
@@ -217,8 +255,8 @@ Go to **GitHub → Settings → Secrets and variables → Actions** and add:
 ### How it works
 
 1. PR opened → CI validates code
-2. PR merged to main → CI runs → Deploy job builds the all-in-one Docker image, pushes to ACR, runs `pulumi up`
-3. Deployment URL appears in the GitHub Actions run summary
+2. PR merged to main → CI runs → Deploy job builds Docker image, pushes to ACR, runs `pulumi up`
+3. Deployment URL printed in the GitHub Actions run summary
 
 ---
 
