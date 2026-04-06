@@ -245,18 +245,31 @@ gh auth refresh --scopes write:org,repo
 
 ---
 
+### Branch → Environment Mapping
+
+| Branch | GitHub Environment | Pulumi Stack | Azure Subscription |
+|---|---|---|---|
+| `main` | `dev` | `dev` | Your subscription |
+| `prod` | `prod` | `prod` | Client subscription |
+
+To deploy to prod:
+1. Set up the `prod` GitHub environment with the client's Azure credentials (run `bash infra/scripts/setup-github-secrets.sh prod`)
+2. Initialize the `prod` Pulumi stack (see Multi-Subscription Setup above)
+3. Push or merge to the `prod` branch
+
 ### Pipelines
 
 | Workflow | Trigger | What it does |
 |---|---|---|
-| `ci.yml` | Push/PR to main | Lint, typecheck, build (CMS + frontend + infra) |
-| `deploy.yml` | Push to main | CI → Docker build → Pulumi up → deploy |
+| `ci.yml` | Push/PR to `main` | Lint, typecheck, build (CMS + frontend + infra) |
+| `deploy.yml` | Push to `main` or `prod` | CI → Docker build → `pulumi up` → deploy |
 
 ### How it works
 
 1. PR opened → CI validates code
-2. PR merged to main → CI runs → Deploy job builds Docker image, pushes to ACR, runs `pulumi up`
-3. Deployment URL printed in the GitHub Actions run summary
+2. Merge to `main` → deploys to `dev`
+3. Merge to `prod` → deploys to `prod`
+4. Deployment URL printed in the GitHub Actions run summary
 
 ---
 
