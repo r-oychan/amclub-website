@@ -12,16 +12,16 @@ jobs:
   ci:
     uses: ./.github/workflows/ci.yml
 
-  deploy-dev:
-    name: Deploy to dev
-    if: github.ref_name == 'dev'
+  deploy:
+    name: Deploy to ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
     needs: ci
     runs-on: ubuntu-latest
-    environment: dev
+    environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
     env:
       AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
       AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
+      STACK: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -33,6 +33,16 @@ jobs:
 
       - name: Install infra dependencies
         run: cd infra && npm ci
+
+      # Extract individual values from AZURE_CREDENTIALS JSON
+      # so they can be used for both azure/login and Pulumi ARM_ vars
+      - name: Parse Azure credentials
+        id: azure
+        run: |
+          echo "client-id=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | python3 -c "import sys,json; print(json.load(sys.stdin)['clientId'])")" >> $GITHUB_OUTPUT
+          echo "tenant-id=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | python3 -c "import sys,json; print(json.load(sys.stdin)['tenantId'])")" >> $GITHUB_OUTPUT
+          echo "subscription-id=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | python3 -c "import sys,json; print(json.load(sys.stdin)['subscriptionId'])")" >> $GITHUB_OUTPUT
+          echo "client-secret=$(echo '${{ secrets.AZURE_CREDENTIALS }}' | python3 -c "import sys,json; print(json.load(sys.stdin)['clientSecret'])")" >> $GITHUB_OUTPUT
 
       - name: Azure Login
         uses: azure/login@v2
@@ -46,25 +56,25 @@ jobs:
         uses: pulumi/actions@v5
         with:
           command: up
-          stack-name: dev
+          stack-name: ${{ env.STACK }}
           work-dir: infra
           cloud-url: azblob://state
         env:
           PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-          ARM_CLIENT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}
-          ARM_CLIENT_SECRET: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}
-          ARM_TENANT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}
-          ARM_SUBSCRIPTION_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
+          ARM_CLIENT_ID: ${{ steps.azure.outputs.client-id }}
+          ARM_CLIENT_SECRET: ${{ steps.azure.outputs.client-secret }}
+          ARM_TENANT_ID: ${{ steps.azure.outputs.tenant-id }}
+          ARM_SUBSCRIPTION_ID: ${{ steps.azure.outputs.subscription-id }}
 
       - name: Show deployment URL
         if: success()
         run: |
           cd infra
-          echo "### Deployed to dev" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Deployed to $STACK" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "| Output | Value |" >> "$GITHUB_STEP_SUMMARY"
           echo "|--------|-------|" >> "$GITHUB_STEP_SUMMARY"
-          pulumi stack output --json --stack dev --cwd . 2>/dev/null | python3 -c "
+          pulumi stack output --json --stack "$STACK" --cwd . 2>/dev/null | python3 -c "
           import sys, json
           outputs = json.load(sys.stdin)
           for k, v in outputs.items():
@@ -72,72 +82,7 @@ jobs:
           " >> "$GITHUB_STEP_SUMMARY" || echo "| - | Could not read outputs |" >> "$GITHUB_STEP_SUMMARY"
         env:
           PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-          ARM_CLIENT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}
-          ARM_CLIENT_SECRET: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}
-          ARM_TENANT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}
-          ARM_SUBSCRIPTION_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
-
-  deploy-prod:
-    name: Deploy to prod
-    if: github.ref_name == 'main'
-    needs: ci
-    runs-on: ubuntu-latest
-    environment: prod
-    env:
-      AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
-      AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_KEY }}
-      PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: infra/package-lock.json
-
-      - name: Install infra dependencies
-        run: cd infra && npm ci
-
-      - name: Azure Login
-        uses: azure/login@v2
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Pulumi Up
-        uses: pulumi/actions@v5
-        with:
-          command: up
-          stack-name: prod
-          work-dir: infra
-          cloud-url: azblob://state
-        env:
-          PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-          ARM_CLIENT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}
-          ARM_CLIENT_SECRET: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}
-          ARM_TENANT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}
-          ARM_SUBSCRIPTION_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
-
-      - name: Show deployment URL
-        if: success()
-        run: |
-          cd infra
-          echo "### Deployed to prod" >> "$GITHUB_STEP_SUMMARY"
-          echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "| Output | Value |" >> "$GITHUB_STEP_SUMMARY"
-          echo "|--------|-------|" >> "$GITHUB_STEP_SUMMARY"
-          pulumi stack output --json --stack prod --cwd . 2>/dev/null | python3 -c "
-          import sys, json
-          outputs = json.load(sys.stdin)
-          for k, v in outputs.items():
-              print(f'| {k} | \`{v}\` |')
-          " >> "$GITHUB_STEP_SUMMARY" || echo "| - | Could not read outputs |" >> "$GITHUB_STEP_SUMMARY"
-        env:
-          PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-          ARM_CLIENT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}
-          ARM_CLIENT_SECRET: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}
-          ARM_TENANT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).tenantId }}
-          ARM_SUBSCRIPTION_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).subscriptionId }}
+          ARM_CLIENT_ID: ${{ steps.azure.outputs.client-id }}
+          ARM_CLIENT_SECRET: ${{ steps.azure.outputs.client-secret }}
+          ARM_TENANT_ID: ${{ steps.azure.outputs.tenant-id }}
+          ARM_SUBSCRIPTION_ID: ${{ steps.azure.outputs.subscription-id }}
