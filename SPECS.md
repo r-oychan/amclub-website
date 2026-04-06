@@ -1,0 +1,172 @@
+# Site Specs
+
+> Source of truth for page structure, CMS bindings, component inventory, and infrastructure.
+> Update this file whenever a page, component, content type, or infra resource changes.
+
+---
+
+## Pages
+
+| Route | Page Component | Strapi Type | Content Type Name |
+|---|---|---|---|
+| `/home` | `HomePage.tsx` | singleType | `home-page` |
+| `/about` | `AboutPage.tsx` | singleType | `about-page` |
+| `/dining` | `DiningPage.tsx` | singleType | `dining-page` |
+| `/fitness` | `FitnessPage.tsx` | singleType | `fitness-page` |
+| `/kids` | `KidsPage.tsx` | singleType | `kids-page` |
+| `/event-spaces` | `EventSpacesPage.tsx` | singleType | `event-spaces-page` |
+| `/membership` | `MembershipPage.tsx` | singleType | `membership-page` |
+| `/whats-on` | `WhatsOnPage.tsx` | singleType | `whats-on-page` |
+| `/:section/:slug` | `VenueDetailPage.tsx` | collection | `restaurant` / `venue` / `facility` |
+
+All pages use a `content` **dynamiczone** (block-based), populated by Strapi block components listed below.
+
+---
+
+## Block Components
+
+| React Component | Strapi Block Component | Notes |
+|---|---|---|
+| `Hero.tsx` | `blocks.hero` | Single image, heading, subheading, CTA, variant field |
+| `HeroCarousel.tsx` | `blocks.hero` (slides) | Uses `slides` repeatable + `autoPlayInterval` |
+| `CardGrid.tsx` | `blocks.card-grid` | label, heading, cards array, optional CTA |
+| `FeatureGrid.tsx` | `blocks.feature-grid` | Feature items with icon/image |
+| `ThreeColGrid.tsx` | `blocks.card-grid` | 3-column layout variant of card-grid |
+| `TextBlock.tsx` | `blocks.text-block` | Rich text / prose |
+| `AboutSection.tsx` | `blocks.text-block` | Text + image variant |
+| `StatsCounter.tsx` | `blocks.stats-counter` | `stat-item` repeatables (label, value) |
+| `TabsSection.tsx` | `blocks.tabs-section` | Tab labels + content per tab |
+| `TestimonialSlider.tsx` | `blocks.testimonial-slider` | Pulls from `testimonial` collection |
+| `FaqAccordion.tsx` | `blocks.faq-section` | Pulls from `faq-item` collection |
+| `TeamGrid.tsx` | `blocks.team-grid` | Pulls from `committee-member` collection |
+| `CtaBanner.tsx` | `blocks.cta-banner` | Heading, subtext, primary + secondary CTA |
+| `OverlaySection.tsx` | `blocks.cta-banner` | Full-bleed image with overlay CTA variant |
+
+### Detail Page Components (venue/restaurant/facility detail)
+
+| React Component | Strapi Source | Notes |
+|---|---|---|
+| `DetailHeroBanner.tsx` | `restaurant` / `venue` / `facility` `.image` | Full-width hero from record |
+| `DetailBreadcrumb.tsx` | static + route params | Section label + item name |
+| `DetailSection.tsx` | `.description`, `.content` | Prose or blocks |
+| `ContactRow.tsx` | `.contact` fields | Phone, email, address |
+| `PhotoGallery.tsx` | `.gallery` (media[]) | Lightbox grid |
+
+---
+
+## Layout Components
+
+| Component | Strapi Source | Notes |
+|---|---|---|
+| `Header.tsx` | singleType `header` | Nav items via `useHeaderData` hook. Floating (≥1200px) / hamburger (<1200px) |
+| `Footer.tsx` | singleType `footer` | Contact block + `footer-column` repeatable |
+
+---
+
+## Strapi Content Types
+
+### Single Types (one record per type)
+| Name | API ID | Key Fields |
+|---|---|---|
+| home-page | `home-page` | title, content (dynamiczone), seo |
+| about-page | `about-page` | title, content, seo |
+| dining-page | `dining-page` | title, content, seo |
+| fitness-page | `fitness-page` | title, content, seo |
+| kids-page | `kids-page` | title, content, seo |
+| event-spaces-page | `event-spaces-page` | title, content, seo |
+| membership-page | `membership-page` | title, content, seo |
+| whats-on-page | `whats-on-page` | title, content, seo |
+| header | `header` | logo, navItems (nav-item[]), cta (shared.link) |
+| footer | `footer` | contact (address, phone, email), columns (footer-column[]), logo |
+
+### Collections (multiple records)
+| Name | API ID | Key Fields |
+|---|---|---|
+| restaurant | `restaurant` | name, slug, description, image, gallery, contact, category, ctas |
+| venue | `venue` | name, slug, description, image, gallery, capacity, contact, ctas |
+| facility | `facility` | name, slug, description, image, gallery, section (fitness/kids/event), ctas |
+| event | `event` | title, slug, date, description, image, category (→ event-category), featured |
+| event-category | `event-category` | name, slug |
+| testimonial | `testimonial` | quote, author, role, image |
+| committee-member | `committee-member` | name, role, image, bio, order |
+| faq-item | `faq-item` | question, answer, order |
+
+---
+
+## Strapi Shared Components
+
+| Component | Fields | Used In |
+|---|---|---|
+| `shared.link` | label, href, isExternal, variant (primary/secondary/outline/text) | CTAs everywhere |
+| `shared.seo` | metaTitle, metaDescription, metaImage, canonicalURL | All page types |
+| `shared.nav-item` | label, href, dropdown (nav-dropdown) | header |
+| `shared.nav-dropdown` | label, href, columns (nav-column[]) | header nav |
+| `shared.nav-column` | heading, links (shared.link[]), image, imageLink | header dropdown |
+| `shared.hero-slide` | image, heading, subheading, cta | blocks.hero carousel |
+| `shared.feature-item` | icon/image, heading, body | blocks.feature-grid |
+| `shared.stat-item` | label, value | blocks.stats-counter |
+| `shared.footer-column` | heading, links (shared.link[]) | footer |
+
+---
+
+## Animations
+
+**Current state: no animation libraries.** All motion is CSS-only via Tailwind.
+
+| Effect | Implementation | Used In |
+|---|---|---|
+| Scroll fade-in | `useScrollFadeIn` hook (IntersectionObserver + CSS transition) | Block sections |
+| Nav transitions | CSS `transition` classes | Header mobile menu |
+| Hero carousel | CSS / JS interval (no library) | `HeroCarousel.tsx` |
+
+> If adding animations: prefer **Framer Motion** (already in ecosystem via Framer prototype). Install: `npm install framer-motion` in `frontend/`.
+
+---
+
+## Infrastructure (Azure via Pulumi)
+
+| Resource | Type | Config |
+|---|---|---|
+| Resource Group | `azure-native.resources.ResourceGroup` | Region: Southeast Asia, name: `amclub-rg` |
+| Container Registry | `azure-native.containerregistry.Registry` | Basic SKU |
+| PostgreSQL Server | `azure-native.dbforpostgresql.FlexibleServer` | v16, Standard_B1ms, 32GB, 7-day backups |
+| Storage Account | `azure-native.storage.StorageAccount` | Standard LRS |
+| File Share | `azure-native.storage.Share` | 5GB quota (for CMS uploads) |
+| Log Analytics | `azure-native.operationalinsights.Workspace` | Per-GB, 30-day retention |
+| Container Apps Env | `azure-native.app.ManagedEnvironment` | Linked to Log Analytics |
+| Container App | `azure-native.app.ContainerApp` | 1 replica, 1 CPU / 1GB RAM, liveness + startup probes |
+
+**Secrets auto-generated:** DB password, app keys ×2, API token salt, admin JWT, transfer token salt, encryption key, JWT secret.
+
+**Outputs:** `resourceGroupName`, `appUrl`, `postgresHost`, `containerRegistryLoginServer`
+
+**IaC entry point:** `infra/index.ts`
+
+---
+
+## Responsive Behaviour Summary
+
+| Breakpoint | Width | Nav |
+|---|---|---|
+| Mobile | 320–767px | Hamburger |
+| Tablet | 768–1199px | Hamburger |
+| Desktop L | 1200–1439px | Floating dark navy bar |
+| Desktop XL | 1440px+ | Full-width top bar |
+
+Tailwind custom breakpoints: `xl` = 75rem (1200px), `2xl` = 90rem (1440px).
+
+---
+
+## Key Source Files
+
+| Purpose | Path |
+|---|---|
+| API utility | `frontend/src/lib/api.ts` |
+| TypeScript types | `frontend/src/lib/types.ts` |
+| Static subpage data | `frontend/src/data/subpages.ts` |
+| Tailwind theme | `frontend/src/index.css` |
+| Nav data hook | `frontend/src/hooks/useHeaderData.ts` |
+| Scroll animation hook | `frontend/src/hooks/useScrollFadeIn.ts` |
+| App router | `frontend/src/App.tsx` |
+| Design spec | `DESIGN.md` |
+| Framer prototype | https://tactesting.framer.website |

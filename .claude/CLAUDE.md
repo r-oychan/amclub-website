@@ -82,12 +82,43 @@ Full design spec in `DESIGN.md` at project root.
 - **After completing work:** Compare the built output against the Framer prototype to ensure alignment with the mockup. Check at multiple breakpoints (mobile, tablet, desktop).
 - Use `screenshots/breakpoints/` for reference when the prototype is unavailable.
 
+## Workflow: Post-Iteration Browser Testing (REQUIRED)
+After every dev iteration (fix, feature, or refactor), you MUST use the `playwright-cli` skill to run a browser regression test before considering the work done.
+
+**Step 1 — Regression sweep:** Navigate through the site (starting at `http://localhost:5173`) and visit every page/route that exists. For each page, verify:
+- Page renders without blank screens or console errors
+- Navigation links work
+- No layout breakage at desktop width (1440px)
+
+**Step 2 — Targeted test:** Test the specific fix or feature implemented in this iteration:
+- For a bug fix: reproduce the original failure condition and confirm it no longer occurs
+- For a new feature: exercise the feature end-to-end (interact with it, check expected output)
+- For a refactor: confirm the visible behavior is identical before and after
+
+**Step 3 — Report:** After testing, briefly state what was tested and whether it passed or failed. If anything fails, fix it before finishing.
+
 ## Flexibility & Componentization
 - **Componentize everything:** Every distinct visual section on a page should be its own React component.
 - **Make everything configurable:** Props should drive content, layout variants, colors, and visibility. Avoid hardcoding text, images, or layout decisions inside components.
 - **CMS-driven:** All content should come from Strapi. Components receive data via props, not static imports.
 - **Variant support:** Components should support visual variants (e.g., light/dark background, left/right image alignment) via props.
 - **Slot patterns:** Use children/render props for flexible composition where appropriate.
+
+## Spec Tracking
+- `SPECS.md` at the project root is the source of truth for every page, component, CMS binding, animation, and infra resource.
+- **Read `SPECS.md` at the start of any feature or fix** to understand the current structure before touching code.
+- **Update `SPECS.md`** whenever you add, rename, or remove a page, component, content type, Strapi component, or infra resource. Keep it in sync with the code.
+
+## Documentation Policy
+- **Always consult official online docs** when you are stuck on a bug, hit an unexpected error, or the user asks for a fix — do not guess from memory alone.
+- Priority order for doc lookups: official library/framework docs first, then GitHub issues, then community sources.
+- Key doc sources:
+  - Strapi v5: https://docs.strapi.io
+  - React / React Router: https://reactrouter.com/docs and https://react.dev
+  - Tailwind CSS v4: https://tailwindcss.com/docs
+  - Pulumi Azure Native: https://www.pulumi.com/registry/packages/azure-native/
+  - Vite: https://vite.dev/guide
+  - TypeScript: https://www.typescriptlang.org/docs
 
 ## Clarification Policy
 - Use `AskUserQuestion` tool whenever requirements are ambiguous, design intent is unclear, or a decision could go multiple ways. Do not guess — ask.
