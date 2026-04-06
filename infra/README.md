@@ -249,13 +249,13 @@ gh auth refresh --scopes write:org,repo
 
 | Branch | GitHub Environment | Pulumi Stack | Azure Subscription |
 |---|---|---|---|
-| `main` | `dev` | `dev` | Your subscription |
-| `prod` | `prod` | `prod` | Client subscription |
+| `dev` | `dev` | `dev` | Your subscription |
+| `main` | `prod` | `prod` | Client subscription |
 
 To deploy to prod:
 1. Set up the `prod` GitHub environment with the client's Azure credentials (run `bash infra/scripts/setup-github-secrets.sh prod`)
 2. Initialize the `prod` Pulumi stack (see Multi-Subscription Setup above)
-3. Push or merge to the `prod` branch
+3. Merge to `main`
 
 ### Pipelines
 

@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [main, prod]
+    branches: [main, dev]
 
 concurrency:
   group: deploy-${{ github.ref }}
@@ -21,7 +21,7 @@ jobs:
     steps:
       - id: map
         run: |
-          if [ "${{ github.ref_name }}" = "prod" ]; then
+          if [ "${{ github.ref_name }}" = "main" ]; then
             echo "environment=prod" >> $GITHUB_OUTPUT
             echo "stack=prod"       >> $GITHUB_OUTPUT
           else

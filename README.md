@@ -137,11 +137,11 @@ media/
 
 | Branch | Deploys to | Azure Subscription |
 |---|---|---|
-| `main` | `dev` environment | Your subscription |
-| `prod` | `prod` environment | Client subscription |
+| `dev` | `dev` environment | Your subscription |
+| `main` | `prod` environment | Client subscription |
 
-**Push to `main`** → CI runs → deploys to Azure `dev`
-**Push to `prod`** → CI runs → deploys to Azure `prod`
+**Push to `dev`** → CI runs → deploys to Azure `dev`
+**Push to `main`** → CI runs → deploys to Azure `prod`
 
 See [`infra/README.md`](infra/README.md) for full infrastructure and deployment docs.
 
