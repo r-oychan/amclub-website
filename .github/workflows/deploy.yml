@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [main, prod]
 
 concurrency:
   group: deploy-${{ github.ref }}
@@ -12,11 +12,28 @@ jobs:
   ci:
     uses: ./.github/workflows/ci.yml
 
-  deploy:
-    name: Deploy to Azure
-    needs: ci
+  resolve-env:
+    name: Resolve environment
     runs-on: ubuntu-latest
-    environment: dev
+    outputs:
+      environment: ${{ steps.map.outputs.environment }}
+      stack: ${{ steps.map.outputs.stack }}
+    steps:
+      - id: map
+        run: |
+          if [ "${{ github.ref_name }}" = "prod" ]; then
+            echo "environment=prod" >> $GITHUB_OUTPUT
+            echo "stack=prod"       >> $GITHUB_OUTPUT
+          else
+            echo "environment=dev"  >> $GITHUB_OUTPUT
+            echo "stack=dev"        >> $GITHUB_OUTPUT
+          fi
+
+  deploy:
+    name: Deploy to ${{ needs.resolve-env.outputs.environment }}
+    needs: [ci, resolve-env]
+    runs-on: ubuntu-latest
+    environment: ${{ needs.resolve-env.outputs.environment }}
     env:
       AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
       AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_KEY }}
@@ -45,7 +62,7 @@ jobs:
         uses: pulumi/actions@v5
         with:
           command: up
-          stack-name: dev
+          stack-name: ${{ needs.resolve-env.outputs.stack }}
           work-dir: infra
           cloud-url: azblob://state
         env:
@@ -59,17 +76,19 @@ jobs:
         if: success()
         run: |
           cd infra
-          echo "### Deployment complete" >> "$GITHUB_STEP_SUMMARY"
+          STACK="${{ needs.resolve-env.outputs.stack }}"
+          echo "### Deployed to ${{ needs.resolve-env.outputs.environment }}" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "| Output | Value |" >> "$GITHUB_STEP_SUMMARY"
           echo "|--------|-------|" >> "$GITHUB_STEP_SUMMARY"
-          pulumi stack output --json --stack dev --cwd . 2>/dev/null | python3 -c "
+          pulumi stack output --json --stack "$STACK" --cwd . 2>/dev/null | python3 -c "
           import sys, json
           outputs = json.load(sys.stdin)
           for k, v in outputs.items():
               print(f'| {k} | \`{v}\` |')
           " >> "$GITHUB_STEP_SUMMARY" || echo "| - | Could not read outputs |" >> "$GITHUB_STEP_SUMMARY"
         env:
+          PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
           PULUMI_BACKEND_URL: azblob://state
           ARM_CLIENT_ID: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientId }}
           ARM_CLIENT_SECRET: ${{ fromJson(secrets.AZURE_CREDENTIALS).clientSecret }}
