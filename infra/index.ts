@@ -231,7 +231,7 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
     containers: [
       {
         name: 'app',
-        image: appImage.imageName,
+        image: appImage.repoDigest,
         resources: {
           cpu: 0.5,
           memory: '1Gi',
