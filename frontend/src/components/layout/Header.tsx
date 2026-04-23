@@ -25,6 +25,7 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [mobileExpanded, setMobileExpanded] = useState<string | null>(null);
   const dropdownTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const location = useLocation();
   const headerData = useHeaderData();
@@ -45,6 +46,7 @@ export function Header() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileOpen(false);
     setActiveDropdown(null);
+    setMobileExpanded(null);
   }, [location.pathname]);
 
   const handleDropdownEnter = useCallback((href: string) => {
@@ -316,20 +318,74 @@ export function Header() {
 
           {/* Nav links */}
           <nav className="flex-1 overflow-y-auto px-8 py-4">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.href}
-                href={item.href}
-                isExternal={item.isExternal}
-                onClick={() => setMobileOpen(false)}
-                className="flex items-center justify-between py-4 border-b border-white/10 text-white text-lg font-body"
-              >
-                <span>{item.label}</span>
-                <svg className="h-5 w-5 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </NavLink>
-            ))}
+            {navItems.map((item) => {
+              const hasDropdown = !!item.columns?.length;
+              const isExpanded = mobileExpanded === item.href;
+              const allChildren = item.columns?.flatMap((c) => c.links ?? []) ?? [];
+
+              if (!hasDropdown) {
+                return (
+                  <NavLink
+                    key={item.href}
+                    href={item.href}
+                    isExternal={item.isExternal}
+                    onClick={() => setMobileOpen(false)}
+                    className="flex items-center justify-between py-4 border-b border-white/10 text-white text-lg font-body"
+                  >
+                    <span>{item.label}</span>
+                    <svg className="h-5 w-5 text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </NavLink>
+                );
+              }
+
+              return (
+                <div key={item.href} className="border-b border-white/10">
+                  <div className="flex items-center justify-between">
+                    <NavLink
+                      href={item.href}
+                      isExternal={item.isExternal}
+                      onClick={() => setMobileOpen(false)}
+                      className="flex-1 py-4 text-white text-lg font-body"
+                    >
+                      {item.label}
+                    </NavLink>
+                    <button
+                      type="button"
+                      onClick={() => setMobileExpanded(isExpanded ? null : item.href)}
+                      aria-expanded={isExpanded}
+                      aria-label={`Toggle ${item.label} submenu`}
+                      className="p-3 text-white/60 hover:text-white transition-colors"
+                    >
+                      <svg
+                        className={`h-5 w-5 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                  </div>
+                  {isExpanded && allChildren.length > 0 && (
+                    <div className="pb-3 pl-4 flex flex-col">
+                      {allChildren.map((child) => (
+                        <NavLink
+                          key={child.href}
+                          href={child.href}
+                          isExternal={child.isExternal}
+                          onClick={() => setMobileOpen(false)}
+                          className="py-2.5 text-white/80 hover:text-white text-base font-body transition-colors"
+                        >
+                          {child.label}
+                        </NavLink>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </nav>
 
           {/* CTA button at bottom */}
