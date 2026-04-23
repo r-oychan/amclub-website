@@ -106,7 +106,23 @@ const DEFAULT_HEADER: HeaderData = {
   logoUrl: 'https://framerusercontent.com/images/jYpgpsEhknSxMZJWxquvCab3o.webp',
   ctaButton: { label: 'Member Login', href: 'https://amclub-portal.iontone.com/#/login', isExternal: true },
   navItems: [
-    { label: 'Home', href: '/home' },
+    {
+      label: 'Home',
+      href: '/home',
+      columns: [
+        {
+          links: [
+            { label: 'About Us', href: '/about' },
+            { label: 'Club News', href: '/home-sub/news' },
+            { label: 'Gallery', href: '/home-sub/gallery' },
+            { label: 'Advertising & Sponsorship', href: '/home-sub/advertise-with-us' },
+            { label: 'Contact Us', href: '/home-sub/contact-us' },
+            { label: 'Club Constitution', href: '/documents/club-constitution.pdf', isExternal: true },
+            { label: 'Club By-laws', href: '/documents/club-by-laws.pdf', isExternal: true },
+          ],
+        },
+      ],
+    },
     {
       label: 'Dining & Retail',
       href: '/dining',

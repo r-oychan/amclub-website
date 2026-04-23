@@ -892,14 +892,67 @@ export const homeSubpages: SubpageData[] = [
     name: 'Advertising & Sponsorships',
     type: 'Advertising',
     description:
-      'Reach a community of over 11,000 engaged Members at The American Club. We provide advertising opportunities that connect your message with our Member community.',
+      'Reach a community of over 11,000 engaged Members at The American Club. We provide targeted advertising opportunities that connect your message with our vibrant Member community through thoughtfully curated communication channels — from printed collateral to digital touchpoints across our premises.\n\nOur platforms are designed to deliver purposeful messaging that resonates with an affluent, international audience.',
     phone: '6739-4388',
     email: 'marketing@amclub.org.sg',
+    image:
+      'https://framerusercontent.com/images/ALiDWPH3U3VnmiEzcoEet6lPIk.jpeg',
     parentSection: 'The American Club',
     parentHref: '/home',
     ctas: [
       { label: 'View Advertising Rate Card', href: '#' },
       { label: 'Enquire Now', href: '#' },
+    ],
+    extraSections: [
+      {
+        title: 'Sponsorship Opportunities',
+        content:
+          'Gain access to a premium network of affluent, international Members by partnering with The American Club. Sponsorship opportunities span our signature events, Club tournaments, and year-round Member engagement programs — giving your brand meaningful exposure in a trusted environment.',
+        bullets: [
+          'Signature annual events and seasonal celebrations',
+          'Sporting tournaments and wellness programs',
+          'Youth activities, classes, and seasonal camps',
+          'Custom brand activations tailored to your objectives',
+        ],
+      },
+      {
+        title: 'Why Advertise With Us',
+        content:
+          'The American Club community is made up of over 11,000 Members from more than 60 nationalities — executives, families, and influencers who value quality, heritage, and connection.',
+        bullets: [
+          'Premium, affluent audience with high purchasing power',
+          'Multi-channel exposure across print and digital',
+          'Year-round engagement through Member touchpoints',
+          'Trusted 77-year-old brand with strong Member loyalty',
+        ],
+      },
+    ],
+    faq: [
+      {
+        question: 'What advertising formats are available?',
+        answer:
+          'We offer a range of formats including print placements in our Member publications, digital signage across Club premises, targeted e-newsletters, and custom sponsored content. Our team will help you select the right mix for your objectives.',
+      },
+      {
+        question: 'Who is your Member demographic?',
+        answer:
+          'Our 11,000+ Members span more than 60 nationalities, predominantly professionals, business leaders, and families. They represent an affluent, internationally-minded community that values premium brands and experiences.',
+      },
+      {
+        question: 'How do I request the Advertising Rate Card?',
+        answer:
+          'You can download the latest rate card from the link above, or reach out to our Marketing team at marketing@amclub.org.sg or 6739-4388 for a tailored proposal.',
+      },
+      {
+        question: 'Do you offer bespoke sponsorship packages?',
+        answer:
+          'Yes — we work with partners to design bespoke packages that align with your brand goals, whether through event sponsorship, co-branded activations, or long-term partnerships.',
+      },
+      {
+        question: 'What is the lead time to book an advertisement?',
+        answer:
+          'Lead times vary by format. Print placements typically require 4–6 weeks, while digital placements can often be turned around in 1–2 weeks. Contact our team to confirm availability.',
+      },
     ],
   },
   {

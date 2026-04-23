@@ -17,6 +17,8 @@
 | `/event-spaces` | `EventSpacesPage.tsx` | singleType | `event-spaces-page` |
 | `/membership` | `MembershipPage.tsx` | singleType | `membership-page` |
 | `/whats-on` | `WhatsOnPage.tsx` | singleType | `whats-on-page` |
+| `/home-sub/news` | `NewsPage.tsx` | — | static list (Club News) |
+| `/home-sub/gallery` | `GalleryPage.tsx` | — | static list (event albums) |
 | `/:section/:slug` | `VenueDetailPage.tsx` | collection | `restaurant` / `venue` / `facility` |
 
 All pages use a `content` **dynamiczone** (block-based), populated by Strapi block components listed below.

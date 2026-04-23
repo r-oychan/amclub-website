@@ -9,6 +9,8 @@ import KidsPage from './pages/KidsPage';
 import EventSpacesPage from './pages/EventSpacesPage';
 import MembershipPage from './pages/MembershipPage';
 import WhatsOnPage from './pages/WhatsOnPage';
+import NewsPage from './pages/NewsPage';
+import GalleryPage from './pages/GalleryPage';
 import VenueDetailPage from './pages/VenueDetailPage';
 
 export default function App() {
@@ -32,6 +34,8 @@ export default function App() {
             <Route path="/membership" element={<MembershipPage />} />
             <Route path="/membership/:slug" element={<VenueDetailPage section="membership" />} />
             <Route path="/whats-on" element={<WhatsOnPage />} />
+            <Route path="/home-sub/news" element={<NewsPage />} />
+            <Route path="/home-sub/gallery" element={<GalleryPage />} />
             <Route path="/home-sub/:slug" element={<VenueDetailPage section="home-sub" />} />
           </Routes>
         </main>
