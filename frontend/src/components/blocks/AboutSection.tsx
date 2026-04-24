@@ -46,12 +46,13 @@ export function AboutSection({
               <div className="relative w-full max-w-[514px] mx-auto lg:mx-0" style={{ aspectRatio: '514 / 411', perspective: '1200px' }}>
                 {images[0] && (
                   <div
-                    className="absolute rounded-lg overflow-hidden shadow-xl"
+                    className="absolute overflow-hidden shadow-xl"
                     style={{
                       width: '62.26%',
                       aspectRatio: '320 / 201',
                       top: '47.69%',
                       left: '1.17%',
+                      opacity: 0.2,
                       transform: 'perspective(1200px) rotate(-15deg) rotateX(31deg) rotateY(37deg)',
                     }}
                   >
@@ -60,12 +61,13 @@ export function AboutSection({
                 )}
                 {images[1] && (
                   <div
-                    className="absolute rounded-lg overflow-hidden shadow-xl"
+                    className="absolute overflow-hidden shadow-xl"
                     style={{
                       width: '62.26%',
                       aspectRatio: '320 / 201',
                       top: '36.50%',
                       left: '6.61%',
+                      opacity: 0.4,
                       transform: 'perspective(1200px) rotate(-19deg) rotateX(29deg) rotateY(41deg)',
                     }}
                   >
@@ -74,12 +76,13 @@ export function AboutSection({
                 )}
                 {images[2] && (
                   <div
-                    className="absolute rounded-lg overflow-hidden shadow-xl"
+                    className="absolute overflow-hidden shadow-xl"
                     style={{
                       width: '62.26%',
                       aspectRatio: '320 / 201',
                       top: '22.87%',
                       left: '13.04%',
+                      opacity: 0.65,
                       transform: 'perspective(1200px) rotate(-23deg) rotateX(30deg) rotateY(39deg)',
                     }}
                   >
@@ -88,7 +91,7 @@ export function AboutSection({
                 )}
                 {images[3] && (
                   <div
-                    className="absolute rounded-lg overflow-hidden shadow-2xl"
+                    className="absolute overflow-hidden shadow-2xl"
                     style={{
                       width: '62.26%',
                       aspectRatio: '320 / 201',
