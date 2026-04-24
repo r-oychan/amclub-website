@@ -185,14 +185,13 @@ export function Header() {
             className="hidden 2xl:block relative transition-all duration-300"
             style={{ padding: scrolled ? '18px 24px 18px' : '30px 32px 23px' }}
           >
-            {/* CTA button (Member Login) — floating tab overlapping bar's top edge (matches Framer) */}
+            {/* CTA button (Member Login) — inside bar, top-right (matches Framer) */}
             {ctaButton && (
               <NavLink
                 href={ctaButton.href}
                 isExternal={ctaButton.isExternal}
-                className="absolute right-10 z-20 inline-flex items-center gap-2 px-5 py-2.5 text-white text-xs font-body uppercase tracking-wider hover:opacity-90 transition-all duration-300 shadow-lg"
+                className="absolute top-5 right-8 z-10 inline-flex items-center gap-2 px-5 py-2.5 text-white text-xs font-body uppercase tracking-wider hover:opacity-90 transition-all duration-300"
                 style={{
-                  top: '-19px',
                   backgroundColor: 'rgb(0, 22, 74)',
                   borderRadius: '100px',
                   opacity: scrolled ? 0 : 1,
