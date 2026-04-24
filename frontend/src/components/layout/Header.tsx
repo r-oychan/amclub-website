@@ -155,7 +155,7 @@ export function Header() {
               : '2xl:max-w-[1280px] 2xl:rounded-[20px]'
           }`}
           style={{
-            backgroundColor: scrolled ? 'rgba(0,29,97,0.8)' : 'rgba(0,29,97,0.75)',
+            backgroundColor: 'rgba(0, 29, 97, 0.75)',
             backdropFilter: 'blur(15px)',
             WebkitBackdropFilter: 'blur(15px)',
           }}
