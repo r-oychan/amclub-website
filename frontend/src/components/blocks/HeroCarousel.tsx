@@ -11,10 +11,10 @@ interface HeroCarouselProps {
 }
 
 const ZONE_CLASSES: Record<HeroZone, string> = {
-  'bottom-left': 'bottom-0 left-0 items-start text-left pb-24 pl-8 sm:pl-12 lg:pl-20',
-  'bottom-right': 'bottom-0 right-0 items-end text-right pb-24 pr-8 sm:pr-12 lg:pr-20',
-  'middle-left': 'top-1/2 left-0 -translate-y-1/2 items-start text-left pl-8 sm:pl-12 lg:pl-20',
-  'middle-right': 'top-1/2 right-0 -translate-y-1/2 items-end text-right pr-8 sm:pr-12 lg:pr-20',
+  'bottom-left': 'bottom-0 left-0 items-start text-left pb-24',
+  'bottom-right': 'bottom-0 right-0 items-end text-right pb-24',
+  'middle-left': 'top-1/2 left-0 -translate-y-1/2 items-start text-left',
+  'middle-right': 'top-1/2 right-0 -translate-y-1/2 items-end text-right',
 };
 
 export function HeroCarousel({
@@ -67,66 +67,32 @@ export function HeroCarousel({
               {/* Dark overlay */}
               <div className="absolute inset-0 bg-black/40" />
 
-              {sameZone ? (
-                /* Title + subtitle in same zone */
-                <div className={`absolute flex flex-col max-w-xl z-10 ${ZONE_CLASSES[slideTitlePos]}`}>
-                  {slide.title && (
-                    <h1
-                      className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold italic mb-4"
-                      style={{ color: slide.titleColor ?? '#ffffff' }}
-                    >
-                      {slide.title}
-                    </h1>
-                  )}
-                  {slide.subtitle && (
-                    slide.subtitleLink ? (
-                      <Link
-                        to={slide.subtitleLink}
-                        className="text-base sm:text-lg mb-6 max-w-md underline-offset-4 hover:underline"
-                        style={{ color: slide.subtitleColor ?? 'rgba(255,255,255,0.85)' }}
-                      >
-                        {slide.subtitle}
-                      </Link>
-                    ) : (
-                      <p
-                        className="text-base sm:text-lg mb-6 max-w-md"
-                        style={{ color: slide.subtitleColor ?? 'rgba(255,255,255,0.85)' }}
-                      >
-                        {slide.subtitle}
-                      </p>
-                    )
-                  )}
-                  {slide.cta && (
-                    <Button label={slide.cta.label} href={slide.cta.href} variant="primary" className="!bg-accent hover:!bg-accent/90" />
-                  )}
-                </div>
-              ) : (
-                /* Title and subtitle in different zones */
-                <>
-                  {slide.title && (
-                    <div className={`absolute flex flex-col max-w-xl z-10 ${ZONE_CLASSES[slideTitlePos]}`}>
-                      <h1
-                        className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold italic"
-                        style={{ color: slide.titleColor ?? '#ffffff' }}
-                      >
-                        {slide.title}
-                      </h1>
-                    </div>
-                  )}
-                  {(slide.subtitle || slide.cta) && (
-                    <div className={`absolute flex flex-col max-w-md z-10 ${ZONE_CLASSES[slideSubtitlePos]}`}>
+              {/* Centered 1560px overlay container with 60px horizontal padding */}
+              <div className="absolute inset-0 z-10 mx-auto w-full max-w-[1560px] px-6 sm:px-10 lg:px-[60px]">
+                <div className="relative w-full h-full">
+                  {sameZone ? (
+                    /* Title + subtitle in same zone */
+                    <div className={`absolute flex flex-col max-w-xl ${ZONE_CLASSES[slideTitlePos]}`}>
+                      {slide.title && (
+                        <h1
+                          className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold italic mb-4"
+                          style={{ color: slide.titleColor ?? '#ffffff' }}
+                        >
+                          {slide.title}
+                        </h1>
+                      )}
                       {slide.subtitle && (
                         slide.subtitleLink ? (
                           <Link
                             to={slide.subtitleLink}
-                            className="text-base sm:text-lg mb-6 underline-offset-4 hover:underline"
+                            className="text-base sm:text-lg mb-6 max-w-md underline-offset-4 hover:underline"
                             style={{ color: slide.subtitleColor ?? 'rgba(255,255,255,0.85)' }}
                           >
                             {slide.subtitle}
                           </Link>
                         ) : (
                           <p
-                            className="text-base sm:text-lg mb-6"
+                            className="text-base sm:text-lg mb-6 max-w-md"
                             style={{ color: slide.subtitleColor ?? 'rgba(255,255,255,0.85)' }}
                           >
                             {slide.subtitle}
@@ -137,9 +103,48 @@ export function HeroCarousel({
                         <Button label={slide.cta.label} href={slide.cta.href} variant="primary" className="!bg-accent hover:!bg-accent/90" />
                       )}
                     </div>
+                  ) : (
+                    /* Title and subtitle in different zones */
+                    <>
+                      {slide.title && (
+                        <div className={`absolute flex flex-col max-w-xl ${ZONE_CLASSES[slideTitlePos]}`}>
+                          <h1
+                            className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold italic"
+                            style={{ color: slide.titleColor ?? '#ffffff' }}
+                          >
+                            {slide.title}
+                          </h1>
+                        </div>
+                      )}
+                      {(slide.subtitle || slide.cta) && (
+                        <div className={`absolute flex flex-col max-w-md ${ZONE_CLASSES[slideSubtitlePos]}`}>
+                          {slide.subtitle && (
+                            slide.subtitleLink ? (
+                              <Link
+                                to={slide.subtitleLink}
+                                className="text-base sm:text-lg mb-6 underline-offset-4 hover:underline"
+                                style={{ color: slide.subtitleColor ?? 'rgba(255,255,255,0.85)' }}
+                              >
+                                {slide.subtitle}
+                              </Link>
+                            ) : (
+                              <p
+                                className="text-base sm:text-lg mb-6"
+                                style={{ color: slide.subtitleColor ?? 'rgba(255,255,255,0.85)' }}
+                              >
+                                {slide.subtitle}
+                              </p>
+                            )
+                          )}
+                          {slide.cta && (
+                            <Button label={slide.cta.label} href={slide.cta.href} variant="primary" className="!bg-accent hover:!bg-accent/90" />
+                          )}
+                        </div>
+                      )}
+                    </>
                   )}
-                </>
-              )}
+                </div>
+              </div>
             </div>
           );
         })}
