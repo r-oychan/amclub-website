@@ -55,6 +55,7 @@ export interface CardItem {
 export interface FeatureItem {
   heading: string;
   description?: string;
+  image?: string;
 }
 
 export interface FaqItem {

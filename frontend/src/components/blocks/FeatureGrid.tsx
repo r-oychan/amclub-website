@@ -45,17 +45,25 @@ export function FeatureGrid({
         {items && items.length > 0 && (
           <div className={`grid grid-cols-1 ${items.length <= 3 ? 'md:grid-cols-3' : 'md:grid-cols-2 lg:grid-cols-3'} gap-8`}>
             {items.map((item) => (
-              <div
-                key={item.heading}
-                className={`rounded-xl p-8 shadow-sm hover:shadow-md transition-shadow ${
-                  dark ? 'bg-white/10' : 'bg-white'
-                }`}
-              >
-                <h3 className={`font-heading text-lg font-bold mb-3 ${dark ? 'text-white' : 'text-primary'}`}>
+              <div key={item.heading} className="flex flex-col">
+                {item.image && (
+                  <img
+                    src={item.image}
+                    alt=""
+                    className="w-full aspect-[344/217] object-cover block mb-6"
+                  />
+                )}
+                <h3
+                  className={`font-heading italic font-light text-2xl md:text-[26.56px] leading-[1.1] mb-4 ${
+                    dark ? 'text-bg' : 'text-primary'
+                  }`}
+                >
                   {item.heading}
                 </h3>
                 {item.description && (
-                  <p className={`text-sm ${dark ? 'text-white/70' : 'text-text-dark/70'}`}>{item.description}</p>
+                  <p className={`font-body text-base md:text-[17.6px] leading-[1.4] ${dark ? 'text-bg/90' : 'text-text-dark/80'}`}>
+                    {item.description}
+                  </p>
                 )}
               </div>
             ))}

@@ -80,9 +80,21 @@ export default function HomePage() {
         cta={{ label: 'Explore Membership', href: '/membership' }}
         dark
         items={[
-          { heading: 'The Perfect Club Experience for the Whole Family', description: "From pool time to playtime, dining to downtime \u2014 there's something for everyone in the family to enjoy." },
-          { heading: 'Business Done Right. Leisure Done Better.', description: 'Connect, meet, or recharge \u2014 the Club makes balancing work and leisure effortless.' },
-          { heading: 'Everyday Concierge, the Club Way', description: 'A welcoming smile, a helping hand. Enjoy seamless support with a personal touch.' },
+          {
+            heading: 'The Perfect Club Experience for the Whole Family',
+            description: "From pool time to playtime, dining to downtime \u2014 there's something for everyone in the family to enjoy.",
+            image: 'https://framerusercontent.com/images/ALiDWPH3U3VnmiEzcoEet6lPIk.jpeg',
+          },
+          {
+            heading: 'Business Done Right. Leisure Done Better.',
+            description: 'Connect, meet, or recharge \u2014 the Club makes balancing work and leisure effortless.',
+            image: 'https://framerusercontent.com/images/FfQ1mhhWwbjsMQKiahq8SzaqLs.jpeg',
+          },
+          {
+            heading: 'Everyday Concierge, the Club Way',
+            description: 'A welcoming smile, a helping hand. Enjoy seamless support with a personal touch.',
+            image: 'https://framerusercontent.com/images/DytJIjZnqDf7hE6r7WyfxUrNjU.jpeg',
+          },
         ]}
       />
 
