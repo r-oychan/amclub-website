@@ -39,65 +39,65 @@ export function AboutSection({
           <SectionHeader label={label} heading={heading} />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(160px,1fr)_3fr] gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-8 items-start">
           {/* Left column - Photo collage (3D perspective fan) */}
           <div className={`relative ${fade('delay-0')}`}>
             {images && images.length > 0 && (
-              <div className="relative w-full aspect-[3/4] max-w-[400px] mx-auto lg:mx-0" style={{ perspective: '1200px' }}>
-                {images[3] && (
+              <div className="relative w-full max-w-[514px] mx-auto lg:mx-0" style={{ aspectRatio: '514 / 411', perspective: '1200px' }}>
+                {images[0] && (
                   <div
                     className="absolute rounded-lg overflow-hidden shadow-xl"
                     style={{
-                      width: '75%',
-                      height: '45%',
-                      bottom: '5%',
-                      left: '0%',
-                      transform: 'perspective(1200px) rotate(-25deg) rotateX(35deg) rotateY(31deg)',
+                      width: '62.26%',
+                      aspectRatio: '320 / 201',
+                      top: '47.69%',
+                      left: '1.17%',
+                      transform: 'perspective(1200px) rotate(-15deg) rotateX(31deg) rotateY(37deg)',
                     }}
                   >
-                    <img src={images[3]} alt="" className="w-full h-full object-cover" />
-                  </div>
-                )}
-                {images[2] && (
-                  <div
-                    className="absolute rounded-lg overflow-hidden shadow-xl"
-                    style={{
-                      width: '80%',
-                      height: '50%',
-                      bottom: '15%',
-                      left: '5%',
-                      transform: 'perspective(1200px) rotate(-23deg) rotateX(30deg) rotateY(39deg)',
-                    }}
-                  >
-                    <img src={images[2]} alt="" className="w-full h-full object-cover" />
+                    <img src={images[0]} alt="" className="w-full h-full object-cover" />
                   </div>
                 )}
                 {images[1] && (
                   <div
                     className="absolute rounded-lg overflow-hidden shadow-xl"
                     style={{
-                      width: '85%',
-                      height: '50%',
-                      bottom: '25%',
-                      left: '8%',
+                      width: '62.26%',
+                      aspectRatio: '320 / 201',
+                      top: '36.50%',
+                      left: '6.61%',
                       transform: 'perspective(1200px) rotate(-19deg) rotateX(29deg) rotateY(41deg)',
                     }}
                   >
                     <img src={images[1]} alt="" className="w-full h-full object-cover" />
                   </div>
                 )}
-                {images[0] && (
+                {images[2] && (
+                  <div
+                    className="absolute rounded-lg overflow-hidden shadow-xl"
+                    style={{
+                      width: '62.26%',
+                      aspectRatio: '320 / 201',
+                      top: '22.87%',
+                      left: '13.04%',
+                      transform: 'perspective(1200px) rotate(-23deg) rotateX(30deg) rotateY(39deg)',
+                    }}
+                  >
+                    <img src={images[2]} alt="" className="w-full h-full object-cover" />
+                  </div>
+                )}
+                {images[3] && (
                   <div
                     className="absolute rounded-lg overflow-hidden shadow-2xl"
                     style={{
-                      width: '90%',
-                      height: '55%',
-                      top: '5%',
-                      left: '10%',
-                      transform: 'perspective(1200px) rotate(-15deg) rotateX(31deg) rotateY(37deg)',
+                      width: '62.26%',
+                      aspectRatio: '320 / 201',
+                      top: '10.22%',
+                      left: '50.99%',
+                      transform: 'translateX(-50%) perspective(1200px) rotate(-25deg) rotateX(35deg) rotateY(31deg)',
                     }}
                   >
-                    <img src={images[0]} alt="" className="w-full h-full object-cover" />
+                    <img src={images[3]} alt="" className="w-full h-full object-cover" />
                   </div>
                 )}
               </div>
