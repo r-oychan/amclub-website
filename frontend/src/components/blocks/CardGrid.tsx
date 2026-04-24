@@ -40,44 +40,69 @@ export function CardGrid({
             {subheading}
           </p>
         )}
+      </div>
 
-        {variant === 'event' ? (
-          <div className="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory -mx-4 px-4">
-            {items.map((item, i) => (
-              <EventCard key={i} item={item} />
-            ))}
-          </div>
-        ) : (
+      {variant === 'event' ? (
+        <EventMarquee items={items} />
+      ) : (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className={`grid grid-cols-1 ${colClass} gap-8`}>
             {items.map((item, i) => (
               <DefaultCard key={i} item={item} variant={variant} />
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </section>
   );
 }
 
-function EventCard({ item }: { item: CardItem }) {
+function EventMarquee({ items }: { items: CardItem[] }) {
+  // Duplicate the items so the sequence is seamless: when the first half
+  // has scrolled into the second half's starting position, the transform
+  // resets from -50% back to 0 without a visible jump.
+  const loop = [...items, ...items];
   return (
-    <div className="flex-shrink-0 w-72 snap-start rounded-xl overflow-hidden bg-white shadow-md hover:shadow-lg transition-shadow">
+    <div className="relative w-full overflow-hidden mt-4 group">
+      <div
+        className="flex gap-6 w-max animate-marquee-ltr group-hover:[animation-play-state:paused]"
+        style={{ animation: 'marquee-ltr 60s linear infinite' }}
+      >
+        {loop.map((item, i) => (
+          <EventCard key={i} item={item} />
+        ))}
+      </div>
+      <style>{`
+        @keyframes marquee-ltr {
+          from { transform: translateX(-50%); }
+          to { transform: translateX(0%); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+function EventCard({ item }: { item: CardItem }) {
+  const [month, day] = (item.date ?? '').split(' ');
+  return (
+    <div className="flex-shrink-0 w-72">
       {item.image && (
-        <div className="h-44 overflow-hidden">
+        <div className="relative h-56 rounded-lg overflow-hidden mb-4">
           <img src={item.image} alt={item.title ?? ''} className="w-full h-full object-cover" />
+          {month && day && (
+            <div className="absolute bottom-3 right-3 bg-white rounded-md px-3 py-1.5 text-center shadow-md min-w-[56px]">
+              <div className="text-[10px] font-bold uppercase text-accent tracking-wider leading-none">{month}</div>
+              <div className="text-xl font-bold text-primary leading-none mt-1">{day}</div>
+            </div>
+          )}
         </div>
       )}
-      <div className="p-4">
-        {item.date && (
-          <span className="inline-block bg-accent text-white text-xs font-bold px-2 py-1 rounded mb-2">
-            {item.date}
-          </span>
-        )}
-        {item.category && (
-          <p className="text-xs text-secondary font-bold uppercase tracking-wide mb-1">{item.category}</p>
-        )}
-        <h3 className="font-heading text-sm font-bold text-primary leading-snug">{item.title}</h3>
-      </div>
+      {item.category && (
+        <span className="inline-block bg-primary text-white text-[10px] font-bold uppercase tracking-[0.15em] px-3 py-1 rounded-full mb-2">
+          {item.category}
+        </span>
+      )}
+      <h3 className="font-body text-base font-semibold text-primary leading-snug">{item.title}</h3>
     </div>
   );
 }
