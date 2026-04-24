@@ -85,24 +85,33 @@ function EventMarquee({ items }: { items: CardItem[] }) {
 function EventCard({ item }: { item: CardItem }) {
   const [month, day] = (item.date ?? '').split(' ');
   return (
-    <div className="flex-shrink-0 w-72">
+    <div className="flex-shrink-0 w-[344px]">
       {item.image && (
-        <div className="relative h-56 rounded-lg overflow-hidden mb-4">
-          <img src={item.image} alt={item.title ?? ''} className="w-full h-full object-cover" />
+        <div className="relative mb-10">
+          <img
+            src={item.image}
+            alt={item.title ?? ''}
+            className="w-full aspect-[344/217] object-cover block"
+          />
           {month && day && (
-            <div className="absolute bottom-3 right-3 bg-white rounded-md px-3 py-1.5 text-center shadow-md min-w-[56px]">
-              <div className="text-[10px] font-bold uppercase text-accent tracking-wider leading-none">{month}</div>
-              <div className="text-xl font-bold text-primary leading-none mt-1">{day}</div>
+            <div className="absolute right-[18px] -bottom-[57px] bg-white p-2 flex flex-col items-center w-[60px] z-10">
+              <span className="font-body text-[13.6px] font-normal uppercase text-primary tracking-[0.04em] leading-none">
+                {month}
+              </span>
+              <span className="block h-px w-[33px] bg-primary/25 my-1.5" />
+              <span className="font-heading italic text-[28.8px] font-light text-primary leading-none">
+                {day}
+              </span>
             </div>
           )}
         </div>
       )}
       {item.category && (
-        <span className="inline-block bg-primary text-white text-[10px] font-bold uppercase tracking-[0.15em] px-3 py-1 rounded-full mb-2">
+        <span className="inline-block bg-primary text-white font-body text-[11.2px] font-normal uppercase tracking-[0.04em] px-3.5 py-1.5 rounded-full mb-3">
           {item.category}
         </span>
       )}
-      <h3 className="font-body text-base font-semibold text-primary leading-snug">{item.title}</h3>
+      <h3 className="font-body text-[17.6px] font-light text-primary leading-[1.4]">{item.title}</h3>
     </div>
   );
 }
