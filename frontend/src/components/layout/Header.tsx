@@ -85,10 +85,10 @@ export function Header() {
         <NavLink
           href={item.href}
           isExternal={item.isExternal}
-          className={`px-3 py-1.5 font-body uppercase tracking-[0.04em] transition-all inline-flex items-center whitespace-nowrap border-b-2 ${
+          className={`px-3 py-1.5 font-body uppercase tracking-[0.04em] transition-all inline-flex items-center whitespace-nowrap border-b-2 border-transparent ${
             isActive
-              ? 'text-[#F5F4F2] border-accent'
-              : 'text-[#F5F4F2]/80 border-transparent hover:text-[#F5F4F2] hover:border-accent'
+              ? 'text-[#F5F4F2]'
+              : 'text-[#F5F4F2]/80 hover:text-[#F5F4F2] hover:border-accent'
           }`}
           style={{ fontSize }}
         >
@@ -185,13 +185,14 @@ export function Header() {
             className="hidden 2xl:block relative transition-all duration-300"
             style={{ padding: scrolled ? '18px 24px 18px' : '30px 32px 23px' }}
           >
-            {/* CTA button (Member Login) — top-right, fades on scroll */}
+            {/* CTA button (Member Login) — floating tab overlapping bar's top edge (matches Framer) */}
             {ctaButton && (
               <NavLink
                 href={ctaButton.href}
                 isExternal={ctaButton.isExternal}
-                className="absolute top-4 right-8 z-10 inline-flex items-center gap-2 px-5 py-2.5 text-white text-xs font-body uppercase tracking-wider hover:opacity-90 transition-all duration-300"
+                className="absolute right-10 z-20 inline-flex items-center gap-2 px-5 py-2.5 text-white text-xs font-body uppercase tracking-wider hover:opacity-90 transition-all duration-300 shadow-lg"
                 style={{
+                  top: '-19px',
                   backgroundColor: 'rgb(0, 22, 74)',
                   borderRadius: '100px',
                   opacity: scrolled ? 0 : 1,

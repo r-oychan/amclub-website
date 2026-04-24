@@ -5,7 +5,6 @@ import { FeatureGrid } from '../components/blocks/FeatureGrid';
 import { TabsSection } from '../components/blocks/TabsSection';
 import { TestimonialSlider } from '../components/blocks/TestimonialSlider';
 import { FaqAccordion } from '../components/blocks/FaqAccordion';
-import { CtaBanner } from '../components/blocks/CtaBanner';
 
 export default function HomePage() {
   return (
@@ -100,6 +99,11 @@ export default function HomePage() {
       <TestimonialSlider
         label="Moments"
         heading="Moments that matter, captured and shared by you"
+        cta={{
+          label: 'Follow Our Socials',
+          href: 'https://www.instagram.com/americanclubsingapore/',
+          isExternal: true,
+        }}
         items={[
           { name: 'Ronald Williams', quote: 'Abuzz with Independence Day cheer on July 1', cta: 'Watch More' },
           { name: 'Sarah Grey', quote: 'A multitude of culinary experience for your tastebuds', cta: 'Watch More' },
@@ -111,21 +115,15 @@ export default function HomePage() {
       <FaqAccordion
         label="FAQ"
         heading="Your Questions, Answered"
-        ctas={[{ label: 'View All FAQ', href: '#' }]}
+        ctas={[
+          { label: 'View All FAQ', href: '#' },
+          { label: 'Enquiries', href: '/home-sub/contact-us' },
+        ]}
         items={[
           { question: 'What types of membership do you offer?', answer: '' },
           { question: 'What facilities and services are included?', answer: '' },
           { question: 'Is membership transferable?', answer: '' },
           { question: 'Can I upgrade or change my membership type?', answer: '' },
-        ]}
-      />
-
-      <CtaBanner
-        heading="Have an Enquiry?"
-        body="We'd love to hear from you. Get in touch with our team."
-        ctas={[
-          { label: 'Contact Us', href: '#' },
-          { label: 'Book a Club Tour', href: '#' },
         ]}
       />
     </>

@@ -100,7 +100,13 @@ export function HeroCarousel({
                         )
                       )}
                       {slide.cta && (
-                        <Button label={slide.cta.label} href={slide.cta.href} variant="primary" className="!bg-accent hover:!bg-accent/90" />
+                        <Button
+                          label={slide.cta.label}
+                          href={slide.cta.href}
+                          variant="white"
+                          className="uppercase tracking-[0.1em] self-start"
+                          iconRight={<HeroArrowIcon />}
+                        />
                       )}
                     </div>
                   ) : (
@@ -137,7 +143,13 @@ export function HeroCarousel({
                             )
                           )}
                           {slide.cta && (
-                            <Button label={slide.cta.label} href={slide.cta.href} variant="primary" className="!bg-accent hover:!bg-accent/90" />
+                            <Button
+                              label={slide.cta.label}
+                              href={slide.cta.href}
+                              variant="white"
+                              className="uppercase tracking-[0.1em] self-end"
+                              iconRight={<HeroArrowIcon />}
+                            />
                           )}
                         </div>
                       )}
@@ -190,5 +202,26 @@ export function HeroCarousel({
         }
       `}</style>
     </section>
+  );
+}
+
+function HeroArrowIcon() {
+  return (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+      className="shrink-0"
+      aria-hidden="true"
+    >
+      <path
+        d="M1 13L13 1M13 1H3M13 1V11"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }

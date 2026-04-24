@@ -1,24 +1,36 @@
 import { useState } from 'react';
-import type { TestimonialItem } from '../../lib/types';
+import type { TestimonialItem, CtaButton } from '../../lib/types';
+import { ArrowLink } from '../shared/ArrowLink';
 
 export function TestimonialSlider({
   label,
   heading,
   items,
+  cta,
 }: {
   label?: string;
   heading: string;
   items: TestimonialItem[];
+  cta?: CtaButton;
 }) {
   const [active, setActive] = useState(0);
 
   return (
     <section className="py-16 bg-primary text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {label && (
-          <p className="text-sm font-bold uppercase tracking-widest text-secondary mb-4 text-center">{label}</p>
-        )}
-        <h2 className="font-heading text-3xl md:text-4xl font-bold text-center mb-12 italic">{heading}</h2>
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
+          <div className="flex-1">
+            {label && (
+              <p className="text-sm font-bold uppercase tracking-widest text-secondary mb-4 text-center md:text-left">{label}</p>
+            )}
+            <h2 className="font-heading text-3xl md:text-4xl font-bold italic text-center md:text-left max-w-3xl">{heading}</h2>
+          </div>
+          {cta?.href && (
+            <div className="flex justify-center md:justify-end md:pb-2 shrink-0">
+              <ArrowLink label={cta.label} href={cta.href} dark isExternal={cta.isExternal} />
+            </div>
+          )}
+        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {items.map((item, i) => (

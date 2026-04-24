@@ -5,14 +5,16 @@ export function Button({
   href,
   variant = 'primary',
   className = '',
+  iconRight,
 }: {
   label: string;
   href?: string;
   variant?: 'primary' | 'secondary' | 'outline' | 'white';
   className?: string;
+  iconRight?: React.ReactNode;
 }) {
   const base =
-    'inline-block px-6 py-3 rounded-full font-body font-bold text-sm tracking-wide transition-all duration-200 cursor-pointer text-center';
+    'inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-body font-bold text-sm tracking-wide transition-all duration-200 cursor-pointer text-center';
   const variants = {
     primary: 'bg-accent text-white hover:bg-accent/90',
     secondary: 'bg-primary text-white hover:bg-primary-dark',
@@ -21,19 +23,26 @@ export function Button({
   };
   const cls = `${base} ${variants[variant]} ${className}`;
 
+  const content = (
+    <>
+      <span>{label}</span>
+      {iconRight}
+    </>
+  );
+
   if (href && (href.startsWith('http') || href.startsWith('#'))) {
     return (
       <a href={href} className={cls}>
-        {label}
+        {content}
       </a>
     );
   }
   if (href) {
     return (
       <Link to={href} className={cls}>
-        {label}
+        {content}
       </Link>
     );
   }
-  return <button className={cls}>{label}</button>;
+  return <button className={cls}>{content}</button>;
 }

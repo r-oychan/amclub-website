@@ -32,7 +32,19 @@ export function Hero({ heading, subheading, cta, backgroundImage, slides, varian
             {subheading}
           </p>
         )}
-        {cta && <Button label={cta.label} href={cta.href} variant="primary" className="!bg-accent hover:!bg-accent/90" />}
+        {cta && (
+          <Button
+            label={cta.label}
+            href={cta.href}
+            variant="white"
+            className="uppercase tracking-[0.1em]"
+            iconRight={
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0" aria-hidden="true">
+                <path d="M1 13L13 1M13 1H3M13 1V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            }
+          />
+        )}
       </div>
     </section>
   );

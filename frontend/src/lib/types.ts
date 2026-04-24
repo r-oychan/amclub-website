@@ -83,4 +83,5 @@ export interface TabItem {
 export interface CtaButton {
   label: string;
   href?: string;
+  isExternal?: boolean;
 }
