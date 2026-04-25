@@ -42,8 +42,8 @@ export function HeritageTimeline({
           : undefined
       }
     >
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_700px] gap-10 lg:gap-16 items-center">
           {/* Left column */}
           <div className="lg:max-w-[480px]">
             <h2
@@ -72,7 +72,7 @@ export function HeritageTimeline({
           </div>
 
           {/* Right: slideshow */}
-          <div className="relative w-full overflow-hidden h-[420px] sm:h-[520px] lg:h-[700px]">
+          <div className="relative overflow-hidden w-full h-[320px] sm:h-[420px] lg:h-[500px]">
             {slides.map((s, i) => (
               <div
                 key={`${s.year}-${i}`}
