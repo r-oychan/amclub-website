@@ -117,10 +117,41 @@ export default function HomePage() {
           isExternal: true,
         }}
         items={[
-          { name: 'Ronald Williams', quote: 'Abuzz with Independence Day cheer on July 1', cta: 'Watch More' },
-          { name: 'Sarah Grey', quote: 'A multitude of culinary experience for your tastebuds', cta: 'Watch More' },
-          { name: 'Matthew Hallen', quote: 'Fantastic evening of glitz, glamor and giving', cta: 'Watch More' },
-          { name: 'Joseph Gunner', quote: 'Abuzz with Independence Day cheer on July 1', cta: 'Watch More' },
+          {
+            name: 'Ronald Williams',
+            quote: 'Abuzz with Independence Day cheer on July 1',
+            cta: 'Watch More',
+            image: 'https://framerusercontent.com/images/MlqKdegxMYfk5tpETtAaDIaV2w.jpg',
+            href: 'https://www.instagram.com/americanclubsingapore/',
+          },
+          {
+            name: 'Sarah Grey',
+            quote: 'A multitude of culinary experience for your tastebuds',
+            cta: 'Watch More',
+            image: 'https://framerusercontent.com/images/rNT1Hh6hiX6cJHoJGmlFogBGWmU.jpg',
+            href: 'https://www.instagram.com/americanclubsingapore/',
+          },
+          {
+            name: 'Matthew Hallen',
+            quote: 'Fantastic evening of glitz, glamor and giving',
+            cta: 'Watch More',
+            image: 'https://framerusercontent.com/images/A9M0VHDW2FE6UoaFatzINqucGp0.jpg',
+            href: 'https://www.instagram.com/americanclubsingapore/',
+          },
+          {
+            name: 'Joseph Gunner',
+            quote: 'Abuzz with Independence Day cheer on July 1',
+            cta: 'Watch More',
+            image: 'https://framerusercontent.com/images/JkrDtEpbLxJMTiPrF9mJYWb3YQ.jpeg',
+            href: 'https://www.instagram.com/americanclubsingapore/',
+          },
+          {
+            name: 'Emma Chen',
+            quote: 'Sunday brunch with the family at the Grillhouse',
+            cta: 'Watch More',
+            image: 'https://framerusercontent.com/images/PlDsZH1QChc2aIXh0p9duml4TC0.jpeg',
+            href: 'https://www.instagram.com/americanclubsingapore/',
+          },
         ]}
       />
 

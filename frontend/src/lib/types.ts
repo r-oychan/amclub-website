@@ -67,6 +67,8 @@ export interface TestimonialItem {
   name: string;
   quote: string;
   cta?: string;
+  image?: string;
+  href?: string;
 }
 
 export interface TeamMember {

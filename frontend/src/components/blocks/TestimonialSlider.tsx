@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef } from 'react';
 import type { TestimonialItem, CtaButton } from '../../lib/types';
 import { ArrowLink } from '../shared/ArrowLink';
 
@@ -13,46 +13,126 @@ export function TestimonialSlider({
   items: TestimonialItem[];
   cta?: CtaButton;
 }) {
-  const [active, setActive] = useState(0);
+  const trackRef = useRef<HTMLDivElement | null>(null);
+
+  const scrollNext = () => {
+    if (!trackRef.current) return;
+    const card = trackRef.current.querySelector<HTMLAnchorElement>('[data-moment-card]');
+    const step = (card?.offsetWidth ?? 320) + 24;
+    trackRef.current.scrollBy({ left: step, behavior: 'smooth' });
+  };
 
   return (
-    <section className="py-16 bg-primary text-white">
+    <section className="py-16 md:py-24 bg-primary text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12">
-          <div className="flex-1">
-            {label && (
-              <p className="text-sm font-bold uppercase tracking-widest text-secondary mb-4 text-center md:text-left">{label}</p>
-            )}
-            <h2 className="font-heading text-3xl md:text-4xl font-bold italic text-center md:text-left max-w-3xl">{heading}</h2>
-          </div>
-          {cta?.href && (
-            <div className="flex justify-center md:justify-end md:pb-2 shrink-0">
-              <ArrowLink label={cta.label} href={cta.href} dark isExternal={cta.isExternal} />
-            </div>
+        {/* Section header: label left, heading right, CTA under heading */}
+        <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-4 md:gap-10 mb-10 md:mb-14 items-start">
+          {label && (
+            <p className="font-body text-sm font-bold uppercase tracking-[0.15em] text-accent md:pt-3">
+              {label}
+            </p>
           )}
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {items.map((item, i) => (
-            <div
-              key={i}
-              className={`rounded-xl p-6 transition-all cursor-pointer ${
-                active === i ? 'bg-white/15 scale-105' : 'bg-white/5 hover:bg-white/10'
-              }`}
-              onClick={() => setActive(i)}
-            >
-              <div className="w-16 h-16 rounded-full bg-white/20 mb-4 flex items-center justify-center text-2xl">
-                {item.name.charAt(0)}
+          <div>
+            <h2 className="font-heading italic font-light text-3xl md:text-5xl leading-[1.1] max-w-3xl">
+              {heading}
+            </h2>
+            {cta?.href && (
+              <div className="mt-6">
+                <ArrowLink label={cta.label} href={cta.href} dark isExternal={cta.isExternal} />
               </div>
-              <p className="font-heading text-sm italic mb-3 text-text-light">&ldquo;{item.quote}&rdquo;</p>
-              <p className="text-sm font-bold">{item.name}</p>
-              {item.cta && (
-                <button className="text-xs text-secondary mt-2 hover:underline cursor-pointer">{item.cta}</button>
-              )}
-            </div>
-          ))}
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Cards row — bleeds past max-w-7xl with a next button on the right */}
+      <div className="relative">
+        <div
+          ref={trackRef}
+          className="flex gap-6 overflow-x-auto px-4 sm:px-6 lg:px-[max(calc((100vw-80rem)/2+2rem),2rem)] pb-4 scrollbar-hide snap-x snap-mandatory"
+          style={{ scrollbarWidth: 'none' }}
+        >
+          {items.map((item, i) => (
+            <MomentCard key={i} item={item} />
+          ))}
+        </div>
+
+        {/* Next button */}
+        <button
+          type="button"
+          onClick={scrollNext}
+          aria-label="Next testimonials"
+          className="hidden md:flex absolute right-6 lg:right-10 top-1/2 -translate-y-1/2 w-11 h-11 items-center justify-center rounded-full bg-white/15 hover:bg-white/25 text-white transition-colors"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+      </div>
+
+      <style>{`
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+      `}</style>
     </section>
+  );
+}
+
+function MomentCard({ item }: { item: TestimonialItem }) {
+  const Wrapper: React.ElementType = item.href ? 'a' : 'div';
+  const wrapperProps = item.href
+    ? { href: item.href, target: '_blank', rel: 'noopener noreferrer' }
+    : {};
+  return (
+    <Wrapper
+      data-moment-card
+      {...wrapperProps}
+      className="group relative flex-shrink-0 w-[280px] md:w-[320px] aspect-[320/520] rounded-3xl overflow-hidden snap-start shadow-xl bg-primary-dark"
+    >
+      {item.image && (
+        <img
+          src={item.image}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      )}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/70" />
+
+      {/* Instagram name pill — top-left */}
+      <div className="absolute top-4 left-4 inline-flex items-center gap-2 rounded-full bg-black/35 backdrop-blur-sm px-3 py-1.5 text-white">
+        <InstagramIcon />
+        <span className="font-body text-xs font-semibold">{item.name}</span>
+      </div>
+
+      {/* Quote + Watch More — bottom */}
+      <div className="absolute left-0 right-0 bottom-0 p-5 flex flex-col gap-4">
+        <p className="font-heading italic text-lg md:text-xl leading-snug text-white">
+          &ldquo;{item.quote}&rdquo;
+        </p>
+        {item.cta && (
+          <span className="inline-flex items-center gap-2 font-body text-[14.4px] font-bold uppercase tracking-[0.04em] text-white">
+            {item.cta}
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0 text-secondary" aria-hidden="true">
+              <path
+                d="M1 13L13 1M13 1H3M13 1V11"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </span>
+        )}
+      </div>
+    </Wrapper>
+  );
+}
+
+function InstagramIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0" aria-hidden="true">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+    </svg>
   );
 }
