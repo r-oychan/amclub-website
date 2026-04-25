@@ -147,7 +147,7 @@ export function Header() {
         }`}
       >
         <div
-          className="relative w-full transition-transform duration-300 ease-in-out origin-top 2xl:max-w-[1280px] 2xl:rounded-[20px]"
+          className="relative w-full transition-transform duration-300 ease-in-out origin-top 2xl:max-w-[1280px] 2xl:rounded-b-[20px]"
           style={{
             backgroundColor: 'rgba(0, 29, 97, 0.75)',
             backdropFilter: 'blur(22px)',
