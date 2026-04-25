@@ -1,6 +1,6 @@
 import { useState } from 'react';
+import { Link } from 'react-router';
 import type { FaqItem, CtaButton } from '../../lib/types';
-import { Button } from '../shared/Button';
 
 export function FaqAccordion({
   label,
@@ -18,51 +18,118 @@ export function FaqAccordion({
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="py-16 bg-white">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        {label && (
-          <p className="text-sm font-bold uppercase tracking-widest text-accent mb-4 text-center">{label}</p>
-        )}
-        <h2 className="font-heading text-3xl md:text-4xl font-bold text-primary text-center mb-4 italic">
-          {heading}
-        </h2>
-        {subheading && (
-          <p className="text-text-dark/70 text-center mb-8">{subheading}</p>
-        )}
-
-        {ctas && ctas.length > 0 && (
-          <div className="flex flex-wrap justify-center gap-4 mb-8">
-            {ctas.map((cta) => (
-              <Button key={cta.label} label={cta.label} href={cta.href} variant="secondary" className="text-sm" />
-            ))}
-          </div>
-        )}
-
-        <div className="divide-y divide-gray-200">
-          {items.map((item, i) => (
-            <div key={i}>
-              <button
-                className="w-full flex items-center justify-between py-5 text-left cursor-pointer group"
-                onClick={() => setOpenIndex(openIndex === i ? null : i)}
-              >
-                <span className="font-heading font-bold text-primary group-hover:text-accent transition-colors pr-4">
-                  {item.question}
-                </span>
-                <span className="text-primary flex-shrink-0 transition-transform" style={{ transform: openIndex === i ? 'rotate(180deg)' : 'none' }}>
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </span>
-              </button>
-              {openIndex === i && (
-                <div className="pb-5 text-sm text-text-dark/70">
-                  {item.answer || 'Details coming soon.'}
-                </div>
-              )}
+    <section className="bg-bg py-20 px-6 sm:px-10 lg:px-[60px]">
+      <div className="mx-auto w-full max-w-[1280px]">
+        <div className="border-t border-primary/15 pt-10 grid grid-cols-1 lg:grid-cols-[140px_1fr] gap-x-12 gap-y-10">
+          {label && (
+            <div className="flex items-start">
+              <span className="block w-[3px] h-5 bg-accent mr-3 mt-[2px]" aria-hidden="true" />
+              <span className="font-body text-[12.8px] uppercase tracking-[0.04em] text-primary leading-tight">
+                {label}
+              </span>
             </div>
-          ))}
+          )}
+
+          <div>
+            <h2
+              className="font-heading italic font-light text-primary"
+              style={{
+                fontSize: '2.4rem',
+                lineHeight: '1.1',
+                letterSpacing: '-0.03em',
+              }}
+            >
+              {heading}
+            </h2>
+
+            {subheading && (
+              <p className="mt-4 font-body text-[1rem] text-primary/70 max-w-2xl">{subheading}</p>
+            )}
+
+            {ctas && ctas.length > 0 && (
+              <div className="mt-6 flex flex-wrap gap-x-8 gap-y-3">
+                {ctas.map((cta) => (
+                  <FaqCtaLink key={cta.label} label={cta.label} href={cta.href} />
+                ))}
+              </div>
+            )}
+
+            <ul className="mt-10">
+              {items.map((item, i) => {
+                const isOpen = openIndex === i;
+                return (
+                  <li
+                    key={i}
+                    className="border-t border-primary/15 last:border-b last:border-primary/15"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setOpenIndex(isOpen ? null : i)}
+                      className="w-full flex items-center justify-between gap-6 py-6 text-left cursor-pointer"
+                      aria-expanded={isOpen}
+                    >
+                      <span className="font-body text-[1.2rem] leading-[1.4] text-primary">
+                        {item.question}
+                      </span>
+                      <span
+                        className="flex-shrink-0 text-accent transition-transform duration-200"
+                        style={{ transform: isOpen ? 'rotate(45deg)' : 'rotate(0deg)' }}
+                        aria-hidden="true"
+                      >
+                        <PlusIcon />
+                      </span>
+                    </button>
+                    {isOpen && item.answer && (
+                      <div className="pb-6 pr-12 font-body text-[1rem] leading-[1.6] text-primary/80">
+                        {item.answer}
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function FaqCtaLink({ label, href }: { label: string; href?: string }) {
+  const className =
+    'group inline-flex items-center gap-2 font-body text-[12.8px] uppercase tracking-[0.08em] text-primary hover:text-accent transition-colors';
+  const content = (
+    <>
+      <span>{label}</span>
+      <ArrowUpRight className="text-accent transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+    </>
+  );
+  if (!href || href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('tel:')) {
+    return (
+      <a href={href ?? '#'} className={className}>
+        {content}
+      </a>
+    );
+  }
+  return (
+    <Link to={href} className={className}>
+      {content}
+    </Link>
+  );
+}
+
+function PlusIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <path d="M10 2.5V17.5M2.5 10H17.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function ArrowUpRight({ className }: { className?: string }) {
+  return (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className={className} aria-hidden="true">
+      <path d="M2 10L10 2M10 2H3.5M10 2V8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
