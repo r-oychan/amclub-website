@@ -33,6 +33,7 @@ interface VenueData {
     title: string;
     content: string;
     bullets?: string[];
+    contactRows?: { label: string; value: string }[];
   }[];
   promoCards?: {
     heading: string;
@@ -80,8 +81,11 @@ function staticFallback(section: string, slug: string): VenueData | null {
 }
 
 /* Map extra section titles to DetailSection icon names */
-function resolveIcon(title: string): 'clock' | 'location' | 'reservation' | 'dresscode' | 'capacity' | 'menu' {
+function resolveIcon(
+  title: string
+): 'clock' | 'location' | 'reservation' | 'dresscode' | 'capacity' | 'menu' | 'sponsorship' {
   const lower = title.toLowerCase();
+  if (lower.includes('sponsor') || lower.includes('partner')) return 'sponsorship';
   if (lower.includes('reserv') || lower.includes('book')) return 'reservation';
   if (lower.includes('menu') || lower.includes('food') || lower.includes('cuisine')) return 'menu';
   if (lower.includes('hour') || lower.includes('time')) return 'clock';
@@ -90,6 +94,9 @@ function resolveIcon(title: string): 'clock' | 'location' | 'reservation' | 'dre
   if (lower.includes('capac') || lower.includes('seat')) return 'capacity';
   return 'reservation';
 }
+
+const STRIPE_PATTERN_SVG =
+  'url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22126%22 height=%22126%22%3E%3Cpath d=%22M126 0v21.584L21.584 126H0v-17.585L108.415 0H126Zm0 108.414V126h-17.586L126 108.414Zm0-84v39.171L63.585 126H24.414L126 24.414Zm0 42v39.17L105.584 126h-39.17L126 66.414ZM105.586 0 0 105.586V66.415L66.415 0h39.171Zm-42 0L0 63.586V24.415L24.415 0h39.171Zm-42 0L0 21.586V0h21.586Z%22 fill=%22rgb(136,136,136,0.2)%22 fill-rule=%22evenodd%22/%3E%3C/svg%3E")';
 
 export default function VenueDetailPage({ section: sectionProp }: { section?: string }) {
   const { section: sectionParam, slug } = useParams<{ section: string; slug: string }>();
@@ -193,9 +200,15 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                     />
                   </div>
                 ) : (
-                  <div className="bg-primary/10 aspect-[4/3] flex items-center justify-center">
-                    <span className="text-primary/20 font-heading text-4xl font-bold">{venue.name}</span>
-                  </div>
+                  <div
+                    aria-hidden
+                    className="aspect-[4/3] w-full"
+                    style={{
+                      backgroundImage: STRIPE_PATTERN_SVG,
+                      backgroundSize: '64px',
+                      backgroundRepeat: 'repeat',
+                    }}
+                  />
                 )}
               </div>
             </div>
@@ -217,7 +230,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
               </h1>
 
               {/* Category badge — Lato 13.6px / 400 / uppercase */}
-              {venue.cuisineType && (
+              {venue.cuisineType && venue.cuisineType.trim() && (
                 <p
                   className="text-text-dark uppercase"
                   style={{ fontSize: '13.6px', fontWeight: 400, letterSpacing: '0.544px' }}
@@ -329,6 +342,44 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                           </li>
                         ))}
                       </ul>
+                    )}
+                    {extra.contactRows && extra.contactRows.length > 0 && (
+                      <div
+                        className="grid"
+                        style={{
+                          gridTemplateColumns: 'auto 1fr',
+                          columnGap: '40px',
+                          rowGap: '8px',
+                          marginTop: '8px',
+                        }}
+                      >
+                        {extra.contactRows.map((row, m) => (
+                          <div key={m} className="contents">
+                            <p
+                              style={{
+                                fontFamily: 'Lato, sans-serif',
+                                fontSize: '17.6px',
+                                fontWeight: 700,
+                                lineHeight: '24.64px',
+                                color: '#000',
+                              }}
+                            >
+                              {row.label}
+                            </p>
+                            <p
+                              style={{
+                                fontFamily: 'Lato, sans-serif',
+                                fontSize: '17.6px',
+                                fontWeight: 400,
+                                lineHeight: '24.64px',
+                                color: '#000',
+                              }}
+                            >
+                              {row.value}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
                     )}
                   </div>
                 </DetailSection>

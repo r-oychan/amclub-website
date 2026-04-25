@@ -6,7 +6,8 @@ type IconName =
   | 'reservation'
   | 'dresscode'
   | 'capacity'
-  | 'menu';
+  | 'menu'
+  | 'sponsorship';
 
 const ICON_STROKE = '#DF4661';
 
@@ -99,6 +100,18 @@ function SectionIcon({ icon }: { icon: IconName }) {
           />
           <path
             d="M15 3C15 3 15 8 15 11C15 14 17 14 17 14V21H19V14C19 14 21 14 21 11C21 8 21 3 21 3"
+            stroke={ICON_STROKE}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      );
+    case 'sponsorship':
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path
+            d="M20.84 4.61C19.32 3.09 16.85 3.09 15.33 4.61L12 7.94L8.67 4.61C7.15 3.09 4.68 3.09 3.16 4.61C1.64 6.13 1.64 8.6 3.16 10.12L12 18.96L20.84 10.12C22.36 8.6 22.36 6.13 20.84 4.61Z"
             stroke={ICON_STROKE}
             strokeWidth="1.5"
             strokeLinecap="round"
