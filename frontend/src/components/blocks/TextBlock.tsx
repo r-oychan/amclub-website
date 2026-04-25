@@ -36,15 +36,27 @@ function TextBlockBody({ label, heading, body, funFact, vision, mission, timelin
         <p className="text-text-dark/70 text-sm mt-4 mb-6">{timeline}</p>
       )}
       {vision && (
-        <div className="mb-8">
-          <h3 className="font-heading text-xl font-bold text-primary mb-2">Our Vision</h3>
-          <p className="text-text-dark/80 italic">{vision}</p>
+        <div className="mb-10">
+          <h3
+            className="font-heading italic text-primary mb-4"
+            style={{ fontSize: 'clamp(1.5rem, 1.6vw + 1rem, 1.875rem)', fontWeight: 300, letterSpacing: '-0.03em', lineHeight: 1.1 }}
+          >
+            Our Vision
+          </h3>
+          <div className="h-[2px] w-12 bg-accent mb-5" />
+          <p className="text-text-dark/80 leading-relaxed">{vision}</p>
         </div>
       )}
       {mission && (
         <div className="mb-8">
-          <h3 className="font-heading text-xl font-bold text-primary mb-2">Our Mission</h3>
-          <p className="text-text-dark/80 italic">{mission}</p>
+          <h3
+            className="font-heading italic text-primary mb-4"
+            style={{ fontSize: 'clamp(1.5rem, 1.6vw + 1rem, 1.875rem)', fontWeight: 300, letterSpacing: '-0.03em', lineHeight: 1.1 }}
+          >
+            Our Mission
+          </h3>
+          <div className="h-[2px] w-12 bg-accent mb-5" />
+          <p className="text-text-dark/80 leading-relaxed">{mission}</p>
         </div>
       )}
       {cta && (

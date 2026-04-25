@@ -7,6 +7,8 @@ import { CtaBanner } from '../components/blocks/CtaBanner';
 import { PartnerOrganizations } from '../components/blocks/PartnerOrganizations';
 import { AwardsGrid } from '../components/blocks/AwardsGrid';
 import { HeritageTimeline } from '../components/blocks/HeritageTimeline';
+import { GovernanceBlock } from '../components/blocks/GovernanceBlock';
+import { ManagementSlider } from '../components/blocks/ManagementSlider';
 
 const FRAMER_ASSETS = 'https://framerusercontent.com/images';
 
@@ -68,14 +70,13 @@ export default function AboutPage() {
       />
 
       <StatsCounter
-        label="The Club Today"
+        heading="The Club Today"
         stats={[
           { value: '11,000+', label: 'Members' },
           { value: '90+', label: 'Nationalities' },
           { value: '77+', label: 'Years of Heritage' },
           { value: '25', label: 'Committees' },
         ]}
-        dark
       />
 
       <TextBlock
@@ -85,28 +86,31 @@ export default function AboutPage() {
         imagePosition="left"
       />
 
-      <TextBlock
+      <GovernanceBlock
         heading="Club Governance"
         body={"The governance structure of the Club is that it is member-owned. There are 25 committees which provide plenty of opportunities to get involved as a volunteer. The committees support the Club management through strategic counsel and policy making.\n\nOnly the General Committee (GC) has approval power.\n\nEach year at the Annual General Meeting (AGM) in November, six spots are available for election/re-election for a two-year tenure. From the GC, the Executive Committee (EXCO) is formed each year in April."}
-        ctas={[
+        sidebarHeading="Join a Committee"
+        sidebarBody="If Members wish to volunteer on any of our Committees, please fill in the online Volunteer Interest Form."
+        links={[
           { label: 'Volunteer Interest Form', href: '#' },
-          { label: 'Committee List', href: '#' },
+          { label: 'Committee List', href: '#', caption: '(Updated as at December 3, 2025)' },
           { label: 'Volunteer Code of Conduct', href: '#' },
         ]}
       />
 
       <TeamGrid
         heading="General Committee"
+        variant="light"
         members={[
           { name: 'Daniel Gewirtz', role: 'President', image: `${FRAMER_ASSETS}/yQzuzYzL7t5XQaH5upKt7gruR9Q.png?width=300` },
           { name: 'Tessa Pang', role: 'Secretary', image: `${FRAMER_ASSETS}/0WIEM72I1vgWDuMYqLCBgOrk.png?width=300` },
           { name: 'Alisha Barnes', role: 'Secretary', image: `${FRAMER_ASSETS}/jxU7bm20Hkfa0nt1lQIJg1xft8Q.png?width=300` },
-          { name: 'Terry Kim', role: 'Treasurer', image: `${FRAMER_ASSETS}/yQzuzYzL7t5XQaH5upKt7gruR9Q.png?width=300` },
+          { name: 'Terry Kim', role: 'Treasurer' },
           { name: 'Charles Santos', role: 'Member at Large', image: `${FRAMER_ASSETS}/bapIqliILvMJllzgOM301TfFbFE.png?width=300` },
-          { name: 'Kate Park', role: 'Member at Large', image: `${FRAMER_ASSETS}/yQzuzYzL7t5XQaH5upKt7gruR9Q.png?width=300` },
-          { name: 'Kenny Liu', role: 'Member at Large', image: `${FRAMER_ASSETS}/yQzuzYzL7t5XQaH5upKt7gruR9Q.png?width=300` },
+          { name: 'Kate Park', role: 'Member at Large' },
+          { name: 'Kenny Liu', role: 'Member at Large' },
           { name: 'Marcella Sullivan', role: 'Member at Large', image: `${FRAMER_ASSETS}/7dTc00R0ddDdnpQZ18pBIezRw.png?width=300` },
-          { name: 'Michael Schindler', role: 'Member at Large', image: `${FRAMER_ASSETS}/yQzuzYzL7t5XQaH5upKt7gruR9Q.png?width=300` },
+          { name: 'Michael Schindler', role: 'Member at Large' },
           { name: 'Ngiam Siew Wei', role: 'Member at Large', image: `${FRAMER_ASSETS}/LgG3L2KEkC3NpG2yO94nYJQ0yU.png?width=300` },
           { name: 'Priyanka Bhalla', role: 'Member at Large', image: `${FRAMER_ASSETS}/7fAHglucQZFyxm4xbLmhwxyv6wI.png?width=300` },
           { name: 'Ted Teo', role: 'Member at Large', image: `${FRAMER_ASSETS}/tDBTdmmp2D543zjHGjP6DhuvMtA.png?width=300` },
@@ -132,38 +136,39 @@ export default function AboutPage() {
         asideImagePosition="left"
       />
 
-      <TeamGrid
+      <ManagementSlider
         heading="Club Management"
         members={[
           {
             name: 'Christine Kaelbel-Sheares',
             role: 'General Manager',
-            image: `${FRAMER_ASSETS}/Kc4g3gqcDM59xyogzsi9CH62xbo.jpeg?width=600`,
+            image: `${FRAMER_ASSETS}/Kc4g3gqcDM59xyogzsi9CH62xbo.jpeg?width=1200`,
+            bio: "Christine is a seasoned executive with a diverse global leadership experience. She has held key roles in prestigious hotels in Singapore and the United States. She has led teams in The Venetian and The Palazzo in Las Vegas, The Four Seasons in Chicago, Auberge du Soleil Resort and Domaine Chandon, both in Napa Valley, California. She also served as the Director of Guest Product Development and Asia Operations for Princess Cruises, overseeing a fleet of ships in Asia, Australia, and New Zealand.\n\nIn her most recent role, Christine was the Vice President of Food & Beverage at the Marina Bay Sands Singapore. She was part of the pioneer team and was instrumental in designing service protocols and setting new standards for service excellence. Christine holds a Bachelor's Degree in Law and Politics from the University of London and pursued postgraduate studies in Hospitality Management at the Cesar Ritz Colleges in Switzerland.\n\nFluent in English, French, Mandarin and Cantonese, she brings a unique skill set to support the Club's membership. With her love of the Singaporean and American communities and cultures, her extensive global experience in executive management, and her passion for service, Christine is committed to elevating the Club's overall Member experience.",
           },
           {
             name: 'Shah Bahari',
             role: 'Director of Food & Beverage',
-            image: `${FRAMER_ASSETS}/4Ef2YIpYt3NnB45ttxaPrldXQg.jpg?width=600`,
+            image: `${FRAMER_ASSETS}/4Ef2YIpYt3NnB45ttxaPrldXQg.jpg?width=1200`,
           },
           {
             name: 'Audrey Lim',
             role: 'Director of Finance',
-            image: `${FRAMER_ASSETS}/w35xKyRe5sLU0f3k3a7zPVD7w.jpeg?width=600`,
+            image: `${FRAMER_ASSETS}/w35xKyRe5sLU0f3k3a7zPVD7w.jpeg?width=1200`,
           },
           {
             name: 'Vincent Lim',
             role: 'Director of Human Resources',
-            image: `${FRAMER_ASSETS}/4QRsPlTR6NqbnGUgLe8aJ9XOK0M.jpg?width=600`,
+            image: `${FRAMER_ASSETS}/4QRsPlTR6NqbnGUgLe8aJ9XOK0M.jpg?width=1200`,
           },
           {
             name: 'Chang Lim',
             role: 'Director of Information Technology',
-            image: `${FRAMER_ASSETS}/eJi2gxT39VUQXoqBU9zkL38ZHM.jpg?width=600`,
+            image: `${FRAMER_ASSETS}/eJi2gxT39VUQXoqBU9zkL38ZHM.jpg?width=1200`,
           },
           {
             name: 'Julie Zul',
             role: 'Director of Member Engagement',
-            image: `${FRAMER_ASSETS}/jyPhDb3hmo4PPzz1fTXNgrcX3fQ.jpg?width=600`,
+            image: `${FRAMER_ASSETS}/jyPhDb3hmo4PPzz1fTXNgrcX3fQ.jpg?width=1200`,
           },
         ]}
       />
