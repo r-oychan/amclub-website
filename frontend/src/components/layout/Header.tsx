@@ -177,8 +177,8 @@ export function Header() {
 
           {/* ===== Desktop XL (≥1440px) — floating bar ===== */}
           <div
-            className="hidden 2xl:block relative"
-            style={{ padding: '30px 32px 23px' }}
+            className="hidden 2xl:block relative transition-all duration-300"
+            style={{ padding: scrolled ? '18px 32px 18px' : '30px 32px 23px' }}
           >
             {/* CTA button (Member Login) — inside bar, top-right (matches Framer) */}
             {ctaButton && (
