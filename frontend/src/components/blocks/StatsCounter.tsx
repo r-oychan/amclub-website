@@ -20,7 +20,7 @@ export function StatsCounter({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           {stats.map((stat) => (
             <div key={stat.label}>
-              <div className={`font-heading text-4xl md:text-5xl font-bold mb-2 ${dark ? 'text-white' : 'text-primary'}`}>
+              <div className={`font-heading text-4xl md:text-5xl font-light italic mb-2 ${dark ? 'text-accent' : 'text-primary'}`}>
                 {stat.value}
               </div>
               <div className={`text-sm uppercase tracking-wide ${dark ? 'text-text-light' : 'text-text-dark/70'}`}>

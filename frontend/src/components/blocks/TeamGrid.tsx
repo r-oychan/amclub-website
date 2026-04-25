@@ -14,9 +14,17 @@ export function TeamGrid({
         <div className={`grid grid-cols-2 md:grid-cols-3 ${members.length > 6 ? 'lg:grid-cols-5' : 'lg:grid-cols-3'} gap-8`}>
           {members.map((member) => (
             <div key={member.name} className="text-center">
-              <div className="w-24 h-24 rounded-full bg-white/20 mx-auto mb-4 flex items-center justify-center text-3xl font-heading">
-                {member.name.split(' ').map((n) => n[0]).join('')}
-              </div>
+              {member.image ? (
+                <img
+                  src={member.image}
+                  alt={member.name}
+                  className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+                />
+              ) : (
+                <div className="w-24 h-24 rounded-full bg-white/20 mx-auto mb-4 flex items-center justify-center text-3xl font-heading">
+                  {member.name.split(' ').map((n) => n[0]).join('')}
+                </div>
+              )}
               <h3 className="font-bold text-sm mb-1">{member.name}</h3>
               <p className="text-xs text-text-light">{member.role}</p>
               {member.bio && (

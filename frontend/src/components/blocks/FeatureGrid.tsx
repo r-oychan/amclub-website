@@ -12,6 +12,8 @@ export function FeatureGrid({
   listItems,
   ctas,
   dark = false,
+  asideImage,
+  asideImagePosition = 'left',
 }: {
   label?: string;
   heading?: string;
@@ -22,7 +24,18 @@ export function FeatureGrid({
   listItems?: string[];
   ctas?: CtaButton[];
   dark?: boolean;
+  asideImage?: string;
+  asideImagePosition?: 'left' | 'right';
 }) {
+  const aside = asideImage ? (
+    <img
+      src={asideImage}
+      alt=""
+      className="w-full max-w-[420px] mx-auto md:mx-0 object-contain"
+      loading="lazy"
+    />
+  ) : null;
+
   return (
     <section className={`py-16 ${dark ? 'bg-primary text-white' : 'bg-bg'}`}>
       <div className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -31,6 +44,9 @@ export function FeatureGrid({
 
         <SectionHeader label={label} heading={heading} cta={cta} dark={dark} />
 
+        <div className={asideImage ? 'grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-10 lg:gap-16 items-start' : ''}>
+          {aside && asideImagePosition === 'left' && aside}
+          <div>
         {subheading && (
           <p className={`max-w-2xl mb-4 ${dark ? 'text-white/70' : 'text-text-dark/70'}`}>
             {subheading}
@@ -88,6 +104,9 @@ export function FeatureGrid({
             ))}
           </div>
         )}
+          </div>
+          {aside && asideImagePosition === 'right' && aside}
+        </div>
       </div>
     </section>
   );

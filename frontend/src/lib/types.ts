@@ -77,6 +77,19 @@ export interface TeamMember {
   name: string;
   role: string;
   bio?: string;
+  image?: string;
+}
+
+export interface PartnerLogo {
+  name: string;
+  image: string;
+  href?: string;
+}
+
+export interface AwardItem {
+  title: string;
+  issuer: string;
+  image?: string;
 }
 
 export interface TabItem {
