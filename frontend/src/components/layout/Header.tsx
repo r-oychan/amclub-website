@@ -147,15 +147,12 @@ export function Header() {
         }`}
       >
         <div
-          className={`relative w-full transition-all duration-300 ease-in-out origin-top ${
-            scrolled
-              ? '2xl:max-w-[1070px] 2xl:rounded-b-3xl'
-              : '2xl:max-w-[1280px] 2xl:rounded-[20px]'
-          }`}
+          className="relative w-full transition-transform duration-300 ease-in-out origin-top 2xl:max-w-[1280px] 2xl:rounded-[20px]"
           style={{
             backgroundColor: 'rgba(0, 29, 97, 0.75)',
-            backdropFilter: 'blur(15px)',
-            WebkitBackdropFilter: 'blur(15px)',
+            backdropFilter: 'blur(22px)',
+            WebkitBackdropFilter: 'blur(22px)',
+            transform: scrolled ? 'scale(0.9)' : 'scale(1)',
           }}
         >
           {/* Noise texture overlay */}
@@ -180,15 +177,15 @@ export function Header() {
 
           {/* ===== Desktop XL (≥1440px) — floating bar ===== */}
           <div
-            className="hidden 2xl:block relative transition-all duration-300"
-            style={{ padding: scrolled ? '18px 24px 18px' : '30px 32px 23px' }}
+            className="hidden 2xl:block relative"
+            style={{ padding: '30px 32px 23px' }}
           >
             {/* CTA button (Member Login) — inside bar, top-right (matches Framer) */}
             {ctaButton && (
               <NavLink
                 href={ctaButton.href}
                 isExternal={ctaButton.isExternal}
-                className="absolute top-5 right-8 z-10 inline-flex items-center gap-2 px-5 py-2.5 text-white text-xs font-body uppercase tracking-wider hover:opacity-90 transition-all duration-300"
+                className="absolute top-5 right-8 z-10 inline-flex items-center gap-2 px-5 py-2.5 text-white text-xs font-body uppercase tracking-wider hover:opacity-90 transition-opacity duration-300"
                 style={{
                   backgroundColor: 'rgb(0, 22, 74)',
                   borderRadius: '100px',
@@ -202,30 +199,22 @@ export function Header() {
             )}
 
             {/* Nav row: left links | logo (center) | right links */}
-            <div className={`flex justify-center transition-all duration-300 ${scrolled ? 'items-center' : 'items-end'}`}>
+            <div className="flex items-end justify-center">
               <nav className="flex-1 flex items-center justify-end gap-0.5 pb-0.5">
-                {leftItems.map((item) => renderDesktopNavItem(item, scrolled ? '11.5px' : '13.6px'))}
+                {leftItems.map((item) => renderDesktopNavItem(item, '13.6px'))}
               </nav>
 
-              {/* Logo — centered, scales down + clips text on scroll */}
-              <Link
-                to="/home"
-                className="flex-shrink-0 mx-5 overflow-hidden transition-all duration-300"
-                style={{ height: scrolled ? '33px' : '87px' }}
-              >
+              {/* Logo — centered */}
+              <Link to="/home" className="flex-shrink-0 mx-5" style={{ height: '87px' }}>
                 <img
                   src={logoUrl}
                   alt="The American Club Singapore"
-                  className="transition-all duration-300"
-                  style={{
-                    width: scrolled ? '162px' : '180px',
-                    height: scrolled ? '78px' : '87px',
-                  }}
+                  style={{ width: '180px', height: '87px' }}
                 />
               </Link>
 
               <nav className="flex-1 flex items-center justify-start gap-0.5 pb-0.5">
-                {rightItems.map((item) => renderDesktopNavItem(item, scrolled ? '11.5px' : '13.6px'))}
+                {rightItems.map((item) => renderDesktopNavItem(item, '13.6px'))}
               </nav>
             </div>
           </div>
