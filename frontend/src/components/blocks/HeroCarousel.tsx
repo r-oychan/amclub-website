@@ -64,8 +64,13 @@ export function HeroCarousel({
                 backgroundPosition: 'center',
               }}
             >
-              {/* Dark overlay */}
-              <div className="absolute inset-0 bg-black/40" />
+              {/* Dark overlay — opacity driven by slide.overlayDarken (0–100, default 0 = no effect) */}
+              {(slide.overlayDarken ?? 0) > 0 && (
+                <div
+                  className="absolute inset-0 bg-black pointer-events-none"
+                  style={{ opacity: Math.min(100, Math.max(0, slide.overlayDarken ?? 0)) / 100 }}
+                />
+              )}
 
               {/* Centered 1560px overlay container with 60px horizontal padding */}
               <div className="absolute inset-0 z-10 mx-auto w-full max-w-[1560px] px-6 sm:px-10 lg:px-[60px]">

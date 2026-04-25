@@ -7,6 +7,8 @@ export type HeroZone = 'bottom-left' | 'bottom-right' | 'middle-left' | 'middle-
 
 export interface HeroSlide {
   backgroundImage: string;
+  /** Percent (0–100) of black overlay laid on top of the image. 0 = no overlay. */
+  overlayDarken?: number;
   title?: string;
   titleColor?: string;
   titlePosition?: HeroZone;
