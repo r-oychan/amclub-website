@@ -6,6 +6,7 @@ import { FeatureGrid } from '../components/blocks/FeatureGrid';
 import { CtaBanner } from '../components/blocks/CtaBanner';
 import { PartnerOrganizations } from '../components/blocks/PartnerOrganizations';
 import { AwardsGrid } from '../components/blocks/AwardsGrid';
+import { HeritageTimeline } from '../components/blocks/HeritageTimeline';
 
 const FRAMER_ASSETS = 'https://framerusercontent.com/images';
 
@@ -14,14 +15,56 @@ export default function AboutPage() {
     <>
       <Hero
         heading="About the Club"
-        subheading="77 Years of Heritage, Community and Connection"
         variant="compact"
         backgroundImage={`${FRAMER_ASSETS}/5Wnl6bOkKlpqZIDwN798ZEhqs.jpg?width=2560`}
       />
 
-      <TextBlock
+      <HeritageTimeline
+        heading="77 Years of Heritage, Community and Connection"
         body="Since 1948, The American Club has been Singapore's cherished sanctuary in the heart of Orchard, where generations of Members from over 60 nations come together to build lifelong friendships, celebrate shared moments, and enjoy a true home away from home."
-        timeline="In 2000, the Club's Fitness & Leisure expanded its offerings with more fitness options, including more Aquatics classes and adult recreational and fitness classes. The Club has now evolved to become true home away from home destination for Members, local and overseas alike."
+        backgroundImage={`${FRAMER_ASSETS}/5Wnl6bOkKlpqZIDwN798ZEhqs.jpg?width=2560`}
+        slides={[
+          {
+            year: '1966',
+            body: 'In what was regarded as "one of the most significant improvements of the Club\'s amenities in its 19-year history", a new Bowling Alley Complex was built, housing an eight-lane bowling alley, an air-conditioned cocktail lounge, a library, a card room, conference rooms, and office for the American community organization.',
+            image: `${FRAMER_ASSETS}/LqyNjKZmAT6eQLWMGwjqYJ4qvyk.jpg?width=1600`,
+          },
+          {
+            year: '1970',
+            body: "The Presidential Room - formed of a rooftop garden room and serving as a cocktail lounge and multi-purpose room - was built. The Eagle's Nest was opened to answer the long-standing need of Members for a casual dining facility accessible from all activity areas. It featured a light meals, snacks and a relaxed dress code.",
+            image: `${FRAMER_ASSETS}/q4RJmABpcLaL18xk0ENsstWi2E.jpg?width=1600`,
+          },
+          {
+            year: '1978',
+            body: 'The Club purchased one acre of land on Claymore Hill at $2.29 million for the construction of the Car park and Sports Complex, featuring three squash courts, two air-conditioned racquetball courts, four tennis courts, and an 88-car parking lot.',
+            image: `${FRAMER_ASSETS}/Br8wsd35CiEWsRROc5cb0uw.jpg?width=1600`,
+          },
+          {
+            year: '1983',
+            body: "Due to its state of disrepair, a proposed major development plan was mooted with the option to either renovate or demolish and rebuild the clubhouse. As membership had already exceeded the Club's capacity by this time, architects were engaged to draw up a design for a new clubhouse.",
+            image: `${FRAMER_ASSETS}/NNmXh9wZuz8PMn8kYcq6xRHDJ7A.jpg?width=1600`,
+          },
+          {
+            year: '1989',
+            body: 'The Claymore Hill Complex sees its grand opening in May. It consisted of two levels of underground parking, the Liberty Lounge - an up-market cocktail lounge, the Union Bar - a casual sports bar, and a function room on the third floor.',
+            image: `${FRAMER_ASSETS}/qOdPN2jz2g8jc3ohflKsKZtJhg.jpg?width=1600`,
+          },
+          {
+            year: '1990',
+            body: 'The Scotts Complex is remodeled to maximize floor space.\nConstruction of the new Library, Jackpot Room, Teen Room and staff locker room begins.',
+            image: `${FRAMER_ASSETS}/zL20NMUh0bUXlxaXByninbz4.jpeg?width=1600`,
+          },
+          {
+            year: '2000',
+            body: "In addition, the Club's Fitness & Leisure expanded its offerings with more fitness options, including more Aquatics classes and adult recreational and fitness classes. The Club has now evolved to become true home away from home destination for Members, local and overseas alike.",
+            image: `${FRAMER_ASSETS}/8AdZeXaiX01zJ8DeEDecvQ5y8c.jpg?width=1600`,
+          },
+          {
+            year: '2015',
+            body: 'To meet the growing needs of the membership and in planning for the future, the Club embarked on a $65 million redevelopment project, which replaced the Scotts Road building and pool, and upgraded its Claymore Hill building and Sports Complex. The redevelopment allowed for enhanced usage of space within the Club, increase staff efficiencies, and ultimately elevate Member satisfaction.',
+            image: `${FRAMER_ASSETS}/qGgCGqT3R7jhogHscMek1P7gmE.jpg?width=1600`,
+          },
+        ]}
       />
 
       <StatsCounter

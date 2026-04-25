@@ -92,6 +92,12 @@ export interface AwardItem {
   image?: string;
 }
 
+export interface TimelineSlide {
+  year: string;
+  body: string;
+  image: string;
+}
+
 export interface TabItem {
   label: string;
   href?: string;

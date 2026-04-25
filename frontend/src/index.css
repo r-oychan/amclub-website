@@ -69,3 +69,14 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 3.7rem;
   }
 }
+
+@keyframes bar-fill {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+
+.animate-bar-fill {
+  animation-name: bar-fill;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
