@@ -75,7 +75,7 @@ export function HeroCarousel({
                     <div className={`absolute flex flex-col max-w-2xl lg:max-w-3xl ${ZONE_CLASSES[slideTitlePos]}`}>
                       {slide.title && (
                         <h1
-                          className="font-heading italic font-semibold text-5xl md:text-6xl lg:text-7xl xl:text-[5.6rem] tracking-[-0.04em] leading-none text-bg mb-4"
+                          className="font-heading italic font-semibold text-[2.5rem] xl:text-[5.6rem] leading-none tracking-[-0.04em] text-bg mb-4"
                           style={slide.titleColor ? { color: slide.titleColor } : undefined}
                         >
                           {slide.title}
@@ -85,15 +85,15 @@ export function HeroCarousel({
                         slide.subtitleLink ? (
                           <Link
                             to={slide.subtitleLink}
-                            className="text-base sm:text-lg mb-6 max-w-md underline-offset-4 hover:underline"
-                            style={{ color: slide.subtitleColor ?? 'rgba(255,255,255,0.85)' }}
+                            className="font-body text-[1.1rem] xl:text-[1.3rem] leading-[1.4] mb-6 max-w-md underline-offset-4 hover:underline"
+                            style={{ color: slide.subtitleColor ?? '#FFFFFF' }}
                           >
                             {slide.subtitle}
                           </Link>
                         ) : (
                           <p
-                            className="text-base sm:text-lg mb-6 max-w-md"
-                            style={{ color: slide.subtitleColor ?? 'rgba(255,255,255,0.85)' }}
+                            className="font-body text-[1.1rem] xl:text-[1.3rem] leading-[1.4] mb-6 max-w-md"
+                            style={{ color: slide.subtitleColor ?? '#FFFFFF' }}
                           >
                             {slide.subtitle}
                           </p>
@@ -115,7 +115,7 @@ export function HeroCarousel({
                       {slide.title && (
                         <div className={`absolute flex flex-col max-w-2xl lg:max-w-3xl ${ZONE_CLASSES[slideTitlePos]}`}>
                           <h1
-                            className="font-heading italic font-semibold text-5xl md:text-6xl lg:text-7xl xl:text-[5.6rem] tracking-[-0.04em] leading-none text-bg"
+                            className="font-heading italic font-semibold text-[2.5rem] xl:text-[5.6rem] leading-none tracking-[-0.04em] text-bg"
                             style={slide.titleColor ? { color: slide.titleColor } : undefined}
                           >
                             {slide.title}
@@ -128,15 +128,15 @@ export function HeroCarousel({
                             slide.subtitleLink ? (
                               <Link
                                 to={slide.subtitleLink}
-                                className="text-base sm:text-lg mb-6 underline-offset-4 hover:underline"
-                                style={{ color: slide.subtitleColor ?? 'rgba(255,255,255,0.85)' }}
+                                className="font-body text-[1.1rem] xl:text-[1.3rem] leading-[1.4] mb-6 underline-offset-4 hover:underline"
+                                style={{ color: slide.subtitleColor ?? '#FFFFFF' }}
                               >
                                 {slide.subtitle}
                               </Link>
                             ) : (
                               <p
-                                className="text-base sm:text-lg mb-6"
-                                style={{ color: slide.subtitleColor ?? 'rgba(255,255,255,0.85)' }}
+                                className="font-body text-[1.1rem] xl:text-[1.3rem] leading-[1.4] mb-6"
+                                style={{ color: slide.subtitleColor ?? '#FFFFFF' }}
                               >
                                 {slide.subtitle}
                               </p>
