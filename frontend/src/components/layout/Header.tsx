@@ -204,8 +204,13 @@ export function Header() {
                 {leftItems.map((item) => renderDesktopNavItem(item, '13.6px'))}
               </nav>
 
-              {/* Logo — centered */}
-              <Link to="/home" className="flex-shrink-0 mx-5" style={{ height: '87px' }}>
+              {/* Logo — centered. On scroll the container clips to 33px while the
+                  image stays full height, so only the top half of the eagle crest shows. */}
+              <Link
+                to="/home"
+                className="flex-shrink-0 mx-5 overflow-hidden transition-all duration-300"
+                style={{ height: scrolled ? '33px' : '87px' }}
+              >
                 <img
                   src={logoUrl}
                   alt="The American Club Singapore"
