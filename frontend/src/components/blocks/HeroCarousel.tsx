@@ -72,11 +72,11 @@ export function HeroCarousel({
                 <div className="relative w-full h-full">
                   {sameZone ? (
                     /* Title + subtitle in same zone */
-                    <div className={`absolute flex flex-col max-w-xl ${ZONE_CLASSES[slideTitlePos]}`}>
+                    <div className={`absolute flex flex-col max-w-2xl lg:max-w-3xl ${ZONE_CLASSES[slideTitlePos]}`}>
                       {slide.title && (
                         <h1
-                          className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold italic mb-4"
-                          style={{ color: slide.titleColor ?? '#ffffff' }}
+                          className="font-heading italic font-semibold text-5xl md:text-6xl lg:text-7xl xl:text-[5.6rem] tracking-[-0.04em] leading-none text-bg mb-4"
+                          style={slide.titleColor ? { color: slide.titleColor } : undefined}
                         >
                           {slide.title}
                         </h1>
@@ -113,10 +113,10 @@ export function HeroCarousel({
                     /* Title and subtitle in different zones */
                     <>
                       {slide.title && (
-                        <div className={`absolute flex flex-col max-w-xl ${ZONE_CLASSES[slideTitlePos]}`}>
+                        <div className={`absolute flex flex-col max-w-2xl lg:max-w-3xl ${ZONE_CLASSES[slideTitlePos]}`}>
                           <h1
-                            className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold italic"
-                            style={{ color: slide.titleColor ?? '#ffffff' }}
+                            className="font-heading italic font-semibold text-5xl md:text-6xl lg:text-7xl xl:text-[5.6rem] tracking-[-0.04em] leading-none text-bg"
+                            style={slide.titleColor ? { color: slide.titleColor } : undefined}
                           >
                             {slide.title}
                           </h1>
