@@ -64,14 +64,13 @@ export function Header() {
       href={link.href}
       isExternal={link.isExternal}
       onClick={() => setActiveDropdown(null)}
-      className="block px-2 py-1.5 text-sm font-body text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors"
+      className="block py-2 text-[13.6px] font-body text-black hover:opacity-60 transition-opacity"
     >
       {link.label}
     </NavLink>
   );
 
   const renderDesktopNavItem = (item: NavItemConfig, fontSize: string) => {
-    const isActive = !item.isExternal && (location.pathname === item.href || location.pathname.startsWith(item.href + '/'));
     const hasDropdown = !!item.columns?.length;
     const isOpen = activeDropdown === item.href;
 
@@ -85,11 +84,7 @@ export function Header() {
         <NavLink
           href={item.href}
           isExternal={item.isExternal}
-          className={`px-3 py-1.5 font-body uppercase tracking-[0.04em] transition-all inline-flex items-center whitespace-nowrap border-b-2 border-transparent ${
-            isActive
-              ? 'text-[#F5F4F2]'
-              : 'text-[#F5F4F2]/80 hover:text-[#F5F4F2] hover:border-accent'
-          }`}
+          className="px-3 py-1.5 font-body uppercase tracking-[0.04em] transition-colors duration-200 inline-flex items-center whitespace-nowrap border-b border-accent/0 text-[#F5F4F2] hover:border-accent"
           style={{ fontSize }}
         >
           {item.label}
@@ -106,8 +101,11 @@ export function Header() {
           >
             <div className="pt-4">
               <div
-                className="bg-white shadow-xl p-8 flex gap-8 w-fit"
-                style={{ borderRadius: '24px' }}
+                className="bg-white p-10 flex gap-8 w-fit"
+                style={{
+                  borderRadius: '24px',
+                  boxShadow: '0 10px 20px rgba(0, 0, 0, 0.05)',
+                }}
               >
                 {item.columns!.map((col, ci) =>
                   col.image ? (
@@ -123,7 +121,7 @@ export function Header() {
                   ) : (
                     <div key={ci} className="flex-1 min-w-[160px]">
                       {col.heading && (
-                        <p className="text-xs font-body uppercase tracking-[0.08em] text-gray-400 mb-3 font-semibold">
+                        <p className="text-[13.6px] font-body uppercase tracking-[0.04em] text-black/50 mb-3 font-semibold">
                           {col.heading}
                         </p>
                       )}
@@ -253,7 +251,7 @@ export function Header() {
             {/* Single row: left links | full logo (center) | right links */}
             <div className="flex items-end justify-center">
               <nav className="flex-1 flex items-center justify-end gap-0.5 pb-0.5">
-                {leftItems.map((item) => renderDesktopNavItem(item, '12px'))}
+                {leftItems.map((item) => renderDesktopNavItem(item, '13.6px'))}
               </nav>
 
               {/* Logo — centered, full height */}
@@ -266,7 +264,7 @@ export function Header() {
               </Link>
 
               <nav className="flex-1 flex items-center justify-start gap-0.5 pb-0.5">
-                {rightItems.map((item) => renderDesktopNavItem(item, '12px'))}
+                {rightItems.map((item) => renderDesktopNavItem(item, '13.6px'))}
               </nav>
             </div>
           </div>
