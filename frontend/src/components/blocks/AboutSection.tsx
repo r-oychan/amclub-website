@@ -26,6 +26,13 @@ export function AboutSection({
   const fade = (delay: string) =>
     `${fadeBase} ${isVisible ? fadeShow : fadeHidden} ${delay}`;
 
+  // Cascading per-image fade for the perspective gallery
+  const cardOpacities = [0.2, 0.4, 0.65, 1];
+  const cardDelays = [0, 150, 300, 450];
+  const cardOpacity = (i: number) => (isVisible ? cardOpacities[i] : 0);
+  const cardTransition = (i: number) =>
+    `opacity 700ms ease-out ${cardDelays[i]}ms`;
+
   return (
     <section ref={sectionRef} className="py-20 md:py-28 bg-bg overflow-hidden">
       {/* Top accent line */}
@@ -41,7 +48,7 @@ export function AboutSection({
 
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_3fr] gap-8 items-start">
           {/* Left column - Photo collage (3D perspective fan) */}
-          <div className={`relative ${fade('delay-0')}`}>
+          <div className="relative">
             {images && images.length > 0 && (
               <div className="relative w-full max-w-[514px] mx-auto lg:mx-0" style={{ aspectRatio: '514 / 411', perspective: '1200px' }}>
                 {images[0] && (
@@ -52,7 +59,8 @@ export function AboutSection({
                       aspectRatio: '320 / 201',
                       top: '47.69%',
                       left: '1.17%',
-                      opacity: 0.2,
+                      opacity: cardOpacity(0),
+                      transition: cardTransition(0),
                       transform: 'perspective(1200px) rotate(-15deg) rotateX(31deg) rotateY(37deg)',
                     }}
                   >
@@ -67,7 +75,8 @@ export function AboutSection({
                       aspectRatio: '320 / 201',
                       top: '36.50%',
                       left: '6.61%',
-                      opacity: 0.4,
+                      opacity: cardOpacity(1),
+                      transition: cardTransition(1),
                       transform: 'perspective(1200px) rotate(-19deg) rotateX(29deg) rotateY(41deg)',
                     }}
                   >
@@ -82,7 +91,8 @@ export function AboutSection({
                       aspectRatio: '320 / 201',
                       top: '22.87%',
                       left: '13.04%',
-                      opacity: 0.65,
+                      opacity: cardOpacity(2),
+                      transition: cardTransition(2),
                       transform: 'perspective(1200px) rotate(-23deg) rotateX(30deg) rotateY(39deg)',
                     }}
                   >
@@ -97,6 +107,8 @@ export function AboutSection({
                       aspectRatio: '320 / 201',
                       top: '10.22%',
                       left: '50.99%',
+                      opacity: cardOpacity(3),
+                      transition: cardTransition(3),
                       transform: 'translateX(-50%) perspective(1200px) rotate(-25deg) rotateX(35deg) rotateY(31deg)',
                     }}
                   >
@@ -115,12 +127,12 @@ export function AboutSection({
                 {stats.map((stat) => (
                   <div
                     key={stat.label}
-                    className="bg-white rounded-2xl px-6 py-8 text-center shadow-sm"
+                    className="bg-white/[0.77] rounded-[32px] p-10 text-center"
                   >
-                    <div className="font-heading text-3xl md:text-4xl font-light italic text-accent mb-2">
+                    <div className="font-heading text-[1.8rem] xl:text-[2.4rem] font-light italic text-accent leading-[1.1] xl:tracking-[-0.03em] mb-2">
                       {stat.value}
                     </div>
-                    <div className="text-xs font-bold uppercase tracking-[0.15em] text-text-dark/60">
+                    <div className="text-[13.6px] font-normal uppercase tracking-[0.04em] text-primary leading-[1.1]">
                       {stat.label}
                     </div>
                   </div>

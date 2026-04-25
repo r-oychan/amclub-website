@@ -22,7 +22,7 @@ export function SectionHeader({
           <>
             <div className="w-1 h-5 shrink-0 bg-accent rounded-full" />
             <span
-              className={`text-xs font-bold uppercase tracking-[0.2em] ${
+              className={`text-[14.4px] font-bold uppercase tracking-[0.04em] ${
                 dark ? 'text-white/70' : 'text-text-dark'
               }`}
             >
@@ -46,7 +46,7 @@ export function SectionHeader({
         {cta && cta.href && (
           <Link
             to={cta.href}
-            className={`inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] transition-colors duration-200 ${
+            className={`inline-flex items-center gap-2 text-[14.4px] font-bold uppercase tracking-[0.04em] transition-colors duration-200 ${
               dark
                 ? 'text-white/80 hover:text-white'
                 : 'text-primary hover:text-accent'
