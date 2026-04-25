@@ -72,7 +72,7 @@ export function HeritageTimeline({
           </div>
 
           {/* Right: slideshow */}
-          <div className="relative w-full aspect-[4/3] md:aspect-[16/11] overflow-hidden">
+          <div className="relative w-full overflow-hidden h-[420px] sm:h-[520px] lg:h-[700px]">
             {slides.map((s, i) => (
               <div
                 key={`${s.year}-${i}`}
