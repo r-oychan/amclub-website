@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { TestimonialItem, CtaButton } from '../../lib/types';
 import { ArrowLink } from '../shared/ArrowLink';
 
@@ -14,12 +14,34 @@ export function TestimonialSlider({
   cta?: CtaButton;
 }) {
   const trackRef = useRef<HTMLDivElement | null>(null);
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(false);
 
-  const scrollNext = () => {
+  const updateScrollState = () => {
+    const el = trackRef.current;
+    if (!el) return;
+    const maxScrollLeft = el.scrollWidth - el.clientWidth;
+    setCanScrollPrev(el.scrollLeft > 2);
+    setCanScrollNext(el.scrollLeft < maxScrollLeft - 2);
+  };
+
+  useEffect(() => {
+    updateScrollState();
+    const el = trackRef.current;
+    if (!el) return;
+    el.addEventListener('scroll', updateScrollState, { passive: true });
+    window.addEventListener('resize', updateScrollState);
+    return () => {
+      el.removeEventListener('scroll', updateScrollState);
+      window.removeEventListener('resize', updateScrollState);
+    };
+  }, [items.length]);
+
+  const scrollBy = (dir: 1 | -1) => {
     if (!trackRef.current) return;
-    const card = trackRef.current.querySelector<HTMLAnchorElement>('[data-moment-card]');
+    const card = trackRef.current.querySelector<HTMLElement>('[data-moment-card]');
     const step = (card?.offsetWidth ?? 320) + 24;
-    trackRef.current.scrollBy({ left: step, behavior: 'smooth' });
+    trackRef.current.scrollBy({ left: step * dir, behavior: 'smooth' });
   };
 
   return (
@@ -45,29 +67,57 @@ export function TestimonialSlider({
         </div>
       </div>
 
-      {/* Cards row — bleeds past max-w-7xl with a next button on the right */}
-      <div className="relative">
-        <div
-          ref={trackRef}
-          className="flex gap-6 overflow-x-auto px-4 sm:px-6 lg:px-[max(calc((100vw-80rem)/2+2rem),2rem)] pb-4 scrollbar-hide snap-x snap-mandatory"
-          style={{ scrollbarWidth: 'none' }}
-        >
-          {items.map((item, i) => (
-            <MomentCard key={i} item={item} />
-          ))}
-        </div>
+      {/* Carousel: aligned with section width, with fade-mask and prev/next buttons */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative">
+          <div
+            ref={trackRef}
+            className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory"
+            style={{
+              scrollbarWidth: 'none',
+              WebkitMaskImage:
+                'linear-gradient(to right, rgba(0,0,0,0) 0%, #000 6%, #000 94%, rgba(0,0,0,0) 100%)',
+              maskImage:
+                'linear-gradient(to right, rgba(0,0,0,0) 0%, #000 6%, #000 94%, rgba(0,0,0,0) 100%)',
+            }}
+          >
+            {items.map((item, i) => (
+              <MomentCard key={i} item={item} />
+            ))}
+          </div>
 
-        {/* Next button */}
-        <button
-          type="button"
-          onClick={scrollNext}
-          aria-label="Next testimonials"
-          className="hidden md:flex absolute right-6 lg:right-10 top-1/2 -translate-y-1/2 w-11 h-11 items-center justify-center rounded-full bg-white/15 hover:bg-white/25 text-white transition-colors"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <polyline points="9 18 15 12 9 6" />
-          </svg>
-        </button>
+          {/* Prev button */}
+          <button
+            type="button"
+            onClick={() => scrollBy(-1)}
+            aria-label="Previous testimonials"
+            className="hidden md:flex absolute left-5 top-1/2 -translate-y-1/2 w-10 h-10 items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-opacity duration-200"
+            style={{
+              opacity: canScrollPrev ? 1 : 0,
+              pointerEvents: canScrollPrev ? 'auto' : 'none',
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
+          </button>
+
+          {/* Next button */}
+          <button
+            type="button"
+            onClick={() => scrollBy(1)}
+            aria-label="Next testimonials"
+            className="hidden md:flex absolute right-5 top-1/2 -translate-y-1/2 w-10 h-10 items-center justify-center rounded-full bg-white/20 hover:bg-white/30 text-white transition-opacity duration-200"
+            style={{
+              opacity: canScrollNext ? 1 : 0,
+              pointerEvents: canScrollNext ? 'auto' : 'none',
+            }}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <style>{`
