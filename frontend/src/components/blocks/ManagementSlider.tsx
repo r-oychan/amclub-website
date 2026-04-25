@@ -20,133 +20,157 @@ export function ManagementSlider({
   const showNav = members.length > 1;
 
   return (
-    <section className="bg-bg py-16 md:py-24">
-      <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative bg-primary text-white rounded-[12px] overflow-hidden px-6 sm:px-10 lg:px-16 py-12 lg:py-16">
+    <section className="bg-bg py-16 md:py-24 px-4 sm:px-6 lg:px-5">
+      <div className="max-w-[1400px] mx-auto">
+        <div
+          className="relative bg-primary text-white rounded-[12px] overflow-hidden lg:h-[775px]"
+        >
+          {/* Background logo watermark */}
           {watermark && (
             <img
               src={watermark}
               alt=""
               aria-hidden="true"
-              className="pointer-events-none select-none absolute -bottom-12 -left-10 w-[420px] opacity-[0.07]"
+              className="pointer-events-none select-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] max-w-none opacity-[0.05]"
             />
           )}
 
-          <div className="relative">
+          <div className="relative h-full flex flex-col px-6 sm:px-10 lg:px-16 pt-10 lg:pt-14 pb-10 lg:pb-12">
+            {/* Static title */}
             <h2
-              className="font-heading italic text-white mb-10 md:mb-14"
+              className="font-heading italic text-white"
               style={{ fontSize: 'clamp(2rem, 2.6vw + 1rem, 2.8rem)', fontWeight: 300, letterSpacing: '-0.03em', lineHeight: 1.05 }}
             >
               {heading}
             </h2>
 
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.05fr] gap-10 lg:gap-16 items-start">
-              {/* Left: profile copy */}
-              <div className="lg:max-w-[500px]">
-                <h3
-                  className="font-body font-bold text-white mb-4"
-                  style={{ fontSize: 'clamp(1.5rem, 1.5vw + 1rem, 1.875rem)', letterSpacing: '-0.01em', lineHeight: 1.15 }}
-                >
-                  {m.name}
-                </h3>
-                <div className="h-[1px] w-24 bg-white/40 mb-5" />
-                <p className="font-body font-bold text-secondary mb-6" style={{ fontSize: '15px', letterSpacing: '0.02em' }}>
-                  {m.role}
-                </p>
-                {m.bio && (
-                  <div
-                    className="font-body text-white/85 whitespace-pre-line space-y-4"
-                    style={{ fontSize: '14.4px', lineHeight: 1.55 }}
+            {/* Carousel area */}
+            <div className="relative mt-8 lg:mt-10 lg:h-[600px] flex-1">
+              {/* Slide content (transparent) */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 h-full items-start lg:px-12">
+                {/* Left: text */}
+                <div className="lg:max-w-[480px] lg:pt-2">
+                  <h3
+                    className="font-body font-bold text-white mb-3"
+                    style={{ fontSize: 'clamp(1.5rem, 1.5vw + 1rem, 1.875rem)', letterSpacing: '-0.01em', lineHeight: 1.15 }}
                   >
-                    {m.bio.split(/\n\n+/).map((para, i) => (
-                      <p key={i}>{para}</p>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Right: photo */}
-              <div className="relative">
-                <div className="relative aspect-[4/3] w-full overflow-hidden">
-                  {m.image ? (
-                    <img src={m.image} alt={m.name} className="w-full h-full object-cover" loading="lazy" />
-                  ) : (
-                    <div className="w-full h-full bg-white/10" />
+                    {m.name}
+                  </h3>
+                  <div className="h-[1px] w-24 bg-white/40 mb-4" />
+                  <p
+                    className="font-body font-bold text-secondary mb-5"
+                    style={{ fontSize: '15px', letterSpacing: '0.02em' }}
+                  >
+                    {m.role}
+                  </p>
+                  {m.bio && (
+                    <div
+                      className="font-body text-white/85 whitespace-pre-line space-y-4"
+                      style={{ fontSize: '14.4px', lineHeight: 1.55 }}
+                    >
+                      {m.bio.split(/\n\n+/).map((para, i) => (
+                        <p key={i}>{para}</p>
+                      ))}
+                    </div>
                   )}
                 </div>
-              </div>
-            </div>
 
-            {/* Pagination dots */}
-            {showNav && (
-              <div className="mt-10 flex items-center justify-center">
-                <div className="flex items-center gap-2 bg-black/30 backdrop-blur-sm rounded-full px-4 py-2.5">
-                  {members.map((mem, i) => (
-                    <button
-                      key={mem.name}
-                      type="button"
-                      onClick={() => goTo(i)}
-                      aria-label={`Show ${mem.name}`}
-                      className="rounded-full transition-colors"
-                      style={{
-                        width: i === active ? 8 : 6,
-                        height: i === active ? 8 : 6,
-                        backgroundColor: i === active ? '#ffffff' : 'rgba(255,255,255,0.4)',
-                      }}
-                    />
-                  ))}
+                {/* Right: image */}
+                <div className="relative w-full max-w-[558px] lg:justify-self-end">
+                  <div className="relative w-full aspect-[558/473] overflow-hidden">
+                    {m.image ? (
+                      <img src={m.image} alt={m.name} className="w-full h-full object-cover" loading="lazy" />
+                    ) : (
+                      <div className="w-full h-full bg-white/10" />
+                    )}
+                  </div>
                 </div>
               </div>
-            )}
-          </div>
 
-          {/* Edge arrows */}
-          {showNav && (
-            <>
-              <button
-                type="button"
-                onClick={prev}
-                aria-label="Previous director"
-                className="absolute z-10 flex items-center justify-center rounded-full text-white transition hover:opacity-100"
-                style={{
-                  left: 16,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  width: 44,
-                  height: 44,
-                  backgroundColor: 'rgba(0,0,0,0.35)',
-                  backdropFilter: 'blur(4px)',
-                  WebkitBackdropFilter: 'blur(4px)',
-                  opacity: 0.9,
-                }}
-              >
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <polyline points="15,18 9,12 15,6" />
-                </svg>
-              </button>
-              <button
-                type="button"
-                onClick={next}
-                aria-label="Next director"
-                className="absolute z-10 flex items-center justify-center rounded-full text-white transition hover:opacity-100"
-                style={{
-                  right: 16,
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  width: 44,
-                  height: 44,
-                  backgroundColor: 'rgba(0,0,0,0.35)',
-                  backdropFilter: 'blur(4px)',
-                  WebkitBackdropFilter: 'blur(4px)',
-                  opacity: 0.9,
-                }}
-              >
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <polyline points="9,18 15,12 9,6" />
-                </svg>
-              </button>
-            </>
-          )}
+              {/* Prev / Next on carousel edges */}
+              {showNav && (
+                <>
+                  <button
+                    type="button"
+                    onClick={prev}
+                    aria-label="Previous"
+                    className="absolute z-10 flex items-center justify-center rounded-full text-white transition hover:opacity-100"
+                    style={{
+                      left: 0,
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      width: 60,
+                      height: 60,
+                      backgroundColor: 'rgba(0,0,0,0.2)',
+                      backdropFilter: 'blur(4px)',
+                      WebkitBackdropFilter: 'blur(4px)',
+                    }}
+                  >
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <polyline points="15,18 9,12 15,6" />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={next}
+                    aria-label="Next"
+                    className="absolute z-10 flex items-center justify-center rounded-full text-white transition hover:opacity-100"
+                    style={{
+                      right: 0,
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      width: 60,
+                      height: 60,
+                      backgroundColor: 'rgba(0,0,0,0.2)',
+                      backdropFilter: 'blur(4px)',
+                      WebkitBackdropFilter: 'blur(4px)',
+                    }}
+                  >
+                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <polyline points="9,18 15,12 9,6" />
+                    </svg>
+                  </button>
+
+                  {/* Pagination dots */}
+                  <div
+                    className="absolute z-10 flex items-center"
+                    style={{
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      bottom: 10,
+                      borderRadius: 50,
+                      backgroundColor: 'rgba(0,0,0,0.2)',
+                      backdropFilter: 'blur(4px)',
+                      WebkitBackdropFilter: 'blur(4px)',
+                    }}
+                  >
+                    {members.map((mem, i) => (
+                      <button
+                        key={mem.name}
+                        type="button"
+                        onClick={() => goTo(i)}
+                        aria-label={`Scroll to page ${i + 1}`}
+                        className="flex items-center justify-center"
+                        style={{
+                          padding:
+                            i === 0
+                              ? '10px 5px 10px 10px'
+                              : i === members.length - 1
+                              ? '10px 10px 10px 5px'
+                              : '10px 5px',
+                        }}
+                      >
+                        <span
+                          className="block rounded-full bg-white"
+                          style={{ width: 10, height: 10, opacity: i === active ? 1 : 0.5 }}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </section>
