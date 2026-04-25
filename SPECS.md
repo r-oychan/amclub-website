@@ -19,6 +19,7 @@
 | `/whats-on` | `WhatsOnPage.tsx` | singleType | `whats-on-page` |
 | `/home-sub/news` | `NewsPage.tsx` | — | static list (Club News) |
 | `/home-sub/gallery` | `GalleryPage.tsx` | — | static list (event albums) |
+| `/home-sub/contact-us` | `ContactUsPage.tsx` | — | static (`data/contactUs.ts`) — Map + Getting Here + Outlet Operating Hours tabs |
 | `/:section/:slug` | `VenueDetailPage.tsx` | collection | `restaurant` / `venue` / `facility` |
 
 All pages use a `content` **dynamiczone** (block-based), populated by Strapi block components listed below.
@@ -53,6 +54,14 @@ All pages use a `content` **dynamiczone** (block-based), populated by Strapi blo
 | `DetailSection.tsx` | `.description`, `.content` | Prose or blocks |
 | `ContactRow.tsx` | `.contact` fields | Phone, email, address |
 | `PhotoGallery.tsx` | `.gallery` (media[]) | Lightbox grid |
+
+### Contact Page Components
+
+| React Component | Source | Notes |
+|---|---|---|
+| `MapGettingHere.tsx` | `data/contactUs.ts` `contactInfo` | Embedded Google Maps + Address / Operating Hours / Contact Details |
+| `OutletOperatingHours.tsx` | `data/contactUs.ts` `outletGroups` | Pill tabs (5 categories) + masonry grid of cards. Each card has name + scheduled blocks (with optional `subtitle` like "Lunch"/"Dinner"). |
+| `TalkToUsBanner.tsx` | static | Mint-to-navy radial-gradient CTA banner |
 
 ---
 

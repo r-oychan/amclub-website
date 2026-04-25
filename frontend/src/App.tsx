@@ -12,6 +12,7 @@ import WhatsOnPage from './pages/WhatsOnPage';
 import NewsPage from './pages/NewsPage';
 import GalleryPage from './pages/GalleryPage';
 import VenueDetailPage from './pages/VenueDetailPage';
+import ContactUsPage from './pages/ContactUsPage';
 
 export default function App() {
   return (
@@ -36,6 +37,7 @@ export default function App() {
             <Route path="/whats-on" element={<WhatsOnPage />} />
             <Route path="/home-sub/news" element={<NewsPage />} />
             <Route path="/home-sub/gallery" element={<GalleryPage />} />
+            <Route path="/home-sub/contact-us" element={<ContactUsPage />} />
             <Route path="/home-sub/:slug" element={<VenueDetailPage section="home-sub" />} />
           </Routes>
         </main>
