@@ -138,6 +138,7 @@ export default function AboutPage() {
 
       <ManagementSlider
         heading="Club Management"
+        watermark={`${FRAMER_ASSETS}/jYpgpsEhknSxMZJWxquvCab3o.webp`}
         members={[
           {
             name: 'Christine Kaelbel-Sheares',
