@@ -1,5 +1,4 @@
 import type { FeatureItem, CtaButton } from '../../lib/types';
-import { SectionHeader } from '../shared/SectionHeader';
 import { Button } from '../shared/Button';
 
 export function FeatureGrid({
@@ -37,12 +36,40 @@ export function FeatureGrid({
   ) : null;
 
   return (
-    <section className={`py-16 ${dark ? 'bg-primary text-white' : 'bg-bg'}`}>
-      <div className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Top accent line */}
-        <div className={`h-px ${dark ? 'bg-white/20' : 'bg-secondary/40'} mb-12 md:mb-16`} />
-
-        <SectionHeader label={label} heading={heading} cta={cta} dark={dark} />
+    <section className={`py-16 md:py-24 ${dark ? 'bg-primary text-white' : 'bg-bg'}`}>
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        {label && (
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="w-1 h-5 shrink-0 bg-accent rounded-full" />
+            <span
+              className={`text-[14.4px] font-bold uppercase tracking-[0.04em] ${
+                dark ? 'text-white/70' : 'text-text-dark'
+              }`}
+            >
+              {label}
+            </span>
+          </div>
+        )}
+        {heading && (
+          <h2
+            className={`font-heading italic text-center mb-12 md:mb-16 ${
+              dark ? 'text-white' : 'text-primary'
+            }`}
+            style={{
+              fontSize: 'clamp(2rem, 2.6vw + 1rem, 2.8rem)',
+              fontWeight: 300,
+              letterSpacing: '-0.03em',
+              lineHeight: 1.05,
+            }}
+          >
+            {heading}
+          </h2>
+        )}
+        {cta && cta.href && (
+          <div className="flex justify-center mb-10">
+            <Button label={cta.label} href={cta.href} variant={dark ? 'white' : 'secondary'} />
+          </div>
+        )}
 
         <div className={asideImage ? 'grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] gap-10 lg:gap-16 items-start' : ''}>
           {aside && asideImagePosition === 'left' && aside}
