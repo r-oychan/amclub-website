@@ -34,7 +34,11 @@ export function Hero({ heading, subheading, cta, backgroundImage, slides, varian
     >
       <div className={`absolute inset-0 ${bg ? 'bg-primary/60' : 'bg-primary'}`} />
       <div className={`relative z-10 max-w-3xl mx-auto px-4 ${isCompact ? '' : 'py-24'}`}>
-        <h1 className={headingClass}>{heading}</h1>
+        {isCompact ? (
+          <h2 className={headingClass}>{heading}</h2>
+        ) : (
+          <h1 className={headingClass}>{heading}</h1>
+        )}
         {subheading && <p className={subClass}>{subheading}</p>}
         {cta && (
           <Button
