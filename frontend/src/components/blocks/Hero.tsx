@@ -13,8 +13,17 @@ export function Hero({ heading, subheading, cta, backgroundImage, slides, varian
   const bg = slides && slides.length === 1 ? slides[0].backgroundImage : backgroundImage;
 
   const headingClass = isCompact
-    ? 'heading-h2-serif text-white !text-[2rem] sm:!text-[2.2rem] md:!text-[2.4rem]'
+    ? 'font-heading italic text-white'
     : 'font-heading text-4xl sm:text-5xl md:text-6xl font-bold mb-6 italic';
+  const headingStyle = isCompact
+    ? {
+        fontSize: 'clamp(2rem, 1.6vw + 1.2rem, 2.4rem)',
+        fontWeight: 300,
+        fontStyle: 'italic' as const,
+        letterSpacing: '-0.03em',
+        lineHeight: 1.1,
+      }
+    : undefined;
   const subClass = isCompact
     ? 'font-body text-[15px] md:text-[17.6px] font-light leading-[1.4] text-white/85 mt-3 max-w-2xl mx-auto'
     : 'text-lg sm:text-xl text-text-light mb-8 max-w-2xl mx-auto';
@@ -35,7 +44,7 @@ export function Hero({ heading, subheading, cta, backgroundImage, slides, varian
       <div className={`absolute inset-0 ${bg ? 'bg-primary/60' : 'bg-primary'}`} />
       <div className={`relative z-10 max-w-3xl mx-auto px-4 ${isCompact ? '' : 'py-24'}`}>
         {isCompact ? (
-          <h2 className={headingClass}>{heading}</h2>
+          <h2 className={headingClass} style={headingStyle}>{heading}</h2>
         ) : (
           <h1 className={headingClass}>{heading}</h1>
         )}
