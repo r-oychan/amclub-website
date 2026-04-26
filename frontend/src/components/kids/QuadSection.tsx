@@ -122,103 +122,105 @@ export function QuadSection() {
 
   return (
     <section ref={sectionRef} className="relative py-20 md:py-28 bg-white overflow-hidden">
-      {/* ── Decoration + Logo Area ───────────────────────────── */}
-      <div className="relative mx-auto w-[320px] h-[320px] md:w-[400px] md:h-[400px] mb-16">
-        {/* Central Quad logo */}
-        <div className="absolute inset-0 flex items-center justify-center z-10">
-          <div className="w-[180px] h-[180px] md:w-[220px] md:h-[220px] rounded-full bg-[#FEB700] flex items-center justify-center shadow-lg overflow-hidden">
-            <img
-              src="/uploads/pages/kids/quad.png"
-              alt="The Quad"
-              className="w-full h-full object-cover"
-            />
+      <div className="relative">
+        {/* ── Decoration + Logo Area (overlays cards) ───────────── */}
+        <div className="pointer-events-none absolute left-1/2 -top-[80px] md:-top-[110px] z-20 w-[320px] h-[320px] md:w-[400px] md:h-[400px] -translate-x-1/2">
+          {/* Central Quad logo */}
+          <div className="absolute inset-0 flex items-center justify-center z-10">
+            <div className="w-[180px] h-[180px] md:w-[220px] md:h-[220px] rounded-full bg-[#FEB700] flex items-center justify-center shadow-lg overflow-hidden">
+              <img
+                src="/uploads/pages/kids/quad.png"
+                alt="The Quad"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
+
+          {/* SVG Decorations — each transitions rotation on visibility */}
+          {/* Top-right: teal swirl */}
+          <div
+            className="absolute top-[5%] right-[2%] w-[60px] md:w-[80px] transition-all duration-1000 ease-out"
+            style={{
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? 'rotate(0deg)' : 'rotate(-25deg)',
+              transitionDelay: '0ms',
+            }}
+          >
+            <TealSwirl />
+          </div>
+
+          {/* Bottom-left: teal swirl flipped */}
+          <div
+            className="absolute bottom-[8%] left-[0%] w-[55px] md:w-[72px] transition-all duration-1000 ease-out"
+            style={{
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? 'rotate(-120deg)' : 'rotate(-145deg)',
+              transitionDelay: '100ms',
+            }}
+          >
+            <TealSwirlFlipped />
+          </div>
+
+          {/* Top-left: coral zigzag */}
+          <div
+            className="absolute top-[15%] left-[5%] w-[40px] md:w-[52px] transition-all duration-1000 ease-out"
+            style={{
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? 'rotate(0deg)' : 'rotate(30deg)',
+              transitionDelay: '200ms',
+            }}
+          >
+            <CoralZigzag />
+          </div>
+
+          {/* Bottom-right: yellow hook */}
+          <div
+            className="absolute bottom-[18%] right-[5%] w-[50px] md:w-[65px] transition-all duration-1000 ease-out"
+            style={{
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? 'rotate(0deg)' : 'rotate(-20deg)',
+              transitionDelay: '150ms',
+            }}
+          >
+            <YellowHook />
+          </div>
+
+          {/* Left-middle: coral teardrop */}
+          <div
+            className="absolute top-[40%] left-[-8%] w-[38px] md:w-[48px] transition-all duration-1000 ease-out"
+            style={{
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? 'rotate(-90deg)' : 'rotate(-115deg)',
+              transitionDelay: '250ms',
+            }}
+          >
+            <CoralTeardrop />
+          </div>
+
+          {/* Right-middle: purple pill */}
+          <div
+            className="absolute top-[55%] right-[-2%] w-[18px] md:w-[24px] transition-all duration-1000 ease-out"
+            style={{
+              opacity: isVisible ? 1 : 0,
+              transform: isVisible ? 'rotate(110deg)' : 'rotate(85deg)',
+              transitionDelay: '300ms',
+            }}
+          >
+            <PurplePill />
           </div>
         </div>
 
-        {/* SVG Decorations — each transitions rotation on visibility */}
-        {/* Top-right: teal swirl */}
+        {/* ── Three Quad Venue Cards ────────────────────────────── */}
         <div
-          className="absolute top-[5%] right-[2%] w-[60px] md:w-[80px] transition-all duration-1000 ease-out"
+          className="relative z-10 pt-[140px] md:pt-[170px] transition-all duration-700 ease-out"
           style={{
             opacity: isVisible ? 1 : 0,
-            transform: isVisible ? 'rotate(0deg)' : 'rotate(-25deg)',
-            transitionDelay: '0ms',
+            transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
+            transitionDelay: '400ms',
           }}
         >
-          <TealSwirl />
+          <ThreeColGrid items={QUAD_VENUES} variant="left" />
         </div>
-
-        {/* Bottom-left: teal swirl flipped */}
-        <div
-          className="absolute bottom-[8%] left-[0%] w-[55px] md:w-[72px] transition-all duration-1000 ease-out"
-          style={{
-            opacity: isVisible ? 1 : 0,
-            transform: isVisible ? 'rotate(-120deg)' : 'rotate(-145deg)',
-            transitionDelay: '100ms',
-          }}
-        >
-          <TealSwirlFlipped />
-        </div>
-
-        {/* Top-left: coral zigzag */}
-        <div
-          className="absolute top-[15%] left-[5%] w-[40px] md:w-[52px] transition-all duration-1000 ease-out"
-          style={{
-            opacity: isVisible ? 1 : 0,
-            transform: isVisible ? 'rotate(0deg)' : 'rotate(30deg)',
-            transitionDelay: '200ms',
-          }}
-        >
-          <CoralZigzag />
-        </div>
-
-        {/* Bottom-right: yellow hook */}
-        <div
-          className="absolute bottom-[18%] right-[5%] w-[50px] md:w-[65px] transition-all duration-1000 ease-out"
-          style={{
-            opacity: isVisible ? 1 : 0,
-            transform: isVisible ? 'rotate(0deg)' : 'rotate(-20deg)',
-            transitionDelay: '150ms',
-          }}
-        >
-          <YellowHook />
-        </div>
-
-        {/* Left-middle: coral teardrop */}
-        <div
-          className="absolute top-[40%] left-[-8%] w-[38px] md:w-[48px] transition-all duration-1000 ease-out"
-          style={{
-            opacity: isVisible ? 1 : 0,
-            transform: isVisible ? 'rotate(-90deg)' : 'rotate(-115deg)',
-            transitionDelay: '250ms',
-          }}
-        >
-          <CoralTeardrop />
-        </div>
-
-        {/* Right-middle: purple pill */}
-        <div
-          className="absolute top-[55%] right-[-2%] w-[18px] md:w-[24px] transition-all duration-1000 ease-out"
-          style={{
-            opacity: isVisible ? 1 : 0,
-            transform: isVisible ? 'rotate(110deg)' : 'rotate(85deg)',
-            transitionDelay: '300ms',
-          }}
-        >
-          <PurplePill />
-        </div>
-      </div>
-
-      {/* ── Three Quad Venue Cards ────────────────────────────── */}
-      <div
-        className="transition-all duration-700 ease-out"
-        style={{
-          opacity: isVisible ? 1 : 0,
-          transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
-          transitionDelay: '400ms',
-        }}
-      >
-        <ThreeColGrid items={QUAD_VENUES} variant="left" />
       </div>
     </section>
   );
