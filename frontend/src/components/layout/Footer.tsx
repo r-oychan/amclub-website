@@ -123,7 +123,7 @@ function FooterColumn({
 }) {
   return (
     <div>
-      <h3 className={HEADING_CLASSES}>{heading}</h3>
+      <h3 className={HEADING_CLASSES} style={{ fontFamily: 'var(--font-body)' }}>{heading}</h3>
       <ul className="space-y-4">
         {links.map((link) => (
           <li key={link.label}>
