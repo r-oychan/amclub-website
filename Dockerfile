@@ -41,6 +41,7 @@ COPY --from=frontend-builder /build/dist /app/frontend
 WORKDIR /app/cms
 COPY --from=cms-builder /build/node_modules ./node_modules
 COPY --from=cms-builder /build/dist ./dist
+COPY --from=cms-builder /build/build ./build
 COPY --from=cms-builder /build/package.json ./
 COPY --from=cms-builder /build/dist/config ./config
 COPY --from=cms-builder /build/dist/src ./src
