@@ -13,7 +13,7 @@ export function Hero({ heading, subheading, cta, backgroundImage, slides, varian
   const bg = slides && slides.length === 1 ? slides[0].backgroundImage : backgroundImage;
 
   const headingClass = isCompact
-    ? 'font-heading italic font-light text-[2rem] sm:text-[2.2rem] md:text-[2.4rem] leading-[1.1] tracking-[-0.03em]'
+    ? 'heading-h2-serif text-white !text-[2rem] sm:!text-[2.2rem] md:!text-[2.4rem]'
     : 'font-heading text-4xl sm:text-5xl md:text-6xl font-bold mb-6 italic';
   const subClass = isCompact
     ? 'font-body text-[15px] md:text-[17.6px] font-light leading-[1.4] text-white/85 mt-3 max-w-2xl mx-auto'
