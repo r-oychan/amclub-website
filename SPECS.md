@@ -137,6 +137,7 @@ All page-typed entries use a `content` **dynamiczone** (block-based), populated 
 | Effect | Implementation | Used In |
 |---|---|---|
 | Scroll fade-in | `useScrollFadeIn` hook (IntersectionObserver + CSS transition) | Block sections |
+| Scroll slide-in (overlay) | `useScrollFadeIn` + Tailwind `translate-x-12`/`-translate-x-12` | `OverlaySection.tsx` (image + panel slide toward center from opposite sides on scroll) |
 | Nav transitions | CSS `transition` classes | Header mobile menu |
 | Hero carousel | CSS / JS interval (no library) | `HeroCarousel.tsx` |
 

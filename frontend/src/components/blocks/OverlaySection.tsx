@@ -1,5 +1,6 @@
 import type { ReactNode, CSSProperties } from 'react';
 import { ArrowLink, BorderedArrowLink } from '../shared/ArrowLink';
+import { useScrollFadeIn } from '../../hooks/useScrollFadeIn';
 
 export interface OverlaySectionProps {
   /** Horizontal position of the text panel */
@@ -42,6 +43,26 @@ export function OverlaySection({
   const vAlign = textVerticalAlign ?? (isLeft ? 'end' : 'center');
   const isDark = textTheme === 'light';
   const textColorClass = isDark ? 'text-white' : 'text-text-dark';
+
+  // Scroll-triggered slide + fade. Image and panel both slide in toward
+  // center from their own outer side; panel trails the image slightly.
+  const { ref: enterRef, isVisible } = useScrollFadeIn({ threshold: 0.15, replay: false });
+  // Image is on the side opposite the text panel.
+  const imgFadeClass = isLeft
+    ? `transition-all duration-700 ease-out ${
+        isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
+      }`
+    : `transition-all duration-700 ease-out ${
+        isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
+      }`;
+  // Text panel is on the side named by textPosition.
+  const panelFadeClass = isLeft
+    ? `transition-all duration-700 ease-out delay-150 ${
+        isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-12'
+      }`
+    : `transition-all duration-700 ease-out delay-150 ${
+        isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-12'
+      }`;
 
   const bgStyle: CSSProperties = textBgImage
     ? {
@@ -117,10 +138,10 @@ export function OverlaySection({
   if (vAlign === 'center') {
     return (
       <section className="py-6 md:py-10">
-        <div className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div ref={enterRef} className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-12">
             <div
-              className={`md:row-start-1 ${
+              className={`md:row-start-1 ${imgFadeClass} ${
                 isLeft
                   ? 'md:col-start-4 md:col-end-13'
                   : 'md:col-start-1 md:col-end-10'
@@ -133,7 +154,7 @@ export function OverlaySection({
               />
             </div>
             <div
-              className={`relative z-10 -mt-8 mx-4 md:mx-0 md:mt-0 md:row-start-1 md:self-center ${
+              className={`relative z-10 -mt-8 mx-4 md:mx-0 md:mt-0 md:row-start-1 md:self-center ${panelFadeClass} ${
                 isLeft
                   ? 'md:col-start-1 md:col-end-6'
                   : 'md:col-start-8 md:col-end-13'
@@ -151,8 +172,8 @@ export function OverlaySection({
   if (vAlign === 'end') {
     return (
       <section className="py-6 md:py-10">
-        <div className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className={imgOffset}>
+        <div ref={enterRef} className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className={`${imgOffset} ${imgFadeClass}`}>
             <img
               src={image}
               alt={imageAlt}
@@ -160,7 +181,7 @@ export function OverlaySection({
             />
           </div>
           <div
-            className={`relative z-10 -mt-8 mx-4 md:mx-0 md:-mt-52 lg:-mt-64 ${txtCol}`}
+            className={`relative z-10 -mt-8 mx-4 md:mx-0 md:-mt-52 lg:-mt-64 ${txtCol} ${panelFadeClass}`}
           >
             {textPanel}
           </div>
@@ -172,14 +193,17 @@ export function OverlaySection({
   /* ── Start: text first, image overlaps from below ──────── */
   return (
     <section className="py-6 md:py-10">
-      <div className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:block">
+      <div
+        ref={enterRef}
+        className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:block"
+      >
         <div
-          className={`order-2 md:order-none relative z-10 -mt-8 mx-4 md:mx-0 md:mt-0 ${txtCol}`}
+          className={`order-2 md:order-none relative z-10 -mt-8 mx-4 md:mx-0 md:mt-0 ${txtCol} ${panelFadeClass}`}
         >
           {textPanel}
         </div>
         <div
-          className={`order-1 md:order-none ${imgOffset} md:-mt-40 lg:-mt-48`}
+          className={`order-1 md:order-none ${imgOffset} md:-mt-40 lg:-mt-48 ${imgFadeClass}`}
         >
           <img
             src={image}
