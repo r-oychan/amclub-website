@@ -7,22 +7,24 @@
 
 ## Pages
 
-| Route | Page Component | Strapi Type | Content Type Name |
-|---|---|---|---|
-| `/home` | `HomePage.tsx` | singleType | `home-page` |
-| `/about` | `AboutPage.tsx` | singleType | `about-page` |
-| `/dining` | `DiningPage.tsx` | singleType | `dining-page` |
-| `/fitness` | `FitnessPage.tsx` | singleType | `fitness-page` |
-| `/kids` | `KidsPage.tsx` | singleType | `kids-page` |
-| `/event-spaces` | `EventSpacesPage.tsx` | singleType | `event-spaces-page` |
-| `/membership` | `MembershipPage.tsx` | singleType | `membership-page` |
-| `/whats-on` | `WhatsOnPage.tsx` | singleType | `whats-on-page` |
-| `/home-sub/news` | `NewsPage.tsx` | — | static list (Club News) |
-| `/home-sub/gallery` | `GalleryPage.tsx` | — | static list (event albums) |
-| `/home-sub/contact-us` | `ContactUsPage.tsx` | — | static (`data/contactUs.ts`) — Map + Getting Here + Outlet Operating Hours tabs |
-| `/:section/:slug` | `VenueDetailPage.tsx` | collection | `restaurant` / `venue` / `facility` |
+| Route | Page Component | Strapi Type | Content Type Name | CMS Wired |
+|---|---|---|---|---|
+| `/home` | `HomePage.tsx` | singleType | `home-page` | ❌ |
+| `/about` | `AboutPage.tsx` | singleType | `about-page` | ❌ |
+| `/dining` | `DiningPage.tsx` | singleType | `dining-page` | ❌ |
+| `/fitness` | `FitnessPage.tsx` | singleType | `fitness-page` | ❌ |
+| `/kids` | `KidsPage.tsx` | singleType | `kids-page` | ❌ |
+| `/event-spaces` | `EventSpacesPage.tsx` | singleType | `event-spaces-page` | ❌ |
+| `/membership` | `MembershipPage.tsx` | singleType | `membership-page` | ❌ |
+| `/whats-on` | `WhatsOnPage.tsx` | singleType | `whats-on-page` | ❌ |
+| `/home-sub/news` | `NewsPage.tsx` | — | static list (Club News) | ❌ |
+| `/home-sub/gallery` | `GalleryPage.tsx` | — | static list (event albums) | ❌ |
+| `/home-sub/contact-us` | `ContactUsPage.tsx` | — | static (`data/contactUs.ts`) — Map + Getting Here + Outlet Operating Hours tabs | ❌ |
+| `/:section/:slug` | `VenueDetailPage.tsx` | collection | `restaurant` / `venue` / `facility` | ✅ |
 
-All pages use a `content` **dynamiczone** (block-based), populated by Strapi block components listed below.
+> **CMS Wired** = page meets all four conditions in CLAUDE.md → "Workflow: CMS Wiring → Definition of Done". Flip ❌ → ✅ only after the deployed URL renders the deployed Strapi entry. Header nav (`useHeaderData`) is also wired, though it is not a page.
+
+All page-typed entries use a `content` **dynamiczone** (block-based), populated by Strapi block components listed below.
 
 ---
 
@@ -62,6 +64,14 @@ All pages use a `content` **dynamiczone** (block-based), populated by Strapi blo
 | `MapGettingHere.tsx` | `data/contactUs.ts` `contactInfo` | Embedded Google Maps + Address / Operating Hours / Contact Details |
 | `OutletOperatingHours.tsx` | `data/contactUs.ts` `outletGroups` | Pill tabs (5 categories) + masonry grid of cards. Each card has name + scheduled blocks (with optional `subtitle` like "Lunch"/"Dinner"). |
 | `TalkToUsBanner.tsx` | static | Mint-to-navy radial-gradient CTA banner |
+
+### Event Spaces Page Components
+
+| React Component | Source | Notes |
+|---|---|---|
+| `PrivateEventPackages.tsx` | `EventSpacesPage` data | 3-up package cards (Wedding / Corporate / Parties): cream tile, image top, eyebrow lists, navy text-link CTA. Centered "Make an Enquiry" CTA above grid. |
+| `DistinctiveEventSpaces.tsx` | `EventSpacesPage` data | Zigzag rows (Galbraith / Thinkspace / Bowling / Quad). Image ~66% width, navy panel overlapping the opposite corner; stacks vertically below `lg`. |
+| `OffsiteCateringServices.tsx` | `EventSpacesPage` data | Heading + intro on cream, full-bleed navy band with 3 pillar cards (Service Styles / Culinary / Dietary), then Catering2Go sub-banner with white pill `ORDER NOW`. |
 
 ---
 
