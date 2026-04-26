@@ -1,4 +1,5 @@
-import { Link } from 'react-router';
+import { OverlaySection } from '../blocks/OverlaySection';
+import { ArrowLink } from '../shared/ArrowLink';
 import { useScrollFadeIn } from '../../hooks/useScrollFadeIn';
 
 export interface VenueRow {
@@ -7,26 +8,44 @@ export interface VenueRow {
   description: string;
   image: string;
   cta: { label: string; href?: string };
+  /** Optional background image for the text panel (overrides panelBgColor for this row). */
+  panelBgImage?: string;
 }
 
 export function DistinctiveEventSpaces({
   heading = 'Distinctive Event Spaces',
   subheading = 'Four curated venues, each with a distinct character, suited for everything from grand celebrations to smaller, intimate events.',
   items,
+  panelBgColor = '#001E62',
+  panelTheme = 'light',
 }: {
   heading?: string;
   subheading?: string;
   items: VenueRow[];
+  panelBgColor?: string;
+  panelTheme?: 'light' | 'dark';
 }) {
   return (
-    <section className="bg-bg pb-16 md:pb-24">
+    <section className="bg-bg pb-8 md:pb-12">
       <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8">
         <SectionTitle heading={heading} subheading={subheading} />
-        <div className="space-y-12 lg:space-y-20">
-          {items.map((row, i) => (
-            <VenueZigzagRow key={row.name} row={row} reverse={i % 2 === 1} />
-          ))}
-        </div>
+      </div>
+
+      <div className="space-y-2 md:space-y-4">
+        {items.map((row, i) => (
+          <OverlaySection
+            key={row.name}
+            image={row.image}
+            imageAlt={row.name}
+            textPosition={i % 2 === 0 ? 'right' : 'left'}
+            textVerticalAlign="center"
+            textBgColor={panelBgColor}
+            textBgImage={row.panelBgImage}
+            textTheme={panelTheme}
+          >
+            <VenuePanelContent row={row} dark={panelTheme === 'light'} />
+          </OverlaySection>
+        ))}
       </div>
     </section>
   );
@@ -52,81 +71,30 @@ function SectionTitle({ heading, subheading }: { heading: string; subheading?: s
   );
 }
 
-function VenueZigzagRow({ row, reverse }: { row: VenueRow; reverse: boolean }) {
-  const { ref, isVisible } = useScrollFadeIn({ threshold: 0.1, replay: false });
-  const fade = isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8';
+export function VenuePanelContent({ row, dark = true }: { row: VenueRow; dark?: boolean }) {
+  const titleClass = dark
+    ? 'font-heading italic font-light text-[1.66rem] leading-[1.1] text-white mb-5'
+    : 'font-heading italic font-light text-[1.66rem] leading-[1.1] text-primary mb-5';
+  const itemClass = dark
+    ? 'flex items-start gap-2.5 font-body text-[12.8px] font-bold uppercase tracking-[0.04em] text-white'
+    : 'flex items-start gap-2.5 font-body text-[12.8px] font-bold uppercase tracking-[0.04em] text-text-dark';
+  const descClass = dark
+    ? 'font-body text-[15px] font-light leading-[1.5] text-white/77 mb-6'
+    : 'font-body text-[15px] font-light leading-[1.5] text-text-dark/80 mb-6';
 
-  // Mobile/tablet: stack image then panel.
-  // Desktop (lg+): image takes ~67% width on one side; navy panel overlaps the opposite corner.
-  return (
-    <div ref={ref} className={`transition-all duration-700 ease-out ${fade}`}>
-      {/* Mobile/tablet stacked layout */}
-      <div className="lg:hidden">
-        <div className="relative w-full aspect-[3/2] overflow-hidden">
-          <img
-            src={row.image}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover"
-            loading="lazy"
-          />
-        </div>
-        <div className="bg-primary text-white px-7 py-8 sm:px-10 sm:py-10">
-          <VenuePanelContent row={row} />
-        </div>
-      </div>
-
-      {/* Desktop overlapping zigzag layout */}
-      <div className="hidden lg:block relative" style={{ minHeight: 580 }}>
-        {/* Image side */}
-        <div
-          className={`absolute top-0 ${reverse ? 'right-0' : 'left-0'} w-[66%]`}
-        >
-          <div className="relative w-full aspect-[3/2] overflow-hidden">
-            <img
-              src={row.image}
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover"
-              loading="lazy"
-            />
-          </div>
-        </div>
-
-        {/* Navy panel overlapping the opposite corner, vertically centered */}
-        <div
-          className={`absolute top-1/2 -translate-y-1/2 ${
-            reverse ? 'left-0' : 'right-0'
-          } w-[34%] max-w-[461px]`}
-        >
-          <div className="bg-primary text-white p-[60px] shadow-[0_30px_60px_-30px_rgba(0,30,98,0.45)]">
-            <VenuePanelContent row={row} />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function VenuePanelContent({ row }: { row: VenueRow }) {
   return (
     <>
-      <h3 className="font-heading italic font-light text-[1.66rem] leading-[1.1] text-white mb-5">
-        {row.name}
-      </h3>
+      <h3 className={titleClass}>{row.name}</h3>
       <ul className="space-y-2 mb-5">
         {row.capacity.map((c) => (
-          <li
-            key={c}
-            className="flex items-start gap-2.5 font-body text-[12.8px] font-bold uppercase tracking-[0.04em] text-white"
-          >
+          <li key={c} className={itemClass}>
             <DocIcon className="mt-0.5 shrink-0 text-secondary" />
             <span>{c}</span>
           </li>
         ))}
       </ul>
-      <p className="font-body text-[15px] font-light leading-[1.5] text-white/77 mb-6">
-        {row.description}
-      </p>
-      <ArrowLinkLight label={row.cta.label} href={row.cta.href ?? '#'} />
+      <p className={descClass}>{row.description}</p>
+      <ArrowLink label={row.cta.label} href={row.cta.href ?? '#'} dark={dark} />
     </>
   );
 }
@@ -150,42 +118,5 @@ function DocIcon({ className = '' }: { className?: string }) {
       />
       <path d="M9 1.5V4.5h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
     </svg>
-  );
-}
-
-function ArrowLinkLight({ label, href }: { label: string; href: string }) {
-  const className =
-    'group inline-flex items-center gap-2 font-body text-[14.4px] font-bold uppercase tracking-[0.04em] text-white hover:text-secondary transition-colors duration-200';
-  const icon = (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 14 14"
-      fill="none"
-      className="shrink-0 transition-transform duration-200 group-hover:translate-x-1"
-      aria-hidden="true"
-    >
-      <path
-        d="M1 13L13 1M13 1H3M13 1V11"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-  if (href.startsWith('http')) {
-    return (
-      <a className={className} href={href} target="_blank" rel="noopener noreferrer">
-        {label}
-        {icon}
-      </a>
-    );
-  }
-  return (
-    <Link className={className} to={href}>
-      {label}
-      {icon}
-    </Link>
   );
 }

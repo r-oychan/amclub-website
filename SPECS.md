@@ -70,7 +70,7 @@ All page-typed entries use a `content` **dynamiczone** (block-based), populated 
 | React Component | Source | Notes |
 |---|---|---|
 | `PrivateEventPackages.tsx` | `EventSpacesPage` data | 3-up package cards (Wedding / Corporate / Parties): cream tile, image top, eyebrow lists, navy text-link CTA. Centered "Make an Enquiry" CTA above grid. |
-| `DistinctiveEventSpaces.tsx` | `EventSpacesPage` data | Zigzag rows (Galbraith / Thinkspace / Bowling / Quad). Image ~66% width, navy panel overlapping the opposite corner; stacks vertically below `lg`. |
+| `DistinctiveEventSpaces.tsx` | `EventSpacesPage` data | Zigzag rows (Galbraith / Thinkspace / Bowling / Quad). Renders each row through the shared `OverlaySection` block (image + overlapping text panel). Exports `VenuePanelContent` so other pages can reuse the same panel layout. Accepts optional `panelBgImage` per row for image-backed panels. |
 | `OffsiteCateringServices.tsx` | `EventSpacesPage` data | Heading + intro on cream, full-bleed navy band with 3 pillar cards (Service Styles / Culinary / Dietary), then Catering2Go sub-banner with white pill `ORDER NOW`. |
 
 ---
