@@ -21,6 +21,10 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::testimonial.testimonial"
+    },
+    "dark": {
+      "type": "boolean",
+      "default": true
     }
   }
 }

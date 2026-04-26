@@ -21,6 +21,10 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::faq-item.faq-item"
+    },
+    "dark": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

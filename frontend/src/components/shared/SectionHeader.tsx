@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import type { CtaButton } from '../../lib/types';
+import { SectionLabel } from './SectionLabel';
 
 export function SectionHeader({
   label,
@@ -16,20 +17,9 @@ export function SectionHeader({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[minmax(160px,1fr)_3fr] gap-4 lg:gap-8 mb-10 md:mb-14">
-      {/* Left column — section label */}
-      <div className="flex items-start gap-3 pt-2">
-        {label && (
-          <>
-            <div className="w-1 h-5 shrink-0 bg-accent rounded-full" />
-            <span
-              className={`text-[14.4px] font-bold uppercase tracking-[0.04em] ${
-                dark ? 'text-white/70' : 'text-text-dark'
-              }`}
-            >
-              {label}
-            </span>
-          </>
-        )}
+      {/* Left column — section label (top-left) */}
+      <div className="pt-2">
+        {label && <SectionLabel label={label} dark={dark} />}
       </div>
 
       {/* Right column — heading + CTA */}

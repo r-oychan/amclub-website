@@ -1,17 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import type { TestimonialItem, CtaButton } from '../../lib/types';
 import { ArrowLink } from '../shared/ArrowLink';
+import { SectionLabel } from '../shared/SectionLabel';
 
 export function TestimonialSlider({
   label,
   heading,
   items,
   cta,
+  dark = true,
 }: {
   label?: string;
   heading: string;
   items: TestimonialItem[];
   cta?: CtaButton;
+  dark?: boolean;
 }) {
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [canScrollPrev, setCanScrollPrev] = useState(false);
@@ -45,22 +48,24 @@ export function TestimonialSlider({
   };
 
   return (
-    <section className="py-16 md:py-24 bg-primary text-white">
+    <section className={`py-16 md:py-24 ${dark ? 'bg-primary text-white' : 'bg-bg'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section header: label left, heading right, CTA under heading */}
-        <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-4 md:gap-10 mb-10 md:mb-14 items-start">
-          {label && (
-            <p className="font-body text-sm font-bold uppercase tracking-[0.15em] text-accent md:pt-3">
-              {label}
-            </p>
-          )}
+        {/* Section header: label top-left, heading right, CTA under heading */}
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(160px,1fr)_3fr] gap-4 lg:gap-8 mb-10 md:mb-14">
+          <div className="pt-2">
+            {label && <SectionLabel label={label} dark={dark} />}
+          </div>
           <div>
-            <h2 className="font-heading italic font-light text-3xl md:text-5xl leading-[1.1] max-w-3xl">
+            <h2
+              className={`heading-h2-serif max-w-3xl ${
+                dark ? 'text-white' : 'text-primary'
+              }`}
+            >
               {heading}
             </h2>
             {cta?.href && (
               <div className="mt-6">
-                <ArrowLink label={cta.label} href={cta.href} dark isExternal={cta.isExternal} />
+                <ArrowLink label={cta.label} href={cta.href} dark={dark} isExternal={cta.isExternal} />
               </div>
             )}
           </div>

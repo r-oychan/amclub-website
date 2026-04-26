@@ -24,6 +24,10 @@
       "type": "component",
       "repeatable": false,
       "component": "shared.link"
+    },
+    "dark": {
+      "type": "boolean",
+      "default": false
     }
   }
 }
