@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_shared_tab_items",
+  "info": {
+    "displayName": "Tab Item",
+    "icon": "layer",
+    "description": "Single tab with label, link, and image"
+  },
+  "attributes": {
+    "label": {
+      "type": "string",
+      "required": true
+    },
+    "href": {
+      "type": "string"
+    },
+    "isExternal": {
+      "type": "boolean",
+      "default": false
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    }
+  }
+}

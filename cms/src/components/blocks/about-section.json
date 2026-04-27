@@ -1,0 +1,38 @@
+{
+  "collectionName": "components_blocks_about_sections",
+  "info": {
+    "displayName": "About Section",
+    "icon": "information",
+    "description": "Page-anchored about section with stats, fun fact, image collage, and CTA"
+  },
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "heading": {
+      "type": "string",
+      "required": true
+    },
+    "stats": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.stat-item"
+    },
+    "funFactIntro": {
+      "type": "string"
+    },
+    "funFactBody": {
+      "type": "text"
+    },
+    "cta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.link"
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["images"]
+    }
+  }
+}

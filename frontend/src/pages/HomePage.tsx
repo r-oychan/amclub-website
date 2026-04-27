@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { fetchAPI, STRAPI_URL } from '../lib/api';
 import { Hero } from '../components/blocks/Hero';
 import { AboutSection } from '../components/blocks/AboutSection';
 import { CardGrid } from '../components/blocks/CardGrid';
@@ -6,169 +8,266 @@ import { TabsSection } from '../components/blocks/TabsSection';
 import { TestimonialSlider } from '../components/blocks/TestimonialSlider';
 import { FaqAccordion } from '../components/blocks/FaqAccordion';
 
+type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
+type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string };
+type StrapiHeroSlide = {
+  backgroundImage?: StrapiMedia;
+  title?: string;
+  subtitle?: string;
+  titlePosition?: 'bottom-left' | 'bottom-right' | 'middle-left' | 'middle-right';
+  subtitlePosition?: 'bottom-left' | 'bottom-right' | 'middle-left' | 'middle-right';
+  cta?: StrapiLink;
+};
+type StrapiHero = {
+  heading: string;
+  subheading?: string;
+  variant?: 'full' | 'compact';
+  autoPlayInterval?: number;
+  titlePosition?: StrapiHeroSlide['titlePosition'];
+  subtitlePosition?: StrapiHeroSlide['subtitlePosition'];
+  cta?: StrapiLink;
+  backgroundImage?: StrapiMedia;
+  slides?: StrapiHeroSlide[];
+};
+type StrapiAboutSection = {
+  label?: string;
+  heading: string;
+  stats?: { value: string; label: string }[];
+  funFactIntro?: string;
+  funFactBody?: string;
+  cta?: StrapiLink;
+  images?: StrapiMedia[];
+};
+type StrapiEventListing = {
+  label?: string;
+  heading?: string;
+  cta?: StrapiLink;
+  maxItems?: number;
+};
+type StrapiFeatureGrid = {
+  label?: string;
+  heading?: string;
+  cta?: StrapiLink;
+  dark?: boolean;
+  features?: { heading: string; description?: string; image?: StrapiMedia }[];
+};
+type StrapiTabsSection = {
+  label?: string;
+  heading?: string;
+  dark?: boolean;
+  tabs?: { label: string; href?: string; isExternal?: boolean; image?: StrapiMedia }[];
+};
+type StrapiTestimonial = {
+  documentId: string;
+  memberName: string;
+  quote: string;
+  photo?: StrapiMedia;
+  ctaLabel?: string;
+  ctaUrl?: string;
+};
+type StrapiTestimonialSlider = {
+  label?: string;
+  heading?: string;
+  cta?: StrapiLink;
+  dark?: boolean;
+  testimonials?: StrapiTestimonial[];
+};
+type StrapiFaqItem = { documentId: string; question: string };
+type StrapiFaqSection = {
+  label?: string;
+  heading?: string;
+  ctas?: StrapiLink[];
+  dark?: boolean;
+  items?: StrapiFaqItem[];
+};
+
+interface StrapiHomePage {
+  title: string;
+  hero?: StrapiHero;
+  aboutSection?: StrapiAboutSection;
+  events?: StrapiEventListing;
+  services?: StrapiFeatureGrid;
+  experience?: StrapiTabsSection;
+  moments?: StrapiTestimonialSlider;
+  faq?: StrapiFaqSection;
+}
+
+interface StrapiEvent {
+  documentId: string;
+  title: string;
+  date: string;
+  image?: StrapiMedia;
+  category?: { name: string } | null;
+}
+
+const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
+  if (!m?.url) return undefined;
+  if (/^https?:/i.test(m.url)) return m.url;
+  return `${STRAPI_URL}${m.url}`;
+};
+
+const link = (l?: StrapiLink) =>
+  l ? { label: l.label, href: l.href ?? '#', isExternal: l.isExternal } : undefined;
+
+const formatEventDate = (iso: string): string => {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleString('en-US', { month: 'short', day: 'numeric' }).toUpperCase();
+};
+
 export default function HomePage() {
+  const [data, setData] = useState<StrapiHomePage | null>(null);
+  const [events, setEvents] = useState<StrapiEvent[] | null>(null);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const [home, evs] = await Promise.all([
+        fetchAPI<StrapiHomePage>('/home-page'),
+        fetchAPI<StrapiEvent[]>('/events', {
+          'filters[featured][$eq]': 'true',
+          'pagination[limit]': '9',
+          'sort[0]': 'date:asc',
+          'populate[image]': 'true',
+          'populate[category]': 'true',
+        }),
+      ]);
+      if (cancelled) return;
+      setData(home);
+      setEvents(evs ?? []);
+      setLoaded(true);
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  if (!loaded) {
+    return <div className="min-h-screen flex items-center justify-center text-text-dark/50">Loading…</div>;
+  }
+  if (!data) {
+    return <div className="min-h-screen flex items-center justify-center text-text-dark/70">Home page content unavailable.</div>;
+  }
+
+  const hero = data.hero;
+  const heroSlides = (hero?.slides ?? []).map((s) => ({
+    backgroundImage: mediaUrl(s.backgroundImage) ?? '',
+    title: s.title,
+    subtitle: s.subtitle,
+    titlePosition: s.titlePosition,
+    subtitlePosition: s.subtitlePosition,
+    cta: link(s.cta),
+  }));
+
+  const about = data.aboutSection;
+  const aboutImages = (about?.images ?? []).map((m) => mediaUrl(m) ?? '').filter(Boolean);
+
+  const evs = events ?? [];
+  const eventCards = evs.map((e) => ({
+    category: e.category?.name,
+    title: e.title,
+    date: formatEventDate(e.date),
+    image: mediaUrl(e.image),
+  }));
+
+  const services = data.services;
+  const serviceItems = (services?.features ?? []).map((f) => ({
+    heading: f.heading,
+    description: f.description,
+    image: mediaUrl(f.image),
+  }));
+
+  const exp = data.experience;
+  const expItems = (exp?.tabs ?? []).map((t) => ({
+    label: t.label,
+    href: t.href,
+    image: mediaUrl(t.image),
+  }));
+
+  const moments = data.moments;
+  const momentItems = (moments?.testimonials ?? []).map((t) => ({
+    name: t.memberName,
+    quote: t.quote,
+    cta: t.ctaLabel,
+    image: mediaUrl(t.photo),
+    href: t.ctaUrl,
+  }));
+
+  const faq = data.faq;
+  const faqItems = (faq?.items ?? []).map((i) => ({ question: i.question, answer: '' }));
+  const faqCtas = (faq?.ctas ?? []).map((c) => ({ label: c.label, href: c.href ?? '#' }));
+
   return (
     <>
-      <Hero
-        heading="A Home Away From Home"
-        subheading="Thrive in a vibrant community with a unique American and Canadian culture."
-        cta={{ label: 'Request for a Club Tour', href: '#' }}
-        variant="full"
-        titlePosition="bottom-left"
-        subtitlePosition="bottom-right"
-        slides={[
-          {
-            backgroundImage: 'https://framerusercontent.com/images/cEQ0tbJZ9iABZ7aowxb1DaK4U.jpg',
-            title: 'A Home Away From Home',
-            subtitle: 'Thrive in a vibrant community with a unique American and Canadian culture.',
-            cta: { label: 'Request for a Club Tour', href: '#' },
-          },
-          {
-            backgroundImage: 'https://framerusercontent.com/images/ALiDWPH3U3VnmiEzcoEet6lPIk.jpeg',
-            title: 'Dine. Drink. Unwind.',
-            subtitle: 'From casual bites to fine dining, discover our world-class restaurants and bars.',
-            cta: { label: 'Explore Dining', href: '/dining' },
-          },
-          {
-            backgroundImage: 'https://framerusercontent.com/images/FfQ1mhhWwbjsMQKiahq8SzaqLs.jpeg',
-            title: 'Stay Active, Stay Healthy',
-            subtitle: 'State-of-the-art fitness facilities, pools, and wellness programs for the whole family.',
-            cta: { label: 'Discover Fitness', href: '/fitness' },
-          },
-        ]}
-      />
+      {hero && (
+        <Hero
+          heading={hero.heading}
+          subheading={hero.subheading}
+          cta={link(hero.cta)}
+          backgroundImage={mediaUrl(hero.backgroundImage)}
+          variant={hero.variant ?? 'full'}
+          autoPlayInterval={hero.autoPlayInterval}
+          titlePosition={hero.titlePosition}
+          subtitlePosition={hero.subtitlePosition}
+          slides={heroSlides.length ? heroSlides : undefined}
+        />
+      )}
 
-      <AboutSection
-        label="About Us"
-        heading="Blending American Traditions with Singaporean Charm"
-        stats={[
-          { value: '11,000+', label: 'Members' },
-          { value: '90+', label: 'Nationalities' },
-          { value: '77+', label: 'Years of Heritage' },
-        ]}
-        funFact="Did You Know? The idea of forming a social club for Americans was first mooted in 1932?"
-        cta={{ label: 'Discover Our Story', href: '/about' }}
-        images={[
-          'https://framerusercontent.com/images/RjIIikrBuOoQmOLuWXcoR6GFkOE.jpeg',
-          'https://framerusercontent.com/images/ToMfql1ukRrZhj1CjpLEOHmCb4.jpeg',
-          'https://framerusercontent.com/images/JkrDtEpbLxJMTiPrF9mJYWb3YQ.jpeg',
-          'https://framerusercontent.com/images/PlDsZH1QChc2aIXh0p9duml4TC0.jpeg',
-        ]}
-      />
+      {about && (
+        <AboutSection
+          label={about.label}
+          heading={about.heading}
+          stats={about.stats}
+          funFact={about.funFactIntro && about.funFactBody ? `${about.funFactIntro} ${about.funFactBody}` : about.funFactBody}
+          cta={link(about.cta)}
+          images={aboutImages}
+        />
+      )}
 
-      <CardGrid
-        label="Events"
-        heading="From memorable moments to unforgettable evenings - Your club calendar awaits"
-        cta={{ label: 'View Featured Club Events', href: '/whats-on' }}
-        variant="event"
-        items={[
-          { category: 'Dining', title: 'Nostalgic Flavors of Singapore', date: 'DEC 4', image: 'https://framerusercontent.com/images/RjIIikrBuOoQmOLuWXcoR6GFkOE.jpeg' },
-          { category: 'Fitness & Wellness', title: 'Pedal to Victory! A Spin Bike Time Challenge', date: 'NOV 5', image: 'https://framerusercontent.com/images/ToMfql1ukRrZhj1CjpLEOHmCb4.jpeg' },
-          { category: 'Kids', title: 'Scarily Fun Friday Nights for the Kids!', date: 'OCT 19', image: 'https://framerusercontent.com/images/JkrDtEpbLxJMTiPrF9mJYWb3YQ.jpeg' },
-          { category: 'Dining', title: "Smokin' Sundays at Grillhouse", date: 'OCT 11', image: 'https://framerusercontent.com/images/PlDsZH1QChc2aIXh0p9duml4TC0.jpeg' },
-          { category: 'Dining', title: 'Kanonkop Wine Dinner', date: 'OCT 22', image: 'https://framerusercontent.com/images/0YNsQiaf0KR8LDUah35vR09jfwc.jpg' },
-          { category: 'Dining', title: 'Get Your Green Fix Salad Bar Buffet', date: 'OCT 30', image: 'https://framerusercontent.com/images/rNT1Hh6hiX6cJHoJGmlFogBGWmU.jpg' },
-          { category: 'Kids', title: 'National Football League 2025 Live Screening', date: 'DEC 20', image: 'https://framerusercontent.com/images/MlqKdegxMYfk5tpETtAaDIaV2w.jpg' },
-          { category: 'Member Engagement', title: 'Classic & Contemporary: A Cocktail Masterclass Series', date: 'NOV 7', image: 'https://framerusercontent.com/images/A9M0VHDW2FE6UoaFatzINqucGp0.jpg' },
-          { category: 'Fitness & Wellness', title: 'Adult Team Tennis Challenge 2025', date: 'DEC 30', image: 'https://framerusercontent.com/images/FZCLsivFTgvRBOrZD71tlU6pVRc.jpg' },
-        ]}
-      />
+      {data.events && eventCards.length > 0 && (
+        <CardGrid
+          label={data.events.label}
+          heading={data.events.heading}
+          cta={link(data.events.cta)}
+          variant="event"
+          items={eventCards}
+        />
+      )}
 
-      <FeatureGrid
-        label="Services"
-        heading="From shared experiences to lasting bonds - it all starts here"
-        cta={{ label: 'Explore Membership', href: '/membership' }}
-        dark
-        items={[
-          {
-            heading: 'The Perfect Club Experience for the Whole Family',
-            description: "From pool time to playtime, dining to downtime \u2014 there's something for everyone in the family to enjoy.",
-            image: 'https://framerusercontent.com/images/ALiDWPH3U3VnmiEzcoEet6lPIk.jpeg',
-          },
-          {
-            heading: 'Business Done Right. Leisure Done Better.',
-            description: 'Connect, meet, or recharge \u2014 the Club makes balancing work and leisure effortless.',
-            image: 'https://framerusercontent.com/images/FfQ1mhhWwbjsMQKiahq8SzaqLs.jpeg',
-          },
-          {
-            heading: 'Everyday Concierge, the Club Way',
-            description: 'A welcoming smile, a helping hand. Enjoy seamless support with a personal touch.',
-            image: 'https://framerusercontent.com/images/DytJIjZnqDf7hE6r7WyfxUrNjU.jpeg',
-          },
-        ]}
-      />
+      {services && serviceItems.length > 0 && (
+        <FeatureGrid
+          label={services.label}
+          heading={services.heading}
+          cta={link(services.cta)}
+          dark={services.dark}
+          items={serviceItems}
+        />
+      )}
 
-      <TabsSection
-        label="Experience"
-        heading="Dine. Drink. Unwind. All in one unforgettable club."
-        items={[
-          { label: 'Dining & Retail', href: '/dining', image: 'https://framerusercontent.com/images/ALiDWPH3U3VnmiEzcoEet6lPIk.jpeg' },
-          { label: 'Fitness & Wellness', href: '/fitness', image: 'https://framerusercontent.com/images/FfQ1mhhWwbjsMQKiahq8SzaqLs.jpeg' },
-          { label: 'Kids', href: '/kids', image: 'https://framerusercontent.com/images/DytJIjZnqDf7hE6r7WyfxUrNjU.jpeg' },
-        ]}
-      />
+      {exp && expItems.length > 0 && (
+        <TabsSection
+          label={exp.label}
+          heading={exp.heading ?? ''}
+          items={expItems}
+        />
+      )}
 
-      <TestimonialSlider
-        label="Moments"
-        heading="Moments that matter, captured and shared by you"
-        cta={{
-          label: 'Follow Our Socials',
-          href: 'https://www.instagram.com/americanclubsingapore/',
-          isExternal: true,
-        }}
-        items={[
-          {
-            name: 'Ronald Williams',
-            quote: 'Abuzz with Independence Day cheer on July 1',
-            cta: 'Watch More',
-            image: 'https://framerusercontent.com/images/MlqKdegxMYfk5tpETtAaDIaV2w.jpg',
-            href: 'https://www.instagram.com/americanclubsingapore/',
-          },
-          {
-            name: 'Sarah Grey',
-            quote: 'A multitude of culinary experience for your tastebuds',
-            cta: 'Watch More',
-            image: 'https://framerusercontent.com/images/rNT1Hh6hiX6cJHoJGmlFogBGWmU.jpg',
-            href: 'https://www.instagram.com/americanclubsingapore/',
-          },
-          {
-            name: 'Matthew Hallen',
-            quote: 'Fantastic evening of glitz, glamor and giving',
-            cta: 'Watch More',
-            image: 'https://framerusercontent.com/images/A9M0VHDW2FE6UoaFatzINqucGp0.jpg',
-            href: 'https://www.instagram.com/americanclubsingapore/',
-          },
-          {
-            name: 'Joseph Gunner',
-            quote: 'Abuzz with Independence Day cheer on July 1',
-            cta: 'Watch More',
-            image: 'https://framerusercontent.com/images/JkrDtEpbLxJMTiPrF9mJYWb3YQ.jpeg',
-            href: 'https://www.instagram.com/americanclubsingapore/',
-          },
-          {
-            name: 'Emma Chen',
-            quote: 'Sunday brunch with the family at the Grillhouse',
-            cta: 'Watch More',
-            image: 'https://framerusercontent.com/images/PlDsZH1QChc2aIXh0p9duml4TC0.jpeg',
-            href: 'https://www.instagram.com/americanclubsingapore/',
-          },
-        ]}
-      />
+      {moments && momentItems.length > 0 && (
+        <TestimonialSlider
+          label={moments.label}
+          heading={moments.heading ?? ''}
+          cta={link(moments.cta)}
+          items={momentItems}
+        />
+      )}
 
-      <FaqAccordion
-        label="FAQ"
-        heading="Your Questions, Answered"
-        ctas={[
-          { label: 'View All FAQ', href: '#' },
-          { label: 'Enquiries', href: '/home-sub/contact-us' },
-        ]}
-        items={[
-          { question: 'What types of membership do you offer?', answer: '' },
-          { question: 'What facilities and services are included?', answer: '' },
-          { question: 'Is membership transferable?', answer: '' },
-          { question: 'Can I upgrade or change my membership type?', answer: '' },
-        ]}
-      />
+      {faq && faqItems.length > 0 && (
+        <FaqAccordion
+          label={faq.label}
+          heading={faq.heading ?? ''}
+          ctas={faqCtas}
+          items={faqItems}
+        />
+      )}
     </>
   );
 }

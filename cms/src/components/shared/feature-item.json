@@ -3,7 +3,7 @@
   "info": {
     "displayName": "Feature Item",
     "icon": "star",
-    "description": "Feature with heading and description"
+    "description": "Feature with heading, description, and image"
   },
   "attributes": {
     "heading": {
@@ -13,7 +13,7 @@
     "description": {
       "type": "text"
     },
-    "icon": {
+    "image": {
       "type": "media",
       "multiple": false,
       "allowedTypes": ["images"]

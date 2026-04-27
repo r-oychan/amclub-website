@@ -15,7 +15,7 @@
     "tabs": {
       "type": "component",
       "repeatable": true,
-      "component": "shared.link"
+      "component": "shared.tab-item"
     },
     "dark": {
       "type": "boolean",

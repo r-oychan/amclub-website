@@ -25,6 +25,16 @@
     },
     "slides": { "type": "component", "repeatable": true, "component": "shared.hero-slide" },
     "variant": { "type": "enumeration", "enum": ["full", "compact"], "default": "full" },
-    "autoPlayInterval": { "type": "integer", "default": 5000 }
+    "autoPlayInterval": { "type": "integer", "default": 5000 },
+    "titlePosition": {
+      "type": "enumeration",
+      "enum": ["bottom-left", "bottom-right", "middle-left", "middle-right"],
+      "default": "bottom-left"
+    },
+    "subtitlePosition": {
+      "type": "enumeration",
+      "enum": ["bottom-left", "bottom-right", "middle-left", "middle-right"],
+      "default": "bottom-right"
+    }
   }
 }

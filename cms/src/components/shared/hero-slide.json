@@ -6,9 +6,19 @@
     "overlayDarken": { "type": "integer", "min": 0, "max": 100, "default": 0 },
     "title": { "type": "string" },
     "titleColor": { "type": "string", "default": "#FFFFFF" },
+    "titlePosition": {
+      "type": "enumeration",
+      "enum": ["bottom-left", "bottom-right", "middle-left", "middle-right"],
+      "default": "bottom-left"
+    },
     "subtitle": { "type": "text" },
     "subtitleColor": { "type": "string", "default": "#FFFFFF" },
     "subtitleLink": { "type": "string" },
+    "subtitlePosition": {
+      "type": "enumeration",
+      "enum": ["bottom-left", "bottom-right", "middle-left", "middle-right"],
+      "default": "bottom-right"
+    },
     "cta": { "type": "component", "repeatable": false, "component": "shared.link" }
   }
 }
