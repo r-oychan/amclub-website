@@ -119,6 +119,7 @@ export default function KidsPage() {
           { heading: 'Dedicated Attention & Supervision' },
           { heading: 'Safe & Secure Environment' },
         ]}
+        centered
       />
 
       <CtaBanner

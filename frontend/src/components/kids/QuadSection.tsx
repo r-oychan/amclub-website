@@ -124,10 +124,10 @@ export function QuadSection() {
     <section ref={sectionRef} className="relative py-20 md:py-28 bg-white overflow-hidden">
       <div className="relative">
         {/* ── Decoration + Logo Area (overlays cards) ───────────── */}
-        <div className="pointer-events-none absolute left-1/2 -top-[65px] z-20 w-[280px] h-[280px] -translate-x-1/2">
+        <div className="pointer-events-none absolute left-1/2 -top-[15px] z-20 w-[280px] h-[280px] -translate-x-1/2">
           {/* Central Quad logo */}
           <div className="absolute inset-0 flex items-center justify-center z-10">
-            <div className="w-[150px] h-[150px] rounded-full bg-[#FEB700] flex items-center justify-center shadow-lg overflow-hidden">
+            <div className="w-[105px] h-[105px] rounded-full bg-[#FEB700] flex items-center justify-center shadow-lg overflow-hidden">
               <img
                 src="/uploads/pages/kids/quad.png"
                 alt="The Quad"
@@ -212,7 +212,7 @@ export function QuadSection() {
 
         {/* ── Three Quad Venue Cards ────────────────────────────── */}
         <div
-          className="relative z-10 pt-[90px] transition-all duration-700 ease-out"
+          className="relative z-10 pt-[140px] transition-all duration-700 ease-out"
           style={{
             opacity: isVisible ? 1 : 0,
             transform: isVisible ? 'translateY(0)' : 'translateY(30px)',

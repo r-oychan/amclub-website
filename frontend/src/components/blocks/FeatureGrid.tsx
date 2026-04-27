@@ -14,6 +14,7 @@ export function FeatureGrid({
   dark = false,
   asideImage,
   asideImagePosition = 'left',
+  centered = false,
 }: {
   label?: string;
   heading?: string;
@@ -26,6 +27,7 @@ export function FeatureGrid({
   dark?: boolean;
   asideImage?: string;
   asideImagePosition?: 'left' | 'right';
+  centered?: boolean;
 }) {
   const aside = asideImage ? (
     <img
@@ -42,10 +44,24 @@ export function FeatureGrid({
         {/* Top accent line */}
         <div className={`h-px ${dark ? 'bg-white/20' : 'bg-secondary/40'} mb-12 md:mb-16`} />
 
-        <SectionHeader label={label} heading={heading} cta={cta} dark={dark} />
+        {centered ? (
+          heading && (
+            <h2
+              className={`heading-h2-serif text-center mb-10 md:mb-14 ${
+                dark ? 'text-white' : 'text-primary'
+              }`}
+            >
+              {heading}
+            </h2>
+          )
+        ) : (
+          <SectionHeader label={label} heading={heading} cta={cta} dark={dark} />
+        )}
 
         {(subheading || body) && (
-          <div className="mb-10 max-w-2xl">
+          <div
+            className={`mb-10 max-w-2xl ${centered ? 'mx-auto text-center' : ''}`}
+          >
             {subheading && (
               <p className={`mb-4 ${dark ? 'text-white/70' : 'text-text-dark/70'}`}>{subheading}</p>
             )}
