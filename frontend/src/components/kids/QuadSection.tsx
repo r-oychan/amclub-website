@@ -124,7 +124,7 @@ export function QuadSection() {
     <section ref={sectionRef} className="relative py-20 md:py-28 bg-white overflow-hidden">
       <div className="relative">
         {/* ── Decoration + Logo Area (overlays cards) ───────────── */}
-        <div className="pointer-events-none absolute left-1/2 -top-[15px] z-20 w-[280px] h-[280px] -translate-x-1/2">
+        <div className="pointer-events-none absolute left-1/2 top-[10px] z-20 w-[200px] h-[200px] -translate-x-1/2">
           {/* Central Quad logo */}
           <div className="absolute inset-0 flex items-center justify-center z-10">
             <div className="w-[105px] h-[105px] rounded-full bg-[#FEB700] flex items-center justify-center shadow-lg overflow-hidden">
@@ -139,7 +139,7 @@ export function QuadSection() {
           {/* SVG Decorations — each transitions rotation on visibility */}
           {/* Top-right: teal swirl */}
           <div
-            className="absolute top-[5%] right-[2%] w-[55px] transition-all duration-1000 ease-out"
+            className="absolute top-[2%] right-[6%] w-[36px] transition-all duration-1000 ease-out"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? 'rotate(0deg)' : 'rotate(-25deg)',
@@ -151,7 +151,7 @@ export function QuadSection() {
 
           {/* Bottom-left: teal swirl flipped */}
           <div
-            className="absolute bottom-[8%] left-[0%] w-[50px] transition-all duration-1000 ease-out"
+            className="absolute bottom-[12%] left-[2%] w-[32px] transition-all duration-1000 ease-out"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? 'rotate(-120deg)' : 'rotate(-145deg)',
@@ -163,7 +163,7 @@ export function QuadSection() {
 
           {/* Top-left: coral zigzag */}
           <div
-            className="absolute top-[15%] left-[5%] w-[36px] transition-all duration-1000 ease-out"
+            className="absolute top-[18%] left-[8%] w-[24px] transition-all duration-1000 ease-out"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? 'rotate(0deg)' : 'rotate(30deg)',
@@ -175,7 +175,7 @@ export function QuadSection() {
 
           {/* Bottom-right: yellow hook */}
           <div
-            className="absolute bottom-[18%] right-[5%] w-[44px] transition-all duration-1000 ease-out"
+            className="absolute bottom-[22%] right-[8%] w-[28px] transition-all duration-1000 ease-out"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? 'rotate(0deg)' : 'rotate(-20deg)',
@@ -187,7 +187,7 @@ export function QuadSection() {
 
           {/* Left-middle: coral teardrop */}
           <div
-            className="absolute top-[40%] left-[-2%] w-[32px] transition-all duration-1000 ease-out"
+            className="absolute top-[42%] left-[6%] w-[22px] transition-all duration-1000 ease-out"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? 'rotate(-90deg)' : 'rotate(-115deg)',
@@ -199,7 +199,7 @@ export function QuadSection() {
 
           {/* Right-middle: purple pill */}
           <div
-            className="absolute top-[55%] right-[2%] w-[16px] transition-all duration-1000 ease-out"
+            className="absolute top-[58%] right-[8%] w-[12px] transition-all duration-1000 ease-out"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? 'rotate(110deg)' : 'rotate(85deg)',
@@ -212,7 +212,7 @@ export function QuadSection() {
 
         {/* ── Three Quad Venue Cards ────────────────────────────── */}
         <div
-          className="relative z-10 pt-[125px] transition-all duration-700 ease-out"
+          className="relative z-10 pt-[110px] transition-all duration-700 ease-out"
           style={{
             opacity: isVisible ? 1 : 0,
             transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
