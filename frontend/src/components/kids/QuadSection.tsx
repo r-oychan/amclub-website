@@ -124,10 +124,10 @@ export function QuadSection() {
     <section ref={sectionRef} className="relative py-20 md:py-28 bg-white overflow-hidden">
       <div className="relative">
         {/* ── Decoration + Logo Area (overlays cards) ───────────── */}
-        <div className="pointer-events-none absolute left-1/2 -top-[80px] md:-top-[110px] z-20 w-[320px] h-[320px] md:w-[400px] md:h-[400px] -translate-x-1/2">
+        <div className="pointer-events-none absolute left-1/2 -top-[65px] z-20 w-[280px] h-[280px] -translate-x-1/2">
           {/* Central Quad logo */}
           <div className="absolute inset-0 flex items-center justify-center z-10">
-            <div className="w-[180px] h-[180px] md:w-[220px] md:h-[220px] rounded-full bg-[#FEB700] flex items-center justify-center shadow-lg overflow-hidden">
+            <div className="w-[150px] h-[150px] rounded-full bg-[#FEB700] flex items-center justify-center shadow-lg overflow-hidden">
               <img
                 src="/uploads/pages/kids/quad.png"
                 alt="The Quad"
@@ -139,7 +139,7 @@ export function QuadSection() {
           {/* SVG Decorations — each transitions rotation on visibility */}
           {/* Top-right: teal swirl */}
           <div
-            className="absolute top-[5%] right-[2%] w-[60px] md:w-[80px] transition-all duration-1000 ease-out"
+            className="absolute top-[5%] right-[2%] w-[55px] transition-all duration-1000 ease-out"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? 'rotate(0deg)' : 'rotate(-25deg)',
@@ -151,7 +151,7 @@ export function QuadSection() {
 
           {/* Bottom-left: teal swirl flipped */}
           <div
-            className="absolute bottom-[8%] left-[0%] w-[55px] md:w-[72px] transition-all duration-1000 ease-out"
+            className="absolute bottom-[8%] left-[0%] w-[50px] transition-all duration-1000 ease-out"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? 'rotate(-120deg)' : 'rotate(-145deg)',
@@ -163,7 +163,7 @@ export function QuadSection() {
 
           {/* Top-left: coral zigzag */}
           <div
-            className="absolute top-[15%] left-[5%] w-[40px] md:w-[52px] transition-all duration-1000 ease-out"
+            className="absolute top-[15%] left-[5%] w-[36px] transition-all duration-1000 ease-out"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? 'rotate(0deg)' : 'rotate(30deg)',
@@ -175,7 +175,7 @@ export function QuadSection() {
 
           {/* Bottom-right: yellow hook */}
           <div
-            className="absolute bottom-[18%] right-[5%] w-[50px] md:w-[65px] transition-all duration-1000 ease-out"
+            className="absolute bottom-[18%] right-[5%] w-[44px] transition-all duration-1000 ease-out"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? 'rotate(0deg)' : 'rotate(-20deg)',
@@ -187,7 +187,7 @@ export function QuadSection() {
 
           {/* Left-middle: coral teardrop */}
           <div
-            className="absolute top-[40%] left-[-8%] w-[38px] md:w-[48px] transition-all duration-1000 ease-out"
+            className="absolute top-[40%] left-[-2%] w-[32px] transition-all duration-1000 ease-out"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? 'rotate(-90deg)' : 'rotate(-115deg)',
@@ -199,7 +199,7 @@ export function QuadSection() {
 
           {/* Right-middle: purple pill */}
           <div
-            className="absolute top-[55%] right-[-2%] w-[18px] md:w-[24px] transition-all duration-1000 ease-out"
+            className="absolute top-[55%] right-[2%] w-[16px] transition-all duration-1000 ease-out"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? 'rotate(110deg)' : 'rotate(85deg)',
@@ -212,7 +212,7 @@ export function QuadSection() {
 
         {/* ── Three Quad Venue Cards ────────────────────────────── */}
         <div
-          className="relative z-10 pt-[140px] md:pt-[170px] transition-all duration-700 ease-out"
+          className="relative z-10 pt-[90px] transition-all duration-700 ease-out"
           style={{
             opacity: isVisible ? 1 : 0,
             transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
