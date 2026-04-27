@@ -48,7 +48,7 @@ Status legend:
 
 | Page | Frontend file | Strapi single-type | Status | Notes |
 |---|---|---|---|---|
-| Home | `pages/HomePage.tsx` | `home-page` | ❌ none | **Pilot.** Schema uses Dynamic Zone (D1 violation) — refactor needed. Carousel + AboutSection + Events + Services + Tabs + Moments + FAQ. See §6. |
+| Home | `pages/HomePage.tsx` | `home-page` | ✅ wired | **Pilot complete (2026-04-28).** Deployed at `--0000052` revision; serves 30 images from Strapi /uploads, 0 page-section framer* URLs. Verified screenshot: `frontend/audits/deployed-home-1440-cms.jpeg`. |
 | About | `pages/AboutPage.tsx` | `about-page` | ❌ none | Heritage timeline, management slider, governance, partners, awards. |
 | Dining | `pages/DiningPage.tsx` | `dining-page` | ❌ none | List of restaurants — likely needs `restaurant` collection wired via relation. |
 | Fitness | `pages/FitnessPage.tsx` | `fitness-page` | ❌ none | |
@@ -170,7 +170,7 @@ Captured during HomePage Framer audit (`frontend/audits/home.md`).
 
 ## 9. Migration Backlog Order
 
-1. **HomePage** (pilot, in progress) — proves the pipeline.
+1. ✅ **HomePage** (pilot, complete 2026-04-28) — pipeline proven.
 2. About — most components likely match.
 3. Membership, Fitness, Kids, Dining, Event Spaces — straightforward single-types.
 4. What's On — depends on `event` collection seeding (some done by HomePage).
