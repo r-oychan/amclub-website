@@ -3,10 +3,13 @@
   "info": {
     "displayName": "Stats Counter",
     "icon": "chartBubble",
-    "description": "Section with stat counters"
+    "description": "Section with optional heading + label and a row of stat counters"
   },
   "attributes": {
     "label": {
+      "type": "string"
+    },
+    "heading": {
       "type": "string"
     },
     "stats": {

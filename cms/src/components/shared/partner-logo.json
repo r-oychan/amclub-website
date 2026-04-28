@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_shared_partner_logos",
+  "info": {
+    "displayName": "Partner Logo",
+    "icon": "picture",
+    "description": "Partner / sponsor logo with optional link"
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"],
+      "required": true
+    },
+    "href": {
+      "type": "string"
+    }
+  }
+}

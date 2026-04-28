@@ -3,16 +3,21 @@
   "info": {
     "displayName": "Team Grid",
     "icon": "user",
-    "description": "Grid of team/committee members"
+    "description": "Grid of team / committee members. Members fetched separately by memberType."
   },
   "attributes": {
     "heading": {
       "type": "string"
     },
-    "members": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::committee-member.committee-member"
+    "variant": {
+      "type": "enumeration",
+      "enum": ["light", "dark"],
+      "default": "light"
+    },
+    "filterByType": {
+      "type": "enumeration",
+      "enum": ["general-committee", "management"],
+      "default": "general-committee"
     }
   }
 }

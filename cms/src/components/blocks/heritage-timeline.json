@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_blocks_heritage_timelines",
+  "info": {
+    "displayName": "Heritage Timeline",
+    "icon": "clock",
+    "description": "Heading + body with a year-by-year slideshow"
+  },
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "required": true
+    },
+    "body": {
+      "type": "text"
+    },
+    "backgroundImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "slides": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.timeline-slide"
+    }
+  }
+}

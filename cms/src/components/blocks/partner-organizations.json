@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_blocks_partner_organizations",
+  "info": {
+    "displayName": "Partner Organizations",
+    "icon": "handshake",
+    "description": "Sections of partner / sponsor logos"
+  },
+  "attributes": {
+    "heading": {
+      "type": "string"
+    },
+    "groups": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.partner-group"
+    }
+  }
+}

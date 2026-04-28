@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_blocks_management_sliders",
+  "info": {
+    "displayName": "Management Slider",
+    "icon": "user",
+    "description": "Heading and watermark — members fetched separately by memberType"
+  },
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "required": true
+    },
+    "watermark": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "filterByType": {
+      "type": "enumeration",
+      "enum": ["general-committee", "management"],
+      "default": "management"
+    }
+  }
+}

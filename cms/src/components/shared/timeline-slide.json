@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_shared_timeline_slides",
+  "info": {
+    "displayName": "Timeline Slide",
+    "icon": "calendar",
+    "description": "A single year/body/image slide for the heritage timeline"
+  },
+  "attributes": {
+    "year": {
+      "type": "string",
+      "required": true
+    },
+    "body": {
+      "type": "text"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    }
+  }
+}

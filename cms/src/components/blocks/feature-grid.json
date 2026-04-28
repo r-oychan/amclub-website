@@ -3,13 +3,16 @@
   "info": {
     "displayName": "Feature Grid",
     "icon": "apps",
-    "description": "Grid of feature cards with icon, heading and description"
+    "description": "Grid of feature cards (with image) OR a heading-with-bulleted-list and aside image"
   },
   "attributes": {
     "label": {
       "type": "string"
     },
     "heading": {
+      "type": "string"
+    },
+    "subheading": {
       "type": "string"
     },
     "body": {
@@ -19,6 +22,19 @@
       "type": "component",
       "repeatable": true,
       "component": "shared.feature-item"
+    },
+    "listItems": {
+      "type": "json"
+    },
+    "asideImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "asideImagePosition": {
+      "type": "enumeration",
+      "enum": ["left", "right"],
+      "default": "left"
     },
     "cta": {
       "type": "component",

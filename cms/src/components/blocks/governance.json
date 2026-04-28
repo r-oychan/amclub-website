@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_blocks_governances",
+  "info": {
+    "displayName": "Governance",
+    "icon": "shield",
+    "description": "Governance section with main copy and a sidebar of links"
+  },
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "required": true
+    },
+    "body": {
+      "type": "text"
+    },
+    "sidebarHeading": {
+      "type": "string"
+    },
+    "sidebarBody": {
+      "type": "text"
+    },
+    "links": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link"
+    }
+  }
+}

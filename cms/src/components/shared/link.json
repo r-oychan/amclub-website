@@ -3,7 +3,7 @@
   "info": {
     "displayName": "Link",
     "icon": "link",
-    "description": "Button or CTA link"
+    "description": "Button or CTA link with optional caption"
   },
   "attributes": {
     "label": {
@@ -11,6 +11,9 @@
       "required": true
     },
     "href": {
+      "type": "string"
+    },
+    "caption": {
       "type": "string"
     },
     "isExternal": {

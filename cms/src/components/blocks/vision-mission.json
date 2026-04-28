@@ -1,0 +1,26 @@
+{
+  "collectionName": "components_blocks_vision_missions",
+  "info": {
+    "displayName": "Vision / Mission",
+    "icon": "compass",
+    "description": "Side-by-side Our Vision / Our Mission with an image"
+  },
+  "attributes": {
+    "vision": {
+      "type": "text"
+    },
+    "mission": {
+      "type": "text"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "imagePosition": {
+      "type": "enumeration",
+      "enum": ["left", "right"],
+      "default": "left"
+    }
+  }
+}

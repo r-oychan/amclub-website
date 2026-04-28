@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_shared_award_items",
+  "info": {
+    "displayName": "Award Item",
+    "icon": "medal",
+    "description": "Award / certification with title, issuer and image"
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "issuer": {
+      "type": "string"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    }
+  }
+}

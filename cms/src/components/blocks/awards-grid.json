@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_blocks_awards_grids",
+  "info": {
+    "displayName": "Awards Grid",
+    "icon": "medal",
+    "description": "Grid of awards / accolades / certifications"
+  },
+  "attributes": {
+    "heading": {
+      "type": "string"
+    },
+    "items": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.award-item"
+    }
+  }
+}

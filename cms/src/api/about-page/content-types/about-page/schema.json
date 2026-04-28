@@ -15,9 +15,60 @@
       "type": "string",
       "required": true
     },
-    "content": {
-      "type": "dynamiczone",
-      "components": ["blocks.hero","blocks.text-block","blocks.stats-counter","blocks.card-grid","blocks.cta-banner","blocks.feature-grid","blocks.event-listing","blocks.testimonial-slider","blocks.faq-section","blocks.team-grid","blocks.tabs-section"]
+    "hero": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.hero"
+    },
+    "heritage": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.heritage-timeline"
+    },
+    "statsToday": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.stats-counter"
+    },
+    "visionMission": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.vision-mission"
+    },
+    "governance": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.governance"
+    },
+    "generalCommittee": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.team-grid"
+    },
+    "advocacy": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.feature-grid"
+    },
+    "management": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.management-slider"
+    },
+    "partners": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.partner-organizations"
+    },
+    "awards": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.awards-grid"
+    },
+    "ctaBanner": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.cta-banner"
     },
     "seo": {
       "type": "component",
