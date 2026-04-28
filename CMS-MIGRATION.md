@@ -54,7 +54,7 @@ Status legend:
 | Fitness | `pages/FitnessPage.tsx` | `fitness-page` | ✅ wired | **Complete (2026-04-28).** 9 sections (5 overlays + 3-col + bowling overlay + final CTA + hero); added logo to overlay-section and bordered to link. |
 | Kids | `pages/KidsPage.tsx` | `kids-page` | ✅ wired | **Complete (2026-04-28).** All sections CMS-driven except `QuadSection` which stays hardcoded (custom inline-SVG layout). Audit `frontend/audits/kids.md`. |
 | Membership | `pages/MembershipPage.tsx` | `membership-page` | ✅ wired | **Complete (2026-04-28).** 8 sections, hero bg image, 3 program cards. Audit `frontend/audits/membership.md`. |
-| Event Spaces | `pages/EventSpacesPage.tsx` | `event-spaces-page` | ❌ none | List of venues — likely needs `venue` collection via relation. |
+| Event Spaces | `pages/EventSpacesPage.tsx` | `event-spaces-page` | ✅ wired | **Complete (2026-04-28).** 7 new components for packages/venues/catering. 12 images uploaded. |
 | What's On | `pages/WhatsOnPage.tsx` | `whats-on-page` | ✅ wired | **Complete (2026-04-28).** Hero + filterable event grid (9 events from collection) + final CTA. Reuses HomePage-seeded events. |
 | Gallery | `pages/GalleryPage.tsx` | _no single-type yet_ | ❌ none | **Schema gap**: no `gallery-page` content type exists. |
 | News | `pages/NewsPage.tsx` | _no single-type yet_ | ❌ none | **Schema gap**: no `news-page` content type. May need a `news-article` collection. |
@@ -177,6 +177,7 @@ Captured during HomePage Framer audit (`frontend/audits/home.md`).
 5. ✅ **FitnessPage** (complete 2026-04-28) — heaviest overlay-driven page; logo on overlay-section, bordered on link.
 6. ✅ **DiningPage** (complete 2026-04-28) — 6 restaurants seeded; club-favorites 2-up grid; PromoCell stays hardcoded.
 7. ✅ **WhatsOnPage** (complete 2026-04-28) — reuses HomePage events; hero + filterable event grid + final CTA.
+8. ✅ **EventSpacesPage** (complete 2026-04-28) — 7 new components (private-event-packages, distinctive-event-spaces, offsite-catering-services + supporting atoms).
 2. About — most components likely match.
 3. Membership, Fitness, Kids, Dining, Event Spaces — straightforward single-types.
 4. What's On — depends on `event` collection seeding (some done by HomePage).
