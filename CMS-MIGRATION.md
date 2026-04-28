@@ -56,9 +56,9 @@ Status legend:
 | Membership | `pages/MembershipPage.tsx` | `membership-page` | ✅ wired | **Complete (2026-04-28).** 8 sections, hero bg image, 3 program cards. Audit `frontend/audits/membership.md`. |
 | Event Spaces | `pages/EventSpacesPage.tsx` | `event-spaces-page` | ✅ wired | **Complete (2026-04-28).** 7 new components for packages/venues/catering. 12 images uploaded. |
 | What's On | `pages/WhatsOnPage.tsx` | `whats-on-page` | ✅ wired | **Complete (2026-04-28).** Hero + filterable event grid (9 events from collection) + final CTA. Reuses HomePage-seeded events. |
-| Gallery | `pages/GalleryPage.tsx` | _no single-type yet_ | ❌ none | **Schema gap**: no `gallery-page` content type exists. |
-| News | `pages/NewsPage.tsx` | _no single-type yet_ | ❌ none | **Schema gap**: no `news-page` content type. May need a `news-article` collection. |
-| Contact Us | `pages/ContactUsPage.tsx` | _no single-type yet_ | ❌ none | **Schema gap**: no `contact-us-page` content type. |
+| Gallery | `pages/GalleryPage.tsx` | `gallery-page` + `gallery-album` | ✅ wired | **Complete (2026-04-28).** New collection + page; 8 albums seeded. |
+| News | `pages/NewsPage.tsx` | `news-page` + `news-article` | ✅ wired | **Complete (2026-04-28).** New collection + page; 6 articles seeded. |
+| Contact Us | `pages/ContactUsPage.tsx` | `contact-us-page` | ✅ wired | **Complete (2026-04-28).** New page; address, phone, email, map, outlet schedules (5 groups, ~30 outlets) all from CMS. |
 | Venue Detail | `pages/VenueDetailPage.tsx` | `venue` (collection) | ✅ wired | Reference implementation. |
 | Header / Nav | `hooks/useHeaderData.ts` | `header` | ✅ wired | Reference implementation. |
 | Footer | `components/layout/Footer.tsx` | `footer` | ❓ unknown | Verify whether footer is fetched. |
@@ -178,11 +178,19 @@ Captured during HomePage Framer audit (`frontend/audits/home.md`).
 6. ✅ **DiningPage** (complete 2026-04-28) — 6 restaurants seeded; club-favorites 2-up grid; PromoCell stays hardcoded.
 7. ✅ **WhatsOnPage** (complete 2026-04-28) — reuses HomePage events; hero + filterable event grid + final CTA.
 8. ✅ **EventSpacesPage** (complete 2026-04-28) — 7 new components (private-event-packages, distinctive-event-spaces, offsite-catering-services + supporting atoms).
-2. About — most components likely match.
-3. Membership, Fitness, Kids, Dining, Event Spaces — straightforward single-types.
-4. What's On — depends on `event` collection seeding (some done by HomePage).
-5. Gallery, News, Contact Us — require new content types (D7 schema gap above).
-6. Footer audit & fix if needed.
+9. ✅ **GalleryPage** (complete 2026-04-28) — new gallery-album collection + gallery-page single type; 8 albums seeded.
+10. ✅ **NewsPage** (complete 2026-04-28) — new news-article collection + news-page single type; 6 articles seeded.
+11. ✅ **ContactUsPage** (complete 2026-04-28) — new contact-us-page single type with deep outlet schedules (~30 outlets across 5 groups) stored as JSON.
+
+🎉 **All 11 backlog pages wired.**
+
+## Known follow-ups
+
+- **TalkToUsBanner** (ContactUs) currently hardcoded; the contact-us-page schema has `talkToUsCta` populated but the component doesn't take props yet — minor refactor.
+- **Header/footer dropdown panels** — `frontend/src/data/subpages.ts` is still hardcoded with framerusercontent.com URLs. Visible on every page's header.
+- **QuadSection** (Kids) — custom inline-SVG layout still hardcoded. Future task.
+- **PromoCell** (Dining) — small decorative card still hardcoded. Future task.
+- **CtaBanner schema** — does not yet support backgroundImage / decorativeImages (Membership Join CTA + Find-Right CTA in Framer use these). Future schema extension.
 
 ## 10. Update Process
 
