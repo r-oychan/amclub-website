@@ -51,7 +51,7 @@ Status legend:
 | Home | `pages/HomePage.tsx` | `home-page` | ✅ wired | **Pilot complete (2026-04-28).** Deployed at `--0000052` revision; serves 30 images from Strapi /uploads, 0 page-section framer* URLs. Verified screenshot: `frontend/audits/deployed-home-1440-cms.jpeg`. |
 | About | `pages/AboutPage.tsx` | `about-page` | ✅ wired | **Complete (2026-04-28).** All 14 sections render from CMS; 40 images served from /uploads. Audit `frontend/audits/about.md`. |
 | Dining | `pages/DiningPage.tsx` | `dining-page` | ❌ none | List of restaurants — likely needs `restaurant` collection wired via relation. |
-| Fitness | `pages/FitnessPage.tsx` | `fitness-page` | ❌ none | |
+| Fitness | `pages/FitnessPage.tsx` | `fitness-page` | ✅ wired | **Complete (2026-04-28).** 9 sections (5 overlays + 3-col + bowling overlay + final CTA + hero); added logo to overlay-section and bordered to link. |
 | Kids | `pages/KidsPage.tsx` | `kids-page` | ✅ wired | **Complete (2026-04-28).** All sections CMS-driven except `QuadSection` which stays hardcoded (custom inline-SVG layout). Audit `frontend/audits/kids.md`. |
 | Membership | `pages/MembershipPage.tsx` | `membership-page` | ✅ wired | **Complete (2026-04-28).** 8 sections, hero bg image, 3 program cards. Audit `frontend/audits/membership.md`. |
 | Event Spaces | `pages/EventSpacesPage.tsx` | `event-spaces-page` | ❌ none | List of venues — likely needs `venue` collection via relation. |
@@ -174,6 +174,7 @@ Captured during HomePage Framer audit (`frontend/audits/home.md`).
 2. ✅ **AboutPage** (complete 2026-04-28) — biggest page; added 10 new components.
 3. ✅ **MembershipPage** (complete 2026-04-28) — small page; added cta on feature-item, light variant on cta-banner.
 4. ✅ **KidsPage** (complete 2026-04-28) — added overlay-section, three-col-grid, three-col-item; QuadSection stays hardcoded for now.
+5. ✅ **FitnessPage** (complete 2026-04-28) — heaviest overlay-driven page; logo on overlay-section, bordered on link.
 2. About — most components likely match.
 3. Membership, Fitness, Kids, Dining, Event Spaces — straightforward single-types.
 4. What's On — depends on `event` collection seeding (some done by HomePage).
