@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_blocks_three_col_grids",
+  "info": {
+    "displayName": "Three Col Grid",
+    "icon": "grid",
+    "description": "Heading + 2 or 3 column card grid"
+  },
+  "attributes": {
+    "heading": {
+      "type": "string"
+    },
+    "subheading": {
+      "type": "text"
+    },
+    "columns": {
+      "type": "enumeration",
+      "enum": ["2", "3"],
+      "default": "3"
+    },
+    "variant": {
+      "type": "enumeration",
+      "enum": ["centered", "left"],
+      "default": "centered"
+    },
+    "items": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.three-col-item"
+    }
+  }
+}

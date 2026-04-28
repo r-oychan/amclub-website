@@ -1,0 +1,53 @@
+{
+  "collectionName": "components_blocks_overlay_sections",
+  "info": {
+    "displayName": "Overlay Section",
+    "icon": "layer",
+    "description": "Image + overlay text panel with positioning + theming"
+  },
+  "attributes": {
+    "heading": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"],
+      "required": true
+    },
+    "imageAlt": {
+      "type": "string"
+    },
+    "textPosition": {
+      "type": "enumeration",
+      "enum": ["left", "right"],
+      "default": "left"
+    },
+    "textVerticalAlign": {
+      "type": "enumeration",
+      "enum": ["start", "center", "end"],
+      "default": "center"
+    },
+    "textBgColor": {
+      "type": "string"
+    },
+    "textBgImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "textTheme": {
+      "type": "enumeration",
+      "enum": ["light", "dark"],
+      "default": "light"
+    },
+    "ctas": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link"
+    }
+  }
+}

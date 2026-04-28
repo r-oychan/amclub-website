@@ -15,9 +15,35 @@
       "type": "string",
       "required": true
     },
-    "content": {
-      "type": "dynamiczone",
-      "components": ["blocks.hero","blocks.text-block","blocks.stats-counter","blocks.card-grid","blocks.cta-banner","blocks.feature-grid","blocks.event-listing","blocks.testimonial-slider","blocks.faq-section","blocks.team-grid","blocks.tabs-section"]
+    "hero": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.hero"
+    },
+    "hangout": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.overlay-section"
+    },
+    "parties": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.overlay-section"
+    },
+    "learning": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.three-col-grid"
+    },
+    "safety": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.feature-grid"
+    },
+    "finalCta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.cta-banner"
     },
     "seo": {
       "type": "component",

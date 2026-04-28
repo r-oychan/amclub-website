@@ -44,6 +44,10 @@
     "dark": {
       "type": "boolean",
       "default": false
+    },
+    "centered": {
+      "type": "boolean",
+      "default": false
     }
   }
 }
