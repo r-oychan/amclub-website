@@ -56,9 +56,8 @@ export default function MembershipPage() {
       const [page, faqList] = await Promise.all([
         fetchAPI<StrapiMembershipPage>('/membership-page'),
         fetchAPI<StrapiFaqItem[]>('/faq-items', {
-          'filters[category][$eq]': 'membership',
           'sort[0]': 'order:asc',
-          'pagination[limit]': '10',
+          'pagination[limit]': '4',
         }),
       ]);
       if (cancelled) return;
