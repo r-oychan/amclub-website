@@ -49,7 +49,7 @@ Status legend:
 | Page | Frontend file | Strapi single-type | Status | Notes |
 |---|---|---|---|---|
 | Home | `pages/HomePage.tsx` | `home-page` | ✅ wired | **Pilot complete (2026-04-28).** Deployed at `--0000052` revision; serves 30 images from Strapi /uploads, 0 page-section framer* URLs. Verified screenshot: `frontend/audits/deployed-home-1440-cms.jpeg`. |
-| About | `pages/AboutPage.tsx` | `about-page` | ❌ none | Heritage timeline, management slider, governance, partners, awards. |
+| About | `pages/AboutPage.tsx` | `about-page` | ✅ wired | **Complete (2026-04-28).** All 14 sections render from CMS; 40 images served from /uploads. Audit `frontend/audits/about.md`. |
 | Dining | `pages/DiningPage.tsx` | `dining-page` | ❌ none | List of restaurants — likely needs `restaurant` collection wired via relation. |
 | Fitness | `pages/FitnessPage.tsx` | `fitness-page` | ❌ none | |
 | Kids | `pages/KidsPage.tsx` | `kids-page` | ❌ none | Quad badge with image overlap (recent fix). |
@@ -171,6 +171,7 @@ Captured during HomePage Framer audit (`frontend/audits/home.md`).
 ## 9. Migration Backlog Order
 
 1. ✅ **HomePage** (pilot, complete 2026-04-28) — pipeline proven.
+2. ✅ **AboutPage** (complete 2026-04-28) — biggest page; added 10 new components.
 2. About — most components likely match.
 3. Membership, Fitness, Kids, Dining, Event Spaces — straightforward single-types.
 4. What's On — depends on `event` collection seeding (some done by HomePage).
