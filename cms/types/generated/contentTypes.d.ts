@@ -442,36 +442,32 @@ export interface ApiAboutPageAboutPage extends Struct.SingleTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    content: Schema.Attribute.DynamicZone<
-      [
-        'blocks.hero',
-        'blocks.text-block',
-        'blocks.stats-counter',
-        'blocks.card-grid',
-        'blocks.cta-banner',
-        'blocks.feature-grid',
-        'blocks.event-listing',
-        'blocks.testimonial-slider',
-        'blocks.faq-section',
-        'blocks.team-grid',
-        'blocks.tabs-section',
-      ]
-    >;
+    advocacy: Schema.Attribute.Component<'blocks.feature-grid', false>;
+    awards: Schema.Attribute.Component<'blocks.awards-grid', false>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    ctaBanner: Schema.Attribute.Component<'blocks.cta-banner', false>;
+    generalCommittee: Schema.Attribute.Component<'blocks.team-grid', false>;
+    governance: Schema.Attribute.Component<'blocks.governance', false>;
+    heritage: Schema.Attribute.Component<'blocks.heritage-timeline', false>;
+    hero: Schema.Attribute.Component<'blocks.hero', false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::about-page.about-page'
     > &
       Schema.Attribute.Private;
+    management: Schema.Attribute.Component<'blocks.management-slider', false>;
+    partners: Schema.Attribute.Component<'blocks.partner-organizations', false>;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
+    statsToday: Schema.Attribute.Component<'blocks.stats-counter', false>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    visionMission: Schema.Attribute.Component<'blocks.vision-mission', false>;
   };
 }
 
@@ -514,6 +510,44 @@ export interface ApiCommitteeMemberCommitteeMember
   };
 }
 
+export interface ApiContactUsPageContactUsPage extends Struct.SingleTypeSchema {
+  collectionName: 'contact_us_pages';
+  info: {
+    description: 'Contact Us landing page (address, hours, outlet schedules)';
+    displayName: 'Contact Us Page';
+    pluralName: 'contact-us-pages';
+    singularName: 'contact-us-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    address: Schema.Attribute.JSON;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.Email;
+    heroImage: Schema.Attribute.Media<'images'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::contact-us-page.contact-us-page'
+    > &
+      Schema.Attribute.Private;
+    mapEmbedSrc: Schema.Attribute.String;
+    operatingHours: Schema.Attribute.JSON;
+    outletGroups: Schema.Attribute.JSON;
+    phone: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    talkToUsCta: Schema.Attribute.Component<'blocks.cta-banner', false>;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiDiningPageDiningPage extends Struct.SingleTypeSchema {
   collectionName: 'dining_pages';
   info: {
@@ -526,24 +560,13 @@ export interface ApiDiningPageDiningPage extends Struct.SingleTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    content: Schema.Attribute.DynamicZone<
-      [
-        'blocks.hero',
-        'blocks.text-block',
-        'blocks.stats-counter',
-        'blocks.card-grid',
-        'blocks.cta-banner',
-        'blocks.feature-grid',
-        'blocks.event-listing',
-        'blocks.testimonial-slider',
-        'blocks.faq-section',
-        'blocks.team-grid',
-        'blocks.tabs-section',
-      ]
-    >;
+    clubFavorites: Schema.Attribute.Component<'blocks.card-grid', false>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    essentials: Schema.Attribute.Component<'blocks.overlay-section', false>;
+    finalCta: Schema.Attribute.Component<'blocks.cta-banner', false>;
+    hero: Schema.Attribute.Component<'blocks.hero', false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -606,30 +629,29 @@ export interface ApiEventSpacesPageEventSpacesPage
     draftAndPublish: true;
   };
   attributes: {
-    content: Schema.Attribute.DynamicZone<
-      [
-        'blocks.hero',
-        'blocks.text-block',
-        'blocks.stats-counter',
-        'blocks.card-grid',
-        'blocks.cta-banner',
-        'blocks.feature-grid',
-        'blocks.event-listing',
-        'blocks.testimonial-slider',
-        'blocks.faq-section',
-        'blocks.team-grid',
-        'blocks.tabs-section',
-      ]
-    >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    distinctiveSpaces: Schema.Attribute.Component<
+      'blocks.distinctive-event-spaces',
+      false
+    >;
+    finalCta: Schema.Attribute.Component<'blocks.cta-banner', false>;
+    hero: Schema.Attribute.Component<'blocks.hero', false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::event-spaces-page.event-spaces-page'
     > &
       Schema.Attribute.Private;
+    offsiteCatering: Schema.Attribute.Component<
+      'blocks.offsite-catering-services',
+      false
+    >;
+    privatePackages: Schema.Attribute.Component<
+      'blocks.private-event-packages',
+      false
+    >;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
@@ -767,32 +789,29 @@ export interface ApiFitnessPageFitnessPage extends Struct.SingleTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    content: Schema.Attribute.DynamicZone<
-      [
-        'blocks.hero',
-        'blocks.text-block',
-        'blocks.stats-counter',
-        'blocks.card-grid',
-        'blocks.cta-banner',
-        'blocks.feature-grid',
-        'blocks.event-listing',
-        'blocks.testimonial-slider',
-        'blocks.faq-section',
-        'blocks.team-grid',
-        'blocks.tabs-section',
-      ]
+    aquatics: Schema.Attribute.Component<'blocks.overlay-section', false>;
+    bowling: Schema.Attribute.Component<'blocks.overlay-section', false>;
+    connectDiscover: Schema.Attribute.Component<
+      'blocks.overlay-section',
+      false
     >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    finalCta: Schema.Attribute.Component<'blocks.cta-banner', false>;
+    gym: Schema.Attribute.Component<'blocks.overlay-section', false>;
+    hero: Schema.Attribute.Component<'blocks.hero', false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::fitness-page.fitness-page'
     > &
       Schema.Attribute.Private;
+    moreActivities: Schema.Attribute.Component<'blocks.three-col-grid', false>;
     publishedAt: Schema.Attribute.DateTime;
+    senSpa: Schema.Attribute.Component<'blocks.overlay-section', false>;
     seo: Schema.Attribute.Component<'shared.seo', false>;
+    tennis: Schema.Attribute.Component<'blocks.overlay-section', false>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -828,6 +847,75 @@ export interface ApiFooterFooter extends Struct.SingleTypeSchema {
     logo: Schema.Attribute.Media<'images'>;
     phone: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiGalleryAlbumGalleryAlbum
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'gallery_albums';
+  info: {
+    description: 'Photo album for past events';
+    displayName: 'Gallery Album';
+    pluralName: 'gallery-albums';
+    singularName: 'gallery-album';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    coverImage: Schema.Attribute.Media<'images'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    date: Schema.Attribute.String;
+    description: Schema.Attribute.Text;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::gallery-album.gallery-album'
+    > &
+      Schema.Attribute.Private;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    photoCount: Schema.Attribute.Integer;
+    publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiGalleryPageGalleryPage extends Struct.SingleTypeSchema {
+  collectionName: 'gallery_pages';
+  info: {
+    description: 'Gallery landing page';
+    displayName: 'Gallery Page';
+    pluralName: 'gallery-pages';
+    singularName: 'gallery-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    heroImage: Schema.Attribute.Media<'images'>;
+    introBody: Schema.Attribute.Text;
+    introHeading: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::gallery-page.gallery-page'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -877,32 +965,24 @@ export interface ApiHomePageHomePage extends Struct.SingleTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    content: Schema.Attribute.DynamicZone<
-      [
-        'blocks.hero',
-        'blocks.text-block',
-        'blocks.stats-counter',
-        'blocks.card-grid',
-        'blocks.cta-banner',
-        'blocks.feature-grid',
-        'blocks.event-listing',
-        'blocks.testimonial-slider',
-        'blocks.faq-section',
-        'blocks.team-grid',
-        'blocks.tabs-section',
-      ]
-    >;
+    aboutSection: Schema.Attribute.Component<'blocks.about-section', false>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    events: Schema.Attribute.Component<'blocks.event-listing', false>;
+    experience: Schema.Attribute.Component<'blocks.tabs-section', false>;
+    faq: Schema.Attribute.Component<'blocks.faq-section', false>;
+    hero: Schema.Attribute.Component<'blocks.hero', false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::home-page.home-page'
     > &
       Schema.Attribute.Private;
+    moments: Schema.Attribute.Component<'blocks.testimonial-slider', false>;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
+    services: Schema.Attribute.Component<'blocks.feature-grid', false>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -922,31 +1002,22 @@ export interface ApiKidsPageKidsPage extends Struct.SingleTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    content: Schema.Attribute.DynamicZone<
-      [
-        'blocks.hero',
-        'blocks.text-block',
-        'blocks.stats-counter',
-        'blocks.card-grid',
-        'blocks.cta-banner',
-        'blocks.feature-grid',
-        'blocks.event-listing',
-        'blocks.testimonial-slider',
-        'blocks.faq-section',
-        'blocks.team-grid',
-        'blocks.tabs-section',
-      ]
-    >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    finalCta: Schema.Attribute.Component<'blocks.cta-banner', false>;
+    hangout: Schema.Attribute.Component<'blocks.overlay-section', false>;
+    hero: Schema.Attribute.Component<'blocks.hero', false>;
+    learning: Schema.Attribute.Component<'blocks.three-col-grid', false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::kids-page.kids-page'
     > &
       Schema.Attribute.Private;
+    parties: Schema.Attribute.Component<'blocks.overlay-section', false>;
     publishedAt: Schema.Attribute.DateTime;
+    safety: Schema.Attribute.Component<'blocks.feature-grid', false>;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
@@ -968,28 +1039,90 @@ export interface ApiMembershipPageMembershipPage
     draftAndPublish: true;
   };
   attributes: {
-    content: Schema.Attribute.DynamicZone<
-      [
-        'blocks.hero',
-        'blocks.text-block',
-        'blocks.stats-counter',
-        'blocks.card-grid',
-        'blocks.cta-banner',
-        'blocks.feature-grid',
-        'blocks.event-listing',
-        'blocks.testimonial-slider',
-        'blocks.faq-section',
-        'blocks.team-grid',
-        'blocks.tabs-section',
-      ]
-    >;
+    beginJourneyCta: Schema.Attribute.Component<'blocks.cta-banner', false>;
+    benefits: Schema.Attribute.Component<'blocks.feature-grid', false>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    faq: Schema.Attribute.Component<'blocks.faq-section', false>;
+    findRightCta: Schema.Attribute.Component<'blocks.cta-banner', false>;
+    hero: Schema.Attribute.Component<'blocks.hero', false>;
+    intro: Schema.Attribute.Component<'blocks.text-block', false>;
+    joinCta: Schema.Attribute.Component<'blocks.cta-banner', false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::membership-page.membership-page'
+    > &
+      Schema.Attribute.Private;
+    programs: Schema.Attribute.Component<'blocks.card-grid', false>;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiNewsArticleNewsArticle extends Struct.CollectionTypeSchema {
+  collectionName: 'news_articles';
+  info: {
+    description: 'Club news article';
+    displayName: 'News Article';
+    pluralName: 'news-articles';
+    singularName: 'news-article';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    body: Schema.Attribute.Blocks;
+    category: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    date: Schema.Attribute.String;
+    excerpt: Schema.Attribute.Text;
+    image: Schema.Attribute.Media<'images'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::news-article.news-article'
+    > &
+      Schema.Attribute.Private;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiNewsPageNewsPage extends Struct.SingleTypeSchema {
+  collectionName: 'news_pages';
+  info: {
+    description: 'Club news landing page';
+    displayName: 'News Page';
+    pluralName: 'news-pages';
+    singularName: 'news-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    heroImage: Schema.Attribute.Media<'images'>;
+    introBody: Schema.Attribute.Text;
+    introHeading: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::news-page.news-page'
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
@@ -1017,6 +1150,7 @@ export interface ApiRestaurantRestaurant extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     ctas: Schema.Attribute.Component<'shared.link', true>;
+    cuisineIconSlug: Schema.Attribute.String;
     cuisineType: Schema.Attribute.String;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     detailedDescription: Schema.Attribute.Blocks;
@@ -1031,6 +1165,7 @@ export interface ApiRestaurantRestaurant extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     locationLevel: Schema.Attribute.String;
+    logo: Schema.Attribute.Media<'images'>;
     menuUrl: Schema.Attribute.String;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     openingHours: Schema.Attribute.Blocks;
@@ -1060,6 +1195,8 @@ export interface ApiTestimonialTestimonial extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    ctaLabel: Schema.Attribute.String;
+    ctaUrl: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1124,24 +1261,12 @@ export interface ApiWhatsOnPageWhatsOnPage extends Struct.SingleTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
-    content: Schema.Attribute.DynamicZone<
-      [
-        'blocks.hero',
-        'blocks.text-block',
-        'blocks.stats-counter',
-        'blocks.card-grid',
-        'blocks.cta-banner',
-        'blocks.feature-grid',
-        'blocks.event-listing',
-        'blocks.testimonial-slider',
-        'blocks.faq-section',
-        'blocks.team-grid',
-        'blocks.tabs-section',
-      ]
-    >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    eventsSection: Schema.Attribute.Component<'blocks.event-listing', false>;
+    finalCta: Schema.Attribute.Component<'blocks.cta-banner', false>;
+    hero: Schema.Attribute.Component<'blocks.hero', false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1670,6 +1795,7 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::about-page.about-page': ApiAboutPageAboutPage;
       'api::committee-member.committee-member': ApiCommitteeMemberCommitteeMember;
+      'api::contact-us-page.contact-us-page': ApiContactUsPageContactUsPage;
       'api::dining-page.dining-page': ApiDiningPageDiningPage;
       'api::event-category.event-category': ApiEventCategoryEventCategory;
       'api::event-spaces-page.event-spaces-page': ApiEventSpacesPageEventSpacesPage;
@@ -1678,10 +1804,14 @@ declare module '@strapi/strapi' {
       'api::faq-item.faq-item': ApiFaqItemFaqItem;
       'api::fitness-page.fitness-page': ApiFitnessPageFitnessPage;
       'api::footer.footer': ApiFooterFooter;
+      'api::gallery-album.gallery-album': ApiGalleryAlbumGalleryAlbum;
+      'api::gallery-page.gallery-page': ApiGalleryPageGalleryPage;
       'api::header.header': ApiHeaderHeader;
       'api::home-page.home-page': ApiHomePageHomePage;
       'api::kids-page.kids-page': ApiKidsPageKidsPage;
       'api::membership-page.membership-page': ApiMembershipPageMembershipPage;
+      'api::news-article.news-article': ApiNewsArticleNewsArticle;
+      'api::news-page.news-page': ApiNewsPageNewsPage;
       'api::restaurant.restaurant': ApiRestaurantRestaurant;
       'api::testimonial.testimonial': ApiTestimonialTestimonial;
       'api::venue.venue': ApiVenueVenue;

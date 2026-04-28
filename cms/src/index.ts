@@ -19,6 +19,11 @@ const PUBLIC_FIND_TYPES = [
   'api::restaurant.restaurant',
   'api::facility.facility',
   'api::committee-member.committee-member',
+  'api::gallery-album.gallery-album',
+  'api::gallery-page.gallery-page',
+  'api::news-article.news-article',
+  'api::news-page.news-page',
+  'api::contact-us-page.contact-us-page',
 ];
 
 async function grantPublicReadAccess(strapi: any) {

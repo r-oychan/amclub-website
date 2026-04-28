@@ -1,0 +1,23 @@
+{
+  "kind": "singleType",
+  "collectionName": "contact_us_pages",
+  "info": {
+    "singularName": "contact-us-page",
+    "pluralName": "contact-us-pages",
+    "displayName": "Contact Us Page",
+    "description": "Contact Us landing page (address, hours, outlet schedules)"
+  },
+  "options": { "draftAndPublish": true },
+  "attributes": {
+    "title": { "type": "string", "required": true },
+    "heroImage": { "type": "media", "multiple": false, "allowedTypes": ["images"] },
+    "address": { "type": "json" },
+    "operatingHours": { "type": "json" },
+    "phone": { "type": "string" },
+    "email": { "type": "email" },
+    "mapEmbedSrc": { "type": "string" },
+    "outletGroups": { "type": "json" },
+    "talkToUsCta": { "type": "component", "repeatable": false, "component": "blocks.cta-banner" },
+    "seo": { "type": "component", "repeatable": false, "component": "shared.seo" }
+  }
+}
