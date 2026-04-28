@@ -38,37 +38,66 @@ export function FeatureGrid({
     />
   ) : null;
 
+  // When an asideImage is present, the heading + body live INSIDE the content
+  // column (next to the image), matching the Framer "Club Advocacy" layout.
+  // Without an asideImage we keep the existing label/heading split layout via SectionHeader.
+  const inlineHeader = asideImage ? (
+    <>
+      {heading && (
+        <h2
+          className={`heading-h2-serif mb-4 ${centered ? 'text-center' : ''} ${
+            dark ? 'text-white' : 'text-primary'
+          }`}
+        >
+          {heading}
+        </h2>
+      )}
+      {(subheading || body) && (
+        <div className={`mb-8 max-w-2xl ${centered ? 'mx-auto text-center' : ''}`}>
+          {subheading && (
+            <p className={`mb-4 ${dark ? 'text-white/70' : 'text-text-dark/70'}`}>{subheading}</p>
+          )}
+          {body && (
+            <p className={`${dark ? 'text-white/70' : 'text-text-dark/70'}`}>{body}</p>
+          )}
+        </div>
+      )}
+    </>
+  ) : null;
+
   return (
     <section className={`py-16 md:py-24 ${dark ? 'bg-primary text-white' : 'bg-bg'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Top accent line */}
         <div className={`h-px ${dark ? 'bg-white/20' : 'bg-secondary/40'} mb-12 md:mb-16`} />
 
-        {centered ? (
-          heading && (
-            <h2
-              className={`heading-h2-serif text-center mb-10 md:mb-14 ${
-                dark ? 'text-white' : 'text-primary'
-              }`}
-            >
-              {heading}
-            </h2>
-          )
-        ) : (
-          <SectionHeader label={label} heading={heading} cta={cta} dark={dark} />
-        )}
+        {!asideImage && (
+          <>
+            {centered ? (
+              heading && (
+                <h2
+                  className={`heading-h2-serif text-center mb-10 md:mb-14 ${
+                    dark ? 'text-white' : 'text-primary'
+                  }`}
+                >
+                  {heading}
+                </h2>
+              )
+            ) : (
+              <SectionHeader label={label} heading={heading} cta={cta} dark={dark} />
+            )}
 
-        {(subheading || body) && (
-          <div
-            className={`mb-10 max-w-2xl ${centered ? 'mx-auto text-center' : ''}`}
-          >
-            {subheading && (
-              <p className={`mb-4 ${dark ? 'text-white/70' : 'text-text-dark/70'}`}>{subheading}</p>
+            {(subheading || body) && (
+              <div className={`mb-10 max-w-2xl ${centered ? 'mx-auto text-center' : ''}`}>
+                {subheading && (
+                  <p className={`mb-4 ${dark ? 'text-white/70' : 'text-text-dark/70'}`}>{subheading}</p>
+                )}
+                {body && (
+                  <p className={`${dark ? 'text-white/70' : 'text-text-dark/70'}`}>{body}</p>
+                )}
+              </div>
             )}
-            {body && (
-              <p className={`${dark ? 'text-white/70' : 'text-text-dark/70'}`}>{body}</p>
-            )}
-          </div>
+          </>
         )}
 
         <div
@@ -80,6 +109,7 @@ export function FeatureGrid({
         >
           {aside && asideImagePosition === 'left' && aside}
           <div>
+            {inlineHeader}
             {items && items.length > 0 && (
               <div
                 className={`grid grid-cols-1 ${
