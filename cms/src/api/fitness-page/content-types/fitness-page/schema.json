@@ -15,14 +15,15 @@
       "type": "string",
       "required": true
     },
-    "content": {
-      "type": "dynamiczone",
-      "components": ["blocks.hero","blocks.text-block","blocks.stats-counter","blocks.card-grid","blocks.cta-banner","blocks.feature-grid","blocks.event-listing","blocks.testimonial-slider","blocks.faq-section","blocks.team-grid","blocks.tabs-section"]
-    },
-    "seo": {
-      "type": "component",
-      "repeatable": false,
-      "component": "shared.seo"
-    }
+    "hero": { "type": "component", "repeatable": false, "component": "blocks.hero" },
+    "senSpa": { "type": "component", "repeatable": false, "component": "blocks.overlay-section" },
+    "aquatics": { "type": "component", "repeatable": false, "component": "blocks.overlay-section" },
+    "connectDiscover": { "type": "component", "repeatable": false, "component": "blocks.overlay-section" },
+    "gym": { "type": "component", "repeatable": false, "component": "blocks.overlay-section" },
+    "tennis": { "type": "component", "repeatable": false, "component": "blocks.overlay-section" },
+    "moreActivities": { "type": "component", "repeatable": false, "component": "blocks.three-col-grid" },
+    "bowling": { "type": "component", "repeatable": false, "component": "blocks.overlay-section" },
+    "finalCta": { "type": "component", "repeatable": false, "component": "blocks.cta-banner" },
+    "seo": { "type": "component", "repeatable": false, "component": "shared.seo" }
   }
 }

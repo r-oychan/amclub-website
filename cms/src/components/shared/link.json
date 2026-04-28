@@ -20,6 +20,10 @@
       "type": "boolean",
       "default": false
     },
+    "bordered": {
+      "type": "boolean",
+      "default": false
+    },
     "variant": {
       "type": "enumeration",
       "enum": ["primary", "secondary", "outline", "text"],

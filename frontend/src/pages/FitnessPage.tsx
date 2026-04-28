@@ -1,183 +1,137 @@
+import { useEffect, useState } from 'react';
+import { fetchAPI, STRAPI_URL } from '../lib/api';
 import { Hero } from '../components/blocks/Hero';
 import { CtaBanner } from '../components/blocks/CtaBanner';
 import { OverlaySection } from '../components/blocks/OverlaySection';
-import type { OverlaySectionProps } from '../components/blocks/OverlaySection';
 import { ThreeColGrid } from '../components/blocks/ThreeColGrid';
-import type { ThreeColItem } from '../components/blocks/ThreeColGrid';
 
-/* ─── Section model ────────────────────────────────────────────── */
+type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
+type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string; bordered?: boolean };
 
-type PageSection =
-  | ({ type: 'overlay'; priority: number } & OverlaySectionProps)
-  | { type: 'three-col'; priority: number; items: ThreeColItem[] };
+interface StrapiOverlay {
+  heading?: string;
+  description?: string;
+  image?: StrapiMedia;
+  imageAlt?: string;
+  textPosition?: 'left' | 'right';
+  textVerticalAlign?: 'start' | 'center' | 'end';
+  textBgColor?: string;
+  textBgImage?: StrapiMedia;
+  textTheme?: 'light' | 'dark';
+  ctas?: StrapiLink[];
+  logo?: StrapiMedia;
+}
 
-/* ─── Data ─────────────────────────────────────────────────────── */
+interface StrapiFitnessPage {
+  title: string;
+  hero?: { heading: string; subheading?: string; variant?: 'full' | 'compact'; backgroundImage?: StrapiMedia };
+  senSpa?: StrapiOverlay;
+  aquatics?: StrapiOverlay;
+  connectDiscover?: StrapiOverlay;
+  gym?: StrapiOverlay;
+  tennis?: StrapiOverlay;
+  moreActivities?: {
+    columns?: '2' | '3';
+    variant?: 'centered' | 'left';
+    items?: { heading: string; description?: string; image?: StrapiMedia; imageAlt?: string; cta?: StrapiLink; accentColor?: string }[];
+  };
+  bowling?: StrapiOverlay;
+  finalCta?: { heading: string; body?: string; variant?: 'default' | 'light' | 'dark' | 'accent'; ctas?: StrapiLink[] };
+}
 
-const SECTIONS: PageSection[] = [
-  {
-    type: 'overlay',
-    priority: 1,
-    heading: 'sèn Spa',
-    description:
-      'Step away from the everyday and immerse yourself in a retreat where you can unwind, relax, and rejuvenate your mind and body.',
-    ctas: [
-      { label: 'Learn More', href: '/fitness/sen-spa' },
-      { label: 'View Menu', href: '/fitness/sen-spa' },
-    ],
-    image: '/uploads/fitness/spa.jpeg',
-    imageAlt: 'sèn Spa',
-    textPosition: 'right',
-    textVerticalAlign: 'center',
-    textBgColor: '#F5F0EB',
-    textTheme: 'dark',
-    logo: '/uploads/fitness/fRArJiszmhGHpOFTkbxpn8pcnAY.png',
-  },
-  {
-    type: 'overlay',
-    priority: 2,
-    heading: 'Aquatics',
-    description:
-      "From leisure to competitive swimming, dive into the Club's Aquatics programs and embrace an active lifestyle, whether learning, training, or enjoying water fun with family.",
-    ctas: [
-      { label: 'Learn More', href: '/fitness/aquatics' },
-      { label: 'View Our Aquatics Programs', href: '/fitness/aquatics' },
-    ],
-    image: '/uploads/fitness/aquatics.jpeg',
-    imageAlt: 'Aquatics',
-    textPosition: 'left',
-    textVerticalAlign: 'end',
-    textBgColor: '#001E62',
-    textTheme: 'light',
-  },
-  {
-    type: 'overlay',
-    priority: 3,
-    heading: 'Connect & Discover',
-    description: 'Where hobbies become friendship',
-    ctas: [{ label: 'View All Activities', href: '/fitness' }],
-    image: '/uploads/fitness/connect.jpeg',
-    imageAlt: 'Connect & Discover',
-    textPosition: 'right',
-    textVerticalAlign: 'center',
-    textBgColor: '#B8C9B5',
-    textTheme: 'dark',
-  },
-  {
-    type: 'overlay',
-    priority: 4,
-    heading: 'Gym',
-    description:
-      'Whether you have been training for years or trying to get started, get the right support for your fitness journey',
-    ctas: [
-      { label: 'Private Trainings', href: '/fitness/gym', bordered: true },
-      { label: 'Group Fitness Class', href: '/fitness/gym', bordered: true },
-      { label: 'Pilates', href: '/fitness/pilates', bordered: true },
-      { label: 'Learn More', href: '/fitness/gym', bordered: true },
-    ],
-    image: '/uploads/fitness/gym.jpeg',
-    imageAlt: 'Gym',
-    textPosition: 'left',
-    textVerticalAlign: 'end',
-    textBgColor: '#001E62',
-    textTheme: 'light',
-  },
-  {
-    type: 'overlay',
-    priority: 5,
-    heading: 'Tennis',
-    description:
-      "Experience the thrill of tennis on the Club's four state-of-the-art artificial grass courts, ideal for learning, training, or enjoying a friendly match.",
-    ctas: [
-      { label: 'Learn More', href: '/fitness/tennis' },
-      { label: 'Group Fitness Programs', href: '/fitness/tennis' },
-    ],
-    image: '/uploads/fitness/tennis.jpeg',
-    imageAlt: 'Tennis',
-    textPosition: 'right',
-    textVerticalAlign: 'center',
-    textBgColor: '#3B5E4B',
-    textTheme: 'light',
-  },
-  {
-    type: 'three-col',
-    priority: 6,
-    items: [
-      {
-        heading: 'Golf Activities',
-        description: 'Tee Off & Connect.',
-        image: '/uploads/fitness/golf-activities.jpg',
-        imageAlt: 'Golf Activities',
-        cta: { label: 'Explore', href: '/fitness/golf-activities' },
-        accentColor: '#DF4661',
-      },
-      {
-        heading: 'Multi-purpose Court',
-        description: 'Pickleball & More.',
-        image: '/uploads/fitness/multi-purpose-court.jpeg',
-        imageAlt: 'Multi-purpose Court',
-        cta: { label: 'Explore', href: '/fitness/multi-purpose-court' },
-        accentColor: '#E8721E',
-      },
-      {
-        heading: 'Squash',
-        description: 'Your Squash Experience Starts Here.',
-        image: '/uploads/fitness/Squash.jpeg',
-        imageAlt: 'Squash',
-        cta: { label: 'Explore', href: '/fitness/squash' },
-        accentColor: '#DF4661',
-      },
-    ],
-  },
-  {
-    type: 'overlay',
-    priority: 7,
-    heading: 'The Bowling Alley',
-    description:
-      'Strike up some fun at The Bowling Alley, where friendly competition and good times roll together.',
-    ctas: [{ label: 'Learn More', href: '/fitness/bowling-alley' }],
-    image: '/uploads/fitness/bowling.jpeg',
-    imageAlt: 'The Bowling Alley',
-    textPosition: 'left',
-    textVerticalAlign: 'start',
-    textBgColor: '#001E62',
-    textTheme: 'light',
-  },
-];
+const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
+  if (!m?.url) return undefined;
+  if (/^https?:/i.test(m.url)) return m.url;
+  return `${STRAPI_URL}${m.url}`;
+};
 
-/* ─── Page ─────────────────────────────────────────────────────── */
+const linksOf = (ls?: StrapiLink[]) =>
+  (ls ?? []).map((l) => ({ label: l.label, href: l.href ?? '#', isExternal: l.isExternal, bordered: l.bordered }));
+
+const overlayProps = (s?: StrapiOverlay) => {
+  if (!s || !s.image) return null;
+  return {
+    heading: s.heading,
+    description: s.description,
+    image: mediaUrl(s.image) ?? '',
+    imageAlt: s.imageAlt ?? '',
+    textPosition: s.textPosition,
+    textVerticalAlign: s.textVerticalAlign,
+    textBgColor: s.textBgColor,
+    textBgImage: mediaUrl(s.textBgImage),
+    textTheme: s.textTheme,
+    ctas: linksOf(s.ctas),
+    logo: mediaUrl(s.logo),
+  };
+};
 
 export default function FitnessPage() {
-  const sorted = [...SECTIONS].sort((a, b) => a.priority - b.priority);
+  const [data, setData] = useState<StrapiFitnessPage | null>(null);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const page = await fetchAPI<StrapiFitnessPage>('/fitness-page');
+      if (cancelled) return;
+      setData(page);
+      setLoaded(true);
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  if (!loaded) return <div className="min-h-screen flex items-center justify-center text-text-dark/50">Loading…</div>;
+  if (!data) return <div className="min-h-screen flex items-center justify-center text-text-dark/70">Fitness page content unavailable.</div>;
+
+  const overlays: { key: string; props: ReturnType<typeof overlayProps> }[] = [
+    { key: 'senSpa',          props: overlayProps(data.senSpa) },
+    { key: 'aquatics',        props: overlayProps(data.aquatics) },
+    { key: 'connectDiscover', props: overlayProps(data.connectDiscover) },
+    { key: 'gym',             props: overlayProps(data.gym) },
+    { key: 'tennis',          props: overlayProps(data.tennis) },
+  ];
+
+  const moreItems = (data.moreActivities?.items ?? []).map((i) => ({
+    heading: i.heading,
+    description: i.description ?? '',
+    image: mediaUrl(i.image) ?? '',
+    imageAlt: i.imageAlt ?? '',
+    cta: { label: i.cta?.label ?? 'Explore', href: i.cta?.href ?? '#' },
+    accentColor: i.accentColor,
+  }));
+
+  const bowlingP = overlayProps(data.bowling);
 
   return (
     <>
-      <Hero
-        heading="Fitness & Wellness"
-        subheading="Fitness, movement, and wellness experiences that fit seamlessly into your lifestyle."
-        backgroundImage="/uploads/fitness/header-bg.jpg"
-        variant="compact"
-      />
+      {data.hero && (
+        <Hero
+          heading={data.hero.heading}
+          subheading={data.hero.subheading}
+          backgroundImage={mediaUrl(data.hero.backgroundImage)}
+          variant={data.hero.variant ?? 'compact'}
+        />
+      )}
 
-      {sorted.map((section, i) => {
-        if (section.type === 'overlay') {
-          const { type: _type, priority: _priority, ...props } = section;
-          return <OverlaySection key={`overlay-${i}`} {...props} />;
-        }
-        if (section.type === 'three-col') {
-          return <ThreeColGrid key={`grid-${i}`} items={section.items} />;
-        }
-        return null;
-      })}
+      {overlays.map((o) => (o.props ? <OverlaySection key={o.key} {...o.props} /> : null))}
 
-      <CtaBanner
-        heading="Kickstart Your Fitness & Wellness Journey"
-        body="Join as a Member and enjoy unlimited access to fitness facilities, energizing group classes, and indulgent spa experiences."
-        variant="light"
-        ctas={[
-          { label: 'Explore Membership', href: '/membership' },
-          { label: 'Book a Club Tour' },
-        ]}
-      />
+      {data.moreActivities && moreItems.length > 0 && (
+        <ThreeColGrid
+          columns={data.moreActivities.columns === '2' ? 2 : 3}
+          items={moreItems}
+        />
+      )}
+
+      {bowlingP && <OverlaySection {...bowlingP} />}
+
+      {data.finalCta && (
+        <CtaBanner
+          heading={data.finalCta.heading}
+          body={data.finalCta.body ?? ''}
+          variant={data.finalCta.variant === 'default' ? undefined : data.finalCta.variant}
+          ctas={linksOf(data.finalCta.ctas)}
+        />
+      )}
     </>
   );
 }

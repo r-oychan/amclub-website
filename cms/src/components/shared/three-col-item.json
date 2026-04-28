@@ -25,6 +25,9 @@
       "type": "component",
       "repeatable": false,
       "component": "shared.link"
+    },
+    "accentColor": {
+      "type": "string"
     }
   }
 }

@@ -48,6 +48,11 @@
       "type": "component",
       "repeatable": true,
       "component": "shared.link"
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
     }
   }
 }
