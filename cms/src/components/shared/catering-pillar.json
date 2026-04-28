@@ -1,0 +1,14 @@
+{
+  "collectionName": "components_shared_catering_pillars",
+  "info": {
+    "displayName": "Catering Pillar",
+    "icon": "rectangle",
+    "description": "One pillar in the off-site catering panel"
+  },
+  "attributes": {
+    "heading": { "type": "string", "required": true },
+    "subheading": { "type": "string" },
+    "items": { "type": "json" },
+    "image": { "type": "media", "multiple": false, "allowedTypes": ["images"] }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_shared_event_package_items",
+  "info": {
+    "displayName": "Event Package Item",
+    "icon": "rectangle",
+    "description": "Wedding/corporate/parties package card"
+  },
+  "attributes": {
+    "name": { "type": "string", "required": true },
+    "tagline": { "type": "string" },
+    "image": { "type": "media", "multiple": false, "allowedTypes": ["images"] },
+    "serviceFeatures": { "type": "json" },
+    "venues": { "type": "json" },
+    "cta": { "type": "component", "repeatable": false, "component": "shared.link" }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_blocks_offsite_catering_services",
+  "info": {
+    "displayName": "Off-site Catering Services",
+    "icon": "shoppingCart",
+    "description": "Off-site catering with pillars + sub-banner"
+  },
+  "attributes": {
+    "heading": { "type": "string" },
+    "body": { "type": "text" },
+    "ctas": { "type": "component", "repeatable": true, "component": "shared.link" },
+    "pillars": { "type": "component", "repeatable": true, "component": "shared.catering-pillar" },
+    "subBanner": { "type": "component", "repeatable": false, "component": "shared.catering-sub-banner" }
+  }
+}

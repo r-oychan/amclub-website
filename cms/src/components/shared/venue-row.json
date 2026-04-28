@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_shared_venue_rows",
+  "info": {
+    "displayName": "Venue Row",
+    "icon": "rectangle",
+    "description": "Distinctive event-spaces venue row"
+  },
+  "attributes": {
+    "name": { "type": "string", "required": true },
+    "capacity": { "type": "json" },
+    "description": { "type": "text" },
+    "image": { "type": "media", "multiple": false, "allowedTypes": ["images"] },
+    "cta": { "type": "component", "repeatable": false, "component": "shared.link" }
+  }
+}

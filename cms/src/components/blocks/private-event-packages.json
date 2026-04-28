@@ -1,0 +1,14 @@
+{
+  "collectionName": "components_blocks_private_event_packages",
+  "info": {
+    "displayName": "Private Event Packages",
+    "icon": "calendar",
+    "description": "Section showing wedding/corporate/parties packages"
+  },
+  "attributes": {
+    "heading": { "type": "string" },
+    "subheading": { "type": "text" },
+    "enquireCta": { "type": "component", "repeatable": false, "component": "shared.link" },
+    "items": { "type": "component", "repeatable": true, "component": "shared.event-package-item" }
+  }
+}

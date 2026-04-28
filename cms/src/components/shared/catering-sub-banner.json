@@ -1,0 +1,14 @@
+{
+  "collectionName": "components_shared_catering_sub_banners",
+  "info": {
+    "displayName": "Catering Sub-Banner",
+    "icon": "rectangle",
+    "description": "Sub-banner inside the off-site catering section"
+  },
+  "attributes": {
+    "heading": { "type": "string" },
+    "body": { "type": "text" },
+    "image": { "type": "media", "multiple": false, "allowedTypes": ["images"] },
+    "cta": { "type": "component", "repeatable": false, "component": "shared.link" }
+  }
+}

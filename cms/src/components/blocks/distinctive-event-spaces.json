@@ -1,0 +1,14 @@
+{
+  "collectionName": "components_blocks_distinctive_event_spaces",
+  "info": {
+    "displayName": "Distinctive Event Spaces",
+    "icon": "layer",
+    "description": "Section listing curated venues with capacity"
+  },
+  "attributes": {
+    "heading": { "type": "string" },
+    "subheading": { "type": "text" },
+    "panelBgColor": { "type": "string" },
+    "items": { "type": "component", "repeatable": true, "component": "shared.venue-row" }
+  }
+}
