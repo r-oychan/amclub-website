@@ -17,6 +17,11 @@
       "type": "media",
       "multiple": false,
       "allowedTypes": ["images"]
+    },
+    "cta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.link"
     }
   }
 }

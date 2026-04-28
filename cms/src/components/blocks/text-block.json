@@ -13,7 +13,7 @@
       "type": "string"
     },
     "body": {
-      "type": "blocks"
+      "type": "text"
     },
     "cta": {
       "type": "component",

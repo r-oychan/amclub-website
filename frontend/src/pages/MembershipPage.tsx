@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import { fetchAPI, STRAPI_URL } from '../lib/api';
 import { Hero } from '../components/blocks/Hero';
 import { CtaBanner } from '../components/blocks/CtaBanner';
 import { TextBlock } from '../components/blocks/TextBlock';
@@ -5,79 +7,147 @@ import { FeatureGrid } from '../components/blocks/FeatureGrid';
 import { CardGrid } from '../components/blocks/CardGrid';
 import { FaqAccordion } from '../components/blocks/FaqAccordion';
 
+type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
+type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string };
+
+interface StrapiCtaBanner {
+  heading: string;
+  body?: string;
+  variant?: 'default' | 'light' | 'dark' | 'accent';
+  ctas?: StrapiLink[];
+}
+interface StrapiFeatureItem {
+  heading: string;
+  description?: string;
+  image?: StrapiMedia;
+  cta?: StrapiLink;
+}
+interface StrapiMembershipPage {
+  title: string;
+  hero?: { heading: string; subheading?: string; variant?: 'full' | 'compact'; backgroundImage?: StrapiMedia };
+  joinCta?: StrapiCtaBanner;
+  intro?: { heading?: string; body?: string };
+  benefits?: { heading?: string; features?: StrapiFeatureItem[] };
+  findRightCta?: StrapiCtaBanner;
+  programs?: { heading?: string; cards?: StrapiFeatureItem[] };
+  faq?: { heading?: string; ctas?: StrapiLink[]; items?: { question: string }[] };
+  beginJourneyCta?: StrapiCtaBanner;
+}
+
+interface StrapiFaqItem { documentId: string; question: string }
+
+const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
+  if (!m?.url) return undefined;
+  if (/^https?:/i.test(m.url)) return m.url;
+  return `${STRAPI_URL}${m.url}`;
+};
+
+const linksOf = (ls?: StrapiLink[]) =>
+  (ls ?? []).map((l) => ({ label: l.label, href: l.href ?? '#', isExternal: l.isExternal }));
+
 export default function MembershipPage() {
+  const [data, setData] = useState<StrapiMembershipPage | null>(null);
+  const [faqs, setFaqs] = useState<StrapiFaqItem[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const [page, faqList] = await Promise.all([
+        fetchAPI<StrapiMembershipPage>('/membership-page'),
+        fetchAPI<StrapiFaqItem[]>('/faq-items', {
+          'filters[category][$eq]': 'membership',
+          'sort[0]': 'order:asc',
+          'pagination[limit]': '10',
+        }),
+      ]);
+      if (cancelled) return;
+      setData(page);
+      setFaqs(faqList ?? []);
+      setLoaded(true);
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  if (!loaded) {
+    return <div className="min-h-screen flex items-center justify-center text-text-dark/50">Loading…</div>;
+  }
+  if (!data) {
+    return <div className="min-h-screen flex items-center justify-center text-text-dark/70">Membership page content unavailable.</div>;
+  }
+
+  const benefitItems = (data.benefits?.features ?? []).map((f) => ({
+    heading: f.heading,
+    description: f.description,
+    image: mediaUrl(f.image),
+  }));
+
+  const programCards = (data.programs?.cards ?? []).map((c) => ({
+    name: c.heading,
+    description: c.description,
+    image: mediaUrl(c.image),
+    cta: c.cta?.label,
+  }));
+
+  const faqItems = faqs.map((f) => ({ question: f.question, answer: '' }));
+
   return (
     <>
-      <Hero
-        heading="Membership"
-        subheading="A diverse, close-knit community founded on the values of freedom, inclusivity and friendship."
-        variant="compact"
-      />
+      {data.hero && (
+        <Hero
+          heading={data.hero.heading}
+          subheading={data.hero.subheading}
+          backgroundImage={mediaUrl(data.hero.backgroundImage)}
+          variant={data.hero.variant ?? 'compact'}
+        />
+      )}
 
-      <CtaBanner
-        heading="Join Our Community"
-        body="The American Club is more than a social club \u2013 it's a welcoming community where Members and their families connect, unwind, and belong."
-        ctas={[{ label: 'Start Your Application' }]}
-        variant="light"
-      />
+      {data.joinCta && (
+        <CtaBanner
+          heading={data.joinCta.heading}
+          body={data.joinCta.body ?? ''}
+          variant={data.joinCta.variant === 'default' ? undefined : data.joinCta.variant}
+          ctas={linksOf(data.joinCta.ctas)}
+        />
+      )}
 
-      <TextBlock
-        heading="A Home Away From Home"
-        body="Designed for American, Canadian and international families in Singapore, the Club offers a seamless blend of comfort, culture, and convenience."
-      />
+      {data.intro && (
+        <TextBlock heading={data.intro.heading} body={data.intro.body} />
+      )}
 
-      <FeatureGrid
-        items={[
-          { heading: 'World-class Facilities', description: 'The Club offers thoughtfully designed facilities and amenities for every lifestyle.' },
-          { heading: 'Exceptional Dining', description: 'Savor American comfort food and classic favorites, complemented by diverse dining concepts and seasonal menus across the Club.' },
-          { heading: 'Signature Events', description: 'Enjoy a vibrant calendar of American, Canadian, and local celebrations that bring the feeling of home to life all year round.' },
-          { heading: 'Where Kids Thrive', description: 'Engaging kids\u2019 camps, enrichment classes, youth activities and spaces that support learning, play, and friendship.' },
-          { heading: 'Community & Connection', description: 'Build meaningful relationships through shared experiences, multi-generational programming, and a strong sense of belonging.' },
-          { heading: '150+ Reciprocal Clubs', description: 'Your membership extends worldwide, with reciprocal clubs offering the same warm welcome wherever your travels take you.' },
-        ]}
-      />
+      {benefitItems.length > 0 && (
+        <FeatureGrid items={benefitItems} />
+      )}
 
-      <CtaBanner
-        heading="Find the Right Membership for You"
-        body="The American Club offers a range of membership options. Membership is open to individuals aged 21 and above."
-        ctas={[
-          { label: 'Membership Types & Joining Fees' },
-          { label: 'Book a Club Tour' },
-        ]}
-      />
+      {data.findRightCta && (
+        <CtaBanner
+          heading={data.findRightCta.heading}
+          body={data.findRightCta.body ?? ''}
+          variant={data.findRightCta.variant === 'default' ? undefined : data.findRightCta.variant}
+          ctas={linksOf(data.findRightCta.ctas)}
+        />
+      )}
 
-      <CardGrid
-        columns={3}
-        items={[
-          { name: 'Refer & Be Rewarded', description: 'Extend the privilege of membership to your family and friends, and enjoy exclusive rewards through our referral program.', cta: 'Learn More' },
-          { name: 'The Eagle Rewards Program', description: 'A tiered rewards experience that offers elevated recognition and privileges as you enjoy more of the Club.', cta: 'Learn More' },
-          { name: 'Reciprocal Clubs', description: 'Enjoy privileged access to over 150 distinguished private clubs worldwide.', cta: 'Learn More' },
-        ]}
-      />
+      {programCards.length > 0 && (
+        <CardGrid columns={3} items={programCards} />
+      )}
 
-      <FaqAccordion
-        heading="Your Questions, Answered"
-        subheading="Everything you need to know about joining, including types, fees, and standard policies."
-        ctas={[
-          { label: 'View All FAQ' },
-          { label: 'Enquiries' },
-        ]}
-        items={[
-          { question: 'What types of membership do you offer?', answer: '' },
-          { question: 'What facilities and services are included?', answer: '' },
-          { question: 'Is membership transferable?', answer: '' },
-          { question: 'Can I upgrade or change my membership type?', answer: '' },
-        ]}
-      />
+      {data.faq && faqItems.length > 0 && (
+        <FaqAccordion
+          heading={data.faq.heading ?? 'Your Questions, Answered'}
+          ctas={linksOf(data.faq.ctas)}
+          items={faqItems}
+        />
+      )}
 
-      <CtaBanner
-        heading="Begin Your Membership Journey"
-        body="Take the first step toward life at Singapore's premier social club."
-        ctas={[
-          { label: 'Start Your Application' },
-          { label: 'Book a Club Tour' },
-        ]}
-      />
+      {data.beginJourneyCta && (
+        <CtaBanner
+          heading={data.beginJourneyCta.heading}
+          body={data.beginJourneyCta.body ?? ''}
+          variant={data.beginJourneyCta.variant === 'default' ? undefined : data.beginJourneyCta.variant}
+          ctas={linksOf(data.beginJourneyCta.ctas)}
+        />
+      )}
     </>
   );
 }

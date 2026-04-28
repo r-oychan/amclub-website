@@ -23,7 +23,7 @@
     },
     "variant": {
       "type": "enumeration",
-      "enum": ["default", "dark", "accent"],
+      "enum": ["default", "light", "dark", "accent"],
       "default": "default"
     }
   }

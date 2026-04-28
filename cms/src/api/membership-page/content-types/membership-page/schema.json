@@ -15,9 +15,45 @@
       "type": "string",
       "required": true
     },
-    "content": {
-      "type": "dynamiczone",
-      "components": ["blocks.hero","blocks.text-block","blocks.stats-counter","blocks.card-grid","blocks.cta-banner","blocks.feature-grid","blocks.event-listing","blocks.testimonial-slider","blocks.faq-section","blocks.team-grid","blocks.tabs-section"]
+    "hero": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.hero"
+    },
+    "joinCta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.cta-banner"
+    },
+    "intro": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.text-block"
+    },
+    "benefits": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.feature-grid"
+    },
+    "findRightCta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.cta-banner"
+    },
+    "programs": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.card-grid"
+    },
+    "faq": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.faq-section"
+    },
+    "beginJourneyCta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.cta-banner"
     },
     "seo": {
       "type": "component",
