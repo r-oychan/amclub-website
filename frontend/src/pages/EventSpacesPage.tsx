@@ -5,6 +5,7 @@ import { CtaBanner } from '../components/blocks/CtaBanner';
 import { PrivateEventPackages } from '../components/event-spaces/PrivateEventPackages';
 import { DistinctiveEventSpaces } from '../components/event-spaces/DistinctiveEventSpaces';
 import { OffsiteCateringServices } from '../components/event-spaces/OffsiteCateringServices';
+import { PageFade } from '../components/shared/PageFade';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string };
@@ -54,7 +55,7 @@ export default function EventSpacesPage() {
     return () => { cancelled = true; };
   }, []);
 
-  if (!loaded) return <div className="min-h-screen flex items-center justify-center text-text-dark/50">Loading…</div>;
+  if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
   if (!data) return <div className="min-h-screen flex items-center justify-center text-text-dark/70">Event spaces page content unavailable.</div>;
 
   const packages = (data.privatePackages?.items ?? []).map((p) => ({
@@ -90,7 +91,7 @@ export default function EventSpacesPage() {
   } : undefined;
 
   return (
-    <>
+    <PageFade loaded={loaded}>
       {data.hero && (
         <Hero
           heading={data.hero.heading}
@@ -136,6 +137,6 @@ export default function EventSpacesPage() {
           ctas={linksOf(data.finalCta.ctas)}
         />
       )}
-    </>
+    </PageFade>
   );
 }

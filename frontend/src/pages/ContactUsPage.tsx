@@ -6,6 +6,7 @@ import { MapGettingHere } from '../components/contact/MapGettingHere';
 import { OutletOperatingHours } from '../components/contact/OutletOperatingHours';
 import { TalkToUsBanner } from '../components/contact/TalkToUsBanner';
 import type { ContactInfo, OutletGroup } from '../data/contactUs';
+import { PageFade } from '../components/shared/PageFade';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string };
@@ -43,7 +44,7 @@ export default function ContactUsPage() {
     return () => { cancelled = true; };
   }, []);
 
-  if (!loaded) return <div className="min-h-screen flex items-center justify-center text-text-dark/50">Loading…</div>;
+  if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
   if (!data) return <div className="min-h-screen flex items-center justify-center text-text-dark/70">Contact page content unavailable.</div>;
 
   const contactInfo: ContactInfo = {
@@ -57,7 +58,7 @@ export default function ContactUsPage() {
   const outletGroups = data.outletGroups ?? [];
 
   return (
-    <>
+    <PageFade loaded={loaded}>
       <DetailHeroBanner imageUrl={mediaUrl(data.heroImage)} />
       <DetailBreadcrumb parentLabel="The American Club" parentHref="/home" currentName="Contact Us" />
       <MapGettingHere info={contactInfo} />
@@ -65,6 +66,6 @@ export default function ContactUsPage() {
         <OutletOperatingHours groups={outletGroups} defaultGroupId={outletGroups[0].id} />
       )}
       <TalkToUsBanner />
-    </>
+    </PageFade>
   );
 }

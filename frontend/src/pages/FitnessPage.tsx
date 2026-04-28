@@ -4,6 +4,7 @@ import { Hero } from '../components/blocks/Hero';
 import { CtaBanner } from '../components/blocks/CtaBanner';
 import { OverlaySection } from '../components/blocks/OverlaySection';
 import { ThreeColGrid } from '../components/blocks/ThreeColGrid';
+import { PageFade } from '../components/shared/PageFade';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string; bordered?: boolean };
@@ -80,7 +81,7 @@ export default function FitnessPage() {
     return () => { cancelled = true; };
   }, []);
 
-  if (!loaded) return <div className="min-h-screen flex items-center justify-center text-text-dark/50">Loading…</div>;
+  if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
   if (!data) return <div className="min-h-screen flex items-center justify-center text-text-dark/70">Fitness page content unavailable.</div>;
 
   const overlays: { key: string; props: ReturnType<typeof overlayProps> }[] = [
@@ -103,7 +104,7 @@ export default function FitnessPage() {
   const bowlingP = overlayProps(data.bowling);
 
   return (
-    <>
+    <PageFade loaded={loaded}>
       {data.hero && (
         <Hero
           heading={data.hero.heading}
@@ -132,6 +133,6 @@ export default function FitnessPage() {
           ctas={linksOf(data.finalCta.ctas)}
         />
       )}
-    </>
+    </PageFade>
   );
 }

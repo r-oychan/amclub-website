@@ -3,6 +3,7 @@ import { fetchAPI, STRAPI_URL } from '../lib/api';
 import { Hero } from '../components/blocks/Hero';
 import { CtaBanner } from '../components/blocks/CtaBanner';
 import { Button } from '../components/shared/Button';
+import { PageFade } from '../components/shared/PageFade';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string };
@@ -67,11 +68,11 @@ export default function WhatsOnPage() {
     return events.filter((e) => e.category?.name === activeCategory);
   }, [events, activeCategory]);
 
-  if (!loaded) return <div className="min-h-screen flex items-center justify-center text-text-dark/50">Loading…</div>;
+  if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
   if (!data) return <div className="min-h-screen flex items-center justify-center text-text-dark/70">What's On page content unavailable.</div>;
 
   return (
-    <>
+    <PageFade loaded={loaded}>
       {data.hero && (
         <Hero
           heading={data.hero.heading}
@@ -142,6 +143,6 @@ export default function WhatsOnPage() {
           ctas={(data.finalCta.ctas ?? []).map((c) => ({ label: c.label, href: c.href ?? '#', isExternal: c.isExternal }))}
         />
       )}
-    </>
+    </PageFade>
   );
 }

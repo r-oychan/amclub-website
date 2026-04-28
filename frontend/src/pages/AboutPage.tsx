@@ -11,6 +11,7 @@ import { AwardsGrid } from '../components/blocks/AwardsGrid';
 import { HeritageTimeline } from '../components/blocks/HeritageTimeline';
 import { GovernanceBlock } from '../components/blocks/GovernanceBlock';
 import { ManagementSlider } from '../components/blocks/ManagementSlider';
+import { PageFade } from '../components/shared/PageFade';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string; caption?: string };
@@ -99,12 +100,8 @@ export default function AboutPage() {
     return () => { cancelled = true; };
   }, []);
 
-  if (!loaded) {
-    return <div className="min-h-screen flex items-center justify-center text-text-dark/50">Loading…</div>;
-  }
-  if (!data) {
-    return <div className="min-h-screen flex items-center justify-center text-text-dark/70">About page content unavailable.</div>;
-  }
+  if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
+  if (!data) return <div className="min-h-screen flex items-center justify-center text-text-dark/70">About page content unavailable.</div>;
 
   const heritageSlides = (data.heritage?.slides ?? []).map((s) => ({
     year: s.year,
@@ -127,7 +124,7 @@ export default function AboutPage() {
   }));
 
   return (
-    <>
+    <PageFade loaded={loaded}>
       {data.hero && (
         <Hero
           heading={data.hero.heading}
@@ -232,6 +229,6 @@ export default function AboutPage() {
           ctas={(data.ctaBanner.ctas ?? []).map((c) => ({ label: c.label, href: c.href ?? '#' }))}
         />
       )}
-    </>
+    </PageFade>
   );
 }

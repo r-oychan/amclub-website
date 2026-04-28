@@ -3,6 +3,7 @@ import { Link } from 'react-router';
 import { fetchAPI, STRAPI_URL } from '../lib/api';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
 import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
+import { PageFade } from '../components/shared/PageFade';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 
@@ -53,13 +54,13 @@ export default function GalleryPage() {
     return () => { cancelled = true; };
   }, []);
 
-  if (!loaded) return <div className="min-h-screen flex items-center justify-center text-text-dark/50">Loading…</div>;
+  if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
 
   const visible = albums.slice(0, visibleCount);
   const canLoadMore = visibleCount < albums.length;
 
   return (
-    <>
+    <PageFade loaded={loaded}>
       <DetailHeroBanner imageUrl={mediaUrl(data?.heroImage)} />
 
       <DetailBreadcrumb parentLabel="The American Club" parentHref="/home" currentName="Gallery" />
@@ -125,6 +126,6 @@ export default function GalleryPage() {
           )}
         </div>
       </section>
-    </>
+    </PageFade>
   );
 }

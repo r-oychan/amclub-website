@@ -7,6 +7,7 @@ import { FeatureGrid } from '../components/blocks/FeatureGrid';
 import { TabsSection } from '../components/blocks/TabsSection';
 import { TestimonialSlider } from '../components/blocks/TestimonialSlider';
 import { FaqAccordion } from '../components/blocks/FaqAccordion';
+import { PageFade } from '../components/shared/PageFade';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string };
@@ -141,14 +142,11 @@ export default function HomePage() {
     return () => { cancelled = true; };
   }, []);
 
-  if (!loaded) {
-    return <div className="min-h-screen flex items-center justify-center text-text-dark/50">Loading…</div>;
-  }
-  if (!data) {
+  if (loaded && !data) {
     return <div className="min-h-screen flex items-center justify-center text-text-dark/70">Home page content unavailable.</div>;
   }
 
-  const hero = data.hero;
+  const hero = data?.hero;
   const heroSlides = (hero?.slides ?? []).map((s) => ({
     backgroundImage: mediaUrl(s.backgroundImage) ?? '',
     title: s.title,
@@ -158,7 +156,7 @@ export default function HomePage() {
     cta: link(s.cta),
   }));
 
-  const about = data.aboutSection;
+  const about = data?.aboutSection;
   const aboutImages = (about?.images ?? []).map((m) => mediaUrl(m) ?? '').filter(Boolean);
 
   const evs = events ?? [];
@@ -169,21 +167,21 @@ export default function HomePage() {
     image: mediaUrl(e.image),
   }));
 
-  const services = data.services;
+  const services = data?.services;
   const serviceItems = (services?.features ?? []).map((f) => ({
     heading: f.heading,
     description: f.description,
     image: mediaUrl(f.image),
   }));
 
-  const exp = data.experience;
+  const exp = data?.experience;
   const expItems = (exp?.tabs ?? []).map((t) => ({
     label: t.label,
     href: t.href,
     image: mediaUrl(t.image),
   }));
 
-  const moments = data.moments;
+  const moments = data?.moments;
   const momentItems = (moments?.testimonials ?? []).map((t) => ({
     name: t.memberName,
     quote: t.quote,
@@ -192,12 +190,12 @@ export default function HomePage() {
     href: t.ctaUrl,
   }));
 
-  const faq = data.faq;
+  const faq = data?.faq;
   const faqItems = (faq?.items ?? []).map((i) => ({ question: i.question, answer: '' }));
   const faqCtas = (faq?.ctas ?? []).map((c) => ({ label: c.label, href: c.href ?? '#' }));
 
   return (
-    <>
+    <PageFade loaded={loaded}>
       {hero && (
         <Hero
           heading={hero.heading}
@@ -223,7 +221,7 @@ export default function HomePage() {
         />
       )}
 
-      {data.events && eventCards.length > 0 && (
+      {data?.events && eventCards.length > 0 && (
         <CardGrid
           label={data.events.label}
           heading={data.events.heading}
@@ -268,6 +266,6 @@ export default function HomePage() {
           items={faqItems}
         />
       )}
-    </>
+    </PageFade>
   );
 }

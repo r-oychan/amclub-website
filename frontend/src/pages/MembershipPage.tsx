@@ -6,6 +6,7 @@ import { TextBlock } from '../components/blocks/TextBlock';
 import { FeatureGrid } from '../components/blocks/FeatureGrid';
 import { CardGrid } from '../components/blocks/CardGrid';
 import { FaqAccordion } from '../components/blocks/FaqAccordion';
+import { PageFade } from '../components/shared/PageFade';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string };
@@ -68,12 +69,8 @@ export default function MembershipPage() {
     return () => { cancelled = true; };
   }, []);
 
-  if (!loaded) {
-    return <div className="min-h-screen flex items-center justify-center text-text-dark/50">Loading…</div>;
-  }
-  if (!data) {
-    return <div className="min-h-screen flex items-center justify-center text-text-dark/70">Membership page content unavailable.</div>;
-  }
+  if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
+  if (!data) return <div className="min-h-screen flex items-center justify-center text-text-dark/70">Membership page content unavailable.</div>;
 
   const benefitItems = (data.benefits?.features ?? []).map((f) => ({
     heading: f.heading,
@@ -91,7 +88,7 @@ export default function MembershipPage() {
   const faqItems = faqs.map((f) => ({ question: f.question, answer: '' }));
 
   return (
-    <>
+    <PageFade loaded={loaded}>
       {data.hero && (
         <Hero
           heading={data.hero.heading}
@@ -147,6 +144,6 @@ export default function MembershipPage() {
           ctas={linksOf(data.beginJourneyCta.ctas)}
         />
       )}
-    </>
+    </PageFade>
   );
 }

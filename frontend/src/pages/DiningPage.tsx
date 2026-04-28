@@ -6,6 +6,7 @@ import { CtaBanner } from '../components/blocks/CtaBanner';
 import { OverlaySection } from '../components/blocks/OverlaySection';
 import { RestaurantCard } from '../components/dining/RestaurantCard';
 import { PromoCell } from '../components/dining/PromoCell';
+import { PageFade } from '../components/shared/PageFade';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string };
@@ -83,7 +84,7 @@ export default function DiningPage() {
     return () => { cancelled = true; };
   }, []);
 
-  if (!loaded) return <div className="min-h-screen flex items-center justify-center text-text-dark/50">Loading…</div>;
+  if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
   if (!data) return <div className="min-h-screen flex items-center justify-center text-text-dark/70">Dining page content unavailable.</div>;
 
   const venues = restaurants.map((r) => ({
@@ -123,7 +124,7 @@ export default function DiningPage() {
   } : null;
 
   return (
-    <>
+    <PageFade loaded={loaded}>
       {data.hero && (
         <Hero
           heading={data.hero.heading}
@@ -210,6 +211,6 @@ export default function DiningPage() {
           ctas={linksOf(data.finalCta.ctas)}
         />
       )}
-    </>
+    </PageFade>
   );
 }
