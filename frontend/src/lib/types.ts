@@ -104,6 +104,11 @@ export interface TabItem {
   image?: string;
 }
 
+export interface CollageImage {
+  src: string;
+  alt?: string;
+}
+
 export interface CtaButton {
   label: string;
   href?: string;

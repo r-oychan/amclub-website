@@ -80,8 +80,12 @@ export function HeroCarousel({
                     <div className={`absolute flex flex-col max-w-2xl lg:max-w-3xl ${ZONE_CLASSES[slideTitlePos]}`}>
                       {slide.title && (
                         <h1
-                          className="font-heading italic font-light text-[2.5rem] xl:text-[5.6rem] leading-none tracking-[-0.04em] text-bg mb-4"
-                          style={slide.titleColor ? { color: slide.titleColor } : undefined}
+                          className="font-heading italic text-[2.5rem] xl:text-[90px] leading-none tracking-[-0.04em] text-bg mb-4"
+                          style={{
+                            fontWeight: 600,
+                            fontFeatureSettings: '"cv01", "cv05", "cv09", "cv11", "ss03"',
+                            ...(slide.titleColor ? { color: slide.titleColor } : {}),
+                          }}
                         >
                           {slide.title}
                         </h1>
@@ -90,15 +94,23 @@ export function HeroCarousel({
                         slide.subtitleLink ? (
                           <Link
                             to={slide.subtitleLink}
-                            className="font-body text-[1.1rem] xl:text-[1.3rem] leading-[1.4] mb-6 max-w-md underline-offset-4 hover:underline"
-                            style={{ color: slide.subtitleColor ?? '#FFFFFF' }}
+                            className="font-heading italic text-[20.8px] leading-[1.4] mb-6 max-w-md underline-offset-4 hover:underline"
+                            style={{
+                              fontWeight: 600,
+                              fontFeatureSettings: '"cv01", "cv05", "cv09", "cv11", "ss03"',
+                              color: slide.subtitleColor ?? '#FFFFFF',
+                            }}
                           >
                             {slide.subtitle}
                           </Link>
                         ) : (
                           <p
-                            className="font-body text-[1.1rem] xl:text-[1.3rem] leading-[1.4] mb-6 max-w-md"
-                            style={{ color: slide.subtitleColor ?? '#FFFFFF' }}
+                            className="font-heading italic text-[20.8px] leading-[1.4] mb-6 max-w-md"
+                            style={{
+                              fontWeight: 600,
+                              fontFeatureSettings: '"cv01", "cv05", "cv09", "cv11", "ss03"',
+                              color: slide.subtitleColor ?? '#FFFFFF',
+                            }}
                           >
                             {slide.subtitle}
                           </p>
@@ -109,7 +121,7 @@ export function HeroCarousel({
                           label={slide.cta.label}
                           href={slide.cta.href}
                           variant="white"
-                          className="uppercase tracking-[0.1em] self-start"
+                          className="uppercase tracking-[0.1em] text-[13.6px] self-start"
                           iconRight={<HeroArrowIcon />}
                         />
                       )}
@@ -120,8 +132,12 @@ export function HeroCarousel({
                       {slide.title && (
                         <div className={`absolute flex flex-col max-w-2xl lg:max-w-3xl ${ZONE_CLASSES[slideTitlePos]}`}>
                           <h1
-                            className="font-heading italic font-light text-[2.5rem] xl:text-[5.6rem] leading-none tracking-[-0.04em] text-bg"
-                            style={slide.titleColor ? { color: slide.titleColor } : undefined}
+                            className="font-heading italic text-[2.5rem] xl:text-[90px] leading-none tracking-[-0.04em] text-bg"
+                            style={{
+                              fontWeight: 600,
+                              fontFeatureSettings: '"cv01", "cv05", "cv09", "cv11", "ss03"',
+                              ...(slide.titleColor ? { color: slide.titleColor } : {}),
+                            }}
                           >
                             {slide.title}
                           </h1>
@@ -133,15 +149,23 @@ export function HeroCarousel({
                             slide.subtitleLink ? (
                               <Link
                                 to={slide.subtitleLink}
-                                className="font-body text-[1.1rem] xl:text-[1.3rem] leading-[1.4] mb-6 underline-offset-4 hover:underline"
-                                style={{ color: slide.subtitleColor ?? '#FFFFFF' }}
+                                className="font-heading italic text-[20.8px] leading-[1.4] mb-6 underline-offset-4 hover:underline"
+                                style={{
+                                  fontWeight: 600,
+                                  fontFeatureSettings: '"cv01", "cv05", "cv09", "cv11", "ss03"',
+                                  color: slide.subtitleColor ?? '#FFFFFF',
+                                }}
                               >
                                 {slide.subtitle}
                               </Link>
                             ) : (
                               <p
-                                className="font-body text-[1.1rem] xl:text-[1.3rem] leading-[1.4] mb-6"
-                                style={{ color: slide.subtitleColor ?? '#FFFFFF' }}
+                                className="font-heading italic text-[20.8px] leading-[1.4] mb-6"
+                                style={{
+                                  fontWeight: 600,
+                                  fontFeatureSettings: '"cv01", "cv05", "cv09", "cv11", "ss03"',
+                                  color: slide.subtitleColor ?? '#FFFFFF',
+                                }}
                               >
                                 {slide.subtitle}
                               </p>
@@ -152,7 +176,7 @@ export function HeroCarousel({
                               label={slide.cta.label}
                               href={slide.cta.href}
                               variant="white"
-                              className="uppercase tracking-[0.1em] self-end"
+                              className="uppercase tracking-[0.1em] text-[13.6px] self-end"
                               iconRight={<HeroArrowIcon />}
                             />
                           )}

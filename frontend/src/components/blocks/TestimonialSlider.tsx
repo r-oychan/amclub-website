@@ -152,19 +152,19 @@ function MomentCard({ item }: { item: TestimonialItem }) {
       )}
       <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/70" />
 
-      {/* Instagram name pill — top-left */}
-      <div className="absolute top-4 left-4 inline-flex items-center gap-2 rounded-full bg-black/35 backdrop-blur-sm px-3 py-1.5 text-white">
+      {/* Instagram name pill — top, centered, translucent white */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 inline-flex items-center gap-2 rounded-full bg-white/25 backdrop-blur-md px-5 py-2.5 text-white">
         <InstagramIcon />
-        <span className="font-body text-xs font-semibold">{item.name}</span>
+        <span className="font-body text-xs font-semibold whitespace-nowrap">{item.name}</span>
       </div>
 
-      {/* Quote + Watch More — bottom */}
-      <div className="absolute left-0 right-0 bottom-0 p-5 flex flex-col gap-4">
-        <p className="font-heading italic text-lg md:text-xl leading-snug text-white">
+      {/* Quote + Watch More — bottom, centered */}
+      <div className="absolute left-0 right-0 bottom-0 p-5 flex flex-col items-center gap-4">
+        <p className="font-body text-[25.6px] leading-snug text-white text-center">
           &ldquo;{item.quote}&rdquo;
         </p>
         {item.cta && (
-          <span className="inline-flex items-center gap-2 font-body text-[14.4px] font-bold uppercase tracking-[0.04em] text-white">
+          <span className="inline-flex items-center gap-2 font-body text-[14.4px] font-bold uppercase tracking-[0.04em] text-white text-center">
             {item.cta}
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0 text-secondary" aria-hidden="true">
               <path

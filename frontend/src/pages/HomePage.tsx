@@ -57,6 +57,7 @@ type StrapiTabsSection = {
   heading?: string;
   dark?: boolean;
   tabs?: { label: string; href?: string; isExternal?: boolean; image?: StrapiMedia }[];
+  collageImages?: StrapiMedia[];
 };
 type StrapiTestimonial = {
   documentId: string;
@@ -180,6 +181,9 @@ export default function HomePage() {
     href: t.href,
     image: mediaUrl(t.image),
   }));
+  const expCollage = (exp?.collageImages ?? [])
+    .map((m) => ({ src: mediaUrl(m) ?? '', alt: m.alternativeText ?? '' }))
+    .filter((c) => c.src);
 
   const moments = data?.moments;
   const momentItems = (moments?.testimonials ?? []).map((t) => ({
@@ -246,6 +250,7 @@ export default function HomePage() {
           label={exp.label}
           heading={exp.heading ?? ''}
           items={expItems}
+          collageImages={expCollage}
         />
       )}
 

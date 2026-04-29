@@ -12,7 +12,7 @@ export function SectionLabel({
       <div className="w-1 h-5 shrink-0 bg-accent rounded-full mt-[2px]" />
       <span
         className={`font-body text-[14.4px] font-bold uppercase tracking-[0.04em] leading-tight ${
-          dark ? 'text-white/85' : 'text-text-dark'
+          dark ? 'text-secondary' : 'text-text-dark'
         }`}
       >
         {label}

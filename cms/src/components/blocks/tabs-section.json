@@ -17,6 +17,11 @@
       "repeatable": true,
       "component": "shared.tab-item"
     },
+    "collageImages": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["images"]
+    },
     "dark": {
       "type": "boolean",
       "default": false

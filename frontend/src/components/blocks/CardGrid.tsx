@@ -65,17 +65,17 @@ function EventMarquee({ items }: { items: CardItem[] }) {
   return (
     <div className="relative w-full overflow-hidden mt-4 group">
       <div
-        className="flex gap-6 w-max animate-marquee-ltr group-hover:[animation-play-state:paused]"
-        style={{ animation: 'marquee-ltr 60s linear infinite' }}
+        className="flex gap-6 w-max group-hover:[animation-play-state:paused]"
+        style={{ animation: 'marquee-rtl 60s linear infinite' }}
       >
         {loop.map((item, i) => (
           <EventCard key={i} item={item} />
         ))}
       </div>
       <style>{`
-        @keyframes marquee-ltr {
-          from { transform: translateX(-50%); }
-          to { transform: translateX(0%); }
+        @keyframes marquee-rtl {
+          from { transform: translateX(0%); }
+          to { transform: translateX(-50%); }
         }
       `}</style>
     </div>
@@ -98,7 +98,7 @@ function EventCard({ item }: { item: CardItem }) {
               <span className="font-body text-[13.6px] font-normal uppercase text-primary tracking-[0.04em] leading-none">
                 {month}
               </span>
-              <span className="block h-px w-[33px] bg-primary/25 my-1.5" />
+              <span className="block h-px w-[33px] bg-accent my-1.5" />
               <span className="font-heading italic text-[28.8px] font-light text-primary leading-none">
                 {day}
               </span>
@@ -107,11 +107,11 @@ function EventCard({ item }: { item: CardItem }) {
         </div>
       )}
       {item.category && (
-        <span className="inline-block bg-primary text-white font-body text-[11.2px] font-normal uppercase tracking-[0.04em] px-3.5 py-1.5 rounded-full mb-3">
+        <span className="inline-block bg-primary text-white font-body text-[11.2px] font-normal uppercase tracking-[0.04em] px-3.5 py-0.5 rounded-full mb-3">
           {item.category}
         </span>
       )}
-      <h3 className="font-body text-[17.6px] font-light text-primary leading-[1.4]">{item.title}</h3>
+      <h3 className="font-body text-[17.6px] font-bold text-primary leading-[1.4]">{item.title}</h3>
     </div>
   );
 }

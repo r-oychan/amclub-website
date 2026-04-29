@@ -154,8 +154,8 @@ export function AboutSection({
                 <div className="flex gap-4">
                   <div className="w-1 shrink-0 bg-accent rounded-full" />
                   <div>
-                    <p className="font-bold text-text-dark text-sm mb-1">Did You Know?</p>
-                    <p className="text-text-dark/70 text-sm leading-relaxed">
+                    <p className="font-body font-bold text-primary text-[19.2px] leading-tight mb-1">Did You Know?</p>
+                    <p className="font-body text-primary text-[17.6px] leading-relaxed">
                       {funFact.replace(/^Did You Know\?\s*/i, '')}
                     </p>
                   </div>
