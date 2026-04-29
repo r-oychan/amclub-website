@@ -139,7 +139,8 @@ const mediaContainer = new azure.storage.BlobContainer(
     publicAccess: azure.storage.PublicAccess.Blob,
   },
   {
-    import: pulumi.interpolate`/subscriptions/6855c00a-1875-4445-b978-0b42483d5b5c/resourceGroups/${rg.name}/providers/Microsoft.Storage/storageAccounts/${storage.name}/blobServices/default/containers/media`,
+    import:
+      '/subscriptions/6855c00a-1875-4445-b978-0b42483d5b5c/resourceGroups/amclub-rg844202e8/providers/Microsoft.Storage/storageAccounts/amclubdata28a57492/blobServices/default/containers/media',
   },
 );
 
