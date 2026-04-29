@@ -85,18 +85,24 @@ export function FaqAccordion({
                         <PlusIcon />
                       </span>
                     </button>
-                    {/* Answer is always rendered. When closed it's clamped to a
-                        single line with an ellipsis preview; when open it shows
-                        in full with a slide-down transition. */}
-                    {item.answer && (
-                      <div
-                        className={`pb-6 pr-12 font-body text-[1rem] leading-[1.6] transition-all duration-300 ease-out ${answerColor} ${
-                          isOpen ? '' : 'line-clamp-1'
-                        }`}
-                      >
-                        {item.answer}
+                    {/* Sliding answer panel: closed = hidden (rows 0fr); open
+                        = full content (rows 1fr). Inner div hides overflow so
+                        the height animation is smooth. */}
+                    <div
+                      className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+                        isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                      }`}
+                    >
+                      <div className="overflow-hidden">
+                        {item.answer && (
+                          <div
+                            className={`pb-6 pr-12 font-body text-[1rem] leading-[1.6] ${answerColor}`}
+                          >
+                            {item.answer}
+                          </div>
+                        )}
                       </div>
-                    )}
+                    </div>
                   </li>
                 );
               })}

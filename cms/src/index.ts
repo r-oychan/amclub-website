@@ -58,6 +58,55 @@ async function grantPublicReadAccess(strapi: any) {
   }
 }
 
+// Diagnostic + auto-fix: if the hero-slide schema knows about backgroundVideo
+// and a hero-video.mp4 media exists in the library but slide 0 has no video
+// set, attach it. Idempotent — no-ops once set.
+async function ensureHeroSlide0Video(strapi: any) {
+  const heroSlideSchema = strapi.components?.['shared.hero-slide'];
+  const attrs = heroSlideSchema?.attributes;
+  const attrKeys = attrs ? Object.keys(attrs) : [];
+  strapi.log.info(`[bootstrap] hero-slide loaded attrs: ${attrKeys.join(',') || '<none>'}`);
+  if (!attrs || !('backgroundVideo' in attrs)) {
+    strapi.log.warn('[bootstrap] hero-slide.backgroundVideo missing from in-memory schema; skipping video seed');
+    return;
+  }
+
+  const videoFile = await strapi.db.query('plugin::upload.file').findOne({
+    where: { name: 'hero-video.mp4' },
+  });
+  if (!videoFile) {
+    strapi.log.warn('[bootstrap] hero-video.mp4 not in media library; skipping');
+    return;
+  }
+
+  const homepage = await strapi.documents('api::home-page.home-page').findFirst({
+    populate: { hero: { populate: { slides: { populate: '*' } } } },
+  });
+  if (!homepage) {
+    strapi.log.warn('[bootstrap] home-page entry not found');
+    return;
+  }
+  const slides = homepage.hero?.slides ?? [];
+  if (slides.length === 0) {
+    strapi.log.warn('[bootstrap] hero has no slides yet');
+    return;
+  }
+  if (slides[0].backgroundVideo) {
+    return;
+  }
+
+  const updatedSlides = slides.map((s: any, i: number) => {
+    const { id: _id, ...rest } = s;
+    return i === 0 ? { ...rest, backgroundVideo: videoFile.id } : rest;
+  });
+
+  await strapi.documents('api::home-page.home-page').update({
+    documentId: homepage.documentId,
+    data: { hero: { ...homepage.hero, slides: updatedSlides } },
+  });
+  strapi.log.info(`[bootstrap] attached hero-video.mp4 (id ${videoFile.id}) to slide 0`);
+}
+
 export default {
   register() {},
   async bootstrap({ strapi }: { strapi: any }) {
@@ -65,6 +114,11 @@ export default {
       await grantPublicReadAccess(strapi);
     } catch (e) {
       strapi.log.error('[bootstrap] failed to grant public read access', e);
+    }
+    try {
+      await ensureHeroSlide0Video(strapi);
+    } catch (e) {
+      strapi.log.error('[bootstrap] failed to seed hero slide video', e);
     }
   },
 };
