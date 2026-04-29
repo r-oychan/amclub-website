@@ -21,13 +21,7 @@ WORKDIR /build
 COPY cms/package*.json ./
 RUN npm ci
 COPY cms/ ./
-# Cache-bust: bump the value below to force a fresh `strapi build` and
-# guarantee dist/ reflects the latest component schemas. Strapi v5 reads
-# component definitions from dist/src/components/ at startup, so a stale
-# dist means new attributes (backgroundVideo, collageImages, etc.) silently
-# go missing in the API.
-ARG CMS_BUILD_BUST=2026-04-29T1
-RUN echo "$CMS_BUILD_BUST" > /tmp/.build-bust && NODE_ENV=production npm run build
+RUN NODE_ENV=production npm run build
 
 # ── Stage 3: Production runtime ──────────────────────────────
 FROM node:20-alpine

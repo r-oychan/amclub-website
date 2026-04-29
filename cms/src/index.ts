@@ -58,53 +58,53 @@ async function grantPublicReadAccess(strapi: any) {
   }
 }
 
-// Diagnostic + auto-fix: if the hero-slide schema knows about backgroundVideo
-// and a hero-video.mp4 media exists in the library but slide 0 has no video
-// set, attach it. Idempotent — no-ops once set.
-async function ensureHeroSlide0Video(strapi: any) {
-  const heroSlideSchema = strapi.components?.['shared.hero-slide'];
-  const attrs = heroSlideSchema?.attributes;
-  const attrKeys = attrs ? Object.keys(attrs) : [];
-  strapi.log.info(`[bootstrap] hero-slide loaded attrs: ${attrKeys.join(',') || '<none>'}`);
-  if (!attrs || !('backgroundVideo' in attrs)) {
-    strapi.log.warn('[bootstrap] hero-slide.backgroundVideo missing from in-memory schema; skipping video seed');
-    return;
-  }
+// One-time backfill: existing media files seeded by the content migration
+// script were uploaded with a default Blob (no type), so their mime ended up
+// as 'application/octet-stream'. The Strapi admin Media Library filters by
+// mime category and hides those rows, even though the public site still
+// renders them via URL. This step re-detects the mime from the filename and
+// updates each affected row. Self-disabling: once all rows are fixed, the
+// query returns nothing and the function is a no-op.
+const MIME_BY_EXT: Record<string, string> = {
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  gif: 'image/gif',
+  webp: 'image/webp',
+  avif: 'image/avif',
+  svg: 'image/svg+xml',
+  ico: 'image/x-icon',
+  mp4: 'video/mp4',
+  webm: 'video/webm',
+  mov: 'video/quicktime',
+  pdf: 'application/pdf',
+};
 
-  const videoFile = await strapi.db.query('plugin::upload.file').findOne({
-    where: { name: 'hero-video.mp4' },
-  });
-  if (!videoFile) {
-    strapi.log.warn('[bootstrap] hero-video.mp4 not in media library; skipping');
-    return;
-  }
+function mimeFromFilename(filename: string): string | null {
+  const dot = filename.lastIndexOf('.');
+  if (dot < 0) return null;
+  const ext = filename.slice(dot + 1).toLowerCase();
+  return MIME_BY_EXT[ext] ?? null;
+}
 
-  const homepage = await strapi.documents('api::home-page.home-page').findFirst({
-    populate: { hero: { populate: { slides: { populate: '*' } } } },
+async function backfillUploadMimes(strapi: any) {
+  const stale = await strapi.db.query('plugin::upload.file').findMany({
+    where: { mime: 'application/octet-stream' },
+    select: ['id', 'name', 'ext'],
   });
-  if (!homepage) {
-    strapi.log.warn('[bootstrap] home-page entry not found');
-    return;
-  }
-  const slides = homepage.hero?.slides ?? [];
-  if (slides.length === 0) {
-    strapi.log.warn('[bootstrap] hero has no slides yet');
-    return;
-  }
-  if (slides[0].backgroundVideo) {
-    return;
-  }
+  if (stale.length === 0) return;
 
-  const updatedSlides = slides.map((s: any, i: number) => {
-    const { id: _id, ...rest } = s;
-    return i === 0 ? { ...rest, backgroundVideo: videoFile.id } : rest;
-  });
-
-  await strapi.documents('api::home-page.home-page').update({
-    documentId: homepage.documentId,
-    data: { hero: { ...homepage.hero, slides: updatedSlides } },
-  });
-  strapi.log.info(`[bootstrap] attached hero-video.mp4 (id ${videoFile.id}) to slide 0`);
+  let fixed = 0;
+  for (const f of stale) {
+    const mime = mimeFromFilename(f.name) ?? mimeFromFilename(f.ext ?? '');
+    if (!mime) continue;
+    await strapi.db.query('plugin::upload.file').update({
+      where: { id: f.id },
+      data: { mime },
+    });
+    fixed += 1;
+  }
+  strapi.log.info(`[bootstrap] backfilled mime on ${fixed}/${stale.length} upload row(s)`);
 }
 
 export default {
@@ -116,9 +116,9 @@ export default {
       strapi.log.error('[bootstrap] failed to grant public read access', e);
     }
     try {
-      await ensureHeroSlide0Video(strapi);
+      await backfillUploadMimes(strapi);
     } catch (e) {
-      strapi.log.error('[bootstrap] failed to seed hero slide video', e);
+      strapi.log.error('[bootstrap] failed to backfill upload mimes', e);
     }
   },
 };

@@ -1,6 +1,6 @@
 import * as pulumi from '@pulumi/pulumi';
 import * as azure from '@pulumi/azure-native';
-import * as docker from '@pulumi/docker';
+import * as dockerBuild from '@pulumi/docker-build';
 import * as random from '@pulumi/random';
 
 const location = azure.config.location ?? 'southeastasia';
@@ -120,6 +120,16 @@ const dataShare = new azure.storage.FileShare(`${projectName}-data`, {
   shareQuota: 5,
 });
 
+// Blob container for Strapi Media Library uploads. Public access at the blob
+// level so the frontend can fetch media URLs directly without going through
+// Strapi or signed URLs.
+const mediaContainer = new azure.storage.BlobContainer(`${projectName}-media`, {
+  resourceGroupName: rg.name,
+  accountName: storage.name,
+  containerName: 'media',
+  publicAccess: azure.storage.PublicAccess.Blob,
+});
+
 const storageKey = pulumi
   .all([rg.name, storage.name])
   .apply(([rgName, accountName]) =>
@@ -129,6 +139,8 @@ const storageKey = pulumi
     })
   )
   .apply((k) => k.keys[0].value);
+
+const storageBlobUrl = pulumi.interpolate`https://${storage.name}.blob.core.windows.net`;
 
 // ── Log Analytics ────────────────────────────────────────────
 const logAnalytics = new azure.operationalinsights.Workspace(
@@ -181,19 +193,27 @@ new azure.app.ManagedEnvironmentsStorage(`${projectName}-env-storage`, {
   },
 });
 
-// ── Build Docker image ───────────────────────────────────────
-const appImage = new docker.Image(`${projectName}-app-image`, {
-  imageName: pulumi.interpolate`${registry.loginServer}/${projectName}-app:latest`,
-  build: {
-    context: '..',
-    dockerfile: '../Dockerfile',
-    platform: 'linux/amd64',
-  },
-  registry: {
-    server: registry.loginServer,
-    username: registryUsername,
-    password: registryPassword,
-  },
+// ── Build Docker image with BuildKit registry cache ──────────
+// Cache layers are stored as a separate `:buildcache` tag in ACR.
+// `mode: 'max'` exports cache for all stages (frontend-builder,
+// cms-builder, runtime) so unchanged deps skip rebuild.
+const buildCacheRef = pulumi.interpolate`${registry.loginServer}/${projectName}-app:buildcache`;
+
+const appImage = new dockerBuild.Image(`${projectName}-app-image`, {
+  tags: [pulumi.interpolate`${registry.loginServer}/${projectName}-app:latest`],
+  context: { location: '..' },
+  dockerfile: { location: '../Dockerfile' },
+  platforms: ['linux/amd64'],
+  push: true,
+  cacheFrom: [{ registry: { ref: buildCacheRef } }],
+  cacheTo: [{ registry: { ref: buildCacheRef, mode: 'max' } }],
+  registries: [
+    {
+      address: registry.loginServer,
+      username: registryUsername,
+      password: registryPassword,
+    },
+  ],
 });
 
 // ── Container App (Nginx + Strapi) ───────────────────────────
@@ -225,13 +245,14 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
       { name: 'transfer-token-salt', value: transferTokenSalt.result },
       { name: 'encryption-key', value: encryptionKey.result },
       { name: 'jwt-secret', value: jwtSecret.result },
+      { name: 'storage-account-key', value: storageKey },
     ],
   },
   template: {
     containers: [
       {
         name: 'app',
-        image: appImage.repoDigest,
+        image: appImage.ref,
         resources: {
           cpu: 0.5,
           memory: '1Gi',
@@ -251,6 +272,10 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
           { name: 'TRANSFER_TOKEN_SALT', secretRef: 'transfer-token-salt' },
           { name: 'ENCRYPTION_KEY', secretRef: 'encryption-key' },
           { name: 'JWT_SECRET', secretRef: 'jwt-secret' },
+          { name: 'STORAGE_ACCOUNT', value: storage.name },
+          { name: 'STORAGE_ACCOUNT_KEY', secretRef: 'storage-account-key' },
+          { name: 'STORAGE_URL', value: storageBlobUrl },
+          { name: 'STORAGE_CONTAINER_NAME', value: mediaContainer.name },
         ],
         volumeMounts: [
           {

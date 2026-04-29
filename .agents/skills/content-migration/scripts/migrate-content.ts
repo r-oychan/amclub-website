@@ -235,6 +235,26 @@ const sanitizeFilename = (url: string): string => {
     .replace(/-+/g, '-');
 };
 
+const MIME_BY_EXT: Record<string, string> = {
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  gif: 'image/gif',
+  webp: 'image/webp',
+  avif: 'image/avif',
+  svg: 'image/svg+xml',
+  ico: 'image/x-icon',
+  mp4: 'video/mp4',
+  webm: 'video/webm',
+  mov: 'video/quicktime',
+  pdf: 'application/pdf',
+};
+
+const mimeFromFilename = (filename: string): string => {
+  const ext = path.extname(filename).slice(1).toLowerCase();
+  return MIME_BY_EXT[ext] || 'application/octet-stream';
+};
+
 // --- Content Type Schema Loading ---
 
 const loadContentTypeSchemas = (): Map<string, ContentTypeSchema> => {
@@ -396,7 +416,12 @@ const migrateMedia = async (
     try {
       const fileBuffer = fs.readFileSync(localPath);
       const formData = new FormData();
-      const blob = new Blob([fileBuffer]);
+      // Pass mime explicitly; without it the Blob defaults to '' which the
+      // multipart parser turns into application/octet-stream. Strapi stores
+      // that mime verbatim, and the admin Media Library's image filter then
+      // hides the file.
+      const mime = asset.mimeType || mimeFromFilename(filename);
+      const blob = new Blob([fileBuffer], { type: mime });
       formData.append('files', blob, filename);
       formData.append(
         'fileInfo',
