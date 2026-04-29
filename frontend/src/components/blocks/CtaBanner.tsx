@@ -32,7 +32,7 @@ export function CtaBanner({
         {body && (
           <p
             className={`max-w-xl mx-auto mb-8 font-body text-[15px] md:text-[17.6px] font-light leading-[1.4] ${
-              isDark ? 'text-white/77' : 'text-text-dark/80'
+              isDark ? 'text-white/77' : 'text-primary'
             }`}
           >
             {body}
@@ -46,6 +46,8 @@ export function CtaBanner({
                 label={cta.label}
                 href={cta.href ?? '#'}
                 dark={isDark}
+                icon={cta.icon ?? 'arrow'}
+                isExternal={cta.isExternal}
               />
             ))}
           </div>

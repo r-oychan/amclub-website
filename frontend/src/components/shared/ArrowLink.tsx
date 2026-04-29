@@ -1,50 +1,49 @@
 import { Link } from 'react-router';
+import { CtaIcon, type CtaIconName } from './CtaIcon';
+
+export interface ArrowLinkProps {
+  label: string;
+  href: string;
+  dark?: boolean;
+  isExternal?: boolean;
+  /** Selectable icon (default: 'arrow'). Pass null to render no icon. */
+  icon?: CtaIconName | null;
+  /** Override icon color class (default: pink accent on light, teal on dark). */
+  iconColorClass?: string;
+  /** Pixel size for the trailing icon. */
+  iconSize?: number;
+  /** Override label size. Defaults to the dining-card spec (14.4px). */
+  labelClassName?: string;
+}
 
 export function ArrowLink({
   label,
   href,
   dark = false,
   isExternal = false,
-}: {
-  label: string;
-  href: string;
-  dark?: boolean;
-  isExternal?: boolean;
-}) {
-  const className = `inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.15em] transition-colors duration-200 ${
-    dark ? 'text-white/90 hover:text-white' : 'text-primary hover:text-accent'
-  }`;
-  const icon = (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 14 14"
-      fill="none"
-      className={`shrink-0 ${dark ? 'text-secondary' : 'text-accent'}`}
-    >
-      <path
-        d="M1 13L13 1M13 1H3M13 1V11"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
+  icon = 'arrow',
+  iconColorClass,
+  iconSize = 18,
+  labelClassName,
+}: ArrowLinkProps) {
+  const className = `inline-flex items-center gap-2 font-bold uppercase tracking-[0.04em] transition-colors duration-200 ${
+    labelClassName ?? 'text-[14.4px] leading-[1.4]'
+  } ${dark ? 'text-white/90 hover:text-white' : 'text-primary hover:text-primary-dark'}`;
+  const iconClass = iconColorClass ?? (dark ? 'text-secondary' : 'text-accent');
+  const trailing = <CtaIcon name={icon} size={iconSize} className={iconClass} />;
 
   if (isExternal) {
     return (
       <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
         {label}
-        {icon}
+        {trailing}
       </a>
     );
   }
-
   return (
     <Link to={href} className={className}>
       {label}
-      {icon}
+      {trailing}
     </Link>
   );
 }
@@ -53,10 +52,12 @@ export function BorderedArrowLink({
   label,
   href,
   dark = false,
+  icon = 'arrow',
 }: {
   label: string;
   href: string;
   dark?: boolean;
+  icon?: CtaIconName | null;
 }) {
   return (
     <Link
@@ -66,27 +67,13 @@ export function BorderedArrowLink({
       }`}
     >
       <span
-        className={`text-[11px] font-bold uppercase tracking-[0.15em] ${
+        className={`text-[14.4px] leading-[1.4] font-bold uppercase tracking-[0.04em] ${
           dark ? 'text-white/90 hover:text-white' : 'text-primary'
         }`}
       >
         {label}
       </span>
-      <svg
-        width="12"
-        height="12"
-        viewBox="0 0 14 14"
-        fill="none"
-        className={`shrink-0 ${dark ? 'text-secondary' : 'text-accent'}`}
-      >
-        <path
-          d="M1 13L13 1M13 1H3M13 1V11"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
+      <CtaIcon name={icon} size={18} className={dark ? 'text-secondary' : 'text-accent'} />
     </Link>
   );
 }

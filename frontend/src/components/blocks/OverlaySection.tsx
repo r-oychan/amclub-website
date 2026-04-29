@@ -1,5 +1,6 @@
 import type { ReactNode, CSSProperties } from 'react';
 import { ArrowLink, BorderedArrowLink } from '../shared/ArrowLink';
+import type { CtaIconName } from '../shared/CtaIcon';
 import { useScrollFadeIn } from '../../hooks/useScrollFadeIn';
 
 export interface OverlaySectionProps {
@@ -19,7 +20,7 @@ export interface OverlaySectionProps {
   /** Standard content props (ignored if children provided) */
   heading?: string;
   description?: string;
-  ctas?: { label: string; href: string; bordered?: boolean }[];
+  ctas?: { label: string; href: string; bordered?: boolean; icon?: CtaIconName | null; isExternal?: boolean }[];
   logo?: string;
   /** Custom content for the text panel (overrides heading/description/ctas/logo) */
   children?: ReactNode;
@@ -42,7 +43,9 @@ export function OverlaySection({
   const isLeft = textPosition === 'left';
   const vAlign = textVerticalAlign ?? (isLeft ? 'end' : 'center');
   const isDark = textTheme === 'light';
-  const textColorClass = isDark ? 'text-white' : 'text-text-dark';
+  // On a light panel, body copy renders in club navy (matching the Framer prototype),
+  // not the generic charcoal body color.
+  const textColorClass = isDark ? 'text-white' : 'text-primary';
 
   // Scroll-triggered slide + fade. Image and panel both slide in toward
   // center from their own outer side; panel trails the image slightly.
@@ -83,8 +86,8 @@ export function OverlaySection({
       )}
       {description && (
         <p
-          className={`text-sm leading-relaxed mb-7 max-w-sm ${
-            isDark ? 'text-white/70' : 'text-text-dark/80'
+          className={`text-[17.6px] font-light leading-[1.4] mb-7 max-w-sm ${
+            isDark ? 'text-white/77' : 'text-primary'
           }`}
         >
           {description}
@@ -105,6 +108,7 @@ export function OverlaySection({
                 label={cta.label}
                 href={cta.href}
                 dark={isDark}
+                icon={cta.icon ?? 'arrow'}
               />
             ) : (
               <ArrowLink
@@ -112,6 +116,8 @@ export function OverlaySection({
                 label={cta.label}
                 href={cta.href}
                 dark={isDark}
+                icon={cta.icon ?? 'arrow'}
+                isExternal={cta.isExternal}
               />
             ),
           )}

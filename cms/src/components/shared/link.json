@@ -28,6 +28,11 @@
       "type": "enumeration",
       "enum": ["primary", "secondary", "outline", "text"],
       "default": "primary"
+    },
+    "icon": {
+      "type": "enumeration",
+      "enum": ["arrow", "menu", "clock", "phone", "mail", "calendar", "map-pin", "external"],
+      "default": "arrow"
     }
   }
 }

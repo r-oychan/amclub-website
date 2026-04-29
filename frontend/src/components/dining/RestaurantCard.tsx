@@ -1,4 +1,12 @@
 import { ArrowLink } from '../shared/ArrowLink';
+import type { CtaIconName } from '../shared/CtaIcon';
+
+export interface RestaurantCardCta {
+  label: string;
+  href?: string;
+  icon?: CtaIconName | null;
+  isExternal?: boolean;
+}
 
 interface RestaurantCardProps {
   name: string;
@@ -9,7 +17,9 @@ interface RestaurantCardProps {
   image: string;
   logo: string;
   dressCode?: string;
-  ctas: { label: string; href?: string }[];
+  ctas: RestaurantCardCta[];
+  /** Label for the auto-prepended detail-page link. Defaults to "Read More". */
+  readMoreLabel?: string;
 }
 
 export function RestaurantCard({
@@ -22,36 +32,52 @@ export function RestaurantCard({
   logo,
   dressCode,
   ctas,
+  readMoreLabel = 'Read More',
 }: RestaurantCardProps) {
+  const detailHref = `/dining/${slug}`;
+
+  // Always lead with a Read More link back to the restaurant detail page.
+  // Drop any duplicate Read More entries supplied by the CMS so the auto-prepended
+  // link is the single source of truth.
+  const trailingCtas = ctas.filter(
+    (c) => c.label.trim().toLowerCase() !== readMoreLabel.toLowerCase(),
+  );
+
   return (
     <article className="group">
-      {/* Photo with logo overlay */}
-      <div className="relative h-[200px] md:h-[375px] overflow-hidden mb-4">
-        <img
-          src={image}
-          alt={name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
-        <img
-          src={logo}
-          alt={`${name} logo`}
-          className="absolute bottom-4 right-4 h-[60px] w-auto drop-shadow-[0_2px_8px_rgba(0,0,0,0.3)]"
-        />
+      {/* Photo with logo overlay (logo drops ~half below the image) */}
+      <div className="relative mb-16 md:mb-20">
+        <div className="overflow-hidden h-[220px] md:h-[375px]">
+          <img
+            src={image}
+            alt={name}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        </div>
+        {logo && (
+          <img
+            src={logo}
+            alt={`${name} logo`}
+            className="absolute right-6 md:right-10 bottom-0 translate-y-1/2 h-[100px] w-[100px] md:h-[124px] md:w-[124px] object-contain"
+          />
+        )}
       </div>
 
       {/* Name */}
-      <h3 className="font-heading text-xl md:text-2xl font-light italic text-primary mb-2">
+      <h3 className="font-heading text-2xl md:text-[32px] font-normal italic text-primary leading-[1] mb-3">
         {name}
       </h3>
 
       {/* Cuisine row */}
       <div className="flex items-center gap-2 mb-1">
-        <img
-          src={`/uploads/icons/cuisine-${cuisineIconSlug}.svg`}
-          alt=""
-          className="w-4 h-4 opacity-60"
-        />
-        <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-text-dark/70">
+        {cuisineIconSlug && (
+          <img
+            src={`/uploads/icons/cuisine-${cuisineIconSlug}.svg`}
+            alt=""
+            className="w-4 h-4 opacity-70"
+          />
+        )}
+        <span className="text-[13.6px] font-bold uppercase tracking-[0.04em] text-primary">
           {cuisineType}
         </span>
       </div>
@@ -67,24 +93,27 @@ export function RestaurantCard({
               strokeLinejoin="round"
             />
           </svg>
-          <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-text-dark/70">
+          <span className="text-[13.6px] font-bold uppercase tracking-[0.04em] text-text-dark/70">
             {dressCode}
           </span>
         </div>
       )}
 
       {/* Description */}
-      <p className="text-sm text-text-dark/80 leading-relaxed mb-4 mt-2">
+      <p className="text-[17.6px] font-light leading-[1.4] text-primary mb-5 mt-3">
         {description}
       </p>
 
-      {/* CTAs */}
-      <div className="flex flex-wrap items-center gap-4">
-        {ctas.map((cta) => (
+      {/* CTAs — Read More first, then CMS-configured links */}
+      <div className="flex flex-wrap items-center gap-x-7 gap-y-3">
+        <ArrowLink label={readMoreLabel} href={detailHref} icon="arrow" />
+        {trailingCtas.map((cta) => (
           <ArrowLink
             key={cta.label}
             label={cta.label}
-            href={cta.href ?? `/dining/${slug}`}
+            href={cta.href ?? detailHref}
+            icon={cta.icon ?? 'arrow'}
+            isExternal={cta.isExternal}
           />
         ))}
       </div>

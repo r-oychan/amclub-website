@@ -109,8 +109,20 @@ export interface CollageImage {
   alt?: string;
 }
 
+export type CtaIconKind =
+  | 'arrow'
+  | 'menu'
+  | 'clock'
+  | 'phone'
+  | 'mail'
+  | 'calendar'
+  | 'map-pin'
+  | 'external';
+
 export interface CtaButton {
   label: string;
   href?: string;
   isExternal?: boolean;
+  icon?: CtaIconKind | null;
+  bordered?: boolean;
 }

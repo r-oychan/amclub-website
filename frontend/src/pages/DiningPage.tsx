@@ -8,8 +8,16 @@ import { RestaurantCard } from '../components/dining/RestaurantCard';
 import { PromoCell } from '../components/dining/PromoCell';
 import { PageFade } from '../components/shared/PageFade';
 
+import type { CtaIconName } from '../components/shared/CtaIcon';
+
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
-type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string };
+type StrapiLink = {
+  label: string;
+  href?: string;
+  isExternal?: boolean;
+  variant?: string;
+  icon?: CtaIconName | null;
+};
 
 interface StrapiRestaurant {
   documentId: string;
@@ -56,7 +64,12 @@ const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
 };
 
 const linksOf = (ls?: StrapiLink[]) =>
-  (ls ?? []).map((l) => ({ label: l.label, href: l.href ?? '#', isExternal: l.isExternal }));
+  (ls ?? []).map((l) => ({
+    label: l.label,
+    href: l.href ?? '#',
+    isExternal: l.isExternal,
+    icon: l.icon ?? 'arrow',
+  }));
 
 export default function DiningPage() {
   const [data, setData] = useState<StrapiDiningPage | null>(null);
@@ -96,7 +109,12 @@ export default function DiningPage() {
     image: mediaUrl(r.image) ?? '',
     logo: mediaUrl(r.logo) ?? '',
     dressCode: r.dressCode,
-    ctas: (r.ctas ?? []).map((c) => ({ label: c.label, href: c.href })),
+    ctas: (r.ctas ?? []).map((c) => ({
+      label: c.label,
+      href: c.href,
+      icon: c.icon ?? 'arrow',
+      isExternal: c.isExternal,
+    })),
   }));
   const leftColumn = venues.filter((_, i) => i % 2 === 0);
   const rightColumn = venues.filter((_, i) => i % 2 === 1);

@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { ArrowLink } from '../shared/ArrowLink';
 
 export function PromoCell() {
   return (
@@ -16,33 +16,13 @@ export function PromoCell() {
       <div className="border border-accent px-8 py-10 pt-8 flex flex-col md:flex-row items-start gap-6 md:gap-8 bg-bg">
         {/* Text content */}
         <div className="flex-1 min-w-0">
-          <h3 className="font-heading text-2xl md:text-3xl font-light italic text-primary mb-3 leading-tight">
+          <h3 className="font-heading text-[28.8px] font-normal italic text-accent leading-[1.1] tracking-[-0.02em] mb-3">
             Discover What&rsquo;s Cooking @ The Club
           </h3>
-          <p className="text-sm text-text-dark/70 leading-relaxed mb-5">
+          <p className="text-[17.6px] font-light leading-[1.4] text-primary mb-5">
             Browse the latest dining experiences and seasonal highlights.
           </p>
-          <Link
-            to="/dining/promotions"
-            className="inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.15em] text-primary hover:text-accent transition-colors duration-200"
-          >
-            View All Dining Promotions
-            <svg
-              width="14"
-              height="14"
-              viewBox="0 0 14 14"
-              fill="none"
-              className="text-accent shrink-0"
-            >
-              <path
-                d="M1 13L13 1M13 1H3M13 1V11"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </Link>
+          <ArrowLink label="View All Dining Promotions" href="/dining/promotions" icon="arrow" />
         </div>
 
         {/* Promo flyer images — stacked/fanned */}

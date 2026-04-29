@@ -19,14 +19,16 @@ const REST_IMAGES   = ['central.jpeg', 'grillhouse.jpeg', 'the-2nd-floor.jpeg', 
 const LOGO_IMAGES   = ['central.png',  'grillhouse.png',  'the-2nd-floor.png',  'the-gourmet-pantry.png',  'tradewinds.png',  'the-union-bar.png'];
 const SERV_IMAGES   = ['tac2go.jpeg', 'bottles2go.jpg', 'essentials.jpeg'];
 
+// CTAs are stored without "Read More" — the UI auto-prepends a "Read More" link
+// pointing back to the restaurant detail page (/dining/<slug>) as the first link.
 const RESTAURANTS = [
   // [name, slug, cuisineType, cuisineIconSlug, description, imageFile, logoFile, dressCode|null, ctas]
-  ['Central',             'central',             'Cafe',                         'cafe',               'Your favorite coffee, sandwich and chatter spot.', 'central.jpeg',             'central.png',             null,           [{ label: 'Read More', href: '/dining/central' }], 1],
-  ['Grillhouse & Tiki Bar','grillhouse',         'American BBQ & Grill',         'american',           'The home of American BBQ, pizza and beer at a poolside setting. Devour authentic American cuisine featuring Texas-style BBQ, mouth-watering burgers, and delicious pizzas.', 'grillhouse.jpeg', 'grillhouse.png', null, [{ label: 'Read More', href: '/dining/grillhouse' }, { label: 'View Menu' }], 2],
-  ['The 2nd Floor',       'the-2nd-floor',      'Casual Premium Fine Dining',   'casual-fine-dining', 'Experience the best of both worlds, where East and West create a fine dining experience.', 'the-2nd-floor.jpeg',     'the-2nd-floor.png',      'Smart Casual', [{ label: 'Read More', href: '/dining/the-2nd-floor' }, { label: 'View Menu' }], 3],
-  ['The Gourmet Pantry',  'the-gourmet-pantry', 'Wine & Gourmet Store',         'gourmet',            'A curated destination for modern tastemakers – offering exceptional wines, artisanal bites, and beautifully crafted tableware.', 'the-gourmet-pantry.jpeg', 'the-gourmet-pantry.png', null,        [{ label: 'Read More', href: '/dining/the-gourmet-pantry' }], 4],
-  ['Tradewinds',          'tradewinds',         'International',                'international',      'All-day casual dining featuring an international menu with flavors from America to Singapore.', 'tradewinds.jpeg',          'tradewinds.png',         null,        [{ label: 'Read More', href: '/dining/tradewinds' }, { label: 'View Menu' }], 5],
-  ['Union Bar',           'union-bar',          'American Bar Food',            'bar',                'Kick back after work at this classic American sports bar.', 'union-bar.jpeg',                                          'the-union-bar.png',      null,        [{ label: 'Read More', href: '/dining/union-bar' }, { label: 'View Menu' }], 6],
+  ['Central',             'central',             'Cafe',                         'cafe',               'Your favorite coffee, sandwich and chatter spot.', 'central.jpeg',             'central.png',             null,           [{ label: 'View Menu', icon: 'menu' }], 1],
+  ['Grillhouse & Tiki Bar','grillhouse',         'American BBQ & Grill',         'american',           'The home of American BBQ, pizza and beer at a poolside setting. Devour authentic American cuisine featuring Texas-style BBQ, mouth-watering burgers, and delicious pizzas.', 'grillhouse.jpeg', 'grillhouse.png', null, [{ label: 'View Menu', icon: 'menu' }, { label: 'Opening Hours', icon: 'clock' }], 2],
+  ['The 2nd Floor',       'the-2nd-floor',      'Casual Premium Fine Dining',   'casual-fine-dining', 'Experience the best of both worlds, where East and West create a fine dining experience.', 'the-2nd-floor.jpeg',     'the-2nd-floor.png',      'Smart Casual', [{ label: 'View Menu', icon: 'menu' }], 3],
+  ['The Gourmet Pantry',  'the-gourmet-pantry', 'Wine & Gourmet Store',         'gourmet',            'A curated destination for modern tastemakers – offering exceptional wines, artisanal bites, and beautifully crafted tableware.', 'the-gourmet-pantry.jpeg', 'the-gourmet-pantry.png', null,        [{ label: 'View Menu', icon: 'menu' }], 4],
+  ['Tradewinds',          'tradewinds',         'International',                'international',      'All-day casual dining featuring an international menu with flavors from America to Singapore.', 'tradewinds.jpeg',          'tradewinds.png',         null,        [{ label: 'View Menu', icon: 'menu' }], 5],
+  ['Union Bar',           'union-bar',          'American Bar Food',            'bar',                'Kick back after work at this classic American sports bar.', 'union-bar.jpeg',                                          'the-union-bar.png',      null,        [{ label: 'View Menu', icon: 'menu' }], 6],
 ];
 
 async function ensureRestaurant(name, slug, cuisineType, cuisineIconSlug, description, imageId, logoId, dressCode, ctas, order) {
@@ -35,7 +37,7 @@ async function ensureRestaurant(name, slug, cuisineType, cuisineIconSlug, descri
   const payload = {
     name, slug, cuisineType, cuisineIconSlug, description,
     image: imageId, logo: logoId, dressCode, order,
-    ctas: ctas.map((c) => ({ label: c.label, href: c.href ?? '#', variant: 'primary' })),
+    ctas: ctas.map((c) => ({ label: c.label, href: c.href ?? '#', variant: 'primary', icon: c.icon ?? 'arrow' })),
     publishedAt: new Date().toISOString(),
   };
   if (existing) {
@@ -61,8 +63,8 @@ async function upsertDiningPage({ heroMedia, servMedia }) {
       heading: 'Club Favorites, Straight to Your Door',
       subheading: 'Savor your favorite Club dishes and curated wines from the comfort of home, with delivery and takeaway services at your fingertips.',
       cards: [
-        { heading: 'TAC2Go!',     description: 'Savor your Club favorites in the comforts of your own home.',                            image: servMedia['tac2go.jpeg'].id,    cta: { label: 'Order Now', href: '/dining/tac2go',     variant: 'text' } },
-        { heading: 'Bottles2Go!', description: "Bringing the Club's cellar to your home with a curated range of premium wines.",        image: servMedia['bottles2go.jpg'].id, cta: { label: 'Order Now', href: '/dining/bottles2go', variant: 'text' } },
+        { heading: 'TAC2Go!',     description: 'Savor your Club favorites in the comforts of your own home.',                            image: servMedia['tac2go.jpeg'].id,    cta: { label: 'Order Now', href: '/dining/tac2go',     variant: 'text', icon: 'arrow' } },
+        { heading: 'Bottles2Go!', description: "Bringing the Club's cellar to your home with a curated range of premium wines.",        image: servMedia['bottles2go.jpg'].id, cta: { label: 'Order Now', href: '/dining/bottles2go', variant: 'text', icon: 'arrow' } },
       ],
     },
     essentials: {
@@ -75,8 +77,8 @@ async function upsertDiningPage({ heroMedia, servMedia }) {
       textBgColor: '#F5F4F2',
       textTheme: 'dark',
       ctas: [
-        { label: 'Essentials2Go!',                       href: '/dining/essentials', variant: 'primary' },
-        { label: 'Retail Store & Laundry Services',      href: '/dining/essentials', variant: 'primary' },
+        { label: 'Essentials2Go!',                       href: '/dining/essentials', variant: 'primary', icon: 'arrow' },
+        { label: 'Retail Store & Laundry Services',      href: '/dining/essentials', variant: 'primary', icon: 'arrow' },
       ],
     },
     finalCta: {
@@ -84,8 +86,8 @@ async function upsertDiningPage({ heroMedia, servMedia }) {
       body: 'Become a Member to explore our restaurants, where a variety of cuisines and thoughtfully crafted dining experiences await to delight every palate.',
       variant: 'light',
       ctas: [
-        { label: 'Explore Membership', href: '/membership', variant: 'primary' },
-        { label: 'Book a Club Tour',   href: '#',           variant: 'outline' },
+        { label: 'Explore Membership', href: '/membership', variant: 'primary', icon: 'arrow' },
+        { label: 'Book a Club Tour',   href: '#',           variant: 'outline', icon: 'arrow' },
       ],
     },
   };
