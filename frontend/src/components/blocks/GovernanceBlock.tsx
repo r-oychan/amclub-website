@@ -30,7 +30,10 @@ export function GovernanceBlock({
               {heading}
             </h2>
             <div className="h-[2px] w-12 bg-accent mb-7" />
-            <div className="text-text-dark/85 leading-relaxed whitespace-pre-line space-y-4">
+            <div
+              className="text-primary leading-relaxed whitespace-pre-line space-y-4"
+              style={{ fontSize: '17.6px' }}
+            >
               {body.split(/\n\n+/).map((para, i) => (
                 <p key={i}>{para}</p>
               ))}

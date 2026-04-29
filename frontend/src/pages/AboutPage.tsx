@@ -227,6 +227,7 @@ export default function AboutPage() {
           heading={data.ctaBanner.heading}
           body={data.ctaBanner.body ?? ''}
           ctas={(data.ctaBanner.ctas ?? []).map((c) => ({ label: c.label, href: c.href ?? '#' }))}
+          variant={(data.ctaBanner.variant as 'dark' | 'light' | 'accent' | undefined) ?? 'light'}
         />
       )}
     </PageFade>

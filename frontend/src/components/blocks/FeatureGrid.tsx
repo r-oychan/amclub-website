@@ -45,21 +45,46 @@ export function FeatureGrid({
     <>
       {heading && (
         <h2
-          className={`heading-h2-serif mb-4 ${centered ? 'text-center' : ''} ${
+          className={`font-heading italic mb-5 ${centered ? 'text-center' : ''} ${
             dark ? 'text-white' : 'text-primary'
           }`}
+          style={{
+            fontSize: 'clamp(2rem, 2.6vw + 1rem, 2.8rem)',
+            fontWeight: 300,
+            letterSpacing: '-0.03em',
+            lineHeight: 1.05,
+          }}
         >
           {heading}
         </h2>
       )}
-      {(subheading || body) && (
-        <div className={`mb-8 max-w-2xl ${centered ? 'mx-auto text-center' : ''}`}>
-          {subheading && (
-            <p className={`mb-4 ${dark ? 'text-white/70' : 'text-text-dark/70'}`}>{subheading}</p>
-          )}
-          {body && (
-            <p className={`${dark ? 'text-white/70' : 'text-text-dark/70'}`}>{body}</p>
-          )}
+      <div className={`h-[2px] w-12 mb-7 ${dark ? 'bg-white/40' : 'bg-accent'} ${centered ? 'mx-auto' : ''}`} />
+      {subheading && (
+        <h3
+          className={`font-heading italic mb-5 ${centered ? 'text-center' : ''} ${
+            dark ? 'text-white' : 'text-primary'
+          }`}
+          style={{
+            fontSize: 'clamp(1.25rem, 1.2vw + 0.8rem, 1.5rem)',
+            fontWeight: 300,
+            letterSpacing: '-0.02em',
+            lineHeight: 1.2,
+          }}
+        >
+          {subheading}
+        </h3>
+      )}
+      {body && (
+        <div className={`mb-8 max-w-2xl space-y-4 ${centered ? 'mx-auto text-center' : ''}`}>
+          {body.split(/\n\n+/).map((para, i) => (
+            <p
+              key={i}
+              className={`font-body leading-[1.4] ${dark ? 'text-white/80' : 'text-primary'}`}
+              style={{ fontSize: '17.6px' }}
+            >
+              {para}
+            </p>
+          ))}
         </div>
       )}
     </>
@@ -147,11 +172,16 @@ export function FeatureGrid({
             )}
 
             {listItems && listItems.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl mt-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl mt-2">
                 {listItems.map((item) => (
                   <div key={item} className="flex items-start gap-2">
                     <span className="text-secondary mt-0.5">&#10003;</span>
-                    <span className={`text-sm ${dark ? 'text-white/80' : 'text-text-dark/80'}`}>{item}</span>
+                    <span
+                      className={`font-body leading-[1.4] ${dark ? 'text-white/80' : 'text-primary'}`}
+                      style={{ fontSize: '15px' }}
+                    >
+                      {item}
+                    </span>
                   </div>
                 ))}
               </div>

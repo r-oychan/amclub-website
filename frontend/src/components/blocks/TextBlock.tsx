@@ -44,7 +44,7 @@ function TextBlockBody({ label, heading, body, funFact, vision, mission, timelin
             Our Vision
           </h3>
           <div className="h-[2px] w-12 bg-accent mb-5" />
-          <p className="text-text-dark/80 leading-relaxed">{vision}</p>
+          <p className="text-primary leading-relaxed">{vision}</p>
         </div>
       )}
       {mission && (
@@ -56,7 +56,7 @@ function TextBlockBody({ label, heading, body, funFact, vision, mission, timelin
             Our Mission
           </h3>
           <div className="h-[2px] w-12 bg-accent mb-5" />
-          <p className="text-text-dark/80 leading-relaxed">{mission}</p>
+          <p className="text-primary leading-relaxed">{mission}</p>
         </div>
       )}
       {cta && (
@@ -93,7 +93,7 @@ export function TextBlock(props: TextBlockProps) {
     return (
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-start">
             {imagePosition === 'right' ? (
               <>
                 {textEl}
