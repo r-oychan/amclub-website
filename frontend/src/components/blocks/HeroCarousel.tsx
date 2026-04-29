@@ -80,7 +80,7 @@ export function HeroCarousel({
                     <div className={`absolute flex flex-col max-w-2xl lg:max-w-3xl ${ZONE_CLASSES[slideTitlePos]}`}>
                       {slide.title && (
                         <h1
-                          className="font-heading italic font-semibold text-[2.5rem] xl:text-[5.6rem] leading-none tracking-[-0.04em] text-bg mb-4"
+                          className="font-heading italic font-light text-[2.5rem] xl:text-[5.6rem] leading-none tracking-[-0.04em] text-bg mb-4"
                           style={slide.titleColor ? { color: slide.titleColor } : undefined}
                         >
                           {slide.title}
@@ -120,7 +120,7 @@ export function HeroCarousel({
                       {slide.title && (
                         <div className={`absolute flex flex-col max-w-2xl lg:max-w-3xl ${ZONE_CLASSES[slideTitlePos]}`}>
                           <h1
-                            className="font-heading italic font-semibold text-[2.5rem] xl:text-[5.6rem] leading-none tracking-[-0.04em] text-bg"
+                            className="font-heading italic font-light text-[2.5rem] xl:text-[5.6rem] leading-none tracking-[-0.04em] text-bg"
                             style={slide.titleColor ? { color: slide.titleColor } : undefined}
                           >
                             {slide.title}
@@ -217,7 +217,7 @@ function HeroArrowIcon() {
       height="14"
       viewBox="0 0 14 14"
       fill="none"
-      className="shrink-0"
+      className="shrink-0 text-accent transition-colors duration-300 group-hover:text-secondary"
       aria-hidden="true"
     >
       <path

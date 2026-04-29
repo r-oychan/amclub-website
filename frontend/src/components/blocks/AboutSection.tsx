@@ -26,12 +26,20 @@ export function AboutSection({
   const fade = (delay: string) =>
     `${fadeBase} ${isVisible ? fadeShow : fadeHidden} ${delay}`;
 
-  // Cascading per-image fade for the perspective gallery
+  // Cascading rise-up animation for the perspective gallery.
+  // Cards start translated down from the bottom card's slot and rise into
+  // their final fan positions, bottom card first, then climbing upward.
   const cardOpacities = [0.2, 0.4, 0.65, 1];
-  const cardDelays = [0, 150, 300, 450];
+  const cardDelays = [0, 350, 700, 1050];
+  const cardDuration = 1600;
   const cardOpacity = (i: number) => (isVisible ? cardOpacities[i] : 0);
   const cardTransition = (i: number) =>
-    `opacity 700ms ease-out ${cardDelays[i]}ms`;
+    `opacity ${cardDuration}ms ease-out ${cardDelays[i]}ms, transform ${cardDuration}ms cubic-bezier(0.22, 1, 0.36, 1) ${cardDelays[i]}ms`;
+  // Bottom card sits at top: 47.69%; each higher card needs to translate up
+  // from that slot to its own. The hidden state offsets each card *down* by
+  // the percentage difference so they appear to start where the bottom card sits.
+  const baseTops = [47.69, 36.5, 22.87, 10.22];
+  const hiddenOffset = (i: number) => `${baseTops[0] - baseTops[i]}%`;
 
   return (
     <section ref={sectionRef} className="py-20 md:py-28 bg-bg overflow-hidden">
@@ -61,7 +69,7 @@ export function AboutSection({
                       left: '1.17%',
                       opacity: cardOpacity(0),
                       transition: cardTransition(0),
-                      transform: 'perspective(1200px) rotate(-15deg) rotateX(31deg) rotateY(37deg)',
+                      transform: `translateY(${isVisible ? '0%' : hiddenOffset(0)}) perspective(1200px) rotate(-15deg) rotateX(31deg) rotateY(37deg)`,
                     }}
                   >
                     <img src={images[0]} alt="" className="w-full h-full object-cover" />
@@ -77,7 +85,7 @@ export function AboutSection({
                       left: '6.61%',
                       opacity: cardOpacity(1),
                       transition: cardTransition(1),
-                      transform: 'perspective(1200px) rotate(-19deg) rotateX(29deg) rotateY(41deg)',
+                      transform: `translateY(${isVisible ? '0%' : hiddenOffset(1)}) perspective(1200px) rotate(-19deg) rotateX(29deg) rotateY(41deg)`,
                     }}
                   >
                     <img src={images[1]} alt="" className="w-full h-full object-cover" />
@@ -93,7 +101,7 @@ export function AboutSection({
                       left: '13.04%',
                       opacity: cardOpacity(2),
                       transition: cardTransition(2),
-                      transform: 'perspective(1200px) rotate(-23deg) rotateX(30deg) rotateY(39deg)',
+                      transform: `translateY(${isVisible ? '0%' : hiddenOffset(2)}) perspective(1200px) rotate(-23deg) rotateX(30deg) rotateY(39deg)`,
                     }}
                   >
                     <img src={images[2]} alt="" className="w-full h-full object-cover" />
@@ -109,7 +117,7 @@ export function AboutSection({
                       left: '50.99%',
                       opacity: cardOpacity(3),
                       transition: cardTransition(3),
-                      transform: 'translateX(-50%) perspective(1200px) rotate(-25deg) rotateX(35deg) rotateY(31deg)',
+                      transform: `translate(-50%, ${isVisible ? '0%' : hiddenOffset(3)}) perspective(1200px) rotate(-25deg) rotateX(35deg) rotateY(31deg)`,
                     }}
                   >
                     <img src={images[3]} alt="" className="w-full h-full object-cover" />

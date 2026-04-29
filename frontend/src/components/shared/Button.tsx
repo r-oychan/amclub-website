@@ -14,7 +14,7 @@ export function Button({
   iconRight?: React.ReactNode;
 }) {
   const base =
-    'inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-body font-bold text-sm tracking-wide transition-all duration-200 cursor-pointer text-center';
+    'group inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full font-body font-bold text-sm tracking-wide transition-all duration-200 cursor-pointer text-center';
   const variants = {
     primary: 'bg-accent text-white hover:bg-accent/90',
     secondary: 'bg-primary text-white hover:bg-primary-dark',
