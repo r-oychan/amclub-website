@@ -45,6 +45,9 @@ interface VenueData {
   gallery?: { url: string; alternativeText?: string }[];
   cuisineType?: string;
   cuisineIconSlug?: string;
+  /** Facility-side equivalents of cuisineType / cuisineIconSlug */
+  categoryLabel?: string;
+  categoryIconSlug?: string;
   dressCode?: string;
   menuUrl?: string;
   category?: string;
@@ -280,25 +283,38 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                 {venue.name}
               </h1>
 
-              {/* Category badge — cuisine icon + Lato 13.6px / 700 / uppercase club blue */}
-              {venue.cuisineType && venue.cuisineType.trim() && (
-                <div className="flex items-center gap-2.5">
-                  {venue.cuisineIconSlug && (
-                    <img
-                      src={`/uploads/icons/cuisine-${venue.cuisineIconSlug}.svg`}
-                      alt=""
-                      className="w-6 h-6 shrink-0"
-                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                    />
-                  )}
-                  <span
-                    className="text-primary uppercase"
-                    style={{ fontSize: '13.6px', fontWeight: 700, letterSpacing: '0.04em' }}
-                  >
-                    {venue.cuisineType}
-                  </span>
-                </div>
-              )}
+              {/* Category badge — icon + Lato 13.6px / 700 / uppercase club blue.
+                  Restaurants supply cuisineType + cuisineIconSlug; facilities
+                  supply categoryLabel + categoryIconSlug. Either pair shows the
+                  same UI here. */}
+              {(() => {
+                const label = venue.cuisineType ?? venue.categoryLabel;
+                const iconSlug = venue.cuisineIconSlug ?? venue.categoryIconSlug;
+                if (!label || !label.trim()) return null;
+                const iconHref = iconSlug
+                  ? venue.cuisineIconSlug
+                    ? `/uploads/icons/cuisine-${iconSlug}.svg`
+                    : `/uploads/icons/category-${iconSlug}.svg`
+                  : null;
+                return (
+                  <div className="flex items-center gap-2.5">
+                    {iconHref && (
+                      <img
+                        src={iconHref}
+                        alt=""
+                        className="w-6 h-6 shrink-0"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    )}
+                    <span
+                      className="text-primary uppercase"
+                      style={{ fontSize: '13.6px', fontWeight: 700, letterSpacing: '0.04em' }}
+                    >
+                      {label}
+                    </span>
+                  </div>
+                );
+              })()}
 
               {/* CTA buttons — up to 3, white pill with selectable icon */}
               {venue.ctas && venue.ctas.length > 0 && (
