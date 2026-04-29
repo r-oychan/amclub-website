@@ -3,8 +3,8 @@ import { ArrowLink } from '../shared/ArrowLink';
 export function PromoCell() {
   return (
     <div className="relative">
-      {/* Fork & knife icon — centered on top border */}
-      <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-10 bg-white px-2">
+      {/* Fork & knife icon — centered on top border, transparent backdrop */}
+      <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-10">
         <img
           src="/uploads/icons/promo-accent.svg"
           alt=""

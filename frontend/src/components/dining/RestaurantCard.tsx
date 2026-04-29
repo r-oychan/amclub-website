@@ -45,8 +45,7 @@ export function RestaurantCard({
 
   return (
     <article className="group">
-      {/* Photo with logo overlay (logo drops ~half below the image) */}
-      <div className="relative mb-16 md:mb-20">
+      <div className="relative">
         <div className="overflow-hidden h-[220px] md:h-[375px]">
           <img
             src={image}
@@ -58,13 +57,12 @@ export function RestaurantCard({
           <img
             src={logo}
             alt={`${name} logo`}
-            className="absolute right-6 md:right-10 bottom-0 translate-y-1/2 h-[100px] w-[100px] md:h-[124px] md:w-[124px] object-contain"
+            className="pointer-events-none absolute right-6 md:right-10 bottom-0 translate-y-1/2 h-[100px] w-[100px] md:h-[124px] md:w-[124px] object-contain z-10"
           />
         )}
       </div>
 
-      {/* Name */}
-      <h3 className="font-heading text-2xl md:text-[32px] font-normal italic text-primary leading-[1] mb-3">
+      <h3 className="font-heading text-2xl md:text-[32px] font-normal italic text-primary leading-[1] mt-4 mb-3">
         {name}
       </h3>
 
