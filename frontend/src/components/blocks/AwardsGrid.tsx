@@ -22,6 +22,7 @@ export function AwardsGrid({
                   src={item.image}
                   alt=""
                   className="h-24 md:h-28 w-auto object-contain mb-5"
+                  style={{ mixBlendMode: 'multiply', backgroundColor: 'transparent' }}
                   loading="lazy"
                 />
               ) : (

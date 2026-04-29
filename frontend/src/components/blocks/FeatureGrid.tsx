@@ -34,6 +34,7 @@ export function FeatureGrid({
       src={asideImage}
       alt=""
       className="w-full max-w-[420px] mx-auto md:mx-0 object-contain"
+      style={{ mixBlendMode: 'multiply', backgroundColor: 'transparent' }}
       loading="lazy"
     />
   ) : null;
@@ -79,8 +80,8 @@ export function FeatureGrid({
           {body.split(/\n\n+/).map((para, i) => (
             <p
               key={i}
-              className={`font-body leading-[1.4] ${dark ? 'text-white/80' : 'text-primary'}`}
-              style={{ fontSize: '17.6px' }}
+              className={`font-body ${dark ? 'text-white/80' : 'text-primary'}`}
+              style={{ fontSize: '17.6px', fontWeight: 300, lineHeight: '24.64px' }}
             >
               {para}
             </p>
@@ -172,13 +173,13 @@ export function FeatureGrid({
             )}
 
             {listItems && listItems.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-w-2xl mt-2">
+              <div className="flex flex-col gap-2 max-w-2xl mt-2">
                 {listItems.map((item) => (
-                  <div key={item} className="flex items-start gap-2">
-                    <span className="text-secondary mt-0.5">&#10003;</span>
+                  <div key={item} className="flex items-start gap-3">
+                    <span className="text-secondary shrink-0" aria-hidden="true">&#10003;</span>
                     <span
-                      className={`font-body leading-[1.4] ${dark ? 'text-white/80' : 'text-primary'}`}
-                      style={{ fontSize: '15px' }}
+                      className={`font-body ${dark ? 'text-white/80' : 'text-primary'}`}
+                      style={{ fontSize: '17.6px', fontWeight: 400, lineHeight: '26.4px' }}
                     >
                       {item}
                     </span>

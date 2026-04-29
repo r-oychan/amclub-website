@@ -35,12 +35,12 @@ export function ManagementSlider({
           {/* Static title (aligns with content) */}
           <div className="relative pt-10 lg:pt-14 px-8 sm:px-16 lg:px-[120px]">
             <h2
-              className="font-heading italic text-white"
+              className="font-heading italic text-bg"
               style={{
-                fontSize: 'clamp(2.5rem, 4vw + 1rem, 4.25rem)',
+                fontSize: 'clamp(1.75rem, 1.4vw + 1rem, 2.4rem)',
                 fontWeight: 300,
                 letterSpacing: '-0.03em',
-                lineHeight: 1.05,
+                lineHeight: 1.1,
               }}
             >
               {heading}
@@ -70,9 +70,9 @@ export function ManagementSlider({
                         <h3
                           className="font-body font-bold text-white mb-3"
                           style={{
-                            fontSize: 'clamp(1.5rem, 1.5vw + 1rem, 1.875rem)',
-                            letterSpacing: '-0.01em',
-                            lineHeight: 1.15,
+                            fontSize: '24px',
+                            letterSpacing: '-0.02em',
+                            lineHeight: '33.6px',
                           }}
                         >
                           {m.name}
@@ -80,14 +80,14 @@ export function ManagementSlider({
                         <div className="h-[1px] w-24 bg-white/40 mb-4" />
                         <p
                           className="font-body font-bold text-secondary mb-5"
-                          style={{ fontSize: '15px', letterSpacing: '0.02em' }}
+                          style={{ fontSize: '17.6px', lineHeight: '24.64px' }}
                         >
                           {m.role}
                         </p>
                         {m.bio && (
                           <div
-                            className="font-body text-white/85 whitespace-pre-line space-y-4"
-                            style={{ fontSize: '14.4px', lineHeight: 1.55 }}
+                            className="font-body text-white whitespace-pre-line space-y-3"
+                            style={{ fontSize: '12.8px', fontWeight: 400, lineHeight: '20.48px', letterSpacing: '-0.02em' }}
                           >
                             {m.bio.split(/\n\n+/).map((para, j) => (
                               <p key={j}>{para}</p>
