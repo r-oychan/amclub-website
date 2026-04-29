@@ -106,12 +106,15 @@ const database = new azure.dbforpostgresql.Database(`${projectName}-db`, {
   collation: 'en_US.utf8',
 });
 
-// ── Storage Account (Azure Files for uploads) ────────────────
+// ── Storage Account (Azure Files for uploads + Blob for media) ──
 const storage = new azure.storage.StorageAccount(`${projectName}data`, {
   resourceGroupName: rg.name,
   location: rg.location,
   sku: { name: azure.storage.SkuName.Standard_LRS },
   kind: azure.storage.Kind.StorageV2,
+  // Required so the media BlobContainer below can be created with
+  // publicAccess: Blob — Azure's default for new accounts blocks this.
+  allowBlobPublicAccess: true,
 });
 
 const dataShare = new azure.storage.FileShare(`${projectName}-data`, {
