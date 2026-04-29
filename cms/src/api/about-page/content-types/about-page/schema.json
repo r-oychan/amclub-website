@@ -30,6 +30,11 @@
       "repeatable": false,
       "component": "blocks.stats-counter"
     },
+    "collage": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.collage-gallery"
+    },
     "visionMission": {
       "type": "component",
       "repeatable": false,

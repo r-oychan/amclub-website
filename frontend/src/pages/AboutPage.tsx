@@ -11,6 +11,7 @@ import { AwardsGrid } from '../components/blocks/AwardsGrid';
 import { HeritageTimeline } from '../components/blocks/HeritageTimeline';
 import { GovernanceBlock } from '../components/blocks/GovernanceBlock';
 import { ManagementSlider } from '../components/blocks/ManagementSlider';
+import { CollageGallery } from '../components/blocks/CollageGallery';
 import { PageFade } from '../components/shared/PageFade';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
@@ -25,6 +26,7 @@ interface StrapiAboutPage {
     slides?: { year: string; body?: string; image?: StrapiMedia }[];
   };
   statsToday?: { label?: string; heading?: string; stats?: { value: string; label: string }[] };
+  collage?: { label?: string; heading?: string; images?: StrapiMedia[] };
   visionMission?: { vision?: string; mission?: string; image?: StrapiMedia; imagePosition?: 'left' | 'right' };
   governance?: {
     heading: string; body?: string;
@@ -123,6 +125,18 @@ export default function AboutPage() {
     image: mediaUrl(m.photo),
   }));
 
+  const COLLAGE_FALLBACK = [
+    'https://framerusercontent.com/images/glifXVW1Fpm8FU4aR3Bg9B6pMo.jpeg?width=2048&height=1363',
+    'https://framerusercontent.com/images/67l0mNcpyr612koYZMjpg2bmLY.jpeg?width=1600&height=1065',
+    'https://framerusercontent.com/images/K6DoyAS2cr4sNav3IA32UZgU.jpeg?width=1600&height=1065',
+    'https://framerusercontent.com/images/Er6mlC0xHU5nNPKnOyddqkHFFc.jpeg?width=1600&height=1065',
+    'https://framerusercontent.com/images/1PjikpjyQQKqhiR3r8F2UtyRTI.jpeg?width=2048&height=1363',
+  ];
+  const collageImages = (data.collage?.images && data.collage.images.length > 0
+    ? data.collage.images.map((m) => ({ src: mediaUrl(m) ?? '', alt: m.alternativeText ?? '' }))
+    : COLLAGE_FALLBACK.map((src) => ({ src, alt: '' }))
+  ).filter((i) => i.src);
+
   return (
     <PageFade loaded={loaded}>
       {data.hero && (
@@ -149,6 +163,12 @@ export default function AboutPage() {
           stats={data.statsToday.stats ?? []}
         />
       )}
+
+      <CollageGallery
+        label={data.collage?.label}
+        heading={data.collage?.heading}
+        images={collageImages}
+      />
 
       {data.visionMission && (data.visionMission.vision || data.visionMission.mission) && (
         <TextBlock

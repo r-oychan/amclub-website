@@ -17,6 +17,9 @@ const POPULATE = {
   statsToday: {
     populate: { stats: true },
   },
+  collage: {
+    populate: { images: true },
+  },
   visionMission: {
     populate: { image: true },
   },

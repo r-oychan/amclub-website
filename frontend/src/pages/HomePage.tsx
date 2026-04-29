@@ -74,7 +74,13 @@ type StrapiTestimonialSlider = {
   dark?: boolean;
   testimonials?: StrapiTestimonial[];
 };
-type StrapiFaqItem = { documentId: string; question: string };
+type StrapiFaqBlockChild = { type?: string; text?: string; children?: StrapiFaqBlockChild[] };
+type StrapiFaqBlock = { type?: string; children?: StrapiFaqBlockChild[] };
+type StrapiFaqItem = {
+  documentId: string;
+  question: string;
+  answer?: StrapiFaqBlock[] | string | null;
+};
 type StrapiFaqSection = {
   label?: string;
   heading?: string;
@@ -115,6 +121,59 @@ const formatEventDate = (iso: string): string => {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
   return d.toLocaleString('en-US', { month: 'short', day: 'numeric' }).toUpperCase();
+};
+
+const faqAnswerText = (answer: StrapiFaqItem['answer']): string => {
+  if (!answer) return '';
+  if (typeof answer === 'string') return answer.trim();
+  const walk = (n: StrapiFaqBlockChild): string =>
+    (n.text ?? '') + (n.children ?? []).map(walk).join('');
+  return answer
+    .map((b) => (b.children ?? []).map(walk).join(''))
+    .filter(Boolean)
+    .join('\n\n')
+    .trim();
+};
+
+const DUMMY_FAQ_ANSWERS: { match: RegExp; answer: string }[] = [
+  {
+    match: /membership|join|apply/i,
+    answer:
+      'Membership applications are reviewed by the Membership Committee on a rolling basis. Reach out to our Membership team to learn about current categories, eligibility, and entrance fees — they will guide you through every step of the application process.',
+  },
+  {
+    match: /facility|gym|pool|spa|tennis/i,
+    answer:
+      'Members enjoy access to our gym, aquatics centre, sên Spa, tennis courts, and a full suite of fitness studios. Operating hours and class schedules are published weekly in the Member portal.',
+  },
+  {
+    match: /dining|restaurant|food/i,
+    answer:
+      'Eight restaurants and bars cater to every occasion — from casual all-day dining at Central to refined steakhouse fare at Grillhouse. Reservations can be made via the Member portal or by calling Reservations directly.',
+  },
+  {
+    match: /event|book|venue|wedding|party/i,
+    answer:
+      'Our private event team can host gatherings from intimate dinners to grand celebrations across our event spaces. Submit an enquiry via the Private Events page and a coordinator will follow up within two business days.',
+  },
+  {
+    match: /kid|child|family/i,
+    answer:
+      'The Kids Club offers age-appropriate programmes, supervised play, and seasonal camps. Drop-in childcare is available for active members during posted hours.',
+  },
+  {
+    match: /guest|visitor|access|reciprocal/i,
+    answer:
+      'Members may sponsor guests in line with the House Rules. Reciprocal Club privileges are available worldwide — visit the Reciprocal Clubs section for the current list and booking instructions.',
+  },
+];
+
+const dummyAnswer = (question: string): string => {
+  const m = DUMMY_FAQ_ANSWERS.find((d) => d.match.test(question));
+  return (
+    m?.answer ??
+    'Our Member Services team is happy to help — please reach out via the Contact Us page or call the Club directly for the latest details.'
+  );
 };
 
 export default function HomePage() {
@@ -195,7 +254,10 @@ export default function HomePage() {
   }));
 
   const faq = data?.faq;
-  const faqItems = (faq?.items ?? []).map((i) => ({ question: i.question, answer: '' }));
+  const faqItems = (faq?.items ?? []).map((i) => ({
+    question: i.question,
+    answer: faqAnswerText(i.answer) || dummyAnswer(i.question),
+  }));
   const faqCtas = (faq?.ctas ?? []).map((c) => ({ label: c.label, href: c.href ?? '#' }));
 
   return (

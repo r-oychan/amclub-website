@@ -111,7 +111,7 @@ function EventCard({ item }: { item: CardItem }) {
           {item.category}
         </span>
       )}
-      <h3 className="font-body text-[17.6px] font-bold text-primary leading-[1.4]">{item.title}</h3>
+      <h3 className="font-body text-[17.6px] font-normal text-primary leading-[1.4]">{item.title}</h3>
     </div>
   );
 }
