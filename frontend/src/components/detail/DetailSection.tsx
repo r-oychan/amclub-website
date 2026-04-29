@@ -123,7 +123,7 @@ function SectionIcon({ icon }: { icon: IconName }) {
 }
 
 const HEADING_STYLE: React.CSSProperties = {
-  fontFamily: 'Inter, sans-serif',
+  fontFamily: 'Lato, sans-serif',
   fontSize: '20.8px',
   fontWeight: 700,
   color: '#DF4661',
