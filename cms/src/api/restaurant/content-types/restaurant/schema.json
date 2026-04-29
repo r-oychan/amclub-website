@@ -53,10 +53,21 @@
     "ctas": {
       "type": "component",
       "repeatable": true,
-      "component": "shared.link"
+      "component": "shared.link",
+      "max": 3
     },
     "openingHours": {
       "type": "blocks"
+    },
+    "operatingHoursSections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.operating-hours-section"
+    },
+    "locationContact": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.location-contact"
     },
     "locationLevel": {
       "type": "string"

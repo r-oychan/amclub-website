@@ -9,6 +9,24 @@ import { DetailSection } from '../components/detail/DetailSection';
 import { ContactRow } from '../components/detail/ContactRow';
 import { PhotoGallery } from '../components/detail/PhotoGallery';
 import { FaqAccordion } from '../components/blocks/FaqAccordion';
+import { CtaIcon, type CtaIconName } from '../components/shared/CtaIcon';
+
+interface ScheduleRow {
+  dayRange: string;
+  time: string;
+  lastOrder?: string;
+}
+
+interface OperatingHoursSection {
+  title: string;
+  rows?: ScheduleRow[];
+}
+
+interface LocationContact {
+  locationLevel?: string;
+  phone?: string;
+  email?: string;
+}
 
 interface VenueData {
   id?: number;
@@ -17,6 +35,8 @@ interface VenueData {
   description: string;
   detailedDescription?: unknown[];
   openingHours?: unknown[];
+  operatingHoursSections?: OperatingHoursSection[];
+  locationContact?: LocationContact | null;
   locationLevel?: string;
   phone?: string;
   email?: string;
@@ -24,11 +44,12 @@ interface VenueData {
   image?: { url: string; alternativeText?: string };
   gallery?: { url: string; alternativeText?: string }[];
   cuisineType?: string;
+  cuisineIconSlug?: string;
   dressCode?: string;
   menuUrl?: string;
   category?: string;
   capacity?: string;
-  ctas?: { label: string; href: string; isExternal?: boolean }[];
+  ctas?: { label: string; href: string; isExternal?: boolean; icon?: CtaIconName | null }[];
   extraSections?: {
     title: string;
     content: string;
@@ -166,7 +187,37 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
     ? venue.image.url.startsWith('http') ? venue.image.url : `${venue.image.url}`
     : undefined;
 
-  const hasLocation = venue.locationLevel || venue.phone || venue.email;
+  // Resolve the optional Location & Contact module — prefer the CMS component,
+  // fall back to legacy top-level fields if any are populated.
+  const locationContact: LocationContact | null =
+    venue.locationContact && (
+      venue.locationContact.locationLevel || venue.locationContact.phone || venue.locationContact.email
+    )
+      ? venue.locationContact
+      : venue.locationLevel || venue.phone || venue.email
+        ? {
+            locationLevel: venue.locationLevel,
+            phone: venue.phone,
+            email: venue.email,
+          }
+        : null;
+
+  // Resolve operating-hours sections — prefer the new repeatable component,
+  // fall back to the legacy single `hours` string (split by newline as columns).
+  const operatingHoursSections: OperatingHoursSection[] =
+    venue.operatingHoursSections && venue.operatingHoursSections.length > 0
+      ? venue.operatingHoursSections
+      : venue.hours
+        ? [
+            {
+              title: 'Opening Hours',
+              rows: venue.hours.split('\n').filter(Boolean).map((line) => ({
+                dayRange: '',
+                time: line,
+              })),
+            },
+          ]
+        : [];
 
   const galleryUrls = venue.gallery?.map((img) =>
     img.url.startsWith('http') ? img.url : `${img.url}`
@@ -229,44 +280,62 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                 {venue.name}
               </h1>
 
-              {/* Category badge — Lato 13.6px / 400 / uppercase */}
+              {/* Category badge — cuisine icon + Lato 13.6px / 700 / uppercase club blue */}
               {venue.cuisineType && venue.cuisineType.trim() && (
-                <p
-                  className="text-text-dark uppercase"
-                  style={{ fontSize: '13.6px', fontWeight: 400, letterSpacing: '0.544px' }}
-                >
-                  {venue.cuisineType}
-                </p>
+                <div className="flex items-center gap-2.5">
+                  {venue.cuisineIconSlug && (
+                    <img
+                      src={`/uploads/icons/cuisine-${venue.cuisineIconSlug}.svg`}
+                      alt=""
+                      className="w-6 h-6 shrink-0"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                    />
+                  )}
+                  <span
+                    className="text-primary uppercase"
+                    style={{ fontSize: '13.6px', fontWeight: 700, letterSpacing: '0.04em' }}
+                  >
+                    {venue.cuisineType}
+                  </span>
+                </div>
               )}
 
-              {/* CTA buttons — white pill, shadow */}
+              {/* CTA buttons — up to 3, white pill with selectable icon */}
               {venue.ctas && venue.ctas.length > 0 && (
                 <div className="flex flex-wrap gap-3">
-                  {venue.ctas.map((cta) => (
-                    <Link
-                      key={cta.label}
-                      to={cta.href}
-                      className="inline-flex items-center gap-2 bg-white rounded-full text-primary uppercase hover:shadow-md transition-shadow"
-                      style={{
-                        padding: '12px 16px 12px 24px',
-                        fontSize: '13.6px',
-                        fontWeight: 700,
-                        letterSpacing: '0.544px',
-                        boxShadow: 'rgba(32, 99, 171, 0.07) 0px 20px 19px -12px',
-                      }}
-                    >
-                      {cta.label}
-                      <svg width="24" height="24" viewBox="0 0 14 14" fill="none">
-                        <path
-                          d="M1 13L13 1M13 1H3M13 1V11"
-                          stroke="#DF4661"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </Link>
-                  ))}
+                  {venue.ctas.slice(0, 3).map((cta) => {
+                    const linkClass =
+                      'inline-flex items-center gap-2 bg-white rounded-full text-primary uppercase hover:shadow-md transition-shadow';
+                    const linkStyle = {
+                      padding: '12px 16px 12px 24px',
+                      fontSize: '13.6px',
+                      fontWeight: 700,
+                      letterSpacing: '0.04em',
+                      boxShadow: 'rgba(32, 99, 171, 0.07) 0px 20px 19px -12px',
+                    } as const;
+                    const inner = (
+                      <>
+                        {cta.label}
+                        <CtaIcon name={cta.icon ?? 'arrow'} size={20} className="text-accent" />
+                      </>
+                    );
+                    return cta.isExternal ? (
+                      <a
+                        key={cta.label}
+                        href={cta.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={linkClass}
+                        style={linkStyle}
+                      >
+                        {inner}
+                      </a>
+                    ) : (
+                      <Link key={cta.label} to={cta.href} className={linkClass} style={linkStyle}>
+                        {inner}
+                      </Link>
+                    );
+                  })}
                 </div>
               )}
 
@@ -283,35 +352,58 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                 ))}
               </div>
 
-              {/* ── Opening Hours ── */}
-              {venue.hours && (
-                <DetailSection icon="clock" title="Opening Hours">
-                  <div className="flex flex-row gap-8">
-                    {venue.hours.split('\n').map((line, i) => (
-                      <p
-                        key={i}
-                        className="text-text-dark"
-                        style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
-                      >
-                        {line}
-                      </p>
+              {/* ── Operating Hours (one or many sections, e.g. Grillhouse + Tiki Bar) ── */}
+              {operatingHoursSections.map((section, idx) => (
+                <DetailSection key={`oh-${idx}`} icon="clock" title={section.title}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
+                    {(section.rows ?? []).map((row, rIdx) => (
+                      <div key={rIdx} className="flex flex-col gap-1">
+                        <p
+                          className="text-text-dark"
+                          style={{ fontSize: '17.6px', fontWeight: 700, lineHeight: '24.64px' }}
+                        >
+                          {row.dayRange}
+                        </p>
+                        <p
+                          className="text-text-dark"
+                          style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
+                        >
+                          {row.time}
+                        </p>
+                        {row.lastOrder && (
+                          <p
+                            className="text-text-dark"
+                            style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
+                          >
+                            {row.lastOrder}
+                          </p>
+                        )}
+                      </div>
                     ))}
                   </div>
                 </DetailSection>
-              )}
+              ))}
 
-              {/* ── Location & Contact ── */}
-              {hasLocation && (
+              {/* ── Location & Contact (optional CMS module) ── */}
+              {locationContact && (
                 <DetailSection icon="location" title="Location & Contact">
                   <div className="flex flex-col" style={{ gap: '16px' }}>
-                    {venue.locationLevel && (
-                      <ContactRow icon="pin" text={venue.locationLevel} />
+                    {locationContact.locationLevel && (
+                      <ContactRow icon="pin" text={locationContact.locationLevel} />
                     )}
-                    {venue.phone && (
-                      <ContactRow icon="phone" text={venue.phone} href={`tel:${venue.phone}`} />
+                    {locationContact.phone && (
+                      <ContactRow
+                        icon="phone"
+                        text={locationContact.phone}
+                        href={`tel:${locationContact.phone.replace(/\s+/g, '')}`}
+                      />
                     )}
-                    {venue.email && (
-                      <ContactRow icon="email" text={venue.email} href={`mailto:${venue.email}`} />
+                    {locationContact.email && (
+                      <ContactRow
+                        icon="email"
+                        text={locationContact.email}
+                        href={`mailto:${locationContact.email}`}
+                      />
                     )}
                   </div>
                 </DetailSection>

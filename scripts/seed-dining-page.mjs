@@ -21,31 +21,127 @@ const SERV_IMAGES   = ['tac2go.jpeg', 'bottles2go.jpg', 'essentials.jpeg'];
 
 // CTAs are stored without "Read More" — the UI auto-prepends a "Read More" link
 // pointing back to the restaurant detail page (/dining/<slug>) as the first link.
+// Each restaurant supports up to 3 user-defined CTAs (capped by the schema).
 const RESTAURANTS = [
-  // [name, slug, cuisineType, cuisineIconSlug, description, imageFile, logoFile, dressCode|null, ctas]
-  ['Central',             'central',             'Cafe',                         'cafe',               'Your favorite coffee, sandwich and chatter spot.', 'central.jpeg',             'central.png',             null,           [{ label: 'View Menu', icon: 'menu' }], 1],
-  ['Grillhouse & Tiki Bar','grillhouse',         'American BBQ & Grill',         'american',           'The home of American BBQ, pizza and beer at a poolside setting. Devour authentic American cuisine featuring Texas-style BBQ, mouth-watering burgers, and delicious pizzas.', 'grillhouse.jpeg', 'grillhouse.png', null, [{ label: 'View Menu', icon: 'menu' }, { label: 'Opening Hours', icon: 'clock' }], 2],
-  ['The 2nd Floor',       'the-2nd-floor',      'Casual Premium Fine Dining',   'casual-fine-dining', 'Experience the best of both worlds, where East and West create a fine dining experience.', 'the-2nd-floor.jpeg',     'the-2nd-floor.png',      'Smart Casual', [{ label: 'View Menu', icon: 'menu' }], 3],
-  ['The Gourmet Pantry',  'the-gourmet-pantry', 'Wine & Gourmet Store',         'gourmet',            'A curated destination for modern tastemakers – offering exceptional wines, artisanal bites, and beautifully crafted tableware.', 'the-gourmet-pantry.jpeg', 'the-gourmet-pantry.png', null,        [{ label: 'View Menu', icon: 'menu' }], 4],
-  ['Tradewinds',          'tradewinds',         'International',                'international',      'All-day casual dining featuring an international menu with flavors from America to Singapore.', 'tradewinds.jpeg',          'tradewinds.png',         null,        [{ label: 'View Menu', icon: 'menu' }], 5],
-  ['Union Bar',           'union-bar',          'American Bar Food',            'bar',                'Kick back after work at this classic American sports bar.', 'union-bar.jpeg',                                          'the-union-bar.png',      null,        [{ label: 'View Menu', icon: 'menu' }], 6],
+  {
+    name: 'Central', slug: 'central', cuisineType: 'Cafe', cuisineIconSlug: 'cafe',
+    description: 'Your favorite coffee, sandwich and chatter spot.',
+    imageFile: 'central.jpeg', logoFile: 'central.png', dressCode: null,
+    ctas: [{ label: 'View Menu', icon: 'menu' }],
+    operatingHoursSections: [
+      { title: 'Operating Hours', rows: [
+        { dayRange: 'Monday to Friday', time: '7:00 AM - 6:00 PM' },
+        { dayRange: 'Saturday & Sunday', time: '8:00 AM - 4:00 PM' },
+      ] },
+    ],
+    locationContact: { locationLevel: 'Level 1', phone: '6739 4358', email: 'central@amclub.org.sg' },
+    order: 1,
+  },
+  {
+    name: 'Grillhouse & Tiki Bar', slug: 'grillhouse', cuisineType: 'American BBQ & Grill', cuisineIconSlug: 'american',
+    description: 'Welcome to a casual poolside dining restaurant – perfect for families with children and swimmers looking to have a delicious meal.\n\nDevour authentic American cuisine featuring Texas-style BBQ, mouth-watering burgers, delicious pizzas and salads with ice-cold American beer and special Grillhouse shakes.',
+    imageFile: 'grillhouse.jpeg', logoFile: 'grillhouse.png', dressCode: null,
+    ctas: [
+      { label: 'View Menu', icon: 'menu' },
+      { label: 'Promotions', icon: 'arrow' },
+    ],
+    operatingHoursSections: [
+      { title: 'Grillhouse Operating Hours', rows: [
+        { dayRange: 'Sunday to Thursday', time: '11:00 AM - 9:00 PM',  lastOrder: 'Last order at 8:30 p.m.' },
+        { dayRange: 'Friday and Saturday', time: '11:00 AM - 9:30 PM', lastOrder: 'Last order at 9:00 p.m.' },
+      ] },
+      { title: 'Tiki Bar Operating Hours', rows: [
+        { dayRange: 'Fridays & Saturdays', time: '11:30 AM - 12:00 AM', lastOrder: 'Last order at 11:30 p.m.' },
+        { dayRange: 'Sundays',             time: '11:30 AM - 11:00 PM', lastOrder: 'Last order at 10:30 p.m.' },
+      ] },
+    ],
+    locationContact: { locationLevel: 'Level 1', phone: '6739 4357', email: 'grillhouse@amclub.org.sg' },
+    order: 2,
+  },
+  {
+    name: 'The 2nd Floor', slug: 'the-2nd-floor', cuisineType: 'Casual Premium Fine Dining', cuisineIconSlug: 'casual-fine-dining',
+    description: 'Experience the best of both worlds, where East and West create a fine dining experience.',
+    imageFile: 'the-2nd-floor.jpeg', logoFile: 'the-2nd-floor.png', dressCode: 'Smart Casual',
+    ctas: [{ label: 'View Menu', icon: 'menu' }],
+    operatingHoursSections: [
+      { title: 'Operating Hours', rows: [
+        { dayRange: 'Tuesday to Sunday', time: '6:00 PM - 10:00 PM', lastOrder: 'Last order at 9:30 p.m.' },
+      ] },
+    ],
+    locationContact: { locationLevel: 'Level 2', phone: '6739 4360', email: '2ndfloor@amclub.org.sg' },
+    order: 3,
+  },
+  {
+    name: 'The Gourmet Pantry', slug: 'the-gourmet-pantry', cuisineType: 'Wine & Gourmet Store', cuisineIconSlug: 'gourmet',
+    description: 'A curated destination for modern tastemakers – offering exceptional wines, artisanal bites, and beautifully crafted tableware.',
+    imageFile: 'the-gourmet-pantry.jpeg', logoFile: 'the-gourmet-pantry.png', dressCode: null,
+    ctas: [{ label: 'View Menu', icon: 'menu' }],
+    operatingHoursSections: [
+      { title: 'Operating Hours', rows: [
+        { dayRange: 'Daily', time: '10:00 AM - 9:00 PM' },
+      ] },
+    ],
+    locationContact: { locationLevel: 'Level 1', phone: '6739 4361', email: 'pantry@amclub.org.sg' },
+    order: 4,
+  },
+  {
+    name: 'Tradewinds', slug: 'tradewinds', cuisineType: 'International', cuisineIconSlug: 'international',
+    description: 'All-day casual dining featuring an international menu with flavors from America to Singapore.',
+    imageFile: 'tradewinds.jpeg', logoFile: 'tradewinds.png', dressCode: null,
+    ctas: [{ label: 'View Menu', icon: 'menu' }],
+    operatingHoursSections: [
+      { title: 'Operating Hours', rows: [
+        { dayRange: 'Daily', time: '6:30 AM - 10:30 PM', lastOrder: 'Last order at 10:00 p.m.' },
+      ] },
+    ],
+    locationContact: { locationLevel: 'Level 3', phone: '6739 4362', email: 'tradewinds@amclub.org.sg' },
+    order: 5,
+  },
+  {
+    name: 'Union Bar', slug: 'union-bar', cuisineType: 'American Bar Food', cuisineIconSlug: 'bar',
+    description: 'Kick back after work at this classic American sports bar.',
+    imageFile: 'union-bar.jpeg', logoFile: 'the-union-bar.png', dressCode: null,
+    ctas: [{ label: 'View Menu', icon: 'menu' }],
+    operatingHoursSections: [
+      { title: 'Operating Hours', rows: [
+        { dayRange: 'Monday to Sunday', time: '4:00 PM - 12:00 AM', lastOrder: 'Last order at 11:30 p.m.' },
+      ] },
+    ],
+    locationContact: { locationLevel: 'Level 4', phone: '6739 4363', email: 'unionbar@amclub.org.sg' },
+    order: 6,
+  },
 ];
 
-async function ensureRestaurant(name, slug, cuisineType, cuisineIconSlug, description, imageId, logoId, dressCode, ctas, order) {
-  if (DRY) { console.log(`  [dry] upsert restaurant: ${name}`); return { documentId: `dry-${slug}`, slug }; }
-  const existing = await findOneBySlug(ctx, 'restaurants', slug);
+async function ensureRestaurant(r, imageId, logoId) {
+  if (DRY) { console.log(`  [dry] upsert restaurant: ${r.name}`); return { documentId: `dry-${r.slug}`, slug: r.slug }; }
+  const existing = await findOneBySlug(ctx, 'restaurants', r.slug);
+  const ctas = (r.ctas ?? []).slice(0, 3).map((c) => ({
+    label: c.label,
+    href: c.href ?? '#',
+    variant: c.variant ?? 'primary',
+    icon: c.icon ?? 'arrow',
+  }));
   const payload = {
-    name, slug, cuisineType, cuisineIconSlug, description,
-    image: imageId, logo: logoId, dressCode, order,
-    ctas: ctas.map((c) => ({ label: c.label, href: c.href ?? '#', variant: 'primary', icon: c.icon ?? 'arrow' })),
+    name: r.name,
+    slug: r.slug,
+    cuisineType: r.cuisineType,
+    cuisineIconSlug: r.cuisineIconSlug,
+    description: r.description,
+    image: imageId,
+    logo: logoId,
+    dressCode: r.dressCode,
+    order: r.order,
+    ctas,
+    operatingHoursSections: r.operatingHoursSections ?? [],
+    locationContact: r.locationContact ?? null,
     publishedAt: new Date().toISOString(),
   };
   if (existing) {
-    const r = await api(ctx, `/restaurants/${existing.documentId}`, { method: 'PUT', body: { data: payload } });
-    return r.data;
+    const resp = await api(ctx, `/restaurants/${existing.documentId}`, { method: 'PUT', body: { data: payload } });
+    return resp.data;
   }
-  const r = await api(ctx, '/restaurants', { method: 'POST', body: { data: payload } });
-  return r.data;
+  const resp = await api(ctx, '/restaurants', { method: 'POST', body: { data: payload } });
+  return resp.data;
 }
 
 async function upsertDiningPage({ heroMedia, servMedia }) {
@@ -107,9 +203,9 @@ async function main() {
   const servMedia = await uploadAll(ctx, SERV_DIR, SERV_IMAGES, { dry: DRY });
 
   console.log('\n[2/4] Restaurants…');
-  for (const [name, slug, ct, ci, desc, imgFile, logoFile, dc, ctas, order] of RESTAURANTS) {
-    await ensureRestaurant(name, slug, ct, ci, desc, restMedia[imgFile]?.id ?? null, logoMedia[logoFile]?.id ?? null, dc, ctas, order);
-    console.log(`  ✓ ${name}`);
+  for (const r of RESTAURANTS) {
+    await ensureRestaurant(r, restMedia[r.imageFile]?.id ?? null, logoMedia[r.logoFile]?.id ?? null);
+    console.log(`  ✓ ${r.name}`);
   }
 
   console.log('\n[3/4] Dining Page single type…');

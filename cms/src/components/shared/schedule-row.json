@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_shared_schedule_rows",
+  "info": {
+    "displayName": "Schedule Row",
+    "icon": "calendar",
+    "description": "A single row inside an operating-hours section (day range + time + optional last-order note)"
+  },
+  "attributes": {
+    "dayRange": {
+      "type": "string",
+      "required": true
+    },
+    "time": {
+      "type": "string",
+      "required": true
+    },
+    "lastOrder": {
+      "type": "string"
+    }
+  }
+}

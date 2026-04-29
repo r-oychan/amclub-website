@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_blocks_location_contacts",
+  "info": {
+    "displayName": "Location & Contact",
+    "icon": "pin",
+    "description": "Optional contact module for a venue (level, phone, email). Add to a restaurant to surface the section, omit to hide it."
+  },
+  "attributes": {
+    "locationLevel": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "email"
+    }
+  }
+}

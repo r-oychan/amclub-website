@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_blocks_operating_hours_sections",
+  "info": {
+    "displayName": "Operating Hours Section",
+    "icon": "clock",
+    "description": "A titled block of operating-hours rows (e.g. 'Grillhouse Operating Hours'). Multiple sections per venue are supported."
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "rows": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.schedule-row"
+    }
+  }
+}
