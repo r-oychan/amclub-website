@@ -134,9 +134,16 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
     if (!config || !slug || !section) return;
     const load = async () => {
       setLoading(true);
+      // Strapi v5's `populate=*` only goes one level deep, which leaves
+      // operatingHoursSections.rows empty. List each relation explicitly and
+      // deep-populate the nested rows.
       const params: Record<string, string> = {
         'filters[slug][$eq]': slug,
-        'populate': '*',
+        'populate[image]': 'true',
+        'populate[gallery]': 'true',
+        'populate[ctas]': 'true',
+        'populate[locationContact]': 'true',
+        'populate[operatingHoursSections][populate]': '*',
       };
       const items = await fetchAPI<VenueData[]>(config.apiPath, params);
       const fallback = staticFallback(section, slug);
