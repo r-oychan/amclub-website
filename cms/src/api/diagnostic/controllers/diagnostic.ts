@@ -22,6 +22,34 @@ export default {
       }
     }
 
+    // Probe the DB: list columns of components_shared_hero_slides via Knex
+    // and try to read its rows including the new backgroundVideo column.
+    const dbDiagnostic: Record<string, unknown> = {};
+    try {
+      const knex = (strapi as any).db?.connection;
+      if (knex) {
+        const cols = await knex('information_schema.columns')
+          .select('column_name')
+          .where({ table_name: 'components_shared_hero_slides' });
+        dbDiagnostic.columns = cols.map((c: any) => c.column_name);
+
+        // List foreign-key/morph link tables that hold media references for this component
+        const morphRows = await knex('information_schema.tables')
+          .select('table_name')
+          .where('table_name', 'like', 'components_shared_hero_slides%cmps')
+          .orWhere('table_name', 'like', 'components_shared_hero_slides%lnk');
+        dbDiagnostic.linkTables = morphRows.map((r: any) => r.table_name);
+
+        // Try to fetch one component row and show all column values
+        const sample = await knex('components_shared_hero_slides').select('*').limit(1);
+        dbDiagnostic.sampleRow = sample[0] ?? null;
+      } else {
+        dbDiagnostic.error = 'no knex connection on strapi.db';
+      }
+    } catch (e) {
+      dbDiagnostic.error = (e as Error).message;
+    }
+
     ctx.body = {
       registered: Object.keys(components),
       heroSlide: heroSlide
@@ -32,6 +60,7 @@ export default {
         : null,
       dirs: { dist: dirs.dist, app: dirs.app },
       onDisk,
+      db: dbDiagnostic,
     };
   },
 };
