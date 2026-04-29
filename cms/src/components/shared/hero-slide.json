@@ -2,7 +2,8 @@
   "collectionName": "components_shared_hero_slides",
   "info": { "displayName": "Hero Slide", "icon": "picture" },
   "attributes": {
-    "backgroundImage": { "type": "media", "multiple": false, "allowedTypes": ["images"], "required": true },
+    "backgroundImage": { "type": "media", "multiple": false, "allowedTypes": ["images"] },
+    "backgroundVideo": { "type": "media", "multiple": false, "allowedTypes": ["videos"] },
     "overlayDarken": { "type": "integer", "min": 0, "max": 100, "default": 0 },
     "title": { "type": "string" },
     "titleColor": { "type": "string", "default": "#FFFFFF" },

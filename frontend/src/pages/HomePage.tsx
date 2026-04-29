@@ -13,6 +13,7 @@ type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string };
 type StrapiHeroSlide = {
   backgroundImage?: StrapiMedia;
+  backgroundVideo?: StrapiMedia;
   title?: string;
   subtitle?: string;
   titlePosition?: 'bottom-left' | 'bottom-right' | 'middle-left' | 'middle-right';
@@ -208,7 +209,8 @@ export default function HomePage() {
 
   const hero = data?.hero;
   const heroSlides = (hero?.slides ?? []).map((s) => ({
-    backgroundImage: mediaUrl(s.backgroundImage) ?? '',
+    backgroundImage: mediaUrl(s.backgroundImage),
+    backgroundVideo: mediaUrl(s.backgroundVideo),
     title: s.title,
     subtitle: s.subtitle,
     titlePosition: s.titlePosition,

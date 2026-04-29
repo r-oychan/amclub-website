@@ -24,21 +24,75 @@ export function HeroCarousel({
   subtitlePosition = 'bottom-right',
 }: HeroCarouselProps) {
   const [current, setCurrent] = useState(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Per-slide measured durations (ms), populated as each <video> reports its
+  // metadata. Image slides aren't tracked here — they always use autoPlayInterval.
+  const [videoDurations, setVideoDurations] = useState<Record<number, number>>({});
+  const videoRefs = useRef<Record<number, HTMLVideoElement | null>>({});
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const goTo = (index: number) => {
-    setCurrent(index);
+    const next = ((index % slides.length) + slides.length) % slides.length;
+    setCurrent(next);
   };
 
+  const currentSlide = slides[current];
+  const currentIsVideo = !!currentSlide?.backgroundVideo;
+  // The active slide's on-screen duration drives the pink countdown dot. For
+  // a video we use its measured duration once known; before metadata arrives
+  // we fall back to autoPlayInterval (the bar will gracefully restart at the
+  // correct rate when metadata fires).
+  const activeDuration =
+    currentIsVideo && videoDurations[current] ? videoDurations[current] : autoPlayInterval;
+
+  // Drive playback: video slides advance on `ended`, image slides on a timer.
   useEffect(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    Object.values(videoRefs.current).forEach((v) => {
+      if (v) {
+        v.pause();
+        v.currentTime = 0;
+      }
+    });
+
     if (slides.length <= 1) return;
-    intervalRef.current = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
-    }, autoPlayInterval);
+
+    if (currentIsVideo) {
+      const v = videoRefs.current[current];
+      if (v) {
+        v.currentTime = 0;
+        // play() returns a promise; swallow the AbortError that fires if the
+        // user advances slides faster than the video can start.
+        v.play().catch(() => {});
+      }
+      // Advance is handled by the <video onEnded> below — no setTimeout.
+    } else {
+      timerRef.current = setTimeout(() => {
+        setCurrent((prev) => (prev + 1) % slides.length);
+      }, autoPlayInterval);
+    }
+
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
     };
-  }, [slides.length, autoPlayInterval]);
+  }, [current, currentIsVideo, slides.length, autoPlayInterval]);
+
+  const handleVideoLoadedMetadata = (i: number) => {
+    const v = videoRefs.current[i];
+    if (!v || !isFinite(v.duration) || v.duration <= 0) return;
+    const ms = v.duration * 1000;
+    setVideoDurations((prev) => (prev[i] === ms ? prev : { ...prev, [i]: ms }));
+  };
+
+  const handleVideoEnded = (i: number) => {
+    if (i !== current) return;
+    setCurrent((prev) => (prev + 1) % slides.length);
+  };
 
   return (
     <section
@@ -54,16 +108,38 @@ export function HeroCarousel({
           const slideSubtitlePos = slide.subtitlePosition ?? subtitlePosition;
           const sameZone = slideTitlePos === slideSubtitlePos;
 
+          const isVideo = !!slide.backgroundVideo;
+
           return (
             <div
               key={i}
-              className="relative flex-shrink-0 w-full h-full"
-              style={{
-                backgroundImage: `url(${slide.backgroundImage})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
+              className="relative flex-shrink-0 w-full h-full bg-primary"
+              style={
+                !isVideo && slide.backgroundImage
+                  ? {
+                      backgroundImage: `url(${slide.backgroundImage})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                    }
+                  : undefined
+              }
             >
+              {isVideo && (
+                <video
+                  ref={(el) => { videoRefs.current[i] = el; }}
+                  src={slide.backgroundVideo}
+                  // Poster: fall back to backgroundImage if also provided so the
+                  // first frame doesn't flash black before the video starts.
+                  poster={slide.backgroundImage || undefined}
+                  muted
+                  playsInline
+                  preload="metadata"
+                  onLoadedMetadata={() => handleVideoLoadedMetadata(i)}
+                  onEnded={() => handleVideoEnded(i)}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              )}
+
               {/* Dark overlay — opacity driven by slide.overlayDarken (0–100, default 0 = no effect) */}
               {(slide.overlayDarken ?? 0) > 0 && (
                 <div
@@ -210,11 +286,11 @@ export function HeroCarousel({
               >
                 {isActive && (
                   <span
-                    key={`timer-${current}`}
+                    key={`timer-${current}-${activeDuration}`}
                     className="absolute inset-y-0 left-0 rounded-full"
                     style={{
                       backgroundColor: '#DF4661',
-                      animation: `timerFill ${autoPlayInterval}ms linear forwards`,
+                      animation: `timerFill ${activeDuration}ms linear forwards`,
                     }}
                   />
                 )}
