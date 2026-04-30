@@ -126,23 +126,12 @@ const dataShare = new azure.storage.FileShare(`${projectName}-data`, {
 // Blob container for Strapi Media Library uploads. Public access at the blob
 // level so the frontend can fetch media URLs directly without going through
 // Strapi or signed URLs.
-//
-// Note: a previous failed deploy partially created this container in Azure
-// before Pulumi could record it in state, so we import the existing resource
-// here. After this deploy succeeds the import option can be removed.
-const mediaContainer = new azure.storage.BlobContainer(
-  `${projectName}-media`,
-  {
-    resourceGroupName: rg.name,
-    accountName: storage.name,
-    containerName: 'media',
-    publicAccess: azure.storage.PublicAccess.Blob,
-  },
-  {
-    import:
-      '/subscriptions/6855c00a-1875-4445-b978-0b42483d5b5c/resourceGroups/amclub-rg844202e8/providers/Microsoft.Storage/storageAccounts/amclubdata28a57492/blobServices/default/containers/media',
-  },
-);
+const mediaContainer = new azure.storage.BlobContainer(`${projectName}-media`, {
+  resourceGroupName: rg.name,
+  accountName: storage.name,
+  containerName: 'media',
+  publicAccess: azure.storage.PublicAccess.Blob,
+});
 
 const storageKey = pulumi
   .all([rg.name, storage.name])

@@ -152,8 +152,9 @@ All page-typed entries use a `content` **dynamiczone** (block-based), populated 
 | Resource Group | `azure-native.resources.ResourceGroup` | Region: Southeast Asia, name: `amclub-rg` |
 | Container Registry | `azure-native.containerregistry.Registry` | Basic SKU |
 | PostgreSQL Server | `azure-native.dbforpostgresql.FlexibleServer` | v16, Standard_B1ms, 32GB, 7-day backups |
-| Storage Account | `azure-native.storage.StorageAccount` | Standard LRS |
-| File Share | `azure-native.storage.Share` | 5GB quota (for CMS uploads) |
+| Storage Account | `azure-native.storage.StorageAccount` | Standard LRS, `allowBlobPublicAccess: true` (required by media container) |
+| File Share | `azure-native.storage.FileShare` | 5GB quota (legacy `/data` mount; only holds previously seeded uploads) |
+| Blob Container `media` | `azure-native.storage.BlobContainer` | `publicAccess: Blob` — Strapi Media Library backing store |
 | Log Analytics | `azure-native.operationalinsights.Workspace` | Per-GB, 30-day retention |
 | Container Apps Env | `azure-native.app.ManagedEnvironment` | Linked to Log Analytics |
 | Container App | `azure-native.app.ContainerApp` | 1 replica, 1 CPU / 1GB RAM, liveness + startup probes |
