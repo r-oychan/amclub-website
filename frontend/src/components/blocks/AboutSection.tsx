@@ -151,11 +151,11 @@ export function AboutSection({
             {/* Fun fact */}
             {funFact && (
               <div className={`mb-10 ${fade('delay-[400ms]')}`}>
-                <div className="flex gap-4">
+                <div className="flex gap-4 opacity-[0.57]">
                   <div className="w-1 shrink-0 bg-accent rounded-full" />
                   <div>
-                    <p className="font-body font-bold text-primary text-[19.2px] leading-tight mb-1">Did You Know?</p>
-                    <p className="font-body text-primary text-[17.6px] leading-relaxed">
+                    <p className="font-body text-primary text-[19.2px] leading-[1.4] mb-1">Did You Know?</p>
+                    <p className="font-body font-light text-primary text-[17.6px] leading-[1.4]">
                       {funFact.replace(/^Did You Know\?\s*/i, '')}
                     </p>
                   </div>

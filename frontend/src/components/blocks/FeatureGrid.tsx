@@ -160,8 +160,8 @@ export function FeatureGrid({
                     </h3>
                     {item.description && (
                       <p
-                        className={`font-body text-base md:text-[17.6px] leading-[1.4] ${
-                          dark ? 'text-bg/90' : 'text-text-dark/80'
+                        className={`font-body font-light text-base md:text-[17.6px] leading-[1.4] ${
+                          dark ? 'text-bg/70' : 'text-text-dark/80'
                         }`}
                       >
                         {item.description}
