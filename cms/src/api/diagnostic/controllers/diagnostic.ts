@@ -47,10 +47,57 @@ export default {
       morphCheck = { error: (e as Error).message };
     }
 
+    // Fetch home-page through Strapi's own documents API with deep populate
+    // and log slide 0's full content + the cmps junction rows that connect
+    // hero → slides for both the draft and published variants.
+    let docCheck: any = null;
+    try {
+      const draft = await (strapi as any).documents('api::home-page.home-page').findFirst({
+        status: 'draft',
+        populate: { hero: { populate: { slides: { populate: '*' } } } },
+      });
+      const published = await (strapi as any).documents('api::home-page.home-page').findFirst({
+        status: 'published',
+        populate: { hero: { populate: { slides: { populate: '*' } } } },
+      });
+      const knex = (strapi as any).db?.connection;
+      const heroes = knex
+        ? await knex('components_blocks_heroes_cmps').select('*')
+        : null;
+      const homepagesCmps = knex
+        ? await knex('home_pages_cmps').select('*').where('component_type', 'shared.hero')
+        : null;
+      docCheck = {
+        draft: draft
+          ? {
+              id: draft.id,
+              documentId: draft.documentId,
+              publishedAt: draft.publishedAt,
+              slide0Keys: Object.keys(draft.hero?.slides?.[0] ?? {}),
+              slide0BackgroundVideo: draft.hero?.slides?.[0]?.backgroundVideo ?? null,
+            }
+          : null,
+        published: published
+          ? {
+              id: published.id,
+              documentId: published.documentId,
+              publishedAt: published.publishedAt,
+              slide0Keys: Object.keys(published.hero?.slides?.[0] ?? {}),
+              slide0BackgroundVideo: published.hero?.slides?.[0]?.backgroundVideo ?? null,
+            }
+          : null,
+        heroesCmps: heroes,
+        homepagesCmps,
+      };
+    } catch (e) {
+      docCheck = { error: (e as Error).message };
+    }
+
     ctx.body = {
       heroSlideAttrs: attrs ? Object.keys(attrs) : null,
       backgroundVideoAttr: attrs?.backgroundVideo ?? null,
       morphCheck,
+      docCheck,
     };
   },
 };
