@@ -4,8 +4,15 @@ const POPULATE = {
   hero: {
     populate: {
       backgroundImage: true,
+      backgroundVideo: true,
       cta: true,
-      slides: { populate: { backgroundImage: true, cta: true } },
+      slides: {
+        populate: {
+          backgroundImage: true,
+          backgroundVideo: true,
+          cta: true,
+        },
+      },
     },
   },
   aboutSection: {
@@ -18,7 +25,10 @@ const POPULATE = {
     populate: { features: { populate: { image: true } }, cta: true },
   },
   experience: {
-    populate: { tabs: { populate: { image: true } } },
+    populate: {
+      tabs: { populate: { image: true } },
+      collageImages: true,
+    },
   },
   moments: {
     populate: {
