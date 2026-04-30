@@ -54,7 +54,7 @@ export function Hero({ heading, subheading, cta, backgroundImage, slides, varian
             label={cta.label}
             href={cta.href}
             variant="white"
-            className="uppercase tracking-[0.1em]"
+            className="uppercase tracking-[0.04em] text-[13.6px]"
             iconRight={
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0" aria-hidden="true">
                 <path d="M1 13L13 1M13 1H3M13 1V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

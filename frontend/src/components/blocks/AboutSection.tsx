@@ -151,7 +151,7 @@ export function AboutSection({
             {/* Fun fact */}
             {funFact && (
               <div className={`mb-10 ${fade('delay-[400ms]')}`}>
-                <div className="flex gap-4 opacity-[0.57]">
+                <div className="flex gap-4">
                   <div className="w-1 shrink-0 bg-accent rounded-full" />
                   <div>
                     <p className="font-body text-primary text-[19.2px] leading-[1.4] mb-1">Did You Know?</p>

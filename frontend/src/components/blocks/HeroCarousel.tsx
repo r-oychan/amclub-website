@@ -190,10 +190,9 @@ export function HeroCarousel({
                         slide.subtitleLink ? (
                           <Link
                             to={slide.subtitleLink}
-                            className="font-heading italic text-[20.8px] leading-[1.4] mb-6 max-w-md underline-offset-4 hover:underline"
+                            className="font-body text-[20.8px] leading-[1.4] mb-6 max-w-md underline-offset-4 hover:underline"
                             style={{
-                              fontWeight: 600,
-                              fontFeatureSettings: '"cv01", "cv05", "cv09", "cv11", "ss03"',
+                              fontWeight: 400,
                               color: slide.subtitleColor ?? '#FFFFFF',
                             }}
                           >
@@ -201,10 +200,9 @@ export function HeroCarousel({
                           </Link>
                         ) : (
                           <p
-                            className="font-heading italic text-[20.8px] leading-[1.4] mb-6 max-w-md"
+                            className="font-body text-[20.8px] leading-[1.4] mb-6 max-w-md"
                             style={{
-                              fontWeight: 600,
-                              fontFeatureSettings: '"cv01", "cv05", "cv09", "cv11", "ss03"',
+                              fontWeight: 400,
                               color: slide.subtitleColor ?? '#FFFFFF',
                             }}
                           >
@@ -245,10 +243,9 @@ export function HeroCarousel({
                             slide.subtitleLink ? (
                               <Link
                                 to={slide.subtitleLink}
-                                className="font-heading italic text-[20.8px] leading-[1.4] mb-6 underline-offset-4 hover:underline"
+                                className="font-body text-[20.8px] leading-[1.4] mb-6 underline-offset-4 hover:underline"
                                 style={{
-                                  fontWeight: 600,
-                                  fontFeatureSettings: '"cv01", "cv05", "cv09", "cv11", "ss03"',
+                                  fontWeight: 400,
                                   color: slide.subtitleColor ?? '#FFFFFF',
                                 }}
                               >
@@ -256,10 +253,9 @@ export function HeroCarousel({
                               </Link>
                             ) : (
                               <p
-                                className="font-heading italic text-[20.8px] leading-[1.4] mb-6"
+                                className="font-body text-[20.8px] leading-[1.4] mb-6"
                                 style={{
-                                  fontWeight: 600,
-                                  fontFeatureSettings: '"cv01", "cv05", "cv09", "cv11", "ss03"',
+                                  fontWeight: 400,
                                   color: slide.subtitleColor ?? '#FFFFFF',
                                 }}
                               >
