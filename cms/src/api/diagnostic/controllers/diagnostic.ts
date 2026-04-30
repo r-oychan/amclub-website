@@ -97,27 +97,23 @@ export default {
     // attaches a `properties.fields` whitelist when the permission is granted
     // through the admin, and any field added later is silently sanitized out
     // of the REST response.
-    let permCheck: any = null;
+    // Hit the home-page controller directly through Strapi's content-api
+    // service so we see what comes out *before* the HTTP sanitizer runs.
+    let restCheck: any = null;
     try {
-      const publicRole = await (strapi as any).db
-        .query('plugin::users-permissions.role')
-        .findOne({ where: { type: 'public' } });
-      if (publicRole) {
-        const perms = await (strapi as any).db
-          .query('plugin::users-permissions.permission')
-          .findMany({
-            where: {
-              role: publicRole.id,
-              action: { $in: ['api::home-page.home-page.find', 'api::home-page.home-page.findOne'] },
-            },
-          });
-        permCheck = perms.map((p: any) => ({
-          action: p.action,
-          properties: p.properties,
-        }));
-      }
+      const svc = (strapi as any).service('api::home-page.home-page');
+      const direct = await svc.find({
+        populate: { hero: { populate: { slides: { populate: '*' } } } },
+      });
+      restCheck = {
+        slide0Keys: Object.keys(direct?.results?.hero?.slides?.[0] ?? direct?.hero?.slides?.[0] ?? {}),
+        slide0BackgroundVideo:
+          direct?.results?.hero?.slides?.[0]?.backgroundVideo ??
+          direct?.hero?.slides?.[0]?.backgroundVideo ??
+          null,
+      };
     } catch (e) {
-      permCheck = { error: (e as Error).message };
+      restCheck = { error: (e as Error).message };
     }
 
     ctx.body = {
@@ -125,7 +121,7 @@ export default {
       backgroundVideoAttr: attrs?.backgroundVideo ?? null,
       morphCheck,
       docCheck,
-      permCheck,
+      restCheck,
     };
   },
 };
