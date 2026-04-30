@@ -4,7 +4,6 @@ const POPULATE = {
   hero: {
     populate: {
       backgroundImage: true,
-      backgroundVideo: true,
       cta: true,
       slides: {
         populate: {
