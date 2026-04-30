@@ -24,31 +24,39 @@ export function HeroCarousel({
   subtitlePosition = 'bottom-right',
 }: HeroCarouselProps) {
   const [current, setCurrent] = useState(0);
-  // Per-slide measured durations (ms), populated as each <video> reports its
-  // metadata. Image slides aren't tracked here — they always use autoPlayInterval.
-  const [videoDurations, setVideoDurations] = useState<Record<number, number>>({});
+  // 0..1 fraction of how far through the active slide we are. Drives the pink
+  // countdown bar — read from video.currentTime/duration on video slides, or
+  // computed as elapsed/autoPlayInterval on image slides.
+  const [progress, setProgress] = useState(0);
   const videoRefs = useRef<Record<number, HTMLVideoElement | null>>({});
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rafRef = useRef<number | null>(null);
 
   const goTo = (index: number) => {
     const next = ((index % slides.length) + slides.length) % slides.length;
+    setProgress(0);
     setCurrent(next);
+  };
+
+  const advance = () => {
+    setProgress(0);
+    setCurrent((prev) => (prev + 1) % slides.length);
   };
 
   const currentSlide = slides[current];
   const currentIsVideo = !!currentSlide?.backgroundVideo;
-  // The active slide's on-screen duration drives the pink countdown dot. For
-  // a video we use its measured duration once known; before metadata arrives
-  // we fall back to autoPlayInterval (the bar will gracefully restart at the
-  // correct rate when metadata fires).
-  const activeDuration =
-    currentIsVideo && videoDurations[current] ? videoDurations[current] : autoPlayInterval;
 
   // Drive playback: video slides advance on `ended`, image slides on a timer.
+  // The progress fraction is updated each frame from the real source of truth
+  // (video.currentTime for videos, elapsed time for images).
   useEffect(() => {
     if (timerRef.current) {
       clearTimeout(timerRef.current);
       timerRef.current = null;
+    }
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
     }
     Object.values(videoRefs.current).forEach((v) => {
       if (v) {
@@ -67,9 +75,25 @@ export function HeroCarousel({
         // user advances slides faster than the video can start.
         v.play().catch(() => {});
       }
-      // Advance is handled by the <video onEnded> below — no setTimeout.
+      const tick = () => {
+        const vid = videoRefs.current[current];
+        if (vid && isFinite(vid.duration) && vid.duration > 0) {
+          setProgress(Math.min(1, vid.currentTime / vid.duration));
+        }
+        rafRef.current = requestAnimationFrame(tick);
+      };
+      rafRef.current = requestAnimationFrame(tick);
+      // Slide advance is handled by <video onEnded> below.
     } else {
+      const start = performance.now();
+      const tick = () => {
+        const elapsed = performance.now() - start;
+        setProgress(Math.min(1, elapsed / autoPlayInterval));
+        rafRef.current = requestAnimationFrame(tick);
+      };
+      rafRef.current = requestAnimationFrame(tick);
       timerRef.current = setTimeout(() => {
+        setProgress(0);
         setCurrent((prev) => (prev + 1) % slides.length);
       }, autoPlayInterval);
     }
@@ -79,19 +103,16 @@ export function HeroCarousel({
         clearTimeout(timerRef.current);
         timerRef.current = null;
       }
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
     };
   }, [current, currentIsVideo, slides.length, autoPlayInterval]);
 
-  const handleVideoLoadedMetadata = (i: number) => {
-    const v = videoRefs.current[i];
-    if (!v || !isFinite(v.duration) || v.duration <= 0) return;
-    const ms = v.duration * 1000;
-    setVideoDurations((prev) => (prev[i] === ms ? prev : { ...prev, [i]: ms }));
-  };
-
   const handleVideoEnded = (i: number) => {
     if (i !== current) return;
-    setCurrent((prev) => (prev + 1) % slides.length);
+    advance();
   };
 
   return (
@@ -134,7 +155,6 @@ export function HeroCarousel({
                   muted
                   playsInline
                   preload="metadata"
-                  onLoadedMetadata={() => handleVideoLoadedMetadata(i)}
                   onEnded={() => handleVideoEnded(i)}
                   className="absolute inset-0 w-full h-full object-cover"
                 />
@@ -286,11 +306,10 @@ export function HeroCarousel({
               >
                 {isActive && (
                   <span
-                    key={`timer-${current}-${activeDuration}`}
                     className="absolute inset-y-0 left-0 rounded-full"
                     style={{
                       backgroundColor: '#DF4661',
-                      animation: `timerFill ${activeDuration}ms linear forwards`,
+                      width: `${Math.round(progress * 100)}%`,
                     }}
                   />
                 )}
@@ -300,12 +319,6 @@ export function HeroCarousel({
         </div>
       )}
 
-      <style>{`
-        @keyframes timerFill {
-          from { width: 0%; }
-          to { width: 100%; }
-        }
-      `}</style>
     </section>
   );
 }
