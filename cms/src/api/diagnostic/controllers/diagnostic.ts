@@ -93,11 +93,39 @@ export default {
       docCheck = { error: (e as Error).message };
     }
 
+    // Look at the public-role permission row for home-page.find — Strapi v5
+    // attaches a `properties.fields` whitelist when the permission is granted
+    // through the admin, and any field added later is silently sanitized out
+    // of the REST response.
+    let permCheck: any = null;
+    try {
+      const publicRole = await (strapi as any).db
+        .query('plugin::users-permissions.role')
+        .findOne({ where: { type: 'public' } });
+      if (publicRole) {
+        const perms = await (strapi as any).db
+          .query('plugin::users-permissions.permission')
+          .findMany({
+            where: {
+              role: publicRole.id,
+              action: { $in: ['api::home-page.home-page.find', 'api::home-page.home-page.findOne'] },
+            },
+          });
+        permCheck = perms.map((p: any) => ({
+          action: p.action,
+          properties: p.properties,
+        }));
+      }
+    } catch (e) {
+      permCheck = { error: (e as Error).message };
+    }
+
     ctx.body = {
       heroSlideAttrs: attrs ? Object.keys(attrs) : null,
       backgroundVideoAttr: attrs?.backgroundVideo ?? null,
       morphCheck,
       docCheck,
+      permCheck,
     };
   },
 };
