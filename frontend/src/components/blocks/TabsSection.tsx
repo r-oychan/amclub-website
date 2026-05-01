@@ -1,17 +1,26 @@
 import { Link } from 'react-router';
 import type { TabItem, CollageImage } from '../../lib/types';
 import { SectionLabel } from '../shared/SectionLabel';
+import { useScrollFadeIn } from '../../hooks/useScrollFadeIn';
 
 // Random scattered collage layout extracted from the Framer prototype's
 // Experience section (https://tactesting.framer.website/home).
 // Positions/sizes are percentages of the collage container so the layout
 // stays the same shape at any width while images can be swapped in CMS.
-const COLLAGE_LAYOUT: { left: string; top: string; width: string; aspectRatio: string }[] = [
-  { left: '2.1%',  top: '5.2%',  width: '25.45%', aspectRatio: '314 / 451' },  // tall left
-  { left: '36.2%', top: '0%',    width: '35.49%', aspectRatio: '438 / 293' },  // wide top center
-  { left: '72.85%',top: '5.6%',  width: '27.15%', aspectRatio: '335 / 347' },  // square top right
-  { left: '16.1%', top: '58.9%', width: '27.23%', aspectRatio: '336 / 207' },  // wide bottom left
-  { left: '57.4%', top: '64.4%', width: '32.25%', aspectRatio: '398 / 266' },  // wide bottom right
+// `delay` (ms) staggers the scroll-triggered fade-in: top row first, then
+// bottom row.
+const COLLAGE_LAYOUT: {
+  left: string;
+  top: string;
+  width: string;
+  aspectRatio: string;
+  delay: number;
+}[] = [
+  { left: '2.1%',  top: '5.2%',  width: '25.45%', aspectRatio: '314 / 451', delay: 0   }, // tall left
+  { left: '36.2%', top: '0%',    width: '35.49%', aspectRatio: '438 / 293', delay: 120 }, // wide top center
+  { left: '72.85%',top: '5.6%',  width: '27.15%', aspectRatio: '335 / 347', delay: 240 }, // square top right
+  { left: '16.1%', top: '58.9%', width: '27.23%', aspectRatio: '336 / 207', delay: 360 }, // wide bottom left
+  { left: '57.4%', top: '64.4%', width: '32.25%', aspectRatio: '398 / 266', delay: 480 }, // wide bottom right
 ];
 
 export function TabsSection({
@@ -28,6 +37,7 @@ export function TabsSection({
   dark?: boolean;
 }) {
   const collage = (collageImages ?? []).slice(0, COLLAGE_LAYOUT.length);
+  const { ref: collageRef, isVisible: collageVisible } = useScrollFadeIn(0.15);
 
   return (
     <section className={`py-20 md:py-24 ${dark ? 'bg-primary text-white' : 'bg-bg'}`}>
@@ -85,6 +95,7 @@ export function TabsSection({
 
         {collage.length > 0 && (
           <div
+            ref={collageRef}
             className="relative w-full mt-16 md:mt-24"
             style={{ aspectRatio: '1234 / 750' }}
           >
@@ -99,6 +110,9 @@ export function TabsSection({
                     top: pos.top,
                     width: pos.width,
                     aspectRatio: pos.aspectRatio,
+                    opacity: collageVisible ? 1 : 0,
+                    transform: collageVisible ? 'translateY(0)' : 'translateY(32px)',
+                    transition: `opacity 700ms ease-out ${pos.delay}ms, transform 700ms cubic-bezier(0.22, 1, 0.36, 1) ${pos.delay}ms`,
                   }}
                 >
                   <img src={img.src} alt={img.alt ?? ''} className="w-full h-full object-cover block" />
