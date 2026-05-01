@@ -29,7 +29,10 @@ const ALBUMS = [
 async function ensureAlbum(title, slug, date, photoCount, imageId, order) {
   if (DRY) { console.log(`  [dry] upsert album: ${title}`); return { documentId: `dry-${slug}`, slug }; }
   const existing = await findOneBySlug(ctx, 'gallery-albums', slug);
-  const payload = { title, slug, date, photoCount, coverImage: imageId, order, publishedAt: new Date().toISOString() };
+  // Seed `images` with the cover so the album has at least one photo for the lightbox.
+  // Real photo sets are uploaded per-album via the admin UI (Content Manager → Gallery Album → images field).
+  const imagesPayload = imageId ? [imageId] : [];
+  const payload = { title, slug, date, photoCount, coverImage: imageId, images: imagesPayload, order, publishedAt: new Date().toISOString() };
   if (existing) {
     const r = await api(ctx, `/gallery-albums/${existing.documentId}`, { method: 'PUT', body: { data: payload } });
     return r.data;

@@ -18,7 +18,7 @@
 | `/membership` | `MembershipPage.tsx` | singleType | `membership-page` | ❌ |
 | `/whats-on` | `WhatsOnPage.tsx` | singleType | `whats-on-page` | ❌ |
 | `/home-sub/news` | `NewsPage.tsx` | — | static list (Club News) | ❌ |
-| `/home-sub/gallery` | `GalleryPage.tsx` | — | static list (event albums) | ❌ |
+| `/home-sub/gallery` | `GalleryPage.tsx` | singleType + collection | `gallery-page` + `gallery-album` | ✅ |
 | `/home-sub/contact-us` | `ContactUsPage.tsx` | — | static (`data/contactUs.ts`) — Map + Getting Here + Outlet Operating Hours tabs | ❌ |
 | `/:section/:slug` | `VenueDetailPage.tsx` | collection | `restaurant` / `venue` / `facility` | ✅ |
 
@@ -56,6 +56,13 @@ All page-typed entries use a `content` **dynamiczone** (block-based), populated 
 | `DetailSection.tsx` | `.description`, `.content` | Prose or blocks |
 | `ContactRow.tsx` | `.contact` fields | Phone, email, address |
 | `PhotoGallery.tsx` | `.gallery` (media[]) | Lightbox grid |
+
+### Gallery Page Components
+
+| React Component | Strapi Source | Notes |
+|---|---|---|
+| `GalleryPage.tsx` | `gallery-page` (single) + `gallery-album` (collection, sorted by `order`) | Hero band with centered "Gallery" italic title; 2-col cream cards (1-col below `lg`) — image with mint photo-count badge, eyebrow date, title, "View Album" CTA. Click any card opens shared `Lightbox`. Load More reveals 4 more albums per click. |
+| `Lightbox.tsx` | takes `images: { url, alt? }[]`, `title?`, `onClose` | Full-screen portal modal with backdrop blur. Keyboard nav: Esc closes, Arrow Left/Right paginates. Click backdrop closes. Locks body scroll. Hides prev/next chrome when only 1 image. Reusable beyond gallery. |
 
 ### Contact Page Components
 
@@ -97,6 +104,7 @@ All page-typed entries use a `content` **dynamiczone** (block-based), populated 
 | event-spaces-page | `event-spaces-page` | title, content, seo |
 | membership-page | `membership-page` | title, content, seo |
 | whats-on-page | `whats-on-page` | title, content, seo |
+| gallery-page | `gallery-page` | title, introHeading, introBody, heroImage, seo |
 | header | `header` | logo, navItems (nav-item[]), cta (shared.link) |
 | footer | `footer` | contact (address, phone, email), columns (footer-column[]), logo |
 
@@ -111,6 +119,7 @@ All page-typed entries use a `content` **dynamiczone** (block-based), populated 
 | testimonial | `testimonial` | quote, author, role, image |
 | committee-member | `committee-member` | name, role, image, bio, order |
 | faq-item | `faq-item` | question, answer, order |
+| gallery-album | `gallery-album` | title, slug, coverImage, **images (media[])**, date, photoCount, description, order. One album = one upload group; admins upload all photos for an event into the `images` field of that album entry. |
 
 ---
 

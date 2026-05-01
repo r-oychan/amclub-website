@@ -12,6 +12,7 @@
     "title": { "type": "string", "required": true },
     "slug": { "type": "uid", "targetField": "title", "required": true },
     "coverImage": { "type": "media", "multiple": false, "allowedTypes": ["images"] },
+    "images": { "type": "media", "multiple": true, "allowedTypes": ["images"] },
     "date": { "type": "string" },
     "photoCount": { "type": "integer" },
     "description": { "type": "text" },
