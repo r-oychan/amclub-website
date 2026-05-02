@@ -171,6 +171,52 @@ export function HeroCarousel({
               {/* Centered 1560px overlay container with 60px horizontal padding */}
               <div className="absolute inset-0 z-10 mx-auto w-full max-w-[1560px] px-6 sm:px-10 lg:px-[60px]">
                 <div className="relative w-full h-full">
+                  {/* Mobile (<md): always stack title → subtitle → CTA in the lower
+                      half so the dual-zone CMS layout never overlaps on small screens. */}
+                  <div className="md:hidden absolute bottom-0 left-0 right-0 pb-24 flex flex-col items-start text-left">
+                    {slide.title && (
+                      <h1
+                        className="font-heading italic text-[2.5rem] leading-none tracking-[-0.04em] text-bg mb-4"
+                        style={{
+                          fontWeight: 600,
+                          fontFeatureSettings: '"cv01", "cv05", "cv09", "cv11", "ss03"',
+                          ...(slide.titleColor ? { color: slide.titleColor } : {}),
+                        }}
+                      >
+                        {slide.title}
+                      </h1>
+                    )}
+                    {slide.subtitle && (
+                      slide.subtitleLink ? (
+                        <Link
+                          to={slide.subtitleLink}
+                          className="font-body text-[1.05rem] leading-[1.4] mb-6 underline-offset-4 hover:underline"
+                          style={{ fontWeight: 400, color: slide.subtitleColor ?? '#FFFFFF' }}
+                        >
+                          {slide.subtitle}
+                        </Link>
+                      ) : (
+                        <p
+                          className="font-body text-[1.05rem] leading-[1.4] mb-6"
+                          style={{ fontWeight: 400, color: slide.subtitleColor ?? '#FFFFFF' }}
+                        >
+                          {slide.subtitle}
+                        </p>
+                      )
+                    )}
+                    {slide.cta && (
+                      <Button
+                        label={slide.cta.label}
+                        href={slide.cta.href}
+                        variant="white"
+                        className="uppercase tracking-[0.1em] text-[13.6px] self-start"
+                        iconRight={<HeroArrowIcon />}
+                      />
+                    )}
+                  </div>
+
+                  {/* Desktop (md+): respect CMS-configured title/subtitle zones. */}
+                  <div className="hidden md:block absolute inset-0">
                   {sameZone ? (
                     /* Title + subtitle in same zone */
                     <div className={`absolute flex flex-col max-w-2xl lg:max-w-3xl ${ZONE_CLASSES[slideTitlePos]}`}>
@@ -276,6 +322,7 @@ export function HeroCarousel({
                       )}
                     </>
                   )}
+                  </div>
                 </div>
               </div>
             </div>
