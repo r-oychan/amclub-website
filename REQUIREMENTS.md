@@ -71,6 +71,16 @@ Lift the service + admin extension into a standalone Strapi plugin (`@your-org/s
 
 **Designed-in for the Phase 2 lift:** the registry-shaped block renderer, the config-file boundary, the global-subscriber lifecycle pattern, and pure-function service core all already match the plugin shape. The lift is move-files + rename-config-paths, not a rewrite.
 
+**Phase 1 → Phase 2 schema compatibility**
+
+| Phase 1 artefact | Survives Phase 2 lift? | Notes |
+|---|---|---|
+| `kbDocuments: media[]` field on content types | **Stays as-is in consumer schemas** | Plugins don't own content-type fields — that's correct and forward-compatible. Plugin reads whatever field name the consumer configures (`kbDocumentsField: 'kbDocuments'` default). No migration. |
+| `elevenlabs-sync-log` single-type | **Relocates to plugin** | Phase 2 plugin ships this content type (`plugin::elevenlabs-sync.sync-log`). Data is a cache — rebuild by running "Sync all (full)" once after upgrade. Five-minute migration, no data loss. |
+| Block renderer functions | **Stays in consumer project** | Renderers know about consumer-specific block schemas — they can't live in a generic plugin. Phase 2 plugin exposes a `register(componentName, renderFn)` API; consumer wires up renderers in `bootstrap()`. One-time wiring change. |
+| `cms/config/elevenlabs-sync.ts` | **Moves to `cms/config/plugins.ts`** | `elevenlabs-sync: { config: { ... } }` block under the standard Strapi plugin config convention. Pure rename. |
+| API route `/api/admin/elevenlabs/sync` | **URL may change** | Plugin convention is `/api/elevenlabs-sync/...`. Admin UI updates to match. Trivial. |
+
 **Why this and not the alternatives**
 
 | Option | Why not (for Phase 1) |
