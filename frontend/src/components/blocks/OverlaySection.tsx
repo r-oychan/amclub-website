@@ -140,6 +140,10 @@ export function OverlaySection({
   const imgOffset = isLeft ? 'md:ml-[28%]' : 'md:mr-[28%]';
   const txtCol = isLeft ? 'md:w-[40%]' : 'md:w-[40%] md:ml-auto';
 
+  // Mobile breakout: cancel the section gutters so the image fills the full
+  // viewport width. Restored to 0 at md+ so the desktop grid still aligns.
+  const mobileBleed = '-mx-4 sm:-mx-6 md:mx-0';
+
   /* ── Center: CSS Grid with overlapping columns ────────── */
   if (vAlign === 'center') {
     return (
@@ -147,7 +151,7 @@ export function OverlaySection({
         <div ref={enterRef} className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-12">
             <div
-              className={`md:row-start-1 ${imgFadeClass} ${
+              className={`md:row-start-1 ${mobileBleed} ${imgFadeClass} ${
                 isLeft
                   ? 'md:col-start-4 md:col-end-13'
                   : 'md:col-start-1 md:col-end-10'
@@ -160,7 +164,7 @@ export function OverlaySection({
               />
             </div>
             <div
-              className={`relative z-10 -mt-8 mx-4 md:mx-0 md:mt-0 md:row-start-1 md:self-center ${panelFadeClass} ${
+              className={`relative z-10 md:row-start-1 md:self-center ${panelFadeClass} ${
                 isLeft
                   ? 'md:col-start-1 md:col-end-6'
                   : 'md:col-start-8 md:col-end-13'
@@ -179,16 +183,14 @@ export function OverlaySection({
     return (
       <section className="py-6 md:py-10">
         <div ref={enterRef} className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className={`${imgOffset} ${imgFadeClass}`}>
+          <div className={`${mobileBleed} ${imgOffset} ${imgFadeClass}`}>
             <img
               src={image}
               alt={imageAlt}
               className="w-full aspect-[16/10] object-cover"
             />
           </div>
-          <div
-            className={`relative z-10 -mt-8 mx-4 md:mx-0 md:-mt-52 lg:-mt-64 ${txtCol} ${panelFadeClass}`}
-          >
+          <div className={`relative z-10 md:-mt-52 lg:-mt-64 ${txtCol} ${panelFadeClass}`}>
             {textPanel}
           </div>
         </div>
@@ -204,12 +206,12 @@ export function OverlaySection({
         className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:block"
       >
         <div
-          className={`order-2 md:order-none relative z-10 -mt-8 mx-4 md:mx-0 md:mt-0 ${txtCol} ${panelFadeClass}`}
+          className={`order-2 md:order-none relative z-10 ${txtCol} ${panelFadeClass}`}
         >
           {textPanel}
         </div>
         <div
-          className={`order-1 md:order-none ${imgOffset} md:-mt-40 lg:-mt-48 ${imgFadeClass}`}
+          className={`order-1 md:order-none ${mobileBleed} ${imgOffset} md:-mt-40 lg:-mt-48 ${imgFadeClass}`}
         >
           <img
             src={image}
