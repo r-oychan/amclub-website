@@ -148,13 +148,12 @@ export function Header() {
       >
         <div
           className={`relative w-full transition-transform duration-300 ease-in-out origin-top 2xl:max-w-[1280px] ${
-            scrolled ? '2xl:rounded-b-[20px]' : '2xl:rounded-[20px]'
+            scrolled ? '2xl:rounded-b-[20px] 2xl:scale-90' : '2xl:rounded-[20px] 2xl:scale-100'
           }`}
           style={{
             backgroundColor: 'rgba(0, 29, 97, 0.75)',
             backdropFilter: 'blur(22px)',
             WebkitBackdropFilter: 'blur(22px)',
-            transform: scrolled ? 'scale(0.9)' : 'scale(1)',
           }}
         >
           {/* Noise texture overlay */}
