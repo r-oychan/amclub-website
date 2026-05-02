@@ -12,6 +12,8 @@ RUN npm ci
 COPY frontend/ ./
 ARG VITE_API_URL=/api
 ENV VITE_API_URL=$VITE_API_URL
+ARG VITE_ELEVENLABS_AGENT_ID=agent_9501k4971nfqf1xvgd0604g5kq8y
+ENV VITE_ELEVENLABS_AGENT_ID=$VITE_ELEVENLABS_AGENT_ID
 RUN npm run build
 
 # ── Stage 2: Build CMS ───────────────────────────────────────
