@@ -140,8 +140,8 @@ export function OverlaySection({
   const imgOffset = isLeft ? 'md:ml-[28%]' : 'md:mr-[28%]';
   const txtCol = isLeft ? 'md:w-[40%]' : 'md:w-[40%] md:ml-auto';
 
-  // Mobile breakout: cancel the section gutters so the image fills the full
-  // viewport width. Restored to 0 at md+ so the desktop grid still aligns.
+  // Mobile breakout: cancel the section gutters so the image and text panel
+  // fill the full viewport width. Restored at md+ so the desktop grid still aligns.
   const mobileBleed = '-mx-4 sm:-mx-6 md:mx-0';
 
   /* ── Center: CSS Grid with overlapping columns ────────── */
@@ -164,7 +164,7 @@ export function OverlaySection({
               />
             </div>
             <div
-              className={`relative z-10 md:row-start-1 md:self-center ${panelFadeClass} ${
+              className={`relative z-10 md:row-start-1 md:self-center ${mobileBleed} ${panelFadeClass} ${
                 isLeft
                   ? 'md:col-start-1 md:col-end-6'
                   : 'md:col-start-8 md:col-end-13'
@@ -190,7 +190,7 @@ export function OverlaySection({
               className="w-full aspect-[16/10] object-cover"
             />
           </div>
-          <div className={`relative z-10 md:-mt-52 lg:-mt-64 ${txtCol} ${panelFadeClass}`}>
+          <div className={`relative z-10 md:-mt-52 lg:-mt-64 ${mobileBleed} ${txtCol} ${panelFadeClass}`}>
             {textPanel}
           </div>
         </div>
@@ -206,7 +206,7 @@ export function OverlaySection({
         className="max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:block"
       >
         <div
-          className={`order-2 md:order-none relative z-10 ${txtCol} ${panelFadeClass}`}
+          className={`order-2 md:order-none relative z-10 ${mobileBleed} ${txtCol} ${panelFadeClass}`}
         >
           {textPanel}
         </div>
