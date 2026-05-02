@@ -12,15 +12,18 @@ type Message = {
   id: number;
 };
 
+type Mode = 'text' | 'voice';
+
 function ChatbotPanel({ onClose }: { onClose: () => void }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [mode, setMode] = useState<Mode>('text');
   const messageIdRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const conversation = useConversation({
-    textOnly: true,
+    textOnly: mode === 'text',
     onConnect: () => setError(null),
     onDisconnect: () => {},
     onError: (err: unknown) => {
@@ -40,6 +43,7 @@ function ChatbotPanel({ onClose }: { onClose: () => void }) {
   const status = conversation.status;
   const isConnected = status === 'connected';
   const isConnecting = status === 'connecting';
+  const isVoice = mode === 'voice';
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -59,16 +63,20 @@ function ChatbotPanel({ onClose }: { onClose: () => void }) {
     };
   }, []);
 
-  const handleStart = async () => {
+  const startSession = async (nextMode: Mode) => {
     if (!AGENT_ID) {
       setError('Missing VITE_ELEVENLABS_AGENT_ID');
       return;
     }
-    try {
-      await conversation.startSession({ agentId: AGENT_ID });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    }
+    setMode(nextMode);
+    // Defer to next tick so useConversation picks up the new textOnly value.
+    setTimeout(async () => {
+      try {
+        await conversationRef.current.startSession({ agentId: AGENT_ID });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : String(err));
+      }
+    }, 0);
   };
 
   const handleEnd = async () => {
@@ -91,8 +99,12 @@ function ChatbotPanel({ onClose }: { onClose: () => void }) {
     setInput('');
   };
 
+  const handleToggleMute = () => {
+    conversation.setMuted(!conversation.isMuted);
+  };
+
   return (
-    <div className="fixed bottom-24 right-4 z-50 w-[360px] max-w-[calc(100vw-2rem)] h-[520px] max-h-[calc(100vh-8rem)] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-black/5">
+    <div className="fixed bottom-24 right-4 z-50 w-[380px] max-w-[calc(100vw-2rem)] h-[560px] max-h-[calc(100vh-8rem)] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-black/5">
       <div className="flex items-center justify-between px-4 py-3 bg-primary text-white">
         <div className="flex items-center gap-2">
           <span
@@ -112,12 +124,22 @@ function ChatbotPanel({ onClose }: { onClose: () => void }) {
         </button>
       </div>
 
+      {isConnected && isVoice && (
+        <VoiceOrb
+          isSpeaking={conversation.isSpeaking}
+          isMuted={conversation.isMuted}
+          onToggleMute={handleToggleMute}
+        />
+      )}
+
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-2 bg-neutral-50">
         {messages.length === 0 && (
           <p className="text-xs text-neutral-500 text-center py-6">
             {isConnected
-              ? 'Connected. Type a message to begin.'
-              : 'Tap "Start chat" to begin.'}
+              ? isVoice
+                ? 'Speak naturally — or type below.'
+                : 'Type a message to begin.'
+              : 'How would you like to chat?'}
           </p>
         )}
         {messages.map((m) => (
@@ -165,20 +187,103 @@ function ChatbotPanel({ onClose }: { onClose: () => void }) {
               onClick={handleEnd}
               className="w-full text-xs text-neutral-500 hover:text-accent cursor-pointer"
             >
-              End chat
+              End {isVoice ? 'voice chat' : 'chat'}
             </button>
           </>
         ) : (
-          <button
-            onClick={handleStart}
-            disabled={isConnecting}
-            className="w-full px-4 py-2.5 text-sm font-bold rounded-full bg-accent text-white hover:bg-accent/90 disabled:opacity-60 cursor-pointer"
-          >
-            {isConnecting ? 'Connecting…' : 'Start chat'}
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => startSession('text')}
+              disabled={isConnecting}
+              className="flex-1 px-4 py-2.5 text-sm font-bold rounded-full bg-primary text-white hover:bg-primary-dark disabled:opacity-60 cursor-pointer"
+            >
+              {isConnecting && mode === 'text' ? 'Connecting…' : 'Text chat'}
+            </button>
+            <button
+              onClick={() => startSession('voice')}
+              disabled={isConnecting}
+              className="flex-1 px-4 py-2.5 text-sm font-bold rounded-full bg-accent text-white hover:bg-accent/90 disabled:opacity-60 cursor-pointer flex items-center justify-center gap-1.5"
+            >
+              <MicIcon className="w-4 h-4" />
+              {isConnecting && mode === 'voice' ? 'Connecting…' : 'Voice'}
+            </button>
+          </div>
         )}
       </div>
     </div>
+  );
+}
+
+function VoiceOrb({
+  isSpeaking,
+  isMuted,
+  onToggleMute,
+}: {
+  isSpeaking: boolean;
+  isMuted: boolean;
+  onToggleMute: () => void;
+}) {
+  return (
+    <div className="flex flex-col items-center justify-center py-6 gap-3 bg-gradient-to-b from-primary to-primary-dark text-white">
+      <div className="relative w-24 h-24 flex items-center justify-center">
+        <span
+          className={`absolute inset-0 rounded-full bg-accent/30 ${
+            isSpeaking ? 'animate-ping' : ''
+          }`}
+          aria-hidden
+        />
+        <span
+          className={`absolute inset-2 rounded-full bg-accent/50 ${
+            isSpeaking ? 'animate-pulse' : ''
+          }`}
+          aria-hidden
+        />
+        <span
+          className={`relative w-16 h-16 rounded-full bg-gradient-to-br from-accent to-accent/70 shadow-lg transition-transform ${
+            isSpeaking ? 'scale-110' : 'scale-100'
+          }`}
+          aria-hidden
+        />
+      </div>
+      <p className="text-xs font-body uppercase tracking-wider opacity-80">
+        {isMuted ? 'Muted' : isSpeaking ? 'Speaking…' : 'Listening…'}
+      </p>
+      <button
+        onClick={onToggleMute}
+        aria-label={isMuted ? 'Unmute microphone' : 'Mute microphone'}
+        className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
+          isMuted
+            ? 'bg-accent text-white hover:bg-accent/90'
+            : 'bg-white/15 text-white hover:bg-white/25'
+        }`}
+      >
+        <MicIcon muted={isMuted} className="w-5 h-5" />
+      </button>
+    </div>
+  );
+}
+
+function MicIcon({ muted, className }: { muted?: boolean; className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden
+    >
+      <path d="M12 14a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v5a3 3 0 0 0 3 3z" />
+      <path d="M19 11a1 1 0 1 0-2 0 5 5 0 0 1-10 0 1 1 0 1 0-2 0 7 7 0 0 0 6 6.93V20H8a1 1 0 1 0 0 2h8a1 1 0 1 0 0-2h-3v-2.07A7 7 0 0 0 19 11z" />
+      {muted && (
+        <path
+          d="M3 3l18 18"
+          stroke="currentColor"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          fill="none"
+        />
+      )}
+    </svg>
   );
 }
 
