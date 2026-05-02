@@ -20,10 +20,12 @@ function ChatbotPanel({ onClose }: { onClose: () => void }) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const conversation = useConversation({
+    textOnly: true,
     onConnect: () => setError(null),
     onDisconnect: () => {},
     onError: (err: unknown) => {
       const msg = err instanceof Error ? err.message : String(err);
+      console.error('[ChatbotWidget]', err);
       setError(msg || 'Connection error');
     },
     onMessage: ({ source, message }: { source: 'ai' | 'user'; message: string }) => {
@@ -45,13 +47,17 @@ function ChatbotPanel({ onClose }: { onClose: () => void }) {
     }
   }, [messages]);
 
+  const conversationRef = useRef(conversation);
+  useEffect(() => {
+    conversationRef.current = conversation;
+  });
   useEffect(() => {
     return () => {
-      if (conversation.status === 'connected') {
-        conversation.endSession();
+      if (conversationRef.current.status === 'connected') {
+        conversationRef.current.endSession();
       }
     };
-  }, [conversation]);
+  }, []);
 
   const handleStart = async () => {
     if (!AGENT_ID) {
@@ -59,7 +65,7 @@ function ChatbotPanel({ onClose }: { onClose: () => void }) {
       return;
     }
     try {
-      await conversation.startSession({ agentId: AGENT_ID, connectionType: 'webrtc' });
+      await conversation.startSession({ agentId: AGENT_ID });
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     }
@@ -91,11 +97,7 @@ function ChatbotPanel({ onClose }: { onClose: () => void }) {
         <div className="flex items-center gap-2">
           <span
             className={`inline-block w-2 h-2 rounded-full ${
-              isConnected
-                ? conversation.isSpeaking
-                  ? 'bg-accent animate-pulse'
-                  : 'bg-green-400'
-                : 'bg-white/40'
+              isConnected ? 'bg-green-400' : isConnecting ? 'bg-amber-400 animate-pulse' : 'bg-white/40'
             }`}
             aria-hidden
           />
@@ -114,8 +116,8 @@ function ChatbotPanel({ onClose }: { onClose: () => void }) {
         {messages.length === 0 && (
           <p className="text-xs text-neutral-500 text-center py-6">
             {isConnected
-              ? 'Connected. Speak or type to begin.'
-              : 'Tap "Start" to talk with our assistant.'}
+              ? 'Connected. Type a message to begin.'
+              : 'Tap "Start chat" to begin.'}
           </p>
         )}
         {messages.map((m) => (
@@ -163,7 +165,7 @@ function ChatbotPanel({ onClose }: { onClose: () => void }) {
               onClick={handleEnd}
               className="w-full text-xs text-neutral-500 hover:text-accent cursor-pointer"
             >
-              End conversation
+              End chat
             </button>
           </>
         ) : (
@@ -172,7 +174,7 @@ function ChatbotPanel({ onClose }: { onClose: () => void }) {
             disabled={isConnecting}
             className="w-full px-4 py-2.5 text-sm font-bold rounded-full bg-accent text-white hover:bg-accent/90 disabled:opacity-60 cursor-pointer"
           >
-            {isConnecting ? 'Connecting…' : 'Start conversation'}
+            {isConnecting ? 'Connecting…' : 'Start chat'}
           </button>
         )}
       </div>
