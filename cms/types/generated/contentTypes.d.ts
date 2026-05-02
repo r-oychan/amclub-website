@@ -444,6 +444,7 @@ export interface ApiAboutPageAboutPage extends Struct.SingleTypeSchema {
   attributes: {
     advocacy: Schema.Attribute.Component<'blocks.feature-grid', false>;
     awards: Schema.Attribute.Component<'blocks.awards-grid', false>;
+    collage: Schema.Attribute.Component<'blocks.collage-gallery', false>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -582,6 +583,58 @@ export interface ApiDiningPageDiningPage extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiElevenlabsDocElevenlabsDoc
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'elevenlabs_docs';
+  info: {
+    description: 'Tracks documents pushed to the ElevenLabs ConvAI knowledge base. Internal \u2014 not edited by content authors.';
+    displayName: 'ElevenLabs Sync Log';
+    pluralName: 'elevenlabs-docs';
+    singularName: 'elevenlabs-doc';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  pluginOptions: {
+    'content-manager': {
+      visible: true;
+    };
+    'content-type-builder': {
+      visible: false;
+    };
+  };
+  attributes: {
+    contentHash: Schema.Attribute.String;
+    contentType: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    documentId: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    documentName: Schema.Attribute.String & Schema.Attribute.Required;
+    elDocType: Schema.Attribute.Enumeration<['text', 'file']> &
+      Schema.Attribute.Required;
+    entryId: Schema.Attribute.Integer;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::elevenlabs-doc.elevenlabs-doc'
+    > &
+      Schema.Attribute.Private;
+    mediaFileId: Schema.Attribute.Integer;
+    ownerContentType: Schema.Attribute.String;
+    ownerEntryId: Schema.Attribute.Integer;
+    publishedAt: Schema.Attribute.DateTime;
+    sourceKind: Schema.Attribute.Enumeration<['page-entry', 'media-file']> &
+      Schema.Attribute.Required;
+    syncedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiEventCategoryEventCategory
   extends Struct.CollectionTypeSchema {
   collectionName: 'event_categories';
@@ -712,12 +765,21 @@ export interface ApiFacilityFacility extends Struct.CollectionTypeSchema {
     capacity: Schema.Attribute.String;
     category: Schema.Attribute.Enumeration<['fitness', 'kids', 'event-space']> &
       Schema.Attribute.Required;
+    categoryIconSlug: Schema.Attribute.String;
+    categoryLabel: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    ctas: Schema.Attribute.Component<'shared.link', true>;
+    ctas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 3;
+        },
+        number
+      >;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     detailedDescription: Schema.Attribute.Blocks;
+    dressCode: Schema.Attribute.String;
     email: Schema.Attribute.Email;
     gallery: Schema.Attribute.Media<'images', true>;
     image: Schema.Attribute.Media<'images'>;
@@ -727,9 +789,17 @@ export interface ApiFacilityFacility extends Struct.CollectionTypeSchema {
       'api::facility.facility'
     > &
       Schema.Attribute.Private;
+    locationContact: Schema.Attribute.Component<
+      'blocks.location-contact',
+      false
+    >;
     locationLevel: Schema.Attribute.String;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     openingHours: Schema.Attribute.Blocks;
+    operatingHoursSections: Schema.Attribute.Component<
+      'blocks.operating-hours-section',
+      true
+    >;
     order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     phone: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
@@ -872,6 +942,7 @@ export interface ApiGalleryAlbumGalleryAlbum
       Schema.Attribute.Private;
     date: Schema.Attribute.String;
     description: Schema.Attribute.Text;
+    images: Schema.Attribute.Media<'images', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1149,7 +1220,13 @@ export interface ApiRestaurantRestaurant extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    ctas: Schema.Attribute.Component<'shared.link', true>;
+    ctas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 3;
+        },
+        number
+      >;
     cuisineIconSlug: Schema.Attribute.String;
     cuisineType: Schema.Attribute.String;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
@@ -1164,11 +1241,19 @@ export interface ApiRestaurantRestaurant extends Struct.CollectionTypeSchema {
       'api::restaurant.restaurant'
     > &
       Schema.Attribute.Private;
+    locationContact: Schema.Attribute.Component<
+      'blocks.location-contact',
+      false
+    >;
     locationLevel: Schema.Attribute.String;
     logo: Schema.Attribute.Media<'images'>;
     menuUrl: Schema.Attribute.String;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     openingHours: Schema.Attribute.Blocks;
+    operatingHoursSections: Schema.Attribute.Component<
+      'blocks.operating-hours-section',
+      true
+    >;
     order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     phone: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
@@ -1797,6 +1882,7 @@ declare module '@strapi/strapi' {
       'api::committee-member.committee-member': ApiCommitteeMemberCommitteeMember;
       'api::contact-us-page.contact-us-page': ApiContactUsPageContactUsPage;
       'api::dining-page.dining-page': ApiDiningPageDiningPage;
+      'api::elevenlabs-doc.elevenlabs-doc': ApiElevenlabsDocElevenlabsDoc;
       'api::event-category.event-category': ApiEventCategoryEventCategory;
       'api::event-spaces-page.event-spaces-page': ApiEventSpacesPageEventSpacesPage;
       'api::event.event': ApiEventEvent;

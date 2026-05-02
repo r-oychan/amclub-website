@@ -164,6 +164,17 @@ ElevenLabs meters conversation usage (TTS chars, agent turns), not KB CRUD opera
 - Multi-agent support (Phase 2 if ever needed).
 - Webhooks / queueing if ElevenLabs API gets slow. Phase 1 fires synchronously from the lifecycle and accepts the latency.
 
+**Phase 1.5 — chatbot key separation (security hardening)**
+
+Currently the frontend chatbot connects to a *public* agent using just the agent ID. Anyone can scrape the agent ID and run unlimited TTS conversations against our workspace, on our bill. Fix:
+
+- Make the chatbot agent **private** in the ElevenLabs dashboard.
+- Add a Strapi route `POST /api/chatbot/token` that mints a per-session `conversationToken` via `POST /v1/convai/conversation/token?agent_id=...` using the same `ELEVENLABS_API_KEY`. No body needed; rate-limit by IP / session.
+- Frontend chatbot calls the route and passes `{ conversationToken: token }` to `startSession()` instead of `{ agentId }`.
+- Same workspace key (`ELEVENLABS_API_KEY`) is used for both KB sync (this Phase 1) and token minting (Phase 1.5). Two *roles*, one key — ElevenLabs doesn't currently issue scoped keys. The protection comes from never exposing the key to the browser.
+
+Independent of Phase 1 KB sync — can ship in parallel.
+
 **Phase 2 backlog**
 
 - **Extract to plugin.** Wrap the service + admin UI as a Strapi v5 plugin. Make it config-driven (content-type allow-list, doc-name prefix, agent ID env var). Publish to npm or share across client projects.

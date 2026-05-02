@@ -1,0 +1,63 @@
+{
+  "kind": "collectionType",
+  "collectionName": "elevenlabs_docs",
+  "info": {
+    "singularName": "elevenlabs-doc",
+    "pluralName": "elevenlabs-docs",
+    "displayName": "ElevenLabs Sync Log",
+    "description": "Tracks documents pushed to the ElevenLabs ConvAI knowledge base. Internal — not edited by content authors."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {
+    "content-manager": {
+      "visible": true
+    },
+    "content-type-builder": {
+      "visible": false
+    }
+  },
+  "attributes": {
+    "sourceKind": {
+      "type": "enumeration",
+      "enum": ["page-entry", "media-file"],
+      "required": true
+    },
+    "contentType": {
+      "type": "string"
+    },
+    "entryId": {
+      "type": "integer"
+    },
+    "mediaFileId": {
+      "type": "integer"
+    },
+    "ownerContentType": {
+      "type": "string"
+    },
+    "ownerEntryId": {
+      "type": "integer"
+    },
+    "elDocType": {
+      "type": "enumeration",
+      "enum": ["text", "file"],
+      "required": true
+    },
+    "documentId": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "documentName": {
+      "type": "string",
+      "required": true
+    },
+    "contentHash": {
+      "type": "string"
+    },
+    "syncedAt": {
+      "type": "datetime"
+    }
+  }
+}

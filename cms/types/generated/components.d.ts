@@ -48,6 +48,20 @@ export interface BlocksCardGrid extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksCollageGallery extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_collage_galleries';
+  info: {
+    description: 'Scattered image collage section (5 images)';
+    displayName: 'Collage Gallery';
+    icon: 'images';
+  };
+  attributes: {
+    heading: Schema.Attribute.String;
+    images: Schema.Attribute.Media<'images', true>;
+    label: Schema.Attribute.String;
+  };
+}
+
 export interface BlocksCtaBanner extends Struct.ComponentSchema {
   collectionName: 'components_blocks_cta_banners';
   info: {
@@ -199,6 +213,20 @@ export interface BlocksHero extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksLocationContact extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_location_contacts';
+  info: {
+    description: 'Optional contact module for a venue (level, phone, email). Add to a restaurant to surface the section, omit to hide it.';
+    displayName: 'Location & Contact';
+    icon: 'pin';
+  };
+  attributes: {
+    email: Schema.Attribute.Email;
+    locationLevel: Schema.Attribute.String;
+    phone: Schema.Attribute.String;
+  };
+}
+
 export interface BlocksManagementSlider extends Struct.ComponentSchema {
   collectionName: 'components_blocks_management_sliders';
   info: {
@@ -229,6 +257,19 @@ export interface BlocksOffsiteCateringServices extends Struct.ComponentSchema {
     heading: Schema.Attribute.String;
     pillars: Schema.Attribute.Component<'shared.catering-pillar', true>;
     subBanner: Schema.Attribute.Component<'shared.catering-sub-banner', false>;
+  };
+}
+
+export interface BlocksOperatingHoursSection extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_operating_hours_sections';
+  info: {
+    description: "A titled block of operating-hours rows (e.g. 'Grillhouse Operating Hours'). Multiple sections per venue are supported.";
+    displayName: 'Operating Hours Section';
+    icon: 'clock';
+  };
+  attributes: {
+    rows: Schema.Attribute.Component<'shared.schedule-row', true>;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
@@ -309,6 +350,7 @@ export interface BlocksTabsSection extends Struct.ComponentSchema {
     icon: 'layer';
   };
   attributes: {
+    collageImages: Schema.Attribute.Media<'images', true>;
     dark: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     heading: Schema.Attribute.String;
     label: Schema.Attribute.String;
@@ -498,8 +540,8 @@ export interface SharedHeroSlide extends Struct.ComponentSchema {
     icon: 'picture';
   };
   attributes: {
-    backgroundImage: Schema.Attribute.Media<'images'> &
-      Schema.Attribute.Required;
+    backgroundImage: Schema.Attribute.Media<'images'>;
+    backgroundVideo: Schema.Attribute.Media<'videos'>;
     cta: Schema.Attribute.Component<'shared.link', false>;
     overlayDarken: Schema.Attribute.Integer &
       Schema.Attribute.SetMinMax<
@@ -538,6 +580,19 @@ export interface SharedLink extends Struct.ComponentSchema {
     bordered: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     caption: Schema.Attribute.String;
     href: Schema.Attribute.String;
+    icon: Schema.Attribute.Enumeration<
+      [
+        'arrow',
+        'menu',
+        'clock',
+        'phone',
+        'mail',
+        'calendar',
+        'map-pin',
+        'external',
+      ]
+    > &
+      Schema.Attribute.DefaultTo<'arrow'>;
     isExternal: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     label: Schema.Attribute.String & Schema.Attribute.Required;
     variant: Schema.Attribute.Enumeration<
@@ -614,6 +669,20 @@ export interface SharedPartnerLogo extends Struct.ComponentSchema {
     href: Schema.Attribute.String;
     image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
     name: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface SharedScheduleRow extends Struct.ComponentSchema {
+  collectionName: 'components_shared_schedule_rows';
+  info: {
+    description: 'A single row inside an operating-hours section (day range + time + optional last-order note)';
+    displayName: 'Schedule Row';
+    icon: 'calendar';
+  };
+  attributes: {
+    dayRange: Schema.Attribute.String & Schema.Attribute.Required;
+    lastOrder: Schema.Attribute.String;
+    time: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
@@ -719,6 +788,7 @@ declare module '@strapi/strapi' {
       'blocks.about-section': BlocksAboutSection;
       'blocks.awards-grid': BlocksAwardsGrid;
       'blocks.card-grid': BlocksCardGrid;
+      'blocks.collage-gallery': BlocksCollageGallery;
       'blocks.cta-banner': BlocksCtaBanner;
       'blocks.distinctive-event-spaces': BlocksDistinctiveEventSpaces;
       'blocks.event-listing': BlocksEventListing;
@@ -727,8 +797,10 @@ declare module '@strapi/strapi' {
       'blocks.governance': BlocksGovernance;
       'blocks.heritage-timeline': BlocksHeritageTimeline;
       'blocks.hero': BlocksHero;
+      'blocks.location-contact': BlocksLocationContact;
       'blocks.management-slider': BlocksManagementSlider;
       'blocks.offsite-catering-services': BlocksOffsiteCateringServices;
+      'blocks.operating-hours-section': BlocksOperatingHoursSection;
       'blocks.overlay-section': BlocksOverlaySection;
       'blocks.partner-organizations': BlocksPartnerOrganizations;
       'blocks.private-event-packages': BlocksPrivateEventPackages;
@@ -752,6 +824,7 @@ declare module '@strapi/strapi' {
       'shared.nav-item': SharedNavItem;
       'shared.partner-group': SharedPartnerGroup;
       'shared.partner-logo': SharedPartnerLogo;
+      'shared.schedule-row': SharedScheduleRow;
       'shared.seo': SharedSeo;
       'shared.stat-item': SharedStatItem;
       'shared.tab-item': SharedTabItem;
