@@ -25,12 +25,14 @@ export function PromoCell() {
           <ArrowLink label="View All Dining Promotions" href="/dining/promotions" icon="arrow" />
         </div>
 
-        {/* Promo flyer images — stacked/fanned */}
-        <div className="relative w-full md:w-[36%] shrink-0 h-[180px] md:h-[200px]">
+        {/* Promo flyer images — stacked/fanned. Tall enough on mobile to
+            contain the portrait flyer artwork inside the dashed card so it
+            does not bleed into the next restaurant card below. */}
+        <div className="relative w-full md:w-[36%] shrink-0 h-[320px] md:h-[220px] overflow-hidden">
           <img
             src="/uploads/promotions/canadian-thanksgiving.jpg"
             alt="Dining promotion"
-            className="absolute top-0 right-0 w-[55%] shadow-[6px_6px_12px_rgba(0,30,98,0.3)] rotate-3 z-20"
+            className="absolute top-0 right-0 w-[55%] max-h-full object-contain shadow-[6px_6px_12px_rgba(0,30,98,0.3)] rotate-3 z-20"
             onError={(e) => {
               (e.target as HTMLImageElement).style.display = 'none';
             }}
@@ -38,7 +40,7 @@ export function PromoCell() {
           <img
             src="/uploads/promotions/nov-food-beverage-specials.jpg"
             alt="Dining promotion"
-            className="absolute top-4 right-[30%] w-[55%] shadow-[10px_5px_9px_rgba(0,30,98,0.17)] -rotate-2 z-10"
+            className="absolute top-4 right-[30%] w-[55%] max-h-full object-contain shadow-[10px_5px_9px_rgba(0,30,98,0.17)] -rotate-2 z-10"
             onError={(e) => {
               (e.target as HTMLImageElement).style.display = 'none';
             }}
