@@ -123,25 +123,23 @@ export function QuadSection() {
   return (
     <section ref={sectionRef} className="relative py-20 md:py-28 bg-white overflow-hidden">
       <div className="relative">
-        {/* ── Decoration + Logo Area (overlays cards) ───────────── */}
-        <div className="pointer-events-none absolute left-1/2 top-[-5px] z-20 w-[400px] h-[240px] -translate-x-1/2">
+        {/* ── Logo + Decoration Cluster (overlaps cards by half) ──
+            Wrapper is sized to the logo so decorations cluster tight
+            around it. Top is tuned so the logo's vertical center lands
+            on the photo's top edge — pt-[115px] + ThreeColGrid py-12/16. */}
+        <div className="pointer-events-none absolute left-1/2 top-[110px] md:top-[126px] z-20 w-[105px] h-[105px] -translate-x-1/2">
           {/* Central Quad logo */}
-          <div className="absolute inset-0 flex items-center justify-center z-10">
-            <div className="w-[105px] h-[105px] rounded-full bg-[#FEB700] flex items-center justify-center shadow-lg overflow-hidden">
-              <img
-                src="/uploads/pages/kids/quad.png"
-                alt=""
-                className="w-[78%] h-[78%] object-contain"
-              />
-            </div>
+          <div className="absolute inset-0 rounded-full bg-[#FEB700] flex items-center justify-center shadow-lg overflow-hidden">
+            <img
+              src="/uploads/pages/kids/quad.png"
+              alt=""
+              className="w-[78%] h-[78%] object-contain"
+            />
           </div>
 
-          {/* SVG Decorations — scattered around the badge to mirror the
-              Framer prototype: organic distances, not stuck to corners. */}
-
-          {/* Top-center, slightly left: coral zigzag */}
+          {/* Top, slightly left of center: coral zigzag */}
           <div
-            className="absolute top-[8%] left-[40%] w-[28px] transition-all duration-1000 ease-out"
+            className="absolute top-[-22px] left-[14px] w-[28px] transition-all duration-1000 ease-out"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? 'rotate(0deg)' : 'rotate(30deg)',
@@ -151,9 +149,9 @@ export function QuadSection() {
             <CoralZigzag />
           </div>
 
-          {/* Top-right: teal swirl */}
+          {/* Top-right, leaning out: teal swirl */}
           <div
-            className="absolute top-[12%] right-[18%] w-[34px] transition-all duration-1000 ease-out"
+            className="absolute top-[-14px] right-[-26px] w-[34px] transition-all duration-1000 ease-out"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? 'rotate(0deg)' : 'rotate(-25deg)',
@@ -163,9 +161,9 @@ export function QuadSection() {
             <TealSwirl />
           </div>
 
-          {/* Far-left, upper-middle: small purple pill */}
+          {/* Upper-left side: purple pill */}
           <div
-            className="absolute top-[33%] left-[6%] w-[14px] transition-all duration-1000 ease-out"
+            className="absolute top-[14px] left-[-22px] w-[14px] transition-all duration-1000 ease-out"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? 'rotate(110deg)' : 'rotate(85deg)',
@@ -177,7 +175,7 @@ export function QuadSection() {
 
           {/* Right side, middle: coral teardrop */}
           <div
-            className="absolute top-[48%] right-[6%] w-[24px] transition-all duration-1000 ease-out"
+            className="absolute top-[34px] right-[-32px] w-[24px] transition-all duration-1000 ease-out"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? 'rotate(-90deg)' : 'rotate(-115deg)',
@@ -189,7 +187,7 @@ export function QuadSection() {
 
           {/* Lower-left: teal swirl flipped */}
           <div
-            className="absolute top-[68%] left-[18%] w-[30px] transition-all duration-1000 ease-out"
+            className="absolute top-[72px] left-[-26px] w-[30px] transition-all duration-1000 ease-out"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? 'rotate(-120deg)' : 'rotate(-145deg)',
@@ -201,7 +199,7 @@ export function QuadSection() {
 
           {/* Lower-right: yellow hook */}
           <div
-            className="absolute top-[78%] right-[18%] w-[32px] transition-all duration-1000 ease-out"
+            className="absolute top-[80px] right-[-14px] w-[32px] transition-all duration-1000 ease-out"
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? 'rotate(0deg)' : 'rotate(-20deg)',
