@@ -121,13 +121,13 @@ export function QuadSection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative py-20 md:py-28 bg-white overflow-hidden">
+    <section ref={sectionRef} className="relative pt-4 pb-20 md:pt-6 md:pb-28 bg-white overflow-hidden">
       <div className="relative">
         {/* ── Logo + Decoration Cluster (overlaps cards by half) ──
             Wrapper is sized to the logo so decorations cluster tight
             around it. Top is tuned so the logo's vertical center lands
-            on the photo's top edge — pt-[115px] + ThreeColGrid py-12/16. */}
-        <div className="pointer-events-none absolute left-1/2 top-[110px] md:top-[126px] z-20 w-[105px] h-[105px] -translate-x-1/2">
+            on the photo's top edge — cards pt + ThreeColGrid py-12/16. */}
+        <div className="pointer-events-none absolute left-1/2 top-[35px] md:top-[32px] z-20 w-[105px] h-[105px] -translate-x-1/2">
           {/* Central Quad logo */}
           <div className="absolute inset-0 rounded-full bg-[#FEB700] flex items-center justify-center shadow-lg overflow-hidden">
             <img
@@ -212,7 +212,7 @@ export function QuadSection() {
 
         {/* ── Three Quad Venue Cards ────────────────────────────── */}
         <div
-          className="relative z-10 pt-[115px] transition-all duration-700 ease-out"
+          className="relative z-10 pt-[40px] md:pt-[20px] transition-all duration-700 ease-out"
           style={{
             opacity: isVisible ? 1 : 0,
             transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
