@@ -11,6 +11,7 @@
  */
 
 import { useEffect, useState } from 'react';
+import { useFetchClient } from '@strapi/strapi/admin';
 
 interface StatusResponse {
   configured: {
@@ -44,40 +45,15 @@ interface SyncAllResponse {
   results: SyncResult[];
 }
 
-function getAdminAuth(): string {
-  const fromLocal = localStorage.getItem('jwtToken') ?? '';
-  const fromSession = sessionStorage.getItem('jwtToken') ?? '';
-  const token = (fromLocal || fromSession).replace(/^"|"$/g, '');
-  return token ? `Bearer ${token}` : '';
-}
-
-async function api<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(path, {
-    credentials: 'include',
-    ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: getAdminAuth(),
-      ...(init?.headers ?? {}),
-    },
-  });
-  const text = await res.text();
-  const data: unknown = text ? JSON.parse(text) : {};
-  if (!res.ok) {
-    const msg = (data as { error?: { message?: string } }).error?.message ?? `HTTP ${res.status}`;
-    throw new Error(msg);
-  }
-  return data as T;
-}
-
 const SyncAllPage = () => {
+  const { get, post } = useFetchClient();
   const [status, setStatus] = useState<StatusResponse | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [result, setResult] = useState<{ mode: 'success' | 'error'; text: string } | null>(null);
 
   async function refresh() {
     try {
-      const data = await api<StatusResponse>('/api/elevenlabs-sync/status');
+      const { data } = await get<StatusResponse>('/api/elevenlabs-sync/status');
       setStatus(data);
     } catch (err) {
       setResult({ mode: 'error', text: `Failed to load status: ${(err as Error).message}` });
@@ -86,6 +62,7 @@ const SyncAllPage = () => {
 
   useEffect(() => {
     void refresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function runSyncAll(mode: 'delta' | 'full') {
@@ -93,14 +70,11 @@ const SyncAllPage = () => {
     setBusy(mode);
     setResult(null);
     try {
-      const data = await api<SyncAllResponse>('/api/elevenlabs-sync/sync-all', {
-        method: 'POST',
-        body: JSON.stringify({ mode }),
-      });
+      const { data } = await post<SyncAllResponse>('/api/elevenlabs-sync/sync-all', { mode });
       setResult({ mode: 'success', text: `Sync ${mode}: ${JSON.stringify(data.counts)}` });
       await refresh();
     } catch (err) {
-      setResult({ mode: 'error', text: `Sync ${mode} failed: ${(err as Error).message}` });
+      setResult({ mode: 'error', text: `Sync ${mode} failed: ${formatError(err)}` });
     } finally {
       setBusy(null);
     }
@@ -111,11 +85,11 @@ const SyncAllPage = () => {
     setBusy('clear');
     setResult(null);
     try {
-      const data = await api<{ deleted: number }>('/api/elevenlabs-sync/clear-all', { method: 'POST' });
+      const { data } = await post<{ deleted: number }>('/api/elevenlabs-sync/clear-all', {});
       setResult({ mode: 'success', text: `Cleared ${data.deleted} doc(s)` });
       await refresh();
     } catch (err) {
-      setResult({ mode: 'error', text: `Clear failed: ${(err as Error).message}` });
+      setResult({ mode: 'error', text: `Clear failed: ${formatError(err)}` });
     } finally {
       setBusy(null);
     }
@@ -246,5 +220,13 @@ const SyncAllPage = () => {
     </main>
   );
 };
+
+function formatError(err: unknown): string {
+  if (err && typeof err === 'object' && 'response' in err) {
+    const res = (err as { response?: { data?: { error?: { message?: string } } } }).response;
+    return res?.data?.error?.message ?? (err as Error).message ?? String(err);
+  }
+  return err instanceof Error ? err.message : String(err);
+}
 
 export default SyncAllPage;

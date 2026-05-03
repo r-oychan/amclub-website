@@ -1,12 +1,13 @@
 /**
  * Right-side panel injected into the Content Manager edit view.
  * Shows a "Sync to ElevenLabs" button for entries whose content type is
- * in the sync allow-list. POSTs to /api/elevenlabs-sync/sync-entry with
- * the admin session JWT (the admin frontend includes it automatically
- * via the fetchClient helper).
+ * in the sync allow-list. Calls /elevenlabs-sync/sync-entry through
+ * Strapi's useFetchClient so admin auth is handled automatically
+ * (cookies or localStorage depending on the "remember me" toggle).
  */
 
 import { useState } from 'react';
+import { useFetchClient } from '@strapi/strapi/admin';
 
 const SYNCABLE_UIDS = new Set([
   'api::home-page.home-page',
@@ -32,7 +33,7 @@ const SYNCABLE_UIDS = new Set([
 ]);
 
 interface PanelContext {
-  model: string; // e.g. "api::home-page.home-page"
+  model: string;
   document?: { documentId?: string; publishedAt?: string | null };
   documentId?: string;
 }
@@ -43,6 +44,7 @@ interface PanelDescriptor {
 }
 
 function SyncBody({ uid, documentId, isPublished }: { uid: string; documentId?: string; isPublished: boolean }) {
+  const { post } = useFetchClient();
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState<string>('');
 
@@ -50,28 +52,16 @@ function SyncBody({ uid, documentId, isPublished }: { uid: string; documentId?: 
     setStatus('loading');
     setMessage('Syncing…');
     try {
-      const res = await fetch('/api/elevenlabs-sync/sync-entry', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: getAdminAuth(),
-        },
-        body: JSON.stringify({ uid, documentId }),
-      });
-      const data: unknown = await res.json().catch(() => null);
-      if (!res.ok) {
-        const errMsg = (data as { error?: { message?: string } })?.error?.message ?? `HTTP ${res.status}`;
-        setStatus('error');
-        setMessage(errMsg);
-        return;
-      }
-      const result = data as { status: string; documentName: string; documentId?: string; error?: string };
-      setStatus(result.error ? 'error' : 'success');
-      setMessage(result.error ?? `${result.status}: ${result.documentName}`);
+      const { data } = await post<{ status: string; documentName: string; documentId?: string; error?: string }>(
+        '/api/elevenlabs-sync/sync-entry',
+        { uid, documentId },
+      );
+      setStatus(data.error ? 'error' : 'success');
+      setMessage(data.error ?? `${data.status}: ${data.documentName}`);
     } catch (err) {
       setStatus('error');
-      setMessage((err as Error).message);
+      const e = err as { response?: { data?: { error?: { message?: string } } } } & Error;
+      setMessage(e.response?.data?.error?.message ?? e.message ?? String(err));
     }
   }
 
@@ -112,15 +102,6 @@ function SyncBody({ uid, documentId, isPublished }: { uid: string; documentId?: 
       )}
     </div>
   );
-}
-
-function getAdminAuth(): string {
-  // Strapi admin stores the JWT in localStorage under "jwtToken" (or "sessionStorage").
-  // Reading both supports both "stay logged in" toggle states.
-  const fromLocal = localStorage.getItem('jwtToken') ?? '';
-  const fromSession = sessionStorage.getItem('jwtToken') ?? '';
-  const token = (fromLocal || fromSession).replace(/^"|"$/g, '');
-  return token ? `Bearer ${token}` : '';
 }
 
 export const ElevenLabsSyncPanel = (ctx: PanelContext): PanelDescriptor | null => {
