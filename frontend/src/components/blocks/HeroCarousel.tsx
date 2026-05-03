@@ -58,11 +58,13 @@ export function HeroCarousel({
       cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
     }
-    Object.values(videoRefs.current).forEach((v) => {
-      if (v) {
-        v.pause();
-        v.currentTime = 0;
-      }
+    // Pause any video that isn't the new active slide. Critically: do NOT
+    // reset its currentTime — the previous slide is still mid-transition out
+    // of view, and rewinding it to frame 0 would visibly snap the picture
+    // back during the 700ms slide transition. Letting it sit on its last
+    // frame keeps the exit smooth.
+    Object.entries(videoRefs.current).forEach(([k, v]) => {
+      if (v && Number(k) !== current) v.pause();
     });
 
     if (slides.length <= 1) return;
@@ -70,6 +72,7 @@ export function HeroCarousel({
     if (currentIsVideo) {
       const v = videoRefs.current[current];
       if (v) {
+        // Reset only the incoming slide's video so it plays from the start.
         v.currentTime = 0;
         // play() returns a promise; swallow the AbortError that fires if the
         // user advances slides faster than the video can start.
