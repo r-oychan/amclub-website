@@ -4,13 +4,15 @@
  * strategy + admin::isAuthenticatedAdmin policy).
  */
 
+// auth: false bypasses the route-type strategy lookup (which doesn't
+// know about 'admin' on /api/* routes); the global::is-admin policy
+// then validates the admin session token manually.
 const adminAuth = {
-  auth: { strategies: ['admin'] as string[] },
-  policies: ['admin::isAuthenticatedAdmin'],
+  auth: false,
+  policies: ['global::is-admin'],
 };
 
 export default {
-  type: 'admin',
   routes: [
     {
       method: 'POST',
