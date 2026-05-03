@@ -1,17 +1,23 @@
 /**
- * Top-level admin page for ElevenLabs KB sync. Three buttons:
- *  - Sync all (delta)  → push only entries whose hash has changed
- *  - Sync all (full)   → wipe every am-club:* doc and re-push everything
- *  - Clear all         → wipe every am-club:* doc, no re-push (chatbot
- *                        loses all our content until next sync)
+ * Top-level admin page for ElevenLabs KB sync.
  *
- * Below the buttons: status table reading /api/elevenlabs-sync/status —
- * shows the current allow-list, env-var status, and every doc the sync
- * log knows about.
+ * Bulk operations run as background jobs on the server (sync-all and
+ * clear-all return instantly). This page polls /status every 3 s while
+ * a job is running and shows progress + final counts.
  */
 
 import { useEffect, useState } from 'react';
 import { useFetchClient } from '@strapi/strapi/admin';
+
+interface JobState {
+  kind: 'sync-all' | 'clear-all';
+  mode?: 'delta' | 'full';
+  startedAt: string;
+  finishedAt?: string;
+  counts?: Record<string, number>;
+  deleted?: number;
+  error?: string;
+}
 
 interface StatusResponse {
   configured: {
@@ -30,19 +36,14 @@ interface StatusResponse {
     contentHash: string | null;
     syncedAt: string;
   }>;
+  job: JobState | null;
 }
 
-interface SyncResult {
-  documentName: string;
-  status: 'created' | 'updated' | 'skipped' | 'deleted' | 'error';
-  documentId?: string;
-  error?: string;
-}
-
-interface SyncAllResponse {
-  mode: 'delta' | 'full';
-  counts: Record<string, number>;
-  results: SyncResult[];
+interface StartResponse {
+  started: boolean;
+  reason?: string;
+  job?: JobState;
+  current?: JobState;
 }
 
 const SyncAllPage = () => {
@@ -51,12 +52,15 @@ const SyncAllPage = () => {
   const [busy, setBusy] = useState<string | null>(null);
   const [result, setResult] = useState<{ mode: 'success' | 'error'; text: string } | null>(null);
 
+  const job = status?.job ?? null;
+  const jobRunning = !!job && !job.finishedAt;
+
   async function refresh() {
     try {
       const { data } = await get<StatusResponse>('/api/elevenlabs-sync/status');
       setStatus(data);
     } catch (err) {
-      setResult({ mode: 'error', text: `Failed to load status: ${(err as Error).message}` });
+      setResult({ mode: 'error', text: `Failed to load status: ${formatError(err)}` });
     }
   }
 
@@ -65,13 +69,25 @@ const SyncAllPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Poll while a job is running.
+  useEffect(() => {
+    if (!jobRunning) return;
+    const t = setInterval(() => void refresh(), 3000);
+    return () => clearInterval(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [jobRunning]);
+
   async function runSyncAll(mode: 'delta' | 'full') {
     if (mode === 'full' && !confirm('Wipe every am-club:* doc from ElevenLabs and re-push all published entries. Continue?')) return;
     setBusy(mode);
     setResult(null);
     try {
-      const { data } = await post<SyncAllResponse>('/api/elevenlabs-sync/sync-all', { mode });
-      setResult({ mode: 'success', text: `Sync ${mode}: ${JSON.stringify(data.counts)}` });
+      const { data } = await post<StartResponse>('/api/elevenlabs-sync/sync-all', { mode });
+      if (!data.started) {
+        setResult({ mode: 'error', text: data.reason ?? 'Job rejected' });
+      } else {
+        setResult({ mode: 'success', text: `Sync ${mode} started — polling for progress…` });
+      }
       await refresh();
     } catch (err) {
       setResult({ mode: 'error', text: `Sync ${mode} failed: ${formatError(err)}` });
@@ -85,8 +101,12 @@ const SyncAllPage = () => {
     setBusy('clear');
     setResult(null);
     try {
-      const { data } = await post<{ deleted: number }>('/api/elevenlabs-sync/clear-all', {});
-      setResult({ mode: 'success', text: `Cleared ${data.deleted} doc(s)` });
+      const { data } = await post<StartResponse>('/api/elevenlabs-sync/clear-all', {});
+      if (!data.started) {
+        setResult({ mode: 'error', text: data.reason ?? 'Clear rejected' });
+      } else {
+        setResult({ mode: 'success', text: 'Clear started — polling for progress…' });
+      }
       await refresh();
     } catch (err) {
       setResult({ mode: 'error', text: `Clear failed: ${formatError(err)}` });
@@ -108,6 +128,7 @@ const SyncAllPage = () => {
     cursor: 'pointer',
   });
   const btnDisabled: React.CSSProperties = { ...btn('#9b9aff'), cursor: 'not-allowed' };
+  const buttonsDisabled = !!busy || jobRunning;
 
   return (
     <main style={{ padding: 32, maxWidth: 1100, margin: '0 auto' }}>
@@ -122,7 +143,7 @@ const SyncAllPage = () => {
             padding: 16,
             background: status.configured.apiKeySet && status.configured.agentIdSet ? '#eafbe7' : '#fff5f0',
             borderRadius: 4,
-            marginBottom: 24,
+            marginBottom: 16,
             fontSize: 13,
             color: '#32324d',
           }}
@@ -140,30 +161,50 @@ const SyncAllPage = () => {
         </section>
       )}
 
+      {job && (
+        <section
+          style={{
+            padding: 12,
+            background: job.error ? '#fbe7e7' : jobRunning ? '#fff8e1' : '#eafbe7',
+            color: job.error ? '#d02b20' : '#32324d',
+            borderRadius: 4,
+            marginBottom: 16,
+            fontSize: 13,
+          }}
+        >
+          <strong>{jobRunning ? '⏳ Running' : job.error ? '✗ Failed' : '✓ Finished'}:</strong>{' '}
+          {job.kind}{job.mode ? ` (${job.mode})` : ''} — started {new Date(job.startedAt).toLocaleTimeString()}
+          {job.finishedAt && <>, finished {new Date(job.finishedAt).toLocaleTimeString()}</>}
+          {job.counts && <> — {JSON.stringify(job.counts)}</>}
+          {typeof job.deleted === 'number' && <> — deleted {job.deleted}</>}
+          {job.error && <><br />{job.error}</>}
+        </section>
+      )}
+
       <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
         <button
           onClick={() => runSyncAll('delta')}
-          disabled={!!busy}
-          style={busy ? btnDisabled : btn('#4945FF')}
+          disabled={buttonsDisabled}
+          style={buttonsDisabled ? btnDisabled : btn('#4945FF')}
           title="Push only entries whose content has changed since last sync"
         >
-          {busy === 'delta' ? 'Syncing…' : 'Sync all (delta)'}
+          {busy === 'delta' ? 'Starting…' : 'Sync all (delta)'}
         </button>
         <button
           onClick={() => runSyncAll('full')}
-          disabled={!!busy}
-          style={busy ? btnDisabled : btn('#7b79ff')}
+          disabled={buttonsDisabled}
+          style={buttonsDisabled ? btnDisabled : btn('#7b79ff')}
           title="Wipe everything from ElevenLabs and re-sync every published entry"
         >
-          {busy === 'full' ? 'Syncing…' : 'Sync all (full)'}
+          {busy === 'full' ? 'Starting…' : 'Sync all (full)'}
         </button>
         <button
           onClick={runClearAll}
-          disabled={!!busy}
-          style={busy ? btnDisabled : btn('#d02b20')}
+          disabled={buttonsDisabled}
+          style={buttonsDisabled ? btnDisabled : btn('#d02b20')}
           title="Delete every am-club:* doc — chatbot will lose all knowledge until next sync"
         >
-          {busy === 'clear' ? 'Clearing…' : 'Clear all'}
+          {busy === 'clear' ? 'Starting…' : 'Clear all'}
         </button>
         <button onClick={refresh} disabled={!!busy} style={busy ? btnDisabled : btn('#666687')}>
           Refresh
