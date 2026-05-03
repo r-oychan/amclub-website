@@ -6,6 +6,12 @@ import * as random from '@pulumi/random';
 const location = azure.config.location ?? 'southeastasia';
 const projectName = 'amclub';
 
+// ── Read stack config ────────────────────────────────────────
+const stackConfig = new pulumi.Config();
+const elevenlabsApiKey = stackConfig.requireSecret('elevenlabsApiKey');
+const elevenlabsAgentId = stackConfig.require('elevenlabsAgentId');
+const publicSiteUrl = stackConfig.get('publicSiteUrl') ?? 'https://amclub.example';
+
 // ── Auto-generated secrets ───────────────────────────────────
 const dbPassword = new random.RandomPassword(`${projectName}-db-pw`, {
   length: 24,
@@ -249,6 +255,7 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
       { name: 'encryption-key', value: encryptionKey.result },
       { name: 'jwt-secret', value: jwtSecret.result },
       { name: 'storage-account-key', value: storageKey },
+      { name: 'elevenlabs-api-key', value: elevenlabsApiKey },
     ],
   },
   template: {
@@ -279,6 +286,9 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
           { name: 'STORAGE_ACCOUNT_KEY', secretRef: 'storage-account-key' },
           { name: 'STORAGE_URL', value: storageBlobUrl },
           { name: 'STORAGE_CONTAINER_NAME', value: mediaContainer.name },
+          { name: 'ELEVENLABS_API_KEY', secretRef: 'elevenlabs-api-key' },
+          { name: 'ELEVENLABS_AGENT_ID', value: elevenlabsAgentId },
+          { name: 'PUBLIC_SITE_URL', value: publicSiteUrl },
         ],
         volumeMounts: [
           {

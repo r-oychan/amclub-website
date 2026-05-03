@@ -16,6 +16,7 @@ import * as client from './client';
 import { config, getAgentId, getSiteUrl } from './config';
 import { buildDeepPopulate } from './populate';
 import { renderEntryMarkdown } from './markdown';
+import { harvestFiles, type HarvestedFile } from './harvest';
 
 type Strapi = {
   contentTypes: Record<string, { kind?: 'singleType' | 'collectionType'; info?: { singularName?: string } }>;
@@ -49,7 +50,7 @@ interface SyncLogRow {
   ownerContentType: string | null;
   ownerEntryId: number | null;
   elDocType: 'text' | 'file';
-  documentId: string;
+  elDocumentId: string;
   documentName: string;
   contentHash: string | null;
   syncedAt: string;
@@ -103,7 +104,7 @@ async function refreshAgentKnowledgeBase(strapi: Strapi): Promise<void> {
   const agentId = getAgentId();
   const allRows = (await strapi.db.query(SYNC_LOG_UID).findMany({})) as SyncLogRow[];
   const locators: client.KnowledgeBaseLocator[] = allRows.map((r) => ({
-    id: r.documentId,
+    id: r.elDocumentId,
     name: r.documentName,
     type: r.elDocType,
     usage_mode: 'auto',
@@ -137,9 +138,9 @@ export async function syncEntry(strapi: Strapi, uid: string, documentId?: string
     // Entry not published / deleted — clean up if we have a record.
     if (existingRow) {
       try {
-        await client.deleteDoc(existingRow.documentId);
+        await client.deleteDoc(existingRow.elDocumentId);
       } catch (err) {
-        strapi.log.warn(`[elevenlabs-sync] failed to delete remote doc ${existingRow.documentId}: ${(err as Error).message}`);
+        strapi.log.warn(`[elevenlabs-sync] failed to delete remote doc ${existingRow.elDocumentId}: ${(err as Error).message}`);
       }
       await deleteLogRow(strapi, existingRow.id);
       await refreshAgentKnowledgeBase(strapi);
@@ -152,15 +153,15 @@ export async function syncEntry(strapi: Strapi, uid: string, documentId?: string
   const hash = sha256(markdown);
 
   if (existingRow && existingRow.contentHash === hash) {
-    return { documentName: docName, status: 'skipped', documentId: existingRow.documentId };
+    return { documentName: docName, status: 'skipped', documentId: existingRow.elDocumentId };
   }
 
   // Delete prior remote doc (if any), then create fresh.
   if (existingRow) {
     try {
-      await client.deleteDoc(existingRow.documentId);
+      await client.deleteDoc(existingRow.elDocumentId);
     } catch (err) {
-      strapi.log.warn(`[elevenlabs-sync] failed to delete prior doc ${existingRow.documentId}: ${(err as Error).message}`);
+      strapi.log.warn(`[elevenlabs-sync] failed to delete prior doc ${existingRow.elDocumentId}: ${(err as Error).message}`);
     }
   }
 
@@ -174,14 +175,111 @@ export async function syncEntry(strapi: Strapi, uid: string, documentId?: string
     ownerContentType: null,
     ownerEntryId: null,
     elDocType: 'text',
-    documentId: created.id,
+    elDocumentId: created.id,
     documentName: docName,
     contentHash: hash,
     syncedAt: new Date().toISOString(),
   });
 
+  // Harvest + sync any attached PDFs / DOCX / etc. They're individual KB
+  // docs whose lifecycle is bound to this page entry.
+  await syncAttachedFiles(strapi, uid, entry);
+
   await refreshAgentKnowledgeBase(strapi);
   return { documentName: docName, status: existingRow ? 'updated' : 'created', documentId: created.id };
+}
+
+// ── PDF / file-doc syncing ───────────────────────────────────────────
+
+async function syncAttachedFiles(strapi: Strapi, ownerUid: string, entry: Record<string, unknown>): Promise<void> {
+  const files = await harvestFiles(strapi as never, ownerUid, entry);
+  const ownerEntryId = (entry.id as number) ?? null;
+  const fileNamesAfter = new Set<string>();
+
+  for (const f of files) {
+    try {
+      const name = buildFileDocName(ownerUid, entry, f);
+      fileNamesAfter.add(name);
+      await syncOneFile(strapi, ownerUid, ownerEntryId, name, f);
+    } catch (err) {
+      strapi.log.warn(`[elevenlabs-sync] file ${f.name}: ${(err as Error).message}`);
+    }
+  }
+
+  // Drop log rows / KB docs for files that used to belong to this page
+  // but no longer do (editor removed the PDF).
+  const ownedRows = (await strapi.db.query(SYNC_LOG_UID).findMany({
+    where: { sourceKind: 'media-file', ownerContentType: ownerUid, ownerEntryId },
+  })) as SyncLogRow[];
+  for (const row of ownedRows) {
+    if (fileNamesAfter.has(row.documentName)) continue;
+    try {
+      await client.deleteDoc(row.elDocumentId);
+    } catch (err) {
+      strapi.log.warn(`[elevenlabs-sync] failed to drop orphan ${row.elDocumentId}: ${(err as Error).message}`);
+    }
+    await deleteLogRow(strapi, row.id);
+  }
+}
+
+async function syncOneFile(
+  strapi: Strapi,
+  ownerUid: string,
+  ownerEntryId: number | null,
+  documentName: string,
+  file: HarvestedFile,
+): Promise<void> {
+  const fileHash = `${file.size}:${file.updatedAt}`;
+  const existing = await getLogRowByName(strapi, documentName);
+  if (existing && existing.contentHash === fileHash) return;
+
+  if (existing) {
+    try {
+      await client.deleteDoc(existing.elDocumentId);
+    } catch (err) {
+      strapi.log.warn(`[elevenlabs-sync] failed to delete prior file doc ${existing.elDocumentId}: ${(err as Error).message}`);
+    }
+  }
+
+  const buffer = await fetchUploadBuffer(file.url);
+  const created = await client.createFileDoc({
+    file: buffer,
+    filename: file.name,
+    mime: file.mime,
+    name: documentName,
+  });
+
+  await upsertLogRow(strapi, {
+    sourceKind: 'media-file',
+    contentType: null,
+    entryId: null,
+    mediaFileId: file.id,
+    ownerContentType: ownerUid,
+    ownerEntryId,
+    elDocType: 'file',
+    elDocumentId: created.id,
+    documentName,
+    contentHash: fileHash,
+    syncedAt: new Date().toISOString(),
+  });
+}
+
+async function fetchUploadBuffer(url: string): Promise<Buffer> {
+  // Strapi's local provider stores relative URLs (`/uploads/foo.pdf`).
+  // Cloud providers (Azure, S3) store absolute URLs. Resolve both.
+  const absolute = url.startsWith('http') ? url : `http://localhost:${process.env.PORT ?? 1337}${url}`;
+  const res = await fetch(absolute);
+  if (!res.ok) throw new Error(`fetch ${absolute} → ${res.status}`);
+  const ab = await res.arrayBuffer();
+  return Buffer.from(ab);
+}
+
+function buildFileDocName(ownerUid: string, entry: Record<string, unknown>, file: HarvestedFile): string {
+  const short = ownerUid.replace(/^api::/, '').split('.')[0];
+  const slug = (entry.slug as string | undefined) ?? `id-${entry.id}`;
+  // Strip extension so the doc name is stable across mime tweaks.
+  const baseName = file.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9-]+/g, '-');
+  return `${config.docNamePrefix}${short}:${slug}:file:${baseName}`;
 }
 
 function buildPublicUrl(uid: string, entry: Record<string, unknown>): string {

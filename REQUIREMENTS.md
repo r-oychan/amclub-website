@@ -164,6 +164,20 @@ ElevenLabs meters conversation usage (TTS chars, agent turns), not KB CRUD opera
 - Multi-agent support (Phase 2 if ever needed).
 - Webhooks / queueing if ElevenLabs API gets slow. Phase 1 fires synchronously from the lifecycle and accepts the latency.
 
+**Phase 1 deploy — required Pulumi config**
+
+Before the next deploy of the CMS picks up the KB sync feature, set these three values against the live Pulumi stack (`dev` and `prod` separately):
+
+```bash
+cd infra
+pulumi stack select dev   # or prod
+pulumi config set --secret elevenlabsApiKey sk_...                       # workspace API key
+pulumi config set         elevenlabsAgentId agent_9501k4971nfqf1xvgd0604g5kq8y
+pulumi config set         publicSiteUrl https://<your-deployed-host>      # used in markdown header for KB context
+```
+
+The stack values live encrypted in Pulumi state. Pulumi.dev.yaml stays clean of secrets. After setting, push to trigger redeploy — Container App env will have `ELEVENLABS_API_KEY`, `ELEVENLABS_AGENT_ID`, `PUBLIC_SITE_URL` available to Strapi.
+
 **Phase 1.5 — chatbot key separation (security hardening)**
 
 Currently the frontend chatbot connects to a *public* agent using just the agent ID. Anyone can scrape the agent ID and run unlimited TTS conversations against our workspace, on our bill. Fix:

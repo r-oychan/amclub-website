@@ -44,7 +44,7 @@
       "enum": ["text", "file"],
       "required": true
     },
-    "documentId": {
+    "elDocumentId": {
       "type": "string",
       "required": true,
       "unique": true

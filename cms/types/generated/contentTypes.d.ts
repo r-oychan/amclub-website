@@ -609,12 +609,12 @@ export interface ApiElevenlabsDocElevenlabsDoc
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    documentId: Schema.Attribute.String &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
     documentName: Schema.Attribute.String & Schema.Attribute.Required;
     elDocType: Schema.Attribute.Enumeration<['text', 'file']> &
       Schema.Attribute.Required;
+    elDocumentId: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
     entryId: Schema.Attribute.Integer;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<

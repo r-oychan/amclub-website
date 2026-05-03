@@ -1,4 +1,5 @@
 // import type { Core } from '@strapi/strapi';
+import { registerLifecycleHooks } from './services/elevenlabs-sync/lifecycle';
 
 const PUBLIC_FIND_TYPES = [
   'api::home-page.home-page',
@@ -119,6 +120,11 @@ export default {
       await backfillUploadMimes(strapi);
     } catch (e) {
       strapi.log.error('[bootstrap] failed to backfill upload mimes', e);
+    }
+    try {
+      registerLifecycleHooks(strapi);
+    } catch (e) {
+      strapi.log.error('[bootstrap] failed to register elevenlabs sync hooks', e);
     }
   },
 };
