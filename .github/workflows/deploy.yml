@@ -65,6 +65,9 @@ jobs:
           ARM_CLIENT_SECRET: ${{ steps.azure.outputs.client-secret }}
           ARM_TENANT_ID: ${{ steps.azure.outputs.tenant-id }}
           ARM_SUBSCRIPTION_ID: ${{ steps.azure.outputs.subscription-id }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          ELEVENLABS_AGENT_ID: agent_9501k4971nfqf1xvgd0604g5kq8y
+          PUBLIC_SITE_URL: ${{ github.ref_name == 'main' && 'https://amclub.example' || 'https://amclub-app1ff10ffc.purplehill-517bf99b.southeastasia.azurecontainerapps.io' }}
 
       - name: Show deployment URL
         if: success()

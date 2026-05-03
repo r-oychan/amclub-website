@@ -6,11 +6,15 @@ import * as random from '@pulumi/random';
 const location = azure.config.location ?? 'southeastasia';
 const projectName = 'amclub';
 
-// ── Read stack config ────────────────────────────────────────
-const stackConfig = new pulumi.Config();
-const elevenlabsApiKey = stackConfig.requireSecret('elevenlabsApiKey');
-const elevenlabsAgentId = stackConfig.require('elevenlabsAgentId');
-const publicSiteUrl = stackConfig.get('publicSiteUrl') ?? 'https://amclub.example';
+// ── ElevenLabs config (env-var driven, set via GitHub Actions secrets) ─
+// Matches the style used by AZURE_* / PULUMI_* — keeps Pulumi.<stack>.yaml
+// clean and avoids requiring a local `pulumi config set` step.
+const elevenlabsApiKeyRaw = process.env.ELEVENLABS_API_KEY ?? '';
+const elevenlabsAgentId = process.env.ELEVENLABS_AGENT_ID ?? '';
+const publicSiteUrl = process.env.PUBLIC_SITE_URL ?? 'https://amclub.example';
+if (!elevenlabsApiKeyRaw) throw new Error('Missing env var ELEVENLABS_API_KEY (add as GitHub secret)');
+if (!elevenlabsAgentId) throw new Error('Missing env var ELEVENLABS_AGENT_ID (set in deploy.yml)');
+const elevenlabsApiKey = pulumi.secret(elevenlabsApiKeyRaw);
 
 // ── Auto-generated secrets ───────────────────────────────────
 const dbPassword = new random.RandomPassword(`${projectName}-db-pw`, {
