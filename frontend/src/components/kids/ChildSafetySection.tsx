@@ -70,7 +70,7 @@ export function ChildSafetySection() {
         {/* Climbing wall image — pinned to bottom of wrapper, partially behind the gradient fade */}
         <div className="absolute inset-x-0 bottom-0 h-[260px] sm:h-[400px] md:h-[560px] lg:h-[645px]">
           <img
-            src="/uploads/pages/kids/safety/climbing-wall.jpg"
+            src="/images/kids/safety/climbing-wall.jpg"
             alt=""
             aria-hidden="true"
             className="h-full w-full object-cover"
@@ -89,7 +89,7 @@ export function ChildSafetySection() {
           <div className="absolute left-1/2 -top-10 md:-top-12 z-20 -translate-x-1/2">
             <div className="flex flex-col items-center gap-1 rounded-full bg-white px-7 py-3 md:px-9 md:py-4 shadow-md">
               <img
-                src="/uploads/pages/kids/safety/childsafeguarding-logo.png"
+                src="/images/kids/safety/childsafeguarding-logo.png"
                 alt="childsafeguarding.com"
                 className="h-7 md:h-9 w-auto"
               />
