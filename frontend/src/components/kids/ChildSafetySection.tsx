@@ -90,7 +90,7 @@ export function ChildSafetySection() {
         >
           {/* Recognized-company badge — straddles the top edge */}
           <div className="absolute left-1/2 -top-10 md:-top-12 z-20 -translate-x-1/2">
-            <div className="flex flex-col items-center gap-1 rounded-full bg-white px-7 py-3 md:px-9 md:py-4 shadow-md">
+            <div className="flex flex-col items-center gap-1 rounded-full bg-white px-7 pt-5 pb-3 md:px-9 md:pt-6 md:pb-4 shadow-md">
               <img
                 src="/images/kids/safety/childsafeguarding-logo.png"
                 alt="childsafeguarding.com"
