@@ -6,6 +6,7 @@ import { CtaBanner } from '../components/blocks/CtaBanner';
 import { OverlaySection } from '../components/blocks/OverlaySection';
 import { ThreeColGrid } from '../components/blocks/ThreeColGrid';
 import { QuadSection } from '../components/kids/QuadSection';
+import { ChildSafetySection } from '../components/kids/ChildSafetySection';
 import { PageFade } from '../components/shared/PageFade';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
@@ -112,6 +113,9 @@ export default function KidsPage() {
 
       {hangoutP && <OverlaySection {...hangoutP} />}
       {partiesP && <OverlaySection {...partiesP} />}
+
+      {/* Custom Child Safety section — local enhancement, not yet CMS-driven */}
+      <ChildSafetySection />
 
       {data.learning && learningItems.length > 0 && (
         <ThreeColGrid
