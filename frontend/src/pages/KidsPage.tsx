@@ -114,9 +114,6 @@ export default function KidsPage() {
       {hangoutP && <OverlaySection {...hangoutP} />}
       {partiesP && <OverlaySection {...partiesP} />}
 
-      {/* Custom Child Safety section — local enhancement, not yet CMS-driven */}
-      <ChildSafetySection />
-
       {data.learning && learningItems.length > 0 && (
         <ThreeColGrid
           heading={data.learning.heading}
@@ -125,6 +122,9 @@ export default function KidsPage() {
           items={learningItems}
         />
       )}
+
+      {/* Custom Child Safety section — sits between Learning and the final CTA, matches Framer order */}
+      <ChildSafetySection />
 
       {data.safety && (
         <FeatureGrid
