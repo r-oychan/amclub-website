@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchAPI, STRAPI_URL } from '../lib/api';
 import { Hero } from '../components/blocks/Hero';
-import { FeatureGrid } from '../components/blocks/FeatureGrid';
 import { CtaBanner } from '../components/blocks/CtaBanner';
 import { OverlaySection } from '../components/blocks/OverlaySection';
 import { ThreeColGrid } from '../components/blocks/ThreeColGrid';
@@ -123,17 +122,9 @@ export default function KidsPage() {
         />
       )}
 
-      {/* Custom Child Safety section — sits between Learning and the final CTA, matches Framer order */}
+      {/* Custom Child Safety section — sits between Learning and the final CTA, matches Framer order.
+          Replaces the legacy FeatureGrid driven by data.safety, which duplicated this heading. */}
       <ChildSafetySection />
-
-      {data.safety && (
-        <FeatureGrid
-          heading={data.safety.heading}
-          body={data.safety.body}
-          items={(data.safety.features ?? []).map((f) => ({ heading: f.heading, description: f.description }))}
-          centered={data.safety.centered}
-        />
-      )}
 
       {data.finalCta && (
         <CtaBanner
