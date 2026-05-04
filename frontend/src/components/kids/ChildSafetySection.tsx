@@ -64,8 +64,11 @@ export function ChildSafetySection() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="relative bg-white overflow-hidden">
-      {/* Layered wrapper: green band on top, climbing-wall image bleeding below */}
+    <section ref={sectionRef} className="relative bg-white">
+      {/* Layered wrapper: green band on top, climbing-wall image bleeding below.
+          No overflow-hidden — the floating badge sits 40-48px above the green band
+          and would be clipped if any ancestor hid overflow. The climbing-wall image
+          is explicitly sized so it doesn't spill on its own. */}
       <div className="relative">
         {/* Climbing wall image — pinned to bottom of wrapper, partially behind the gradient fade */}
         <div className="absolute inset-x-0 bottom-0 h-[260px] sm:h-[400px] md:h-[560px] lg:h-[645px]">

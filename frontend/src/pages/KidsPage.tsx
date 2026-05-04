@@ -130,7 +130,7 @@ export default function KidsPage() {
         <CtaBanner
           heading={data.finalCta.heading}
           body={data.finalCta.body ?? ''}
-          variant={data.finalCta.variant === 'default' ? undefined : data.finalCta.variant}
+          variant="light"
           ctas={linksOf(data.finalCta.ctas)}
         />
       )}
