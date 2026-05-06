@@ -72,7 +72,10 @@ function ChatbotPanel({ onClose }: { onClose: () => void }) {
     // Defer to next tick so useConversation picks up the new textOnly value.
     setTimeout(async () => {
       try {
-        await conversationRef.current.startSession({ agentId: AGENT_ID });
+        await conversationRef.current.startSession({
+          agentId: AGENT_ID,
+          dynamicVariables: getSingaporeContext(),
+        });
       } catch (err) {
         setError(err instanceof Error ? err.message : String(err));
       }
@@ -212,6 +215,32 @@ function ChatbotPanel({ onClose }: { onClose: () => void }) {
       </div>
     </div>
   );
+}
+
+function getSingaporeContext(): Record<string, string> {
+  const now = new Date();
+  const tz = 'Asia/Singapore';
+  const dateTime = new Intl.DateTimeFormat('en-GB', {
+    timeZone: tz,
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZoneName: 'short',
+  }).format(now);
+  const date = new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
+  const time = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', hour12: false }).format(now);
+  const dayOfWeek = new Intl.DateTimeFormat('en-US', { timeZone: tz, weekday: 'long' }).format(now);
+  return {
+    current_datetime: dateTime,
+    current_date: date,
+    current_time: time,
+    current_day_of_week: dayOfWeek,
+    current_timezone: 'Asia/Singapore (UTC+8)',
+  };
 }
 
 function VoiceOrb({
