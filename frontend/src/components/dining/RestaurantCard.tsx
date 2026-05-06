@@ -87,7 +87,7 @@ export function RestaurantCard({
       {smartCasual ? (
         <div className="flex items-center gap-2 mb-2">
           <img
-            src="/uploads/icons/smart-casual.png"
+            src="/icons/smart-casual.png"
             alt=""
             className="w-[26px] h-[26px] object-contain"
           />
