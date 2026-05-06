@@ -29,6 +29,7 @@ interface StrapiRestaurant {
   image?: StrapiMedia;
   logo?: StrapiMedia;
   dressCode?: string;
+  smartCasual?: boolean;
   ctas?: StrapiLink[];
   order?: number;
 }
@@ -109,6 +110,7 @@ export default function DiningPage() {
     image: mediaUrl(r.image) ?? '',
     logo: mediaUrl(r.logo) ?? '',
     dressCode: r.dressCode,
+    smartCasual: r.smartCasual ?? false,
     ctas: (r.ctas ?? []).map((c) => ({
       label: c.label,
       href: c.href,
@@ -202,10 +204,11 @@ export default function DiningPage() {
                 >
                   <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-6">
-                    <h3 className="font-heading text-xl md:text-2xl font-light italic text-white mb-2">{item.name}</h3>
-                    <p className="text-white/70 text-sm mb-3 max-w-sm">{item.description}</p>
-                    <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.15em] text-white/90 group-hover:text-white transition-colors">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 py-8">
+                    <h3 className="font-heading text-2xl md:text-[32px] font-light italic text-white leading-[1.1] mb-3">{item.name}</h3>
+                    <div className="h-px w-12 bg-white/40 mb-3" />
+                    <p className="text-white/85 text-sm md:text-[15px] leading-[1.4] mb-4 max-w-sm">{item.description}</p>
+                    <span className="inline-flex items-center gap-1.5 text-[12px] font-bold uppercase tracking-[0.15em] text-white/90 group-hover:text-white transition-colors">
                       {item.cta.label}
                       <svg width="12" height="12" viewBox="0 0 14 14" fill="none" className="text-secondary shrink-0">
                         <path d="M1 13L13 1M13 1H3M13 1V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

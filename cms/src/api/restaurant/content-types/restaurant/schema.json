@@ -26,6 +26,10 @@
     "dressCode": {
       "type": "string"
     },
+    "smartCasual": {
+      "type": "boolean",
+      "default": false
+    },
     "description": {
       "type": "text",
       "required": true
