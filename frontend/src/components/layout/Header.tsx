@@ -226,7 +226,7 @@ export function Header() {
           {/* ===== Desktop L (1200px–1439px) — full-width, touching top, full logo ===== */}
           <div
             className="hidden xl:block 2xl:hidden relative transition-all duration-300"
-            style={{ padding: scrolled ? '18px 32px' : '30px 32px 23px' }}
+            style={{ padding: scrolled ? '14px 24px 16px' : '28px 24px 22px' }}
           >
             {/* CTA button — absolute top-right, fades out on scroll */}
             {ctaButton && (
@@ -247,26 +247,27 @@ export function Header() {
             )}
 
             {/* Single row: left links | logo (center) | right links.
-                On scroll the logo container clips to 30px while the image stays full
-                size, revealing only the top half of the eagle crest — matches Framer. */}
+                Sections use justify-between so nav items spread across the full
+                available width — matches Framer at 1300px. On scroll the logo
+                container clips down to reveal only the top half of the eagle. */}
             <div className="flex items-end justify-center">
-              <nav className="flex-1 flex items-center justify-end gap-3 pb-0.5">
+              <nav className="flex-1 flex items-center justify-between pb-0.5">
                 {leftItems.map((item) => renderDesktopNavItem(item, '13.6px'))}
               </nav>
 
               <Link
                 to="/home"
                 className="flex-shrink-0 mx-5 overflow-hidden transition-all duration-300"
-                style={{ height: scrolled ? '33px' : '73px' }}
+                style={{ height: scrolled ? '33px' : '87px' }}
               >
                 <img
                   src={logoUrl}
                   alt="The American Club Singapore"
-                  style={{ width: '150px', height: '73px' }}
+                  style={{ width: '180px', height: '87px' }}
                 />
               </Link>
 
-              <nav className="flex-1 flex items-center justify-start gap-3 pb-0.5">
+              <nav className="flex-1 flex items-center justify-between pb-0.5">
                 {rightItems.map((item) => renderDesktopNavItem(item, '13.6px'))}
               </nav>
             </div>
