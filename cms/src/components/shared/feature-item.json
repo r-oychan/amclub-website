@@ -18,6 +18,11 @@
       "multiple": false,
       "allowedTypes": ["images"]
     },
+    "icon": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
     "cta": {
       "type": "component",
       "repeatable": false,

@@ -59,6 +59,7 @@ export interface FeatureItem {
   heading: string;
   description?: string;
   image?: string;
+  icon?: string;
 }
 
 export interface FaqItem {

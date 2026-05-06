@@ -15,6 +15,17 @@ const ctx = initEnv();
 
 const IMAGES = [
   'hero-membership.jpg',
+  'community-kids-tkd.jpg',
+  'community-fitness.jpg',
+  'community-tennis.jpg',
+  'community-dining.jpg',
+  'icon-facilities.svg',
+  'icon-dining.svg',
+  'icon-events.svg',
+  'icon-kids.svg',
+  'icon-community.svg',
+  'icon-reciprocal.svg',
+  'find-membership-lobby.jpg',
   'program-refer.png',
   'program-eagle-rewards.png',
   'program-reciprocal.jpg',
@@ -39,6 +50,12 @@ async function upsertMembershipPage({ media }) {
         { label: 'Start Your Application', href: '#', variant: 'primary' },
       ],
     },
+    joinCommunityImages: [
+      media['community-kids-tkd.jpg'].id,
+      media['community-fitness.jpg'].id,
+      media['community-tennis.jpg'].id,
+      media['community-dining.jpg'].id,
+    ],
     intro: {
       heading: 'A Home Away From Home',
       body: 'Designed for American, Canadian and international families in Singapore, the Club offers a seamless blend of comfort, culture, and convenience.',
@@ -46,14 +63,22 @@ async function upsertMembershipPage({ media }) {
     benefits: {
       heading: undefined,
       features: [
-        { heading: 'World-class Facilities',     description: 'The Club offers thoughtfully designed facilities and amenities for every lifestyle.' },
-        { heading: 'Exceptional Dining',         description: 'Savor American comfort food and classic favorites, complemented by diverse dining concepts and seasonal menus across the Club.' },
-        { heading: 'Signature Events',           description: 'Enjoy a vibrant calendar of American, Canadian, and local celebrations that bring the feeling of home to life all year round.' },
-        { heading: 'Where Kids Thrive',          description: "Engaging kids' camps, enrichment classes, youth activities and spaces that support learning, play, and friendship." },
-        { heading: 'Community & Connection',     description: 'Build meaningful relationships through shared experiences, multi-generational programming, and a strong sense of belonging.' },
-        { heading: '150+ Reciprocal Clubs',      description: 'Your membership extends worldwide, with reciprocal clubs offering the same warm welcome wherever your travels take you.' },
+        { heading: 'World-class Facilities',  description: 'The Club offers thoughtfully designed facilities and amenities for every lifestyle.' },
+        { heading: 'Exceptional Dining',      description: 'Savor American comfort food and classic favorites, complemented by diverse dining concepts and seasonal menus across the Club.' },
+        { heading: 'Signature Events',        description: 'Enjoy a vibrant calendar of American, Canadian, and local celebrations that bring the feeling of home to life all year round.' },
+        { heading: 'Where Kids Thrive',       description: "Engaging kids' camps, enrichment classes, youth activities and spaces that support learning, play, and friendship." },
+        { heading: 'Community & Connection',  description: 'Build meaningful relationships through shared experiences, multi-generational programming, and a strong sense of belonging.' },
+        { heading: '150+ Reciprocal Clubs',   description: 'Your membership extends worldwide, with reciprocal clubs offering the same warm welcome wherever your travels take you.' },
       ],
     },
+    benefitIcons: [
+      media['icon-facilities.svg'].id,
+      media['icon-dining.svg'].id,
+      media['icon-events.svg'].id,
+      media['icon-kids.svg'].id,
+      media['icon-community.svg'].id,
+      media['icon-reciprocal.svg'].id,
+    ],
     findRightCta: {
       heading: 'Find the Right Membership for You',
       body: 'The American Club offers a range of membership options. Membership is open to individuals aged 21 and above.',
@@ -63,11 +88,12 @@ async function upsertMembershipPage({ media }) {
         { label: 'Book a Club Tour',                href: '#', variant: 'outline' },
       ],
     },
+    findMembershipImage: media['find-membership-lobby.jpg'].id,
     programs: {
       cards: [
         { heading: 'Refer & Be Rewarded',          description: 'Extend the privilege of membership to your family and friends, and enjoy exclusive rewards through our referral program.', image: media['program-refer.png'].id,          cta: { label: 'Learn More', href: '#', variant: 'text' } },
         { heading: 'The Eagle Rewards Program',    description: 'A tiered rewards experience that offers elevated recognition and privileges as you enjoy more of the Club.',                  image: media['program-eagle-rewards.png'].id, cta: { label: 'Learn More', href: '#', variant: 'text' } },
-        { heading: 'Reciprocal Clubs',             description: 'Enjoy privileged access to over 150 distinguished private clubs worldwide.',                                                   image: media['program-reciprocal.jpg'].id,    cta: { label: 'Learn More', href: '#', variant: 'text' } },
+        { heading: 'Reciprocal Clubs',             description: 'Enjoy privileged access to over 150 distinguished private clubs worldwide, extending the comfort and prestige of membership wherever you travel.', image: media['program-reciprocal.jpg'].id, cta: { label: 'Learn More', href: '#', variant: 'text' } },
       ],
     },
     faq: {
@@ -76,8 +102,6 @@ async function upsertMembershipPage({ media }) {
         { label: 'View All FAQ', href: '#', variant: 'primary' },
         { label: 'Enquiries',    href: '/home-sub/contact-us', variant: 'outline' },
       ],
-      // items relation reused from HomePage seed (FAQ items already exist in DB)
-      // We don't link them here — frontend can fetch faq-items separately if needed.
     },
     beginJourneyCta: {
       heading: 'Begin Your Membership Journey',

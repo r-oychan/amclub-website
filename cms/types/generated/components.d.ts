@@ -73,6 +73,8 @@ export interface BlocksCtaBanner extends Struct.ComponentSchema {
     body: Schema.Attribute.Text;
     ctas: Schema.Attribute.Component<'shared.link', true>;
     heading: Schema.Attribute.String & Schema.Attribute.Required;
+    image: Schema.Attribute.Media<'images'>;
+    images: Schema.Attribute.Media<'images', true>;
     label: Schema.Attribute.String;
     variant: Schema.Attribute.Enumeration<
       ['default', 'light', 'dark', 'accent']
@@ -289,6 +291,7 @@ export interface BlocksOverlaySection extends Struct.ComponentSchema {
     logo: Schema.Attribute.Media<'images'>;
     textBgColor: Schema.Attribute.String;
     textBgImage: Schema.Attribute.Media<'images'>;
+    textBgVideo: Schema.Attribute.Media<'videos'>;
     textPosition: Schema.Attribute.Enumeration<['left', 'right']> &
       Schema.Attribute.DefaultTo<'left'>;
     textTheme: Schema.Attribute.Enumeration<['light', 'dark']> &
@@ -516,6 +519,7 @@ export interface SharedFeatureItem extends Struct.ComponentSchema {
     cta: Schema.Attribute.Component<'shared.link', false>;
     description: Schema.Attribute.Text;
     heading: Schema.Attribute.String & Schema.Attribute.Required;
+    icon: Schema.Attribute.Media<'images'>;
     image: Schema.Attribute.Media<'images'>;
   };
 }

@@ -878,6 +878,8 @@ export interface ApiFitnessPageFitnessPage extends Struct.SingleTypeSchema {
     > &
       Schema.Attribute.Private;
     moreActivities: Schema.Attribute.Component<'blocks.three-col-grid', false>;
+    pageBackgroundColor: Schema.Attribute.String;
+    pageBackgroundImage: Schema.Attribute.Media<'images'>;
     publishedAt: Schema.Attribute.DateTime;
     senSpa: Schema.Attribute.Component<'blocks.overlay-section', false>;
     seo: Schema.Attribute.Component<'shared.seo', false>;
@@ -1111,14 +1113,17 @@ export interface ApiMembershipPageMembershipPage
   };
   attributes: {
     beginJourneyCta: Schema.Attribute.Component<'blocks.cta-banner', false>;
+    benefitIcons: Schema.Attribute.Media<'images', true>;
     benefits: Schema.Attribute.Component<'blocks.feature-grid', false>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     faq: Schema.Attribute.Component<'blocks.faq-section', false>;
+    findMembershipImage: Schema.Attribute.Media<'images'>;
     findRightCta: Schema.Attribute.Component<'blocks.cta-banner', false>;
     hero: Schema.Attribute.Component<'blocks.hero', false>;
     intro: Schema.Attribute.Component<'blocks.text-block', false>;
+    joinCommunityImages: Schema.Attribute.Media<'images', true>;
     joinCta: Schema.Attribute.Component<'blocks.cta-banner', false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
@@ -1259,6 +1264,7 @@ export interface ApiRestaurantRestaurant extends Struct.CollectionTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    smartCasual: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

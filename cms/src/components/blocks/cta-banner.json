@@ -25,6 +25,16 @@
       "type": "enumeration",
       "enum": ["default", "light", "dark", "accent"],
       "default": "default"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["images"]
     }
   }
 }

@@ -140,35 +140,52 @@ export function FeatureGrid({
               <div
                 className={`grid grid-cols-1 ${
                   items.length <= 3 ? 'md:grid-cols-3' : 'md:grid-cols-2 lg:grid-cols-3'
-                } gap-8`}
+                } ${centered ? 'gap-x-12 gap-y-14 md:gap-y-20' : 'gap-8'}`}
               >
-                {items.map((item) => (
-                  <div key={item.heading} className="flex flex-col">
-                    {item.image && (
-                      <img
-                        src={item.image}
-                        alt=""
-                        className="w-full aspect-[344/217] object-cover block mb-6"
-                      />
-                    )}
-                    <h3
-                      className={`font-heading italic font-light text-2xl md:text-[26.56px] leading-[1.1] mb-4 ${
-                        dark ? 'text-bg' : 'text-primary'
-                      }`}
-                    >
-                      {item.heading}
-                    </h3>
-                    {item.description && (
-                      <p
-                        className={`font-body font-light text-base md:text-[17.6px] leading-[1.4] ${
-                          dark ? 'text-bg/70' : 'text-text-dark/80'
-                        }`}
+                {items.map((item) => {
+                  const hasIcon = !!item.icon;
+                  const cardAlign = centered || hasIcon ? 'items-center text-center' : '';
+                  return (
+                    <div key={item.heading} className={`flex flex-col ${cardAlign}`}>
+                      {hasIcon ? (
+                        <img
+                          src={item.icon}
+                          alt=""
+                          className="h-[70px] w-[70px] object-contain mb-7"
+                          loading="lazy"
+                        />
+                      ) : item.image ? (
+                        <img
+                          src={item.image}
+                          alt=""
+                          className="w-full aspect-[344/217] object-cover block mb-6"
+                        />
+                      ) : null}
+                      <h3
+                        className={
+                          hasIcon
+                            ? `font-body font-bold text-[19.2px] leading-[1.3] mb-3 ${
+                                dark ? 'text-bg' : 'text-primary'
+                              }`
+                            : `font-heading italic font-light text-2xl md:text-[26.56px] leading-[1.1] mb-4 ${
+                                dark ? 'text-bg' : 'text-primary'
+                              }`
+                        }
                       >
-                        {item.description}
-                      </p>
-                    )}
-                  </div>
-                ))}
+                        {item.heading}
+                      </h3>
+                      {item.description && (
+                        <p
+                          className={`font-body font-light text-base md:text-[17.6px] leading-[1.4] max-w-[300px] ${
+                            dark ? 'text-bg/70' : 'text-text-dark/80'
+                          }`}
+                        >
+                          {item.description}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
 

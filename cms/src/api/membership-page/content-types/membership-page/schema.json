@@ -59,6 +59,21 @@
       "type": "component",
       "repeatable": false,
       "component": "shared.seo"
+    },
+    "joinCommunityImages": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["images"]
+    },
+    "findMembershipImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "benefitIcons": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["images"]
     }
   }
 }

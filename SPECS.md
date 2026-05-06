@@ -45,7 +45,9 @@ All page-typed entries use a `content` **dynamiczone** (block-based), populated 
 | `FaqAccordion.tsx` | `blocks.faq-section` | Pulls from `faq-item` collection |
 | `TeamGrid.tsx` | `blocks.team-grid` | Pulls from `committee-member` collection |
 | `CtaBanner.tsx` | `blocks.cta-banner` | Heading, subtext, primary + secondary CTA |
-| `OverlaySection.tsx` | `blocks.cta-banner` | Full-bleed image with overlay CTA variant |
+| `OverlaySection.tsx` | `blocks.overlay-section` (or `blocks.cta-banner` + sibling media field) | Full-bleed image with overlay text panel |
+| `MembershipCommunityCollage.tsx` | `blocks.cta-banner` (heading/body/ctas) + `membership-page.joinCommunityImages` (media[]) | 4-image scattered collage with centered heading + CTA. Used by `MembershipPage`. |
+| `MembershipPrograms.tsx` | `blocks.card-grid` (cards w/ image + heading + description + cta) | 3-column dark-navy radial gradient with mint divider + arrow CTA. Used by `MembershipPage`. |
 
 ### Detail Page Components (venue/restaurant/facility detail)
 
