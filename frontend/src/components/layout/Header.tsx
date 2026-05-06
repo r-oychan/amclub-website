@@ -146,7 +146,7 @@ export function Header() {
       >
         <div
           className={`relative w-full transition-transform duration-300 ease-in-out origin-top 2xl:max-w-[1280px] ${
-            scrolled ? '2xl:rounded-b-[20px] 2xl:scale-90' : '2xl:rounded-[20px] 2xl:scale-100'
+            scrolled ? 'xl:rounded-b-[20px] 2xl:scale-90' : '2xl:rounded-[20px] 2xl:scale-100'
           }`}
           style={{
             backgroundColor: 'rgba(0, 29, 97, 0.75)',
@@ -224,16 +224,21 @@ export function Header() {
           </div>
 
           {/* ===== Desktop L (1200px–1439px) — full-width, touching top, full logo ===== */}
-          <div className="hidden xl:block 2xl:hidden relative px-6 py-4">
-            {/* CTA button — absolute top-right */}
+          <div
+            className="hidden xl:block 2xl:hidden relative transition-all duration-300"
+            style={{ padding: scrolled ? '14px 24px' : '24px 24px 18px' }}
+          >
+            {/* CTA button — absolute top-right, fades out on scroll */}
             {ctaButton && (
               <NavLink
                 href={ctaButton.href}
                 isExternal={ctaButton.isExternal}
-                className="absolute top-4 right-6 z-10 inline-flex items-center gap-2 px-5 py-2.5 text-white text-xs font-body uppercase tracking-wider hover:opacity-90 transition-opacity"
+                className="absolute top-4 right-6 z-10 inline-flex items-center gap-2 px-5 py-2.5 text-white text-xs font-body uppercase tracking-wider hover:opacity-90 transition-opacity duration-300"
                 style={{
                   backgroundColor: 'rgb(0, 22, 74)',
                   borderRadius: '100px',
+                  opacity: scrolled ? 0 : 1,
+                  pointerEvents: scrolled ? 'none' : 'auto',
                 }}
               >
                 <UserIcon className="text-[#6BBBAE]" />
@@ -241,14 +246,19 @@ export function Header() {
               </NavLink>
             )}
 
-            {/* Single row: left links | full logo (center) | right links */}
+            {/* Single row: left links | logo (center) | right links.
+                On scroll the logo container clips to 30px while the image stays full
+                size, revealing only the top half of the eagle crest — matches Framer. */}
             <div className="flex items-end justify-center">
               <nav className="flex-1 flex items-center justify-end gap-0.5 pb-0.5">
                 {leftItems.map((item) => renderDesktopNavItem(item, '13.6px'))}
               </nav>
 
-              {/* Logo — centered, full height */}
-              <Link to="/home" className="flex-shrink-0 mx-4">
+              <Link
+                to="/home"
+                className="flex-shrink-0 mx-4 overflow-hidden transition-all duration-300"
+                style={{ height: scrolled ? '30px' : '73px' }}
+              >
                 <img
                   src={logoUrl}
                   alt="The American Club Singapore"
