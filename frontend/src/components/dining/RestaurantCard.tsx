@@ -39,6 +39,15 @@ export function RestaurantCard({
 }: RestaurantCardProps) {
   const detailHref = `/dining/${slug}`;
 
+  // The CMS introduced a `smartCasual` boolean to replace the legacy free-text
+  // `dressCode`. Until every entry is migrated, also treat dressCode === "Smart Casual"
+  // (whitespace/case-insensitive) as the same signal so the deployed badge renders
+  // correctly without waiting for editors to tick the new checkbox.
+  const showSmartCasual =
+    smartCasual === true ||
+    (typeof dressCode === 'string' &&
+      dressCode.trim().toLowerCase().replace(/\s+/g, ' ') === 'smart casual');
+
   // Always lead with a Read More link back to the restaurant detail page.
   // Drop any duplicate Read More entries supplied by the CMS so the auto-prepended
   // link is the single source of truth.
@@ -84,7 +93,7 @@ export function RestaurantCard({
       </div>
 
       {/* Smart Casual badge (CMS-toggled) — preferred over the legacy free-text dressCode */}
-      {smartCasual ? (
+      {showSmartCasual ? (
         <div className="flex items-center gap-2 mb-2">
           <img
             src="/icons/smart-casual.png"
