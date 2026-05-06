@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import type { CSSProperties } from 'react';
 import { fetchAPI, STRAPI_URL } from '../lib/api';
 import { Hero } from '../components/blocks/Hero';
 import { CtaBanner } from '../components/blocks/CtaBanner';
@@ -25,6 +26,8 @@ interface StrapiOverlay {
 
 interface StrapiFitnessPage {
   title: string;
+  pageBackgroundColor?: string;
+  pageBackgroundImage?: StrapiMedia;
   hero?: { heading: string; subheading?: string; variant?: 'full' | 'compact'; backgroundImage?: StrapiMedia };
   senSpa?: StrapiOverlay;
   aquatics?: StrapiOverlay;
@@ -103,8 +106,22 @@ export default function FitnessPage() {
 
   const bowlingP = overlayProps(data.bowling);
 
+  const pageBgImage = mediaUrl(data.pageBackgroundImage);
+  const pageStyle: CSSProperties = {
+    backgroundColor: data.pageBackgroundColor || '#F5F4F2',
+    ...(pageBgImage
+      ? {
+          backgroundImage: `url(${pageBgImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }
+      : null),
+  };
+
   return (
     <PageFade loaded={loaded}>
+      <div style={pageStyle}>
       {data.hero && (
         <Hero
           heading={data.hero.heading}
@@ -133,6 +150,7 @@ export default function FitnessPage() {
           ctas={linksOf(data.finalCta.ctas)}
         />
       )}
+      </div>
     </PageFade>
   );
 }

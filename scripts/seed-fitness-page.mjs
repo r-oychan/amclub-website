@@ -12,6 +12,7 @@ const ctx = initEnv();
 const IMAGES = [
   'header-bg.jpg',
   'spa.jpeg',
+  'spa-gradient.svg',
   'fRArJiszmhGHpOFTkbxpn8pcnAY.png',
   'aquatics.jpeg',
   'connect.jpeg',
@@ -26,6 +27,7 @@ const IMAGES = [
 async function upsertFitnessPage({ media }) {
   const data = {
     title: 'Fitness & Wellness',
+    pageBackgroundColor: '#F5F4F2',
     hero: {
       heading: 'Fitness & Wellness',
       subheading: 'Fitness, movement, and wellness experiences that fit seamlessly into your lifestyle.',
@@ -41,7 +43,8 @@ async function upsertFitnessPage({ media }) {
       imageAlt: 'sèn Spa',
       textPosition: 'right',
       textVerticalAlign: 'center',
-      textBgColor: '#F5F0EB',
+      textBgColor: '#F3E3CA',
+      textBgImage: media['spa-gradient.svg'].id,
       textTheme: 'dark',
       logo: media['fRArJiszmhGHpOFTkbxpn8pcnAY.png'].id,
       ctas: [
@@ -55,7 +58,7 @@ async function upsertFitnessPage({ media }) {
       image: media['aquatics.jpeg'].id,
       imageAlt: 'Aquatics',
       textPosition: 'left',
-      textVerticalAlign: 'end',
+      textVerticalAlign: 'center',
       textBgColor: '#001E62',
       textTheme: 'light',
       ctas: [
@@ -70,7 +73,7 @@ async function upsertFitnessPage({ media }) {
       imageAlt: 'Connect & Discover',
       textPosition: 'right',
       textVerticalAlign: 'center',
-      textBgColor: '#B8C9B5',
+      textBgColor: '#D2E6C8',
       textTheme: 'dark',
       ctas: [{ label: 'View All Activities', href: '/fitness', variant: 'primary' }],
     },
@@ -80,8 +83,8 @@ async function upsertFitnessPage({ media }) {
       image: media['gym.jpeg'].id,
       imageAlt: 'Gym',
       textPosition: 'left',
-      textVerticalAlign: 'end',
-      textBgColor: '#001E62',
+      textVerticalAlign: 'center',
+      textBgColor: '#272E3D',
       textTheme: 'light',
       ctas: [
         { label: 'Private Trainings',     href: '/fitness/gym',     variant: 'outline', bordered: true },
@@ -97,7 +100,7 @@ async function upsertFitnessPage({ media }) {
       imageAlt: 'Tennis',
       textPosition: 'right',
       textVerticalAlign: 'center',
-      textBgColor: '#3B5E4B',
+      textBgColor: '#37402D',
       textTheme: 'light',
       ctas: [
         { label: 'Learn More', href: '/fitness/tennis', variant: 'primary' },
@@ -119,8 +122,8 @@ async function upsertFitnessPage({ media }) {
       image: media['bowling.jpeg'].id,
       imageAlt: 'The Bowling Alley',
       textPosition: 'left',
-      textVerticalAlign: 'start',
-      textBgColor: '#001E62',
+      textVerticalAlign: 'center',
+      textBgColor: '#2E045E',
       textTheme: 'light',
       ctas: [{ label: 'Learn More', href: '/fitness/bowling-alley', variant: 'primary' }],
     },

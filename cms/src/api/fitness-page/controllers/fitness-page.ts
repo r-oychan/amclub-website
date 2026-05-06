@@ -3,6 +3,7 @@ import { factories } from '@strapi/strapi';
 const overlay = { populate: { image: true, textBgImage: true, ctas: true, logo: true } };
 
 const POPULATE = {
+  pageBackgroundImage: true,
   hero: {
     populate: {
       backgroundImage: true,

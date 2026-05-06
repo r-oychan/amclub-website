@@ -15,6 +15,14 @@
       "type": "string",
       "required": true
     },
+    "pageBackgroundColor": {
+      "type": "string"
+    },
+    "pageBackgroundImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
     "hero": { "type": "component", "repeatable": false, "component": "blocks.hero" },
     "senSpa": { "type": "component", "repeatable": false, "component": "blocks.overlay-section" },
     "aquatics": { "type": "component", "repeatable": false, "component": "blocks.overlay-section" },
