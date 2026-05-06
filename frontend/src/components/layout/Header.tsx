@@ -141,7 +141,9 @@ export function Header() {
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out 2xl:flex 2xl:justify-center ${
-          scrolled ? 'xl:flex xl:justify-center' : '2xl:pt-[60px] 2xl:px-6'
+          scrolled
+            ? 'xl:flex xl:justify-center xl:pt-2'
+            : '2xl:pt-[60px] 2xl:px-6'
         }`}
       >
         <div
