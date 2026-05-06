@@ -1,19 +1,26 @@
 import { ArrowLink } from '../shared/ArrowLink';
 
+// Match the Framer "Discover What's Cooking" card layout:
+// - bg-white card on the F5F4F2 page bg
+// - thin pink horizontal divider sitting on the card's top edge
+// - fork & knife icon badge centered on the divider
+// - 3-flyer fan on the right (one base + two rotated overlays)
 export function PromoCell() {
   return (
-    <div className="relative">
-      {/* Fork & knife icon — centered on top border, transparent backdrop */}
-      <div className="absolute -top-5 left-1/2 -translate-x-1/2 z-10">
+    <div className="relative bg-white px-8 md:px-12 pt-12 pb-10 md:pb-12">
+      {/* Top pink divider line */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-accent" />
+
+      {/* Fork & knife icon badge — sits on the divider, white square cuts the line */}
+      <div className="absolute -top-[21px] left-1/2 -translate-x-1/2 z-10 bg-white p-[5px]">
         <img
-          src="/uploads/icons/promo-accent.svg"
+          src="/icons/promo-accent.svg"
           alt=""
-          className="w-10 h-10"
+          className="w-[33px] h-[33px] block"
         />
       </div>
 
-      {/* Card with dashed border */}
-      <div className="border border-accent px-8 py-10 pt-8 flex flex-col md:flex-row items-start gap-6 md:gap-8 bg-bg">
+      <div className="flex flex-col md:flex-row md:items-center gap-8 md:gap-6">
         {/* Text content */}
         <div className="flex-1 min-w-0">
           <h3 className="font-heading text-[28.8px] font-normal italic text-accent leading-[1.1] tracking-[-0.02em] mb-3">
@@ -25,25 +32,27 @@ export function PromoCell() {
           <ArrowLink label="View All Dining Promotions" href="/dining/promotions" icon="arrow" />
         </div>
 
-        {/* Promo flyer images — stacked/fanned. Tall enough on mobile to
-            contain the portrait flyer artwork inside the dashed card so it
-            does not bleed into the next restaurant card below. */}
-        <div className="relative w-full md:w-[36%] shrink-0 h-[320px] md:h-[220px] overflow-hidden">
+        {/* Flyer fan — Framer arrangement, 145×168 container */}
+        <div className="relative shrink-0 w-[200px] h-[200px] md:w-[145px] md:h-[168px]">
+          {/* Base flyer (no rotation, leftmost) */}
           <img
-            src="/uploads/promotions/canadian-thanksgiving.jpg"
-            alt="Dining promotion"
-            className="absolute top-0 right-0 w-[55%] max-h-full object-contain shadow-[6px_6px_12px_rgba(0,30,98,0.3)] rotate-3 z-20"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-            }}
+            src="/promotions/promo-3.jpg"
+            alt=""
+            className="absolute top-0 left-0 w-[107px] h-[152px] object-cover shadow-[0_4px_12px_rgba(0,30,98,0.18)]"
           />
+          {/* Middle flyer (+11deg, slight right/down) */}
           <img
-            src="/uploads/promotions/nov-food-beverage-specials.jpg"
-            alt="Dining promotion"
-            className="absolute top-4 right-[30%] w-[55%] max-h-full object-contain shadow-[10px_5px_9px_rgba(0,30,98,0.17)] -rotate-2 z-10"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = 'none';
-            }}
+            src="/promotions/promo-2.jpg"
+            alt=""
+            className="absolute top-[10px] left-[13px] w-[108px] h-[152px] object-cover shadow-[0_6px_14px_rgba(0,30,98,0.22)]"
+            style={{ transform: 'rotate(11deg)', zIndex: 2 }}
+          />
+          {/* Top flyer (+21deg, far right) */}
+          <img
+            src="/promotions/canadian-thanksgiving.jpg"
+            alt=""
+            className="absolute top-[21px] left-[55px] md:left-[40px] w-[102px] h-[146px] object-cover shadow-[0_8px_18px_rgba(0,30,98,0.28)]"
+            style={{ transform: 'rotate(21deg)', zIndex: 1 }}
           />
         </div>
       </div>
