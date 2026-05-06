@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { CollageImage, CtaButton } from '../../lib/types';
 import { Button } from '../shared/Button';
 import { CtaIcon } from '../shared/CtaIcon';
@@ -27,9 +27,8 @@ export function MembershipCommunityCollage({
   ctas,
   images,
 }: MembershipCommunityCollageProps) {
-  const sectionRef = useRef<HTMLElement>(null);
   const [parallax, setParallax] = useState(0);
-  const { ref: enterRef, isVisible } = useScrollFadeIn({
+  const { ref: sectionRef, isVisible } = useScrollFadeIn<HTMLElement>({
     threshold: 0,
     rootMargin: '0px 0px -25% 0px',
     replay: false,
@@ -67,21 +66,14 @@ export function MembershipCommunityCollage({
       window.removeEventListener('resize', onScroll);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [sectionRef]);
 
   if (!images || images.length === 0) return null;
   const visible = images.slice(0, SLOTS.length);
 
-  // Compose refs: `enterRef` triggers the fade-in observer; `sectionRef`
-  // drives the per-frame parallax math.
-  const setRefs = (el: HTMLElement | null) => {
-    sectionRef.current = el;
-    (enterRef as React.MutableRefObject<HTMLElement | null>).current = el;
-  };
-
   return (
     <section
-      ref={setRefs}
+      ref={sectionRef}
       className="bg-bg pt-16 md:pt-24 pb-20 md:pb-28 overflow-hidden"
     >
       <div className="max-w-[1320px] mx-auto px-4 sm:px-6 lg:px-8">

@@ -8,12 +8,14 @@ interface Options {
   replay?: boolean;
 }
 
-export function useScrollFadeIn(thresholdOrOpts: number | Options = 0.15) {
+export function useScrollFadeIn<T extends HTMLElement = HTMLDivElement>(
+  thresholdOrOpts: number | Options = 0.15,
+) {
   const opts: Options =
     typeof thresholdOrOpts === 'number' ? { threshold: thresholdOrOpts } : thresholdOrOpts;
   const { threshold = 0.15, rootMargin = '0px 0px -10% 0px', replay = true } = opts;
 
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<T>(null);
   const [isVisible, setIsVisible] = useState(() =>
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches
