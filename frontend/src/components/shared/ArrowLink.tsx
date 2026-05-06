@@ -10,7 +10,9 @@ export interface ArrowLinkProps {
   icon?: CtaIconName | null;
   /** Override icon color class (default: pink accent on light, teal on dark). */
   iconColorClass?: string;
-  /** Pixel size for the trailing icon. */
+  /** Pixel size for the trailing icon (the outer SVG box). Default 24 — the
+   *  CtaIcon paths fill ~10.5/24 of the viewBox so the visible stroke art
+   *  comes out around 10.5×10.5, matching the Framer prototype. */
   iconSize?: number;
   /** Override label size. Defaults to the dining-card spec (14.4px). */
   labelClassName?: string;
@@ -23,7 +25,7 @@ export function ArrowLink({
   isExternal = false,
   icon = 'arrow',
   iconColorClass,
-  iconSize = 18,
+  iconSize = 24,
   labelClassName,
 }: ArrowLinkProps) {
   const className = `inline-flex items-center gap-2 font-bold uppercase tracking-[0.04em] transition-colors duration-200 ${
@@ -73,7 +75,7 @@ export function BorderedArrowLink({
       >
         {label}
       </span>
-      <CtaIcon name={icon} size={18} className={dark ? 'text-secondary' : 'text-accent'} />
+      <CtaIcon name={icon} size={24} className={dark ? 'text-secondary' : 'text-accent'} />
     </Link>
   );
 }

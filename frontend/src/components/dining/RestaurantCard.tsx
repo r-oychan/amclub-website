@@ -72,7 +72,7 @@ export function RestaurantCard({
           <img
             src={`/uploads/icons/cuisine-${cuisineIconSlug}.svg`}
             alt=""
-            className="w-4 h-4 opacity-70"
+            className="w-[26px] h-[26px] opacity-70"
           />
         )}
         <span className="text-[13.6px] font-bold uppercase tracking-[0.04em] text-primary">

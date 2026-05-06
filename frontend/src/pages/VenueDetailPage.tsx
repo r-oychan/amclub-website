@@ -309,7 +309,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                       <img
                         src={iconHref}
                         alt=""
-                        className="w-6 h-6 shrink-0"
+                        className="w-[26px] h-[26px] shrink-0"
                         onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                       />
                     )}

@@ -385,6 +385,15 @@ Marketing pages are largely form-free. Where inputs appear (enquiry form):
 - Labels above inputs in Lato Bold 0.9rem.
 - Submit button: `button-primary`, full-width on mobile.
 
+### Icons
+
+Two distinct icon roles, two distinct sizes:
+
+- **CTA arrow icons** (the `→` glyph trailing inline-arrow CTAs like `READ MORE`, `VIEW MENU`, `DISCOVER OUR STORY`): outer SVG **24×24**, with the actual stroke art occupying roughly **10.5×10.5** inside that viewBox — i.e. small icon, generous padding. The padding is intentional: it gives the arrow visual breathing room next to the bold all-caps label and keeps the click-target hit area large without scaling the visual mark. Default stroke-width 1.5, color `accent` (`#DF4661`) on light surfaces and `secondary` (`#6BBBAE`) on dark.
+- **Category / type icons** (the small green `CAFE`, `LOUNGE`, `RESTAURANT` glyphs that sit beside the cuisine label on dining cards and the equivalent badges on facility/event-space cards): rendered SVG **26×26**, full-fill — the icon art occupies the entire box. Color is `secondary` (`#6BBBAE`) at 70% opacity to harmonize with the navy label without competing.
+- **Other utility icons** (clock, phone, mail, calendar, map-pin in cards/footer): same 24×24 outer as CTAs, sized contextually by the consuming component.
+- **Source** — all icons are SVG. Multi-color icons are not used. Stroke is always `currentColor` so the parent's text-color drives the icon color.
+
 ### Image Treatment
 
 - **Photography is the hero.** Hero images, card images, and feature images all use full-bleed lifestyle photography — families, members dining, kids in pools, members at the gym.
