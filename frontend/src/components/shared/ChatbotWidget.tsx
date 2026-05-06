@@ -142,7 +142,7 @@ function ChatbotPanel({ onClose }: { onClose: () => void }) {
               ? isVoice
                 ? 'Speak naturally — or type below.'
                 : 'Type a message to begin.'
-              : 'How would you like to chat?'}
+              : 'Tap "Start chat" to begin.'}
           </p>
         )}
         {messages.map((m) => (
@@ -194,23 +194,13 @@ function ChatbotPanel({ onClose }: { onClose: () => void }) {
             </button>
           </>
         ) : (
-          <div className="flex gap-2">
-            <button
-              onClick={() => startSession('text')}
-              disabled={isConnecting}
-              className="flex-1 px-4 py-2.5 text-sm font-bold rounded-full bg-primary text-white hover:bg-primary-dark disabled:opacity-60 cursor-pointer"
-            >
-              {isConnecting && mode === 'text' ? 'Connecting…' : 'Text chat'}
-            </button>
-            <button
-              onClick={() => startSession('voice')}
-              disabled={isConnecting}
-              className="flex-1 px-4 py-2.5 text-sm font-bold rounded-full bg-accent text-white hover:bg-accent/90 disabled:opacity-60 cursor-pointer flex items-center justify-center gap-1.5"
-            >
-              <MicIcon className="w-4 h-4" />
-              {isConnecting && mode === 'voice' ? 'Connecting…' : 'Voice'}
-            </button>
-          </div>
+          <button
+            onClick={() => startSession('text')}
+            disabled={isConnecting}
+            className="w-full px-4 py-2.5 text-sm font-bold rounded-full bg-accent text-white hover:bg-accent/90 disabled:opacity-60 cursor-pointer"
+          >
+            {isConnecting ? 'Connecting…' : 'Start chat'}
+          </button>
         )}
       </div>
     </div>
