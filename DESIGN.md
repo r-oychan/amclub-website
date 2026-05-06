@@ -278,10 +278,12 @@ Two typefaces carry the entire system: **Noto Serif** as the brand voice (always
 **Principles**
 
 - **Italic is mandatory on headings.** A non-italic Noto Serif heading is off-brand. The italic axis is the visual fingerprint of the system.
+- **Hero subheadings are sans, not serif.** The H1 hero title is Noto Serif italic; the subhead beneath it is plain **Lato Regular 400 at ~1.3rem / lh 1.4** — no italic, no `font-feature-settings`. Mixing serif italic into the subhead reads heavy and breaks the brochure rhythm.
 - **Negative tracking on serif.** H1/H2 tighten to `-0.02em` to `-0.04em` for an engraved, invitation-card feel. Body stays at default `0`.
 - **Caps + 0.04em = formality.** Every CTA label, nav link, eyebrow, and inline link arrow uses uppercase with positive letter-spacing. This is how the brand whispers instead of shouts.
 - **Two faces, no exceptions.** Noto Serif and Lato only. No display fonts, no monospace on marketing pages, no decorative scripts.
 - **Light is the default body weight.** Lato Light (300) reads airier than Regular and aligns with the brochure atmosphere.
+- **Antialiased smoothing site-wide.** Apply `-webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;` on `body`. macOS Chrome's default subpixel rendering thickens strokes with color subpixels and makes Lato Light / Noto Serif ExtraLight look heavier than the design intends. Grayscale antialiasing matches the Framer prototype exactly.
 
 ## Layout
 
@@ -339,11 +341,12 @@ The shape language splits cleanly by surface type:
 
 ### Buttons
 
-- **Primary Pill (Navy)** — `button-primary`. Navy background, white Lato ALL-CAPS label at 0.85rem, full pill (`999px`), padding `12px 24px`. The default CTA — `READ MORE`, `VIEW MENU`, `EXPLORE MEMBERSHIP`. Hover: `primary-strong` (`#00164A`).
-- **Hero Invert Pill (White)** — `button-hero-invert`. White background, navy label, shadow `rgba(32, 99, 171, 0.07) 0px 20px 19px -12px`. Reserved for the primary action on hero photography, where a navy pill would disappear into the overlay. Label: `REQUEST FOR A CLUB TOUR`.
+- **Primary Pill (Navy)** — `button-primary`. Navy background, white Lato ALL-CAPS label at 0.85rem **Regular (400)**, full pill (`999px`), padding `12px 24px`. The default pill CTA — `READ MORE`, `VIEW MENU`. Hover: `primary-strong` (`#00164A`).
+- **Hero Invert Pill (White)** — `button-hero-invert`. White background, navy label at **Lato Regular 400, 13.6px (~0.85rem), `0.04em` tracking**, shadow `rgba(32, 99, 171, 0.07) 0px 20px 19px -12px`. Reserved for the primary action on hero photography, where a navy pill would disappear into the overlay. Label: `REQUEST FOR A CLUB TOUR`. **Note:** the white pill is the one CTA that does *not* use Lato Bold — Regular is correct here. The hero photo + scrim already provides contrast; bold would over-shout.
 - **Member Login Pill (Deep Navy)** — `button-member-login`. `primary-strong` (`#00164A`) background, white label, anchored to the right end of the floating nav bar. Padding `8px 18px` — a touch more compact to sit inside the nav pill.
 - **Secondary Outline Pill** — `button-secondary-outline`. 1px navy border on cream background, navy label. Used as the second of a two-button pair on dining cards.
-- **Inline Text Link (CTA)** — `cta-link`. All-caps Lato Bold with right-arrow `→`, navy color, no underline. E.g., `DISCOVER OUR STORY →`, `VIEW FEATURED CLUB EVENTS →`. Hover: arrow nudges 4px right.
+- **Inline Text Link (CTA)** — `cta-link`. **Lato Bold (700)** ALL-CAPS with right-arrow `→`, 14.4px (~0.9rem), `0.04em` tracking, navy color, no underline. E.g., `DISCOVER OUR STORY →`, `VIEW FEATURED CLUB EVENTS →`, `EXPLORE MEMBERSHIP →`. Hover: arrow nudges 4px right.
+- **CTA weight rule.** Pill buttons use Lato **Regular 400**; inline text-link CTAs (with arrow) use Lato **Bold 700**. Same `0.04em` tracking on both.
 - **Transitions** — 200ms ease on color and transform. No scale animations on hover — buttons are calm.
 
 ### Cards & Containers
@@ -520,6 +523,9 @@ When refining screens generated against this design system:
 7. **Look for shadows.** Drop-shadows on cards are wrong. The system has exactly two shadows: the nav pill ambient, and the hero white-CTA lift.
 8. **Caps-and-tracking check.** Every CTA, nav link, eyebrow, and link arrow is ALL CAPS with `0.04em` letter-spacing. Mixed-case CTAs are a regression.
 9. **Photography first.** If a section is text-only on cream with no adjacent photo, ask whether it should pair with imagery — the site rarely has copy-only blocks outside FAQ.
+10. **Antialiased smoothing.** Confirm `body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }` is in effect. Without it macOS Chrome's subpixel rendering makes Lato Light and Noto Serif ExtraLight read heavier than the design intends — the headline appears thicker than the Framer prototype.
+11. **Hero subhead is sans.** If the H1 subhead under the hero pill is rendering in Noto Serif italic, it's wrong. The H1 stays serif italic; everything below it (subhead, CTA label) is Lato.
+12. **CTA weight by shape.** Pill CTAs use Lato Regular 400; inline-arrow CTAs use Lato Bold 700. Both keep `0.04em` tracking.
 
 ---
 

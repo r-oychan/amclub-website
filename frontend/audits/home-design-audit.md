@@ -1,8 +1,10 @@
 # Home Page — Design-Token Audit
 
-**Date:** 2026-04-30
+**Date:** 2026-04-30 (last updated 2026-05-06)
 **Scope:** Home page only (`/home`).
 **Companion doc:** `home.md` covers *content* drift (text/images vs Framer); this doc covers *design-token* drift (typography, color, spacing, rendering).
+
+**Status note (2026-05-06):** several fixes from §3 have shipped. Updated table in §3 reflects what is now in `dev`. New findings from the iteration (hero subheading font face, hero CTA weight rule) added in §F.
 
 ## Source-of-truth decision
 
@@ -101,22 +103,39 @@ The Google Fonts URL uses `&display=swap`. Framer self-hosts each face with `fon
 
 Handover lists **4** swatches. `index.css:4-11` exposes **8** (`primary`, `primary-dark`, `primary-light`, `accent`, `secondary`, `bg`, `text-dark`, `text-light`). The extras (`primary-overlay`, `primary-strong`) named in `DESIGN.md` aren't actually wired into Tailwind — components reach for arbitrary opacity (`bg-primary/60`, `bg-white/[0.77]`, `border-primary/15`) instead. Handover is silent on this so it's not a violation, just inconsistent — would benefit from being collapsed to the handover's 4 named tokens with explicit opacity ramps.
 
+### F. Component-specific weight rules (discovered 2026-05-06)
+
+The handover spec maps "CTA" to one row (Bold 0.9rem) and "CTA button label" to another (Regular 0.85rem), but the home page actually uses **two different CTA styles** based on context:
+
+| Context | Component | Computed in Framer | Rule |
+|---|---|---|---|
+| Hero photo overlay (white pill) | `Button variant="white"` | Lato **Regular 400**, 13.6px, 0.04em | Hero CTA inverts color *and* drops weight to Regular |
+| In-section text link with arrow | `SectionHeader` cta + `AboutSection` cta | Lato **Bold 700**, 14.4px, 0.04em | Default for "EXPLORE MEMBERSHIP", "DISCOVER OUR STORY", "VIEW FEATURED CLUB EVENTS" |
+
+**Hero / Hero-Carousel slide subheading is sans-serif, not serif.** Pre-fix, `HeroCarousel.tsx` was rendering slide subtitles as Noto Serif Italic SemiBold with `ss03`/`cv01-11` alternates — i.e. the same family as the H1 title. Framer's slide subhead is plain **Lato Regular 400 at 20.8px / lh 1.4**. The handover's Body row (Lato 1.2rem Light/Regular 1.4) is the closest spec match.
+
+**funFact wrapper opacity** — Framer dims the entire "Did You Know?" block (rouge accent bar + title + body) via a wrapper at `opacity: 0.567`. Mirroring that on our cream background read as visibly washed out, so the production decision (`AboutSection.tsx:154`) is to render at **full opacity, no dim**. This is an intentional deviation from Framer's exact computed style for legibility on our background.
+
 ---
 
-## 3. Recommended fixes (ordered by visual impact)
+## 3. Recommended fixes
 
-| # | Fix | Files | Risk | Status |
+| # | Fix | Files | Status | Commit |
 |---|---|---|---|---|
-| 1 | `-webkit-font-smoothing: antialiased` on body | `frontend/src/index.css:24-29` | none | ✅ DONE |
-| 2 | Hero H1 → Light Italic 300, 3.2rem | `Hero.tsx:49` | medium (visual) | open |
-| 3 | Section H2 → 300 weight, 2.2rem flat, -0.02em tracking; remove `@media (min-width:1200px)` size override | `index.css:45-71` | medium (visual) | open |
-| 4 | Add `.heading-h2-sans` (Lato 1.5rem Bold -0.02em) | `index.css` | low | open |
-| 5 | Promote handover typography into Tailwind v4 `@theme` | `index.css:3-18` | refactor | open |
-| 6 | Normalize CTA tracking to 0.04em | `Hero.tsx:53`, `AboutSection.tsx:171` | low | open |
-| 7 | Remove Inter from Google Fonts URL | `frontend/index.html:10` | none (perf only) | open |
-| 8 | Reconcile `DESIGN.md` `display-hero`/`headline-lg` to match handover (5.6rem→3.2rem, 600→300, 3.7rem→2.2rem, 200→300, -0.04em→-0.02em on H2) | `DESIGN.md` | docs only | open |
+| 1 | `-webkit-font-smoothing: antialiased` on body | `frontend/src/index.css:24-31` | ✅ DONE | `f4be53f` |
+| 2 | FeatureGrid card description → Lato 300, dim to 70% on dark | `FeatureGrid.tsx:163-165` | ✅ DONE | `2ca6428` |
+| 3 | funFact title default-weight, body Lato 300, both `leading-[1.4]`; opacity left at 100% (Framer's 57% reads washed on cream) | `AboutSection.tsx:152-164` | ✅ DONE | `2ca6428`, `908e10b` |
+| 4 | HeroCarousel slide subheading → Lato Regular 400 (was Noto Serif italic SemiBold + ss03 alternates), 4 code paths | `HeroCarousel.tsx` (subtitle blocks) | ✅ DONE | `908e10b` |
+| 5 | Button white variant → Regular 400 (was inheriting `font-bold` from base); dropped `tracking-wide` from base; Hero pill CTA tracking 0.1em→0.04em + size 14px→13.6px | `Button.tsx:16-23`, `Hero.tsx:53` | ✅ DONE | `908e10b` |
+| 6 | Hero H1 → Light Italic 300, 3.2rem | `Hero.tsx:49` | open | — |
+| 7 | Section H2 → 300 weight, 2.2rem flat, -0.02em tracking; remove `@media (min-width:1200px)` size override | `index.css:45-71` | open | — |
+| 8 | Add `.heading-h2-sans` (Lato 1.5rem Bold -0.02em) | `index.css` | open | — |
+| 9 | Promote handover typography into Tailwind v4 `@theme` (kills the `text-[17.6px]` arbitrary-value sprawl) | `index.css:3-18` | open | — |
+| 10 | Normalize remaining CTA tracking to 0.04em | `AboutSection.tsx:171` (other section CTAs already correct) | open | — |
+| 11 | Remove Inter from Google Fonts URL | `frontend/index.html:10` | open | — |
+| 12 | Reconcile `DESIGN.md` `display-hero`/`headline-lg` to match handover (5.6rem→3.2rem, 600→300, 3.7rem→2.2rem, 200→300, -0.04em→-0.02em on H2) | `DESIGN.md` | open | — |
 
-Fixes 2 + 3 will visibly shrink the H1/H2 in viewport — please review at 1440 / 1200 / 768 / 375 before merging.
+Fixes 6 + 7 will visibly shrink the H1/H2 in viewport — please review at 1440 / 1200 / 768 / 375 before merging.
 
 ---
 
