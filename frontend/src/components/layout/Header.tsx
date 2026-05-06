@@ -226,7 +226,7 @@ export function Header() {
           {/* ===== Desktop L (1200px–1439px) — full-width, touching top, full logo ===== */}
           <div
             className="hidden xl:block 2xl:hidden relative transition-all duration-300"
-            style={{ padding: scrolled ? '14px 24px 16px' : '28px 24px 22px' }}
+            style={{ padding: scrolled ? '14px 16px 16px' : '28px 16px 22px' }}
           >
             {/* CTA button — absolute top-right, fades out on scroll */}
             {ctaButton && (
@@ -247,11 +247,12 @@ export function Header() {
             )}
 
             {/* Single row: left links | logo (center) | right links.
-                Sections use justify-between so nav items spread across the full
-                available width — matches Framer at 1300px. On scroll the logo
-                container clips down to reveal only the top half of the eagle. */}
+                Items pack from the outer edges (justify-start / justify-end) so
+                any extra space lands next to the logo instead of stretching the
+                gap between items. On scroll the logo container clips down to
+                reveal only the top half of the eagle crest. */}
             <div className="flex items-end justify-center">
-              <nav className="flex-1 flex items-center justify-between pb-0.5">
+              <nav className="flex-1 flex items-center justify-start gap-3 pb-0.5">
                 {leftItems.map((item) => renderDesktopNavItem(item, '13.6px'))}
               </nav>
 
@@ -267,7 +268,7 @@ export function Header() {
                 />
               </Link>
 
-              <nav className="flex-1 flex items-center justify-between pb-0.5">
+              <nav className="flex-1 flex items-center justify-end gap-3 pb-0.5">
                 {rightItems.map((item) => renderDesktopNavItem(item, '13.6px'))}
               </nav>
             </div>
