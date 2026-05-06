@@ -141,15 +141,13 @@ export function Header() {
     <>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-in-out 2xl:flex 2xl:justify-center ${
-          scrolled
-            ? 'xl:flex xl:justify-center xl:pt-2'
-            : '2xl:pt-[60px] 2xl:px-6'
+          scrolled ? '' : '2xl:pt-[60px] 2xl:px-6'
         }`}
       >
         <div
           className={`relative w-full transition-transform duration-300 ease-in-out origin-top 2xl:max-w-[1280px] ${
             scrolled
-              ? 'xl:max-w-[1280px] xl:rounded-[20px] xl:scale-[0.836]'
+              ? 'xl:rounded-b-[20px] 2xl:scale-90'
               : '2xl:rounded-[20px] 2xl:scale-100'
           }`}
           style={{
