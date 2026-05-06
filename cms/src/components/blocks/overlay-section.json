@@ -39,6 +39,11 @@
       "multiple": false,
       "allowedTypes": ["images"]
     },
+    "textBgVideo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["videos"]
+    },
     "textTheme": {
       "type": "enumeration",
       "enum": ["light", "dark"],

@@ -19,6 +19,7 @@ interface StrapiOverlay {
   textVerticalAlign?: 'start' | 'center' | 'end';
   textBgColor?: string;
   textBgImage?: StrapiMedia;
+  textBgVideo?: StrapiMedia;
   textTheme?: 'light' | 'dark';
   ctas?: StrapiLink[];
   logo?: StrapiMedia;
@@ -63,6 +64,7 @@ const overlayProps = (s?: StrapiOverlay) => {
     textVerticalAlign: s.textVerticalAlign,
     textBgColor: s.textBgColor,
     textBgImage: mediaUrl(s.textBgImage),
+    textBgVideo: mediaUrl(s.textBgVideo),
     textTheme: s.textTheme,
     ctas: linksOf(s.ctas),
     logo: mediaUrl(s.logo),
@@ -121,7 +123,14 @@ export default function FitnessPage() {
 
   return (
     <PageFade loaded={loaded}>
-      <div style={pageStyle}>
+      <div style={pageStyle} className="relative overflow-hidden">
+      <img
+        src="/images/fitness/page-bg-wave.svg"
+        alt=""
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-0 w-[270%] max-w-none z-0 select-none"
+      />
+      <div className="relative z-10">
       {data.hero && (
         <Hero
           heading={data.hero.heading}
@@ -150,6 +159,7 @@ export default function FitnessPage() {
           ctas={linksOf(data.finalCta.ctas)}
         />
       )}
+      </div>
       </div>
     </PageFade>
   );

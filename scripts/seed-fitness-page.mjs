@@ -13,6 +13,8 @@ const IMAGES = [
   'header-bg.jpg',
   'spa.jpeg',
   'spa-gradient.svg',
+  'sen-spa-bg.mp4',
+  'aquatics-bg.mp4',
   'fRArJiszmhGHpOFTkbxpn8pcnAY.png',
   'aquatics.jpeg',
   'connect.jpeg',
@@ -45,6 +47,7 @@ async function upsertFitnessPage({ media }) {
       textVerticalAlign: 'center',
       textBgColor: '#F3E3CA',
       textBgImage: media['spa-gradient.svg'].id,
+      textBgVideo: media['sen-spa-bg.mp4'].id,
       textTheme: 'dark',
       logo: media['fRArJiszmhGHpOFTkbxpn8pcnAY.png'].id,
       ctas: [
@@ -60,6 +63,7 @@ async function upsertFitnessPage({ media }) {
       textPosition: 'left',
       textVerticalAlign: 'center',
       textBgColor: '#001E62',
+      textBgVideo: media['aquatics-bg.mp4'].id,
       textTheme: 'light',
       ctas: [
         { label: 'Learn More', href: '/fitness/aquatics', variant: 'primary' },

@@ -1,6 +1,6 @@
 import { factories } from '@strapi/strapi';
 
-const overlay = { populate: { image: true, textBgImage: true, ctas: true, logo: true } };
+const overlay = { populate: { image: true, textBgImage: true, textBgVideo: true, ctas: true, logo: true } };
 
 const POPULATE = {
   pageBackgroundImage: true,

@@ -12,6 +12,8 @@ export interface OverlaySectionProps {
   textBgColor?: string;
   /** Background image URL for text panel (overrides textBgColor) */
   textBgImage?: string;
+  /** Background video URL for text panel (overrides textBgImage and textBgColor) */
+  textBgVideo?: string;
   /** 'light' = white text on dark bg, 'dark' = dark text on light bg */
   textTheme?: 'light' | 'dark';
   /** Main section image */
@@ -31,6 +33,7 @@ export function OverlaySection({
   textVerticalAlign,
   textBgColor,
   textBgImage,
+  textBgVideo,
   textTheme = 'light',
   image,
   imageAlt,
@@ -129,10 +132,22 @@ export function OverlaySection({
 
   const textPanel = (
     <div
-      style={bgStyle}
-      className={`p-8 md:p-10 lg:p-12 ${textColorClass}`}
+      style={textBgVideo ? { backgroundColor: textBgColor || '#001E62' } : bgStyle}
+      className={`relative overflow-hidden p-8 md:p-10 lg:p-12 ${textColorClass}`}
     >
-      {content}
+      {textBgVideo && (
+        <video
+          src={textBgVideo}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+        />
+      )}
+      <div className="relative z-10">{content}</div>
     </div>
   );
 

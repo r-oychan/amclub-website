@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4143.5 2606.5" overflow="visible">
+  <defs>
+    <radialGradient id="waveRainbow" cy="0.676" cx="0.52" r="0.92"
+      gradientTransform="translate(0.52, 0.676) scale(1 0.41304347826086957) translate(-0.52, -0.676)">
+      <stop offset="0" stop-color="rgb(128, 0, 215)" stop-opacity="1"/>
+      <stop offset="0.28968335713762544" stop-color="rgb(237, 29, 37)" stop-opacity="1"/>
+      <stop offset="0.4835080888815645" stop-color="rgb(255, 152, 2)" stop-opacity="1"/>
+      <stop offset="0.664572346736981" stop-color="rgb(254, 203, 7)" stop-opacity="1"/>
+      <stop offset="0.7723577235772359" stop-color="rgb(73, 182, 73)" stop-opacity="1"/>
+      <stop offset="1" stop-color="rgb(61, 35, 255)" stop-opacity="1"/>
+    </radialGradient>
+  </defs>
+  <path d="M 4143.5 1052 C 4143.5 1052 3404.151 632.696 2696.5 1261.5 C 1988.849 1890.304 749 0 749 0 L 250.5 963.5 L 0 901 L 0 2467 L 1125.5 2606.5 C 1125.5 2606.5 1811.307 1544.807 2350.5 2084 C 2889.693 2623.193 3876.5 1233.5 3876.5 1233.5 Z" fill="url(#waveRainbow)"/>
+  <path d="M 4025.5 1059.5 C 4025.5 1059.5 3558.292 640.379 2696.5 1201.5 C 1834.708 1762.621 701 0 701 0 L 250.5 859 L 0 796.5 L 0 2362.5 L 560 2362.5 L 1174 2326 C 1174 2326 1841.971 1380.971 2392.5 1931.5 C 2899.652 2438.652 3840.5 1033.5 3840.5 1033.5 Z" fill="#F5F4F2"/>
+</svg>
