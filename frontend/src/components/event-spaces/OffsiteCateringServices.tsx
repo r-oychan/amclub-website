@@ -1,5 +1,5 @@
-import { Link } from 'react-router';
 import { useScrollFadeIn } from '../../hooks/useScrollFadeIn';
+import { ArrowLink } from '../shared/ArrowLink';
 
 export interface CateringPillar {
   heading: string;
@@ -78,7 +78,7 @@ function SectionHeader({
       {ctas && ctas.length > 0 && (
         <div className="mt-6 flex flex-wrap justify-center gap-x-10 gap-y-4">
           {ctas.map((c) => (
-            <ArrowLinkDark key={c.label} label={c.label} href={c.href ?? '#'} />
+            <ArrowLink key={c.label} label={c.label} href={c.href ?? '#'} />
           ))}
         </div>
       )}
@@ -102,19 +102,20 @@ function PillarCard({ pillar }: { pillar: CateringPillar }) {
           loading="lazy"
         />
       </div>
-      <h3 className="font-heading italic font-light text-[1.66rem] leading-[1.1] text-white mb-3">
+      <h3 className="font-heading italic font-light text-[1.66rem] leading-[1.1] text-white">
         {pillar.heading}
       </h3>
-      <p className="font-body text-[15px] font-light leading-[1.4] text-white/77 mb-5">
+      <div className="mt-3 mb-5 h-px w-[90px] bg-secondary" />
+      <p className="font-body text-[19.2px] font-normal leading-[1.4] text-white/95 mb-6">
         {pillar.subheading}
       </p>
       <ul className="space-y-2">
         {pillar.items.map((it) => (
           <li
             key={it}
-            className="flex items-start gap-2.5 font-body text-[15px] font-light leading-[1.4] text-white"
+            className="flex items-start gap-2.5 font-body text-[17.6px] font-light leading-[1.4] text-white"
           >
-            <CheckIcon className="mt-1 shrink-0 text-secondary" />
+            <CheckIcon className="mt-1.5 shrink-0 text-secondary" />
             <span>{it}</span>
           </li>
         ))}
@@ -203,43 +204,6 @@ function CheckIcon({ className = '' }: { className?: string }) {
         strokeLinejoin="round"
       />
     </svg>
-  );
-}
-
-function ArrowLinkDark({ label, href }: { label: string; href: string }) {
-  const className =
-    'group inline-flex items-center gap-2 font-body text-[14.4px] font-bold uppercase tracking-[0.04em] text-primary hover:text-primary-dark transition-colors duration-200';
-  const icon = (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 14 14"
-      fill="none"
-      className="shrink-0 transition-transform duration-200 group-hover:translate-x-1"
-      aria-hidden="true"
-    >
-      <path
-        d="M1 13L13 1M13 1H3M13 1V11"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-  if (href.startsWith('http')) {
-    return (
-      <a className={className} href={href} target="_blank" rel="noopener noreferrer">
-        {label}
-        {icon}
-      </a>
-    );
-  }
-  return (
-    <Link className={className} to={href}>
-      {label}
-      {icon}
-    </Link>
   );
 }
 

@@ -1,5 +1,5 @@
-import { Link } from 'react-router';
 import { useScrollFadeIn } from '../../hooks/useScrollFadeIn';
+import { ArrowLink } from '../shared/ArrowLink';
 
 export interface PackageItem {
   name: string;
@@ -77,7 +77,7 @@ function PackageCard({ item }: { item: PackageItem }) {
           <h3 className="font-heading italic font-light text-[1.66rem] leading-[1.1] text-primary">
             {item.name}
           </h3>
-          <div className="mt-3 h-px w-16 bg-primary/25" />
+          <div className="mt-3 h-px w-[90px] bg-secondary" />
         </div>
         <p className="font-body text-[15px] md:text-[16px] font-semibold leading-[1.35] text-primary">
           {item.tagline}
@@ -138,40 +138,3 @@ function CheckIcon({ className = '' }: { className?: string }) {
   );
 }
 
-function ArrowLink({ label, href }: { label: string; href: string }) {
-  const className =
-    'inline-flex items-center gap-2 font-body text-[14.4px] font-bold uppercase tracking-[0.06em] text-primary hover:text-primary-dark transition-colors duration-200';
-  const icon = (
-    <svg
-      width="12"
-      height="12"
-      viewBox="0 0 14 14"
-      fill="none"
-      className="shrink-0 text-accent transition-transform duration-200 group-hover:translate-x-1"
-      aria-hidden="true"
-    >
-      <path
-        d="M1 13L13 1M13 1H3M13 1V11"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-
-  if (href.startsWith('http')) {
-    return (
-      <a className={`group ${className}`} href={href} target="_blank" rel="noopener noreferrer">
-        {label}
-        {icon}
-      </a>
-    );
-  }
-  return (
-    <Link className={`group ${className}`} to={href}>
-      {label}
-      {icon}
-    </Link>
-  );
-}

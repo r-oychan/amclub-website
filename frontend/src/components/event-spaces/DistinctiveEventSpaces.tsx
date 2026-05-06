@@ -76,11 +76,11 @@ export function VenuePanelContent({ row, dark = true }: { row: VenueRow; dark?: 
     ? 'font-heading italic font-light text-[1.66rem] leading-[1.1] text-white mb-5'
     : 'font-heading italic font-light text-[1.66rem] leading-[1.1] text-primary mb-5';
   const itemClass = dark
-    ? 'flex items-start gap-2.5 font-body text-[12.8px] font-bold uppercase tracking-[0.04em] text-white'
-    : 'flex items-start gap-2.5 font-body text-[12.8px] font-bold uppercase tracking-[0.04em] text-text-dark';
+    ? 'flex items-center gap-2.5 font-body text-[14.4px] font-bold uppercase tracking-[0.04em] text-white'
+    : 'flex items-center gap-2.5 font-body text-[14.4px] font-bold uppercase tracking-[0.04em] text-text-dark';
   const descClass = dark
-    ? 'font-body text-[15px] font-light leading-[1.5] text-white/77 mb-6'
-    : 'font-body text-[15px] font-light leading-[1.5] text-text-dark/80 mb-6';
+    ? 'font-body text-[17.6px] font-light leading-[1.4] text-white/77 mb-6'
+    : 'font-body text-[17.6px] font-light leading-[1.4] text-text-dark/80 mb-6';
 
   return (
     <>
@@ -88,7 +88,7 @@ export function VenuePanelContent({ row, dark = true }: { row: VenueRow; dark?: 
       <ul className="space-y-2 mb-5">
         {row.capacity.map((c) => (
           <li key={c} className={itemClass}>
-            <DocIcon className="mt-0.5 shrink-0 text-secondary" />
+            <CapacityIcon className="shrink-0 text-secondary" />
             <span>{c}</span>
           </li>
         ))}
@@ -99,24 +99,43 @@ export function VenuePanelContent({ row, dark = true }: { row: VenueRow; dark?: 
   );
 }
 
-function DocIcon({ className = '' }: { className?: string }) {
+function CapacityIcon({ className = '' }: { className?: string }) {
   return (
     <svg
-      width="14"
-      height="16"
-      viewBox="0 0 14 16"
+      width="19.3"
+      height="19.3"
+      viewBox="0 0 24 24"
       fill="none"
       className={className}
       aria-hidden="true"
     >
       <path
-        d="M2 1.5h7l3 3v9.5a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5V2a.5.5 0 0 1 .5-.5z"
+        d="M 0 2 L 4.5 0 L 4.5 12.5 L 0 14.5 Z"
+        transform="translate(4.75 4.75)"
         stroke="currentColor"
-        strokeWidth="1.4"
+        strokeWidth="1.5"
         strokeLinejoin="round"
+        strokeLinecap="round"
         fill="none"
       />
-      <path d="M9 1.5V4.5h3" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      <path
+        d="M 0 2 L 4.5 0 L 4.5 12.5 L 0 14.5 Z"
+        transform="translate(14.75 4.75)"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        fill="none"
+      />
+      <path
+        d="M 5.5 2 L 0 0 L 0 12.5 L 5.5 14.5 Z"
+        transform="translate(9.25 4.75)"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+        fill="none"
+      />
     </svg>
   );
 }
