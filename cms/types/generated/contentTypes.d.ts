@@ -651,6 +651,7 @@ export interface ApiEventCategoryEventCategory
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    displayOrder: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     events: Schema.Attribute.Relation<'oneToMany', 'api::event.event'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<

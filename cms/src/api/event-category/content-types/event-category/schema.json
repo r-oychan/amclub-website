@@ -21,6 +21,10 @@
       "targetField": "name",
       "required": true
     },
+    "displayOrder": {
+      "type": "integer",
+      "default": 0
+    },
     "events": {
       "type": "relation",
       "relation": "oneToMany",
