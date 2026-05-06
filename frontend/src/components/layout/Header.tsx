@@ -226,14 +226,14 @@ export function Header() {
           {/* ===== Desktop L (1200px–1439px) — full-width, touching top, full logo ===== */}
           <div
             className="hidden xl:block 2xl:hidden relative transition-all duration-300"
-            style={{ padding: scrolled ? '14px 24px' : '24px 24px 18px' }}
+            style={{ padding: scrolled ? '18px 32px' : '30px 32px 23px' }}
           >
             {/* CTA button — absolute top-right, fades out on scroll */}
             {ctaButton && (
               <NavLink
                 href={ctaButton.href}
                 isExternal={ctaButton.isExternal}
-                className="absolute top-4 right-6 z-10 inline-flex items-center gap-2 px-5 py-2.5 text-white text-xs font-body uppercase tracking-wider hover:opacity-90 transition-opacity duration-300"
+                className="absolute top-5 right-8 z-10 inline-flex items-center gap-2 px-5 py-2.5 text-white text-xs font-body uppercase tracking-wider hover:opacity-90 transition-opacity duration-300"
                 style={{
                   backgroundColor: 'rgb(0, 22, 74)',
                   borderRadius: '100px',
@@ -250,14 +250,14 @@ export function Header() {
                 On scroll the logo container clips to 30px while the image stays full
                 size, revealing only the top half of the eagle crest — matches Framer. */}
             <div className="flex items-end justify-center">
-              <nav className="flex-1 flex items-center justify-end gap-0.5 pb-0.5">
+              <nav className="flex-1 flex items-center justify-end gap-3 pb-0.5">
                 {leftItems.map((item) => renderDesktopNavItem(item, '13.6px'))}
               </nav>
 
               <Link
                 to="/home"
-                className="flex-shrink-0 mx-4 overflow-hidden transition-all duration-300"
-                style={{ height: scrolled ? '30px' : '73px' }}
+                className="flex-shrink-0 mx-5 overflow-hidden transition-all duration-300"
+                style={{ height: scrolled ? '33px' : '73px' }}
               >
                 <img
                   src={logoUrl}
@@ -266,7 +266,7 @@ export function Header() {
                 />
               </Link>
 
-              <nav className="flex-1 flex items-center justify-start gap-0.5 pb-0.5">
+              <nav className="flex-1 flex items-center justify-start gap-3 pb-0.5">
                 {rightItems.map((item) => renderDesktopNavItem(item, '13.6px'))}
               </nav>
             </div>
