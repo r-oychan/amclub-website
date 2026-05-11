@@ -562,6 +562,10 @@ export const fitnessSubpages: SubpageData[] = [
       'https://framerusercontent.com/images/K6DoyAS2cr4sNav3IA32UZgU.jpeg',
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
+    ctas: [
+      { label: 'Personal Training & Group Fitness Classes', href: '/documents/fitness/personal-training-group-fitness-class.pdf', isExternal: true },
+      { label: 'Group Fitness Class Schedule', href: '/documents/fitness/group-fitness-class-schedule.jpg', isExternal: true },
+    ],
     extraSections: [
       {
         title: 'Complimentary Gym Orientation',
@@ -573,6 +577,44 @@ export const fitnessSubpages: SubpageData[] = [
         content:
           'Junior Members aged 12 to 15 are welcome to use the Gym after completing the Teenage Gym Proficiency Course. Simply present your Junior Membership card and register for this complimentary orientation with our Personal Trainer. Sign up at the Sports Counter or email sportscounter@amclub.org.sg.',
       },
+      {
+        title: 'Pilates Program',
+        content:
+          'Pilates helps develop better postural alignment, build flexibility, and improve muscle strength and endurance — ideal for general health and sport-specific training. Classes follow the Pilates Academy International (PAI) method with small class sizes for personalised guidance.',
+        bullets: [
+          'Equipment includes Reformer, Cadillac, and Chair',
+          'Beginner, Intermediate, Advanced, and Multi-level course tiers available',
+          'Both group and private sessions offered',
+          'See the dedicated Pilates page for the full schedule and instructor roster',
+        ],
+      },
+    ],
+    teamHeading: 'Personal Trainers',
+    teamMembers: [
+      { name: 'Mubin',    role: 'Personal Trainer' },
+      { name: 'Robert',   role: 'Personal Trainer' },
+      { name: 'Liza',     role: 'Personal Trainer' },
+      { name: 'Irfan',    role: 'Personal Trainer' },
+      { name: 'Flinson',  role: 'Personal Trainer' },
+      { name: 'Ewan',     role: 'Personal Trainer' },
+      { name: 'Eric',     role: 'Personal Trainer' },
+      { name: 'Elaine',   role: 'Personal Trainer' },
+      { name: 'Ashton',   role: 'Personal Trainer' },
+      { name: 'Adrian',   role: 'Personal Trainer' },
+      { name: 'Yattz',    role: 'Personal Trainer' },
+      { name: 'Nadesh',   role: 'Personal Trainer' },
+      { name: 'Sam',      role: 'Personal Trainer' },
+      { name: 'Crystal',  role: 'Personal Trainer' },
+      { name: 'Jenny',    role: 'Personal Trainer' },
+      { name: 'Vanan',    role: 'Personal Trainer' },
+      { name: 'Ghazali',  role: 'Personal Trainer' },
+      { name: 'Andyn',    role: 'Personal Trainer' },
+      { name: 'Zack',     role: 'Personal Trainer' },
+      { name: 'Desmond',  role: 'Personal Trainer' },
+    ],
+    bottomCtas: [
+      { label: 'View Pilates Class Schedule', href: '/documents/fitness/pilates-group-class-schedule.jpeg', isExternal: true },
+      { label: 'View Pilates Price List', href: '/documents/fitness/pilates-price-list.docx', isExternal: true },
     ],
   },
   {
@@ -672,8 +714,48 @@ export const fitnessSubpages: SubpageData[] = [
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [
-      { label: 'View Rates', href: '#' },
-      { label: 'View Class Schedule', href: '#' },
+      { label: 'View Price List', href: '/documents/fitness/pilates-price-list.docx', isExternal: true },
+      { label: 'View Class Schedule', href: '/documents/fitness/pilates-group-class-schedule.jpeg', isExternal: true },
+    ],
+    extraSections: [
+      {
+        title: 'Program Overview',
+        content:
+          'Classes adopt the Pilates Academy International (PAI) method, integrating modern exercise science, anatomy, and biomechanics. Small class sizes ensure personal attention from our instructors.',
+        bullets: [
+          'Equipment includes Reformer, Cadillac, and Chair',
+          'Accommodates different strength levels and fitness objectives',
+          'Group and private sessions available',
+        ],
+      },
+      {
+        title: 'Course Levels',
+        content: '',
+        bullets: [
+          'Beginners — basic Reformer knowledge, no health issues',
+          'Intermediate — comfortable with basic exercises and have good core strength',
+          'Advanced — by instructor recommendation only',
+          'Multi-level — open to beginner through advanced practitioners',
+        ],
+      },
+      {
+        title: 'Mat and Reformer Fusion',
+        content:
+          'Combines Mat and Reformer repertoire targeting core, arms, thighs, and legs while challenging coordination and body awareness.',
+      },
+    ],
+    teamHeading: 'Pilates Instructors',
+    teamMembers: [
+      { name: 'Annie Agoncillo', role: 'Pilates Coach' },
+      { name: 'Alvan Chan',      role: 'Pilates Coach' },
+      { name: 'Anthea Lee',      role: 'Pilates Instructor' },
+      { name: 'Felicia Tan',     role: 'Pilates Trainer' },
+      { name: 'Mary Sng',        role: 'Pilates Trainer' },
+      { name: 'Chua Li Li',      role: 'Pilates Trainer' },
+      { name: 'Danielle Chue',   role: 'Pilates Trainer' },
+    ],
+    bottomCtas: [
+      { label: 'Download Class Schedule', href: '/documents/fitness/pilates-group-class-schedule.jpeg', isExternal: true },
     ],
   },
   {
