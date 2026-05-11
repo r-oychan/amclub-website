@@ -67,7 +67,7 @@ async function upsertFitnessPage({ media }) {
       textTheme: 'light',
       ctas: [
         { label: 'Learn More', href: '/fitness/aquatics', variant: 'primary' },
-        { label: 'View Our Aquatics Programs', href: '/fitness/aquatics', variant: 'primary' },
+        { label: 'View Our Aquatics Programs', href: '/fitness/aquatics#our-aquatic-programs', variant: 'primary' },
       ],
     },
     connectDiscover: {

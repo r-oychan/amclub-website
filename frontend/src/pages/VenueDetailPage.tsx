@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router';
+import { useParams, useLocation, Link } from 'react-router';
 import { useEffect, useState } from 'react';
 import { fetchAPI } from '../lib/api';
 import { getSubpage } from '../data/subpages';
@@ -146,8 +146,21 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
   const lookupSlug = subSlug ? `${slugParam}-${subSlug}` : slugParam;
   const [venue, setVenue] = useState<VenueData | null>(null);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
   const config = section ? SECTION_MAP[section] : undefined;
+
+  // React Router doesn't auto-scroll to a URL hash on navigation. After the
+  // venue's sections render, look up the target id and bring it into view.
+  // Runs whenever the hash or the venue payload changes.
+  useEffect(() => {
+    if (!location.hash || !venue) return;
+    const id = location.hash.slice(1);
+    const target = document.getElementById(id);
+    if (target) {
+      requestAnimationFrame(() => target.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    }
+  }, [location.hash, venue]);
 
   useEffect(() => {
     if (!config || !lookupSlug || !section) return;
@@ -557,7 +570,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
 
       {/* ── Promo Cards ── */}
       {venue.promoCards && (
-        <section className="py-16 bg-white">
+        <section id="our-aquatic-programs" className="py-16 bg-white scroll-mt-24">
           <div className="max-w-7xl mx-auto px-10">
             <h2
               className="font-heading text-primary text-center mb-4"
