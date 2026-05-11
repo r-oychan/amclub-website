@@ -13,7 +13,7 @@ export interface SubpageData {
   gallery?: string[];
   parentSection: string;
   parentHref: string;
-  ctas?: { label: string; href: string }[];
+  ctas?: { label: string; href: string; isExternal?: boolean }[];
   extraSections?: {
     title: string;
     content: string;
@@ -47,7 +47,7 @@ export const diningSubpages: SubpageData[] = [
     type: 'Cafe',
     description:
       'Have a cup of joe, bagels, pastries and salads at this contemporary café with counter service and self check-out kiosk. Customized cake orders must be placed at least three working days in advance.\n\nNo wet attire allowed in the cafe.',
-    hours: 'Daily\n7:00 a.m. – 7:00 p.m.',
+    hours: 'Daily\n7:00 AM – 7:00 PM',
     level: 'Level 1',
     phone: '6739 4359',
     email: 'central@amclub.org.sg',
@@ -67,7 +67,7 @@ export const diningSubpages: SubpageData[] = [
     description:
       'Amidst the plethora of fusion restaurants in Singapore, none is as exquisite as the award-winning, The 2nd Floor. The logo suggests its East and West origin. The two bold strokes represent the Chinese character for 2 – "er". The Eastern menu is in perfect harmony with authentic Asian flavors and unique contemporary presentations.\n\nThe Western menu is an interpretation of the Modern American Steakhouse and combines bistro ambiance with fine dining fare. The restaurant attained the Excellent Dining Venue award at the Global Gourmet 2020 Chef par Excellence Culinary Competition.',
     hours:
-      'Tuesday to Sunday\nLunch: 11:30 a.m. – 2:30 p.m.\nDinner: 5:30 p.m. – 10:00 p.m.\nThe 2nd Floor is closed on Mondays',
+      'Tuesday to Sunday\nLunch: 11:30 AM – 2:30 PM\nDinner: 5:30 PM – 10:00 PM\nThe 2nd Floor is closed on Mondays',
     level: 'Level 2',
     phone: '6739 4329',
     email: '2ndfloor@amclub.org.sg',
@@ -107,7 +107,7 @@ export const diningSubpages: SubpageData[] = [
     description:
       'Tradewinds takes your tastebuds around the world with its international menu offering. The menu selection features nuances of flavors from America to Singapore.\n\nThis restaurant takes its name from the prevailing surface winds – also known as trade winds – that blow predominantly from the northeast in the Northern Hemisphere and from the southeast in the Southern Hemisphere.\n\nFor centuries, trade winds have facilitated ships to cross the world\'s oceans, establishing trade routes across the Atlantic and Pacific oceans.\n\nTradewinds brings the world\'s flavors to The American Club table.',
     hours:
-      'Sunday to Thursday\n8:00 a.m. – 9:00 p.m. (Last order at 8:30 p.m.)\nFriday & Saturday\n8:00 a.m. – 10:00 p.m. (Last order at 9:30 p.m.)',
+      'Sunday to Thursday\n8:00 AM – 9:00 PM (Last order at 8:30 PM)\nFriday & Saturday\n8:00 AM – 10:00 PM (Last order at 9:30 PM)',
     level: 'Level 1',
     phone: '6739 4361',
     email: 'tradewinds@amclub.org.sg',
@@ -134,7 +134,7 @@ export const diningSubpages: SubpageData[] = [
     description:
       'Welcome to a casual poolside dining restaurant – perfect for families with children and swimmers looking to have a delicious meal.\n\nDevour authentic American cuisine featuring Texas-style BBQ, mouth-watering burgers, delicious pizzas and salads with ice-cold American beer and special Grillhouse shakes.',
     hours:
-      'Grillhouse\nSunday to Thursday: 11:00 AM – 9:00 PM (Last order at 8:30 p.m.)\nFriday and Saturday: 11:00 AM – 9:30 PM (Last order at 9:00 p.m.)\n\nTiki Bar\nFridays & Saturdays: 11:30 AM – 12:00 AM (Last order at 11:30 p.m.)\nSundays: 11:30 AM – 11:00 PM (Last order at 10:30 p.m.)',
+      'Grillhouse\nSunday to Thursday: 11:00 AM – 9:00 PM (Last order at 8:30 PM)\nFriday: 11:00 AM – 9:30 PM (Last order at 9:00 PM)\nSaturday: 8:30 AM – 9:30 PM (Last order at 9:00 PM)\n\nTiki Bar\nFridays & Saturdays: 11:30 AM – 12:00 AM (Last order at 11:30 PM)\nSundays: 11:30 AM – 11:00 PM (Last order at 10:30 PM)',
     level: 'Level 1',
     phone: '6739 4357',
     email: 'grillhouse@amclub.org.sg',
@@ -152,9 +152,9 @@ export const diningSubpages: SubpageData[] = [
     name: 'Union Bar',
     type: 'American Bar Food',
     description:
-      'Nothing feels like a Friday night than bar bites and a cold beer. Grab a bite and a drink after work, and watch the latest football or basketball game on TV, only at the Union Bar.\n\nHappy Hours are even happier now that you can enjoy 20% off house pour and beer starting an hour earlier, from 4:00 p.m., until 8:00 p.m., daily!\n\nPlease be informed that Union Bar does not take any reservations. Strictly walk-ins only.',
+      'Nothing feels like a Friday night than bar bites and a cold beer. Grab a bite and a drink after work, and watch the latest football or basketball game on TV, only at the Union Bar.\n\nHappy Hours are even happier now that you can enjoy 20% off house pour and beer starting an hour earlier, from 4:00 PM, until 8:00 PM, daily!\n\nPlease be informed that Union Bar does not take any reservations. Strictly walk-ins only.',
     hours:
-      'Sunday to Thursday\n12:00 p.m. – 11:00 p.m.\nFriday and Saturday & Eve of PH\n12:00 p.m. – 12:00 a.m.',
+      'Sunday to Thursday\n12:00 PM – 11:00 PM\nFriday and Saturday & Eve of PH\n12:00 PM – 12:00 AM',
     level: 'Basement 2',
     phone: '6739 4340',
     email: 'unionbar@amclub.org.sg',
@@ -188,7 +188,7 @@ export const diningSubpages: SubpageData[] = [
     description:
       'The Gourmet Pantry brings together an excellent selection of wines, featuring more than 100 American wine labels alongside over 300 international labels, thoughtfully curated for every occasion – from easy-drinking table wines to premium selections and celebratory bubblies.\n\nComplementing the wine collection is a distinctive range of homeware and table settings, making it a convenient, one-stop destination for both everyday needs and special moments.',
     hours:
-      'Monday to Thursday\n11:00 a.m. – 8:00 p.m.\nFriday to Sunday\n10:00 a.m. – 8:00 p.m.',
+      'Monday to Thursday\n11:00 AM – 8:00 PM\nFriday to Sunday\n10:00 AM – 8:00 PM',
     level: 'Level 1',
     phone: '6739 4340',
     email: 'gourmetpantry@amclub.org.sg',
@@ -201,7 +201,7 @@ export const diningSubpages: SubpageData[] = [
       {
         title: 'A Refined Way to Unwind',
         content:
-          'Unwind at the Wine Bar @ The Gourmet Pantry and enjoy your favourite pours from Monday to Sunday, 12:00 p.m. – 8:00 p.m.',
+          'Unwind at the Wine Bar @ The Gourmet Pantry and enjoy your favourite pours from Monday to Sunday, 12:00 PM – 8:00 PM',
       },
     ],
     promoCards: {
@@ -261,7 +261,7 @@ export const diningSubpages: SubpageData[] = [
     type: 'Retail',
     description:
       'Essentials is your convenient one-stop shop for everyday needs – featuring exclusive items imported directly from the US, as well as pantry staples, seasonal treats, premium beverages, baking supplies, and laundry services.\n\nEssentials2Go!, our online platform, makes shopping effortless – available for home delivery or self-collection at Essentials, whichever suits you best.',
-    hours: 'Daily\n8:00 a.m. – 8:00 p.m.',
+    hours: 'Daily\n8:00 AM – 8:00 PM',
     level: 'Level 1',
     phone: '6739 4332',
     email: 'essentials@amclub.org.sg',
@@ -308,7 +308,7 @@ export const fitnessSubpages: SubpageData[] = [
     description:
       'sên means life force, echoing the concept of Chi (Chinese), Ki (Japanese), or Prana (Sanskrit), and embodies the pursuit of balance and wellness.\n\nImmerse yourself in a curated selection of indulgent treatments, including massages, facials, hair care, mani-pedis, scrubs, wraps, and more specialized services – all crafted with premium products and delivered by our team of skilled professionals.\n\nAt sên Spa, every experience is tailored to your individual needs, making it the perfect urban retreat for relaxation, rejuvenation, and holistic well-being.',
     hours:
-      'Monday to Saturday: 9:00 a.m. – 8:00 p.m.\nSunday & Public Holiday: 9:00 a.m. – 6:00 p.m.',
+      'Monday to Saturday: 9:00 AM – 8:00 PM\nSunday & Public Holiday: 9:00 AM – 6:00 PM',
     level: 'Basement 3',
     phone: '6739 4449',
     email: 'spa@amclub.org.sg',
@@ -355,7 +355,7 @@ export const fitnessSubpages: SubpageData[] = [
     description:
       'Our Aquatics Team is dedicated to enriching lives through swimming, offering programs for all ages – from babies and toddlers to school-age children and adults.\n\nOur Aquatics program features SwimAmerica, a nationally recognized learn-to-swim program from the United States developed by the American Swimming Coaches Association. Using techniques inspired by world-class and Olympic swimmers, SwimAmerica follows a structured, progressive approach that helps beginners build confidence, proper technique, and strong swimming fundamentals in a safe and effective way.\n\nMembers can further enhance their experience through private lessons, holiday swim camps, intensive stroke clinics, and a variety of in-house swim meets. On weekends, the whole family can enjoy fun in the water with inflatables and play structures.',
     hours:
-      'Pool Operating Hours\nDaily: 6:00 a.m. – 9:00 p.m.\nLifeguards on duty daily 7:00 a.m. – 7:00 p.m.\n\nAquatics Office\nWeekdays: 9:30 a.m. – 6:00 p.m.\nSaturdays: 9:00 a.m. – 12:00 p.m.\nClosed on Sundays',
+      'Pool Operating Hours\nDaily: 6:00 AM – 9:00 PM\nLifeguards on duty daily 7:00 AM – 7:00 PM\n\nAquatics Office\nWeekdays: 9:30 AM – 6:00 PM\nSaturdays: 9:00 AM – 12:00 PM\nClosed on Sundays',
     level: 'Level 1',
     phone: '6739 4450',
     email: 'aquatics@amclub.org.sg',
@@ -373,7 +373,7 @@ export const fitnessSubpages: SubpageData[] = [
     description:
       'Whether you\'re a long-time fitness enthusiast or just starting your wellness journey, our team of qualified Personal Trainers and Group Fitness Instructors is here to support you.\n\nThe Gym also offers a wide range of state-of-the-art cardio and strength equipment, along with a dedicated Group Fitness Studio.\n\nWork out independently, join a group class, or book a personal training session with a trainer of your choice.',
     hours:
-      'Monday to Friday\n6:00 a.m. – 9:00 p.m.\nSaturday, Sunday & Public Holidays\n6:00 a.m. – 8:30 p.m.',
+      'Monday to Friday\n6:00 AM – 9:00 PM\nSaturday, Sunday & Public Holidays\n6:00 AM – 8:30 PM',
     level: 'Basement 2',
     phone: '6739 4312',
     email: 'sportscenter@amclub.org.sg',
@@ -551,7 +551,7 @@ export const kidsSubpages: SubpageData[] = [
     description:
       'The Quad Poolside is a cozy, indoor play haven designed for children under 6 years old. Little ones can explore the charming treehouse playground, enjoy imaginative play in the dress-up corner, and take part in weekly hands-on activities crafted just for them.\n\nEvery visit is guided and overseen by our trained and professional Youth Team Members, ensuring a warm, safe, and engaging environment for our youngest members.',
     hours:
-      'Mondays to Thursdays\n8:30 a.m. – 7:00 p.m.\nFridays & Saturdays\n8:30 a.m. – 8:00 p.m.\nSundays\n8:30 a.m. – 7:00 p.m.',
+      'Mondays to Thursdays\n8:30 AM – 7:00 PM\nFridays & Saturdays\n8:30 AM – 8:00 PM\nSundays\n8:30 AM – 7:00 PM',
     level: 'Level 1',
     phone: '6739 4444 / 4413',
     email: 'youth@amclub.org.sg',
@@ -568,7 +568,7 @@ export const kidsSubpages: SubpageData[] = [
     description:
       'The Quad is an energetic hangout designed for kids 6 years old and above. Packed with arcade machines, interactive games, a dedicated video gaming room, foosball, table tennis, and more, it\'s the perfect spot for active play and friendly competition.',
     hours:
-      'Mondays to Thursdays\n12:00 p.m. – 7:00 p.m.\nFridays\n12:00 p.m. – 8:00 p.m.\nSaturdays\n9:00 a.m. – 8:00 p.m.\nSundays\n9:00 a.m. – 7:00 p.m.\n\nTerm Break\nMondays to Thursdays: 10:00 a.m. – 7:00 p.m.\nFridays: 10:00 a.m. – 8:00 p.m.\nSaturdays: 9:00 a.m. – 8:00 p.m.\nSundays: 9:00 a.m. – 7:00 p.m.',
+      'Mondays to Thursdays\n12:00 PM – 7:00 PM\nFridays\n12:00 PM – 8:00 PM\nSaturdays\n9:00 AM – 8:00 PM\nSundays\n9:00 AM – 7:00 PM\n\nTerm Break\nMondays to Thursdays: 10:00 AM – 7:00 PM\nFridays: 10:00 AM – 8:00 PM\nSaturdays: 9:00 AM – 8:00 PM\nSundays: 9:00 AM – 7:00 PM',
     level: 'Basement 1',
     phone: '6739 4444 / 4413',
     email: 'youth@amclub.org.sg',
@@ -586,7 +586,7 @@ export const kidsSubpages: SubpageData[] = [
     description:
       'The Quad Studios is a versatile, youth-centered space designed for creativity, learning, and celebration. Split into three dedicated studios – Quad Studio 1, 2 & 3 – this vibrant zone hosts a wide range of kids\' recreational classes and can also be seamlessly transformed into fun, customizable party venues, making them ideal for birthdays and special celebrations.',
     hours:
-      'Mondays to Thursdays\n12:00 p.m. – 7:00 p.m.\nFridays\n12:00 p.m. – 8:00 p.m.\nSaturdays\n9:00 a.m. – 8:00 p.m.\nSundays\n9:00 a.m. – 7:00 p.m.',
+      'Mondays to Thursdays\n12:00 PM – 7:00 PM\nFridays\n12:00 PM – 8:00 PM\nSaturdays\n9:00 AM – 8:00 PM\nSundays\n9:00 AM – 7:00 PM',
     level: 'Basement 3',
     phone: '6739 4413 / 4432',
     email: 'youth@amclub.org.sg',
@@ -725,7 +725,7 @@ export const eventSpacesSubpages: SubpageData[] = [
     type: 'Meeting & Co-working',
     description:
       'A dedicated workspace designed for Members who need more than just a workspace. It houses the Business Center as well as the Adult and Children\'s Libraries.',
-    hours: 'Daily 8:00 a.m. – 10:00 p.m.',
+    hours: 'Daily 8:00 AM – 10:00 PM',
     level: 'Level 3',
     phone: '6739 4478',
     email: 'meetings@amclub.org.sg',
@@ -783,7 +783,7 @@ export const eventSpacesSubpages: SubpageData[] = [
     type: 'Workspace',
     description:
       'Thinkspace offers a dedicated hub for Members seeking a professional yet inviting environment to work, meet, or collaborate.',
-    hours: 'Daily 9:00 a.m. – 7:00 p.m.',
+    hours: 'Daily 9:00 AM – 7:00 PM',
     level: 'Level 3',
     image:
       'https://framerusercontent.com/images/zd8RpGTpCNZnJ1FkyAtkThpEy9s.png',
@@ -879,7 +879,7 @@ export const homeSubpages: SubpageData[] = [
     name: 'Contact Us',
     type: 'Contact',
     description:
-      '10 Claymore Hill, Singapore 229573. Sunday to Thursday: 6:00 a.m. - 11:00 p.m. Friday, Saturday & Eve of PH: 6:00 a.m. - 12:00 a.m.',
+      '10 Claymore Hill, Singapore 229573. Sunday to Thursday: 6:00 AM - 11:00 PM Friday, Saturday & Eve of PH: 6:00 AM - 12:00 AM',
     phone: '+65 6737-3411',
     email: 'info@amclub.org.sg',
     image:
@@ -897,7 +897,7 @@ export const homeSubpages: SubpageData[] = [
     parentSection: 'The American Club',
     parentHref: '/home',
     ctas: [
-      { label: 'View Advertising Rate Card', href: '#' },
+      { label: 'View Advertising Rate Card', href: '/documents/ad-rate-card.pdf', isExternal: true },
       { label: 'Enquire Now', href: '#' },
     ],
     extraSections: [
