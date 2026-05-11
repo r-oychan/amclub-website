@@ -1,0 +1,68 @@
+{
+  "kind": "collectionType",
+  "collectionName": "dining_promotions",
+  "info": {
+    "singularName": "dining-promotion",
+    "pluralName": "dining-promotions",
+    "displayName": "Dining Promotion",
+    "description": "A monthly dining promotion flyer shown on /dining/promotions"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true
+    },
+    "summary": {
+      "type": "text"
+    },
+    "restaurantTag": {
+      "type": "enumeration",
+      "enum": [
+        "club-wide",
+        "central",
+        "grillhouse",
+        "the-2nd-floor",
+        "tradewinds",
+        "union-bar",
+        "the-gourmet-pantry"
+      ],
+      "default": "club-wide",
+      "required": true
+    },
+    "validFrom": {
+      "type": "date"
+    },
+    "validTo": {
+      "type": "date"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"],
+      "required": true
+    },
+    "ctas": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link",
+      "max": 2
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
+  }
+}

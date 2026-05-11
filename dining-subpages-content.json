@@ -12,7 +12,7 @@
       "breadcrumb": "Dining & Retail / Central",
       "description": "Have a cup of joe, bagels, pastries and salads at this contemporary café with counter service and self check-out kiosk. Customised cake orders must be placed at least 7 working days in advance.\n\nNo wet attire allowed in the café.",
       "descriptionSource": "[FROM SCREENSHOT]",
-      "hours": "Daily: 7:00 a.m. – 7:00 p.m.",
+      "hours": "Daily: 7:00 AM – 7:00 PM",
       "hoursSource": "[FROM SCREENSHOT]",
       "level": "Level 1",
       "phone": "6739 4359",
@@ -41,7 +41,7 @@
       "breadcrumb": "Dining & Retail / The 2nd Floor",
       "description": "Amidst the plethora of fusion restaurants in Singapore, none is as exquisite as the award-winning The 2nd Floor. The first suggests the Chinese character for 2, \"èr\" (二). The Eastern menu is in perfect harmony with authentic Asian flavors and unique contemporary presentations.\n\nThe Western menu is an interpretation of the Modern American Steakhouse and combines rustic ambiance with fine dining fare. The restaurant showcased the Excellent Dining Venue award at the prestigious World of Chef par Excellence® Culinaire Competition.",
       "descriptionSource": "[FROM SCREENSHOT]",
-      "hours": "Tuesday to Sunday:\nLunch: 11:30 a.m. – 2:30 p.m.\nDinner: 5:30 p.m. – 10:00 p.m.\nThe 2nd Floor is closed on Mondays.",
+      "hours": "Tuesday to Sunday:\nLunch: 11:30 AM – 2:30 PM\nDinner: 5:30 PM – 10:00 PM\nThe 2nd Floor is closed on Mondays.",
       "hoursSource": "[FROM SCREENSHOT]",
       "level": "Level 2",
       "phone": "6739 4329",
@@ -107,7 +107,7 @@
       "breadcrumb": "Dining & Retail / Tradewinds",
       "description": "All-day casual dining featuring an international menu with flavors from America to Singapore.",
       "descriptionSource": "[FROM EXISTING DATA] - only listing-page description available. Full sub-page description NEEDS VERIFICATION from Framer prototype.",
-      "hours": "Sunday to Thursday: 8:00 a.m. – 9:00 p.m.\nFriday & Saturday: 8:00 a.m. – 10:00 p.m.",
+      "hours": "Sunday to Thursday: 8:00 AM – 9:00 PM\nFriday & Saturday: 8:00 AM – 10:00 PM",
       "hoursSource": "[FROM EXISTING DATA]",
       "level": "Level 1",
       "phone": "6739 4326",
@@ -143,13 +143,13 @@
       "hoursStructured": {
         "grillhouse": {
           "heading": "Grillhouse Operating Hours",
-          "sundayToThursday": "11:00 AM – 9:00 PM\nLast order at 8:30 p.m.",
-          "fridayAndSaturday": "11:00 AM – 9:30 PM\nLast order at 9:00 p.m."
+          "sundayToThursday": "11:00 AM – 9:00 PM\nLast order at 8:30 PM",
+          "fridayAndSaturday": "11:00 AM – 9:30 PM\nLast order at 9:00 PM"
         },
         "tikiBar": {
           "heading": "Tiki Bar Operating Hours",
-          "fridayAndSaturday": "11:30 AM – 12:00 AM\nLast order at 11:30 p.m.",
-          "sundays": "11:30 AM – 11:00 PM\nLast order at 10:30 p.m."
+          "fridayAndSaturday": "11:30 AM – 12:00 AM\nLast order at 11:30 PM",
+          "sundays": "11:30 AM – 11:00 PM\nLast order at 10:30 PM"
         }
       },
       "hoursSource": "[FROM SCREENSHOT]",
@@ -213,7 +213,7 @@
       "description": "The Gourmet Pantry brings together an excellent selection of wines, featuring more than 100 American wine labels alongside over 300 international labels, thoughtfully curated for every occasion \u2013 from easy-drinking table wines to premium selections and celebratory bubblies.\n\nComplementing the wine collection is a distinctive range of homeware and table settings, making it a convenient, one-stop destination for both everyday needs and special moments.",
       "descriptionSource": "[FROM EXISTING DATA - subpages.ts]",
       "descriptionNote": "[NEEDS VERIFICATION] - this is the longest description in existing data but may not match the Framer prototype exactly",
-      "hours": "Monday to Thursday: 11:00 a.m. \u2013 8:00 p.m.\nFriday to Sunday: 10:00 a.m. \u2013 8:00 p.m.",
+      "hours": "Monday to Thursday: 11:00 AM \u2013 8:00 PM\nFriday to Sunday: 10:00 AM \u2013 8:00 PM",
       "hoursSource": "[FROM EXISTING DATA - subpages.ts]",
       "level": "Level 1",
       "phone": null,

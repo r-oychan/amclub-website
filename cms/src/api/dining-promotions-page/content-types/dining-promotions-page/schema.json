@@ -1,0 +1,44 @@
+{
+  "kind": "singleType",
+  "collectionName": "dining_promotions_pages",
+  "info": {
+    "singularName": "dining-promotions-page",
+    "pluralName": "dining-promotions-pages",
+    "displayName": "Dining Promotions Page",
+    "description": "Landing page for /dining/promotions — hero, intro, restaurant filter tabs"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "hero": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.hero"
+    },
+    "promotionsHeading": {
+      "type": "string",
+      "default": "Available Promotions"
+    },
+    "promotionsIntro": {
+      "type": "text"
+    },
+    "finalCta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.cta-banner"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
+  }
+}

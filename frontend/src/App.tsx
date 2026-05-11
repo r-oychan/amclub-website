@@ -5,6 +5,7 @@ import { ChatbotWidget } from './components/shared/ChatbotWidget';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import DiningPage from './pages/DiningPage';
+import DiningPromotionsPage from './pages/DiningPromotionsPage';
 import FitnessPage from './pages/FitnessPage';
 import KidsPage from './pages/KidsPage';
 import EventSpacesPage from './pages/EventSpacesPage';
@@ -27,6 +28,7 @@ export default function App() {
             <Route path="/home" element={<HomePage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/dining" element={<DiningPage />} />
+            <Route path="/dining/promotions" element={<DiningPromotionsPage />} />
             <Route path="/dining/:slug" element={<VenueDetailPage section="dining" />} />
             <Route path="/fitness" element={<FitnessPage />} />
             <Route path="/fitness/:slug" element={<VenueDetailPage section="fitness" />} />

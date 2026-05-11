@@ -47,12 +47,13 @@ const RESTAURANTS = [
     ],
     operatingHoursSections: [
       { title: 'Grillhouse Operating Hours', rows: [
-        { dayRange: 'Sunday to Thursday', time: '11:00 AM - 9:00 PM',  lastOrder: 'Last order at 8:30 p.m.' },
-        { dayRange: 'Friday and Saturday', time: '11:00 AM - 9:30 PM', lastOrder: 'Last order at 9:00 p.m.' },
+        { dayRange: 'Sunday to Thursday', time: '11:00 AM - 9:00 PM', lastOrder: 'Last order at 8:30 PM' },
+        { dayRange: 'Friday',             time: '11:00 AM - 9:30 PM', lastOrder: 'Last order at 9:00 PM' },
+        { dayRange: 'Saturday',           time: '8:30 AM - 9:30 PM',  lastOrder: 'Last order at 9:00 PM' },
       ] },
       { title: 'Tiki Bar Operating Hours', rows: [
-        { dayRange: 'Fridays & Saturdays', time: '11:30 AM - 12:00 AM', lastOrder: 'Last order at 11:30 p.m.' },
-        { dayRange: 'Sundays',             time: '11:30 AM - 11:00 PM', lastOrder: 'Last order at 10:30 p.m.' },
+        { dayRange: 'Fridays & Saturdays', time: '11:30 AM - 12:00 AM', lastOrder: 'Last order at 11:30 PM' },
+        { dayRange: 'Sundays',             time: '11:30 AM - 11:00 PM', lastOrder: 'Last order at 10:30 PM' },
       ] },
     ],
     locationContact: { locationLevel: 'Level 1', phone: '6739 4357', email: 'grillhouse@amclub.org.sg' },
@@ -65,7 +66,7 @@ const RESTAURANTS = [
     ctas: [{ label: 'View Menu', icon: 'menu' }],
     operatingHoursSections: [
       { title: 'Operating Hours', rows: [
-        { dayRange: 'Tuesday to Sunday', time: '6:00 PM - 10:00 PM', lastOrder: 'Last order at 9:30 p.m.' },
+        { dayRange: 'Tuesday to Sunday', time: '6:00 PM - 10:00 PM', lastOrder: 'Last order at 9:30 PM' },
       ] },
     ],
     locationContact: { locationLevel: 'Level 2', phone: '6739 4360', email: '2ndfloor@amclub.org.sg' },
@@ -91,7 +92,7 @@ const RESTAURANTS = [
     ctas: [{ label: 'View Menu', icon: 'menu' }],
     operatingHoursSections: [
       { title: 'Operating Hours', rows: [
-        { dayRange: 'Daily', time: '6:30 AM - 10:30 PM', lastOrder: 'Last order at 10:00 p.m.' },
+        { dayRange: 'Daily', time: '6:30 AM - 10:30 PM', lastOrder: 'Last order at 10:00 PM' },
       ] },
     ],
     locationContact: { locationLevel: 'Level 3', phone: '6739 4362', email: 'tradewinds@amclub.org.sg' },
@@ -104,7 +105,7 @@ const RESTAURANTS = [
     ctas: [{ label: 'View Menu', icon: 'menu' }],
     operatingHoursSections: [
       { title: 'Operating Hours', rows: [
-        { dayRange: 'Monday to Sunday', time: '4:00 PM - 12:00 AM', lastOrder: 'Last order at 11:30 p.m.' },
+        { dayRange: 'Monday to Sunday', time: '4:00 PM - 12:00 AM', lastOrder: 'Last order at 11:30 PM' },
       ] },
     ],
     locationContact: { locationLevel: 'Level 4', phone: '6739 4363', email: 'unionbar@amclub.org.sg' },

@@ -2,17 +2,14 @@ import { ArrowLink } from '../shared/ArrowLink';
 
 // Match the Framer "Discover What's Cooking" card layout:
 // - bg-white card on the F5F4F2 page bg
-// - thin pink horizontal divider sitting on the card's top edge
-// - fork & knife icon badge centered on the divider
+// - thin pink hairline border on all 4 sides
+// - fork & knife icon badge centered on the top edge, bridging the border
 // - 3-flyer fan on the right (one base + two rotated overlays)
 export function PromoCell() {
   return (
-    <div className="relative bg-white px-8 md:px-12 pt-12 pb-10 md:pb-12">
-      {/* Top pink divider line */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-accent" />
-
-      {/* Fork & knife icon badge — sits on the divider, white square cuts the line */}
-      <div className="absolute -top-[21px] left-1/2 -translate-x-1/2 z-10 bg-white p-[5px]">
+    <div className="relative bg-white border border-accent px-8 md:px-12 pt-12 pb-10 md:pb-12">
+      {/* Fork & knife icon badge — sits on the top border, white square cuts the line */}
+      <div className="absolute -top-[21px] left-1/2 -translate-x-1/2 z-10 bg-white px-[5px] py-[5px]">
         <img
           src="/icons/promo-accent.svg"
           alt=""

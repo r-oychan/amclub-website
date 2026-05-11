@@ -583,6 +583,100 @@ export interface ApiDiningPageDiningPage extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiDiningPromotionDiningPromotion
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'dining_promotions';
+  info: {
+    description: 'A monthly dining promotion flyer shown on /dining/promotions';
+    displayName: 'Dining Promotion';
+    pluralName: 'dining-promotions';
+    singularName: 'dining-promotion';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    ctas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 2;
+        },
+        number
+      >;
+    image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::dining-promotion.dining-promotion'
+    > &
+      Schema.Attribute.Private;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    restaurantTag: Schema.Attribute.Enumeration<
+      [
+        'club-wide',
+        'central',
+        'grillhouse',
+        'the-2nd-floor',
+        'tradewinds',
+        'union-bar',
+        'the-gourmet-pantry',
+      ]
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'club-wide'>;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    summary: Schema.Attribute.Text;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    validFrom: Schema.Attribute.Date;
+    validTo: Schema.Attribute.Date;
+  };
+}
+
+export interface ApiDiningPromotionsPageDiningPromotionsPage
+  extends Struct.SingleTypeSchema {
+  collectionName: 'dining_promotions_pages';
+  info: {
+    description: 'Landing page for /dining/promotions \u2014 hero, intro, restaurant filter tabs';
+    displayName: 'Dining Promotions Page';
+    pluralName: 'dining-promotions-pages';
+    singularName: 'dining-promotions-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    finalCta: Schema.Attribute.Component<'blocks.cta-banner', false>;
+    hero: Schema.Attribute.Component<'blocks.hero', false>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::dining-promotions-page.dining-promotions-page'
+    > &
+      Schema.Attribute.Private;
+    promotionsHeading: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Available Promotions'>;
+    promotionsIntro: Schema.Attribute.Text;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    subtitle: Schema.Attribute.String;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiElevenlabsDocElevenlabsDoc
   extends Struct.CollectionTypeSchema {
   collectionName: 'elevenlabs_docs';
@@ -1889,6 +1983,8 @@ declare module '@strapi/strapi' {
       'api::committee-member.committee-member': ApiCommitteeMemberCommitteeMember;
       'api::contact-us-page.contact-us-page': ApiContactUsPageContactUsPage;
       'api::dining-page.dining-page': ApiDiningPageDiningPage;
+      'api::dining-promotion.dining-promotion': ApiDiningPromotionDiningPromotion;
+      'api::dining-promotions-page.dining-promotions-page': ApiDiningPromotionsPageDiningPromotionsPage;
       'api::elevenlabs-doc.elevenlabs-doc': ApiElevenlabsDocElevenlabsDoc;
       'api::event-category.event-category': ApiEventCategoryEventCategory;
       'api::event-spaces-page.event-spaces-page': ApiEventSpacesPageEventSpacesPage;
