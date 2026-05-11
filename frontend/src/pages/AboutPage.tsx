@@ -4,7 +4,6 @@ import { Hero } from '../components/blocks/Hero';
 import { TextBlock } from '../components/blocks/TextBlock';
 import { StatsCounter } from '../components/blocks/StatsCounter';
 import { TeamGrid } from '../components/blocks/TeamGrid';
-import { FeatureGrid } from '../components/blocks/FeatureGrid';
 import { CtaBanner } from '../components/blocks/CtaBanner';
 import { PartnerOrganizations } from '../components/blocks/PartnerOrganizations';
 import { AwardsGrid } from '../components/blocks/AwardsGrid';
@@ -197,17 +196,7 @@ export default function AboutPage() {
         />
       )}
 
-      {data.advocacy && (
-        <FeatureGrid
-          heading={data.advocacy.heading}
-          subheading={data.advocacy.subheading}
-          body={data.advocacy.body}
-          listItems={data.advocacy.listItems ?? []}
-          asideImage={mediaUrl(data.advocacy.asideImage)}
-          asideImagePosition={data.advocacy.asideImagePosition ?? 'left'}
-          dark={data.advocacy.dark}
-        />
-      )}
+      {/* Club Advocacy section hidden per stakeholder request (kept in CMS for future re-enable) */}
 
       {data.management && mgmtMembers.length > 0 && (
         <ManagementSlider

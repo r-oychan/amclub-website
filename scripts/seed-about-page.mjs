@@ -170,11 +170,11 @@ async function upsertAboutPage({ media, homeMedia }) {
     },
     governance: {
       heading: 'Club Governance',
-      body: 'The governance structure of the Club is that it is member-owned. There are 25 committees which provide plenty of opportunities to get involved as a volunteer. The committees support the Club management through strategic counsel and policy making.\n\nOnly the General Committee (GC) has approval power.\n\nEach year at the Annual General Meeting (AGM) in November, six spots are available for election/re-election for a two-year tenure. From the GC, the Executive Committee (EXCO) is formed each year in April.',
+      body: 'The Club is member-owned and guided by 25 committees, offering members many ways to get involved as volunteers. These committees support Club management through strategic counsel and policy development.\n\nApproval authority rests solely with the General Committee (GC).\n\nEach November, six GC positions are open for election or re-election at the Annual General Meeting (AGM), with each serving a two-year term. The Executive Committee (EXCO) is then appointed annually from within the GC each April.',
       sidebarHeading: 'Join a Committee',
       sidebarBody: 'If Members wish to volunteer on any of our Committees, please fill in the online Volunteer Interest Form.',
       links: [
-        { label: 'Volunteer Interest Form', href: '#', variant: 'primary' },
+        { label: 'Volunteer Interest Form', href: 'https://amclub.jotform.com/form/tac-volunteer-interest-form', variant: 'primary', isExternal: true },
         { label: 'Committee List', href: '#', variant: 'primary', caption: '(Updated as at December 3, 2025)' },
         { label: 'Volunteer Code of Conduct', href: '#', variant: 'primary' },
       ],
