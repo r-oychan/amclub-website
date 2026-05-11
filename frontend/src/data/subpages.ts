@@ -590,17 +590,36 @@ export const fitnessSubpages: SubpageData[] = [
       'https://framerusercontent.com/images/FfQ1mhhWwbjsMQKiahq8SzaqLs.jpeg',
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
+    ctas: [
+      { label: 'Summer Term 2026 Schedule', href: '/documents/fitness/tennis-summer-term-schedule-2026.pdf', isExternal: true },
+      { label: 'Book a Court', href: 'mailto:sportscounter@amclub.org.sg', isExternal: true },
+    ],
     extraSections: [
       {
         title: 'Tennis Socials',
         content:
-          'Join our Tennis Socials and keep fit while making new friends! Socials are open to players of all levels and played in 30-minute intervals.\n\nMen\'s Social: Every Monday, 6:30 PM – 9:00 PM\nLadies\' Social: Every Wednesday, 9:00 AM – 11:30 AM\nStroke of The Week: Every Tuesday 10:00 AM – 11:00 AM, Every Wednesday 6:00 PM – 7:00 PM\nFriday Night Mixed Social: Every last Friday of the month, 7:00 PM – 9:30 PM',
+          'Join our Tennis Socials and keep fit while making new friends! Socials are open to players of all levels and played in 30-minute intervals. Participants may arrive anytime during the duration of the socials.',
+        bullets: [
+          "Men's Social — Every Monday, 6:30 PM – 9:00 PM",
+          "Ladies' Social — Every Wednesday, 9:00 AM – 11:30 AM",
+          'Stroke of The Week — Every Tuesday, 10:00 AM – 11:00 AM; Every Wednesday, 6:00 PM – 7:00 PM',
+          'Friday Night Mixed Social — Every last Friday of the month, 7:00 PM – 9:30 PM',
+          'Registration is available on the TAC Book app 48 hours in advance.',
+        ],
       },
       {
         title: 'Tennis Etiquette',
-        content:
-          'Please arrive 5 minutes early and sign up at the Sports Counter before you head up to the Tennis Courts.\n\nReservations will be held for a maximum of 15 minutes. Failure to show will incur a "No show" charge.\n\nCancellations must be made at least 4 hours in advance.',
+        content: 'Punctuality & Cancellation Policy',
+        bullets: [
+          'Please arrive 5 minutes early and sign up at the Sports Counter before you head up to the Tennis Courts.',
+          'Arriving late will limit the time of your game. Should you be late, please call in advance at 6739-4312 / 6739-4451.',
+          'Reservations will be held for a maximum of 15 minutes. Failure to show will incur a "No show" charge and the court will be released to other Members.',
+          'Cancellations must be made at least 4 hours in advance.',
+        ],
       },
+    ],
+    bottomCtas: [
+      { label: 'Download Summer Term 2026 Schedule', href: '/documents/fitness/tennis-summer-term-schedule-2026.pdf', isExternal: true },
     ],
   },
   {

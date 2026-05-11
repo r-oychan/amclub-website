@@ -108,7 +108,7 @@ async function upsertFitnessPage({ media }) {
       textTheme: 'light',
       ctas: [
         { label: 'Learn More', href: '/fitness/tennis', variant: 'primary' },
-        { label: 'Term Schedule', href: '/documents/fitness/tennis-summer-term-schedule-2026.pdf', variant: 'primary', isExternal: true },
+        { label: 'Summer Term 2026 Schedule', href: '/documents/fitness/tennis-summer-term-schedule-2026.pdf', variant: 'primary', isExternal: true },
       ],
     },
     moreActivities: {
