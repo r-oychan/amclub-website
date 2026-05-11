@@ -30,9 +30,11 @@ const IMAGES = [
   'heritage-1966.jpg', 'heritage-1970.jpg', 'heritage-1978.jpg',
   'heritage-1983.jpg', 'heritage-1989.jpg', 'heritage-1990.jpeg',
   'heritage-2000.jpg', 'heritage-2015.jpg',
-  // committee 11 (some members lack photos)
+  // committee 15
   'gc-daniel-gewirtz.png', 'gc-tessa-pang.png', 'gc-alisha-barnes.png',
-  'gc-charles-santos.png', 'gc-marcella-sullivan.png', 'gc-ngiam-siew-wei.png',
+  'gc-terry-kim.png',
+  'gc-charles-santos.png', 'gc-kate-park.png', 'gc-kenny-liu.png',
+  'gc-marcella-sullivan.png', 'gc-michael-schindler.png', 'gc-ngiam-siew-wei.png',
   'gc-priyanka-bhalla.png', 'gc-ted-teo.png',
   'gc-michelle-reeb.png', 'gc-autumn-vavoso.png', 'gc-sandra-johnson.png',
   // advocacy
@@ -63,12 +65,12 @@ const COMMITTEE = [
   ['Daniel Gewirtz',     'President',                                                        'gc-daniel-gewirtz.png',     'general-committee', 1],
   ['Tessa Pang',         'Secretary',                                                        'gc-tessa-pang.png',         'general-committee', 2],
   ['Alisha Barnes',      'Secretary',                                                        'gc-alisha-barnes.png',      'general-committee', 3],
-  ['Terry Kim',          'Treasurer',                                                        null,                        'general-committee', 4],
+  ['Terry Kim',          'Treasurer',                                                        'gc-terry-kim.png',          'general-committee', 4],
   ['Charles Santos',     'Member at Large',                                                  'gc-charles-santos.png',     'general-committee', 5],
-  ['Kate Park',          'Member at Large',                                                  null,                        'general-committee', 6],
-  ['Kenny Liu',          'Member at Large',                                                  null,                        'general-committee', 7],
+  ['Kate Park',          'Member at Large',                                                  'gc-kate-park.png',          'general-committee', 6],
+  ['Kenny Liu',          'Member at Large',                                                  'gc-kenny-liu.png',          'general-committee', 7],
   ['Marcella Sullivan',  'Member at Large',                                                  'gc-marcella-sullivan.png',  'general-committee', 8],
-  ['Michael Schindler',  'Member at Large',                                                  null,                        'general-committee', 9],
+  ['Michael Schindler',  'Member at Large',                                                  'gc-michael-schindler.png',  'general-committee', 9],
   ['Ngiam Siew Wei',     'Member at Large',                                                  'gc-ngiam-siew-wei.png',     'general-committee', 10],
   ['Michelle Reeb',      'American Association of Singapore Representative',                 'gc-michelle-reeb.png',      'general-committee', 11],
   ['Autumn Vavoso',      "American Women's Association Representative",                      'gc-autumn-vavoso.png',      'general-committee', 12],
@@ -175,8 +177,8 @@ async function upsertAboutPage({ media, homeMedia }) {
       sidebarBody: 'If Members wish to volunteer on any of our Committees, please fill in the online Volunteer Interest Form.',
       links: [
         { label: 'Volunteer Interest Form', href: 'https://amclub.jotform.com/form/tac-volunteer-interest-form', variant: 'primary', isExternal: true },
-        { label: 'Committee List', href: '#', variant: 'primary', caption: '(Updated as at December 3, 2025)' },
-        { label: 'Volunteer Code of Conduct', href: '#', variant: 'primary' },
+        { label: 'Committee List', href: '/documents/committee-list.pdf', variant: 'primary', caption: '(Updated as at December 3, 2025)', isExternal: true },
+        { label: 'Volunteer Code of Conduct', href: '/documents/volunteer-code-of-conduct.pdf', variant: 'primary', isExternal: true },
       ],
     },
     generalCommittee: {

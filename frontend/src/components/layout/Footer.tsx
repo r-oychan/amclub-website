@@ -24,8 +24,8 @@ const MEMBER_LINKS = [
 ];
 
 const LEGAL_LINKS = [
-  { label: 'Club Constitution', href: '#' },
-  { label: 'Club By-laws', href: '#' },
+  { label: 'Club Constitution', href: '/documents/club-constitution.pdf', external: true },
+  { label: 'Club By-laws', href: '/documents/club-bylaws.pdf', external: true },
   { label: 'Data Protection', href: '#' },
   { label: 'Privacy Statement', href: '#' },
 ];
@@ -98,7 +98,13 @@ export function Footer() {
           <ul className="flex flex-wrap items-center gap-y-2">
             {LEGAL_LINKS.map((l, i) => (
               <li key={l.label} className="flex items-center">
-                <a href={l.href} className={LINK_CLASSES}>{l.label}</a>
+                <a
+                  href={l.href}
+                  className={LINK_CLASSES}
+                  {...(l.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                >
+                  {l.label}
+                </a>
                 {i < LEGAL_LINKS.length - 1 && (
                   <span className="text-secondary mx-5" aria-hidden="true">|</span>
                 )}

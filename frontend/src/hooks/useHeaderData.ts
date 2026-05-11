@@ -118,7 +118,7 @@ const DEFAULT_HEADER: HeaderData = {
             { label: 'Advertising & Sponsorship', href: '/home-sub/advertise-with-us' },
             { label: 'Contact Us', href: '/home-sub/contact-us' },
             { label: 'Club Constitution', href: '/documents/club-constitution.pdf', isExternal: true },
-            { label: 'Club By-laws', href: '/documents/club-by-laws.pdf', isExternal: true },
+            { label: 'Club By-laws', href: '/documents/club-bylaws.pdf', isExternal: true },
           ],
         },
       ],
