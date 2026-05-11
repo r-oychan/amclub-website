@@ -31,8 +31,8 @@ export interface OutletGroup {
 export const contactInfo: ContactInfo = {
   address: ['10 Claymore Hill', 'Singapore 229573'],
   operatingHours: [
-    'Sunday to Thursday: 6:00 a.m. – 11:00 p.m.',
-    'Friday, Saturday & Eve of PH: 6:00 a.m. – 12:00 a.m.',
+    'Sunday to Thursday: 6:00 AM – 11:00 PM',
+    'Friday, Saturday & Eve of PH: 6:00 AM – 12:00 AM',
   ],
   phone: '+65 6737-3411',
   email: 'info@amclub.org.sg',
@@ -50,8 +50,8 @@ export const outletGroups: OutletGroup[] = [
         blocks: [
           {
             rows: [
-              { dayRange: 'Sunday to Thursday', time: '8:00 a.m. – 9:00 p.m.', lastOrder: '(last order at 8:30 p.m.)' },
-              { dayRange: 'Friday & Saturday', time: '8:00 a.m. – 10:00 p.m.', lastOrder: '(last order at 9:30 p.m.)' },
+              { dayRange: 'Sunday to Thursday', time: '8:00 AM – 9:00 PM', lastOrder: '(last order at 8:30 PM)' },
+              { dayRange: 'Friday & Saturday', time: '8:00 AM – 10:00 PM', lastOrder: '(last order at 9:30 PM)' },
             ],
           },
         ],
@@ -61,8 +61,8 @@ export const outletGroups: OutletGroup[] = [
         blocks: [
           {
             rows: [
-              { dayRange: 'Sunday to Thursday', time: '11:00 a.m. – 9:00 p.m.', lastOrder: '(last order at 8:30 p.m.)' },
-              { dayRange: 'Friday to Sunday', time: '11:00 a.m. – 9:30 p.m.', lastOrder: '(last order at 9:00 p.m.)' },
+              { dayRange: 'Sunday to Thursday', time: '11:00 AM – 9:00 PM', lastOrder: '(last order at 8:30 PM)' },
+              { dayRange: 'Friday to Sunday', time: '11:00 AM – 9:30 PM', lastOrder: '(last order at 9:00 PM)' },
             ],
           },
         ],
@@ -73,32 +73,32 @@ export const outletGroups: OutletGroup[] = [
           {
             subtitle: 'Lunch',
             rows: [
-              { dayRange: 'Tuesday to Sunday', time: '11:30 a.m. – 2:30 p.m.', lastOrder: '(last order at 2:00 p.m.)' },
+              { dayRange: 'Tuesday to Sunday', time: '11:30 AM – 2:30 PM', lastOrder: '(last order at 2:00 PM)' },
             ],
           },
           {
             subtitle: 'Dinner',
             rows: [
-              { dayRange: 'Tuesday to Sunday', time: '5:30 p.m. – 10:00 p.m.', lastOrder: '(last order at 9:30 p.m.)' },
+              { dayRange: 'Tuesday to Sunday', time: '5:30 PM – 10:00 PM', lastOrder: '(last order at 9:30 PM)' },
             ],
           },
         ],
       },
       {
         name: 'Essentials',
-        blocks: [{ rows: [{ dayRange: 'Daily', time: '8:00 a.m. – 9:00 p.m.' }] }],
+        blocks: [{ rows: [{ dayRange: 'Daily', time: '8:00 AM – 9:00 PM' }] }],
       },
       {
         name: 'Central',
-        blocks: [{ rows: [{ dayRange: 'Daily', time: '7:00 a.m. – 7:00 p.m.' }] }],
+        blocks: [{ rows: [{ dayRange: 'Daily', time: '7:00 AM – 7:00 PM' }] }],
       },
       {
         name: 'The Gourmet Pantry',
         blocks: [
           {
             rows: [
-              { dayRange: 'Monday to Thursday', time: '11:00 a.m. – 8:00 p.m.' },
-              { dayRange: 'Friday to Sunday', time: '10:00 a.m. – 8:00 p.m.' },
+              { dayRange: 'Monday to Thursday', time: '11:00 AM – 8:00 PM' },
+              { dayRange: 'Friday to Sunday', time: '10:00 AM – 8:00 PM' },
             ],
           },
         ],
@@ -108,8 +108,9 @@ export const outletGroups: OutletGroup[] = [
         blocks: [
           {
             rows: [
-              { dayRange: 'Sunday to Thursday', time: '11:00 a.m. – 9:00 p.m.', lastOrder: '(last order at 8:30 p.m.)' },
-              { dayRange: 'Friday to Sunday', time: '11:00 a.m. – 9:30 p.m.', lastOrder: '(last order at 9:00 p.m.)' },
+              { dayRange: 'Sunday to Thursday', time: '11:00 AM – 9:00 PM', lastOrder: '(last order at 8:30 PM)' },
+              { dayRange: 'Friday', time: '11:00 AM – 9:30 PM', lastOrder: '(last order at 9:00 PM)' },
+              { dayRange: 'Saturday', time: '8:30 AM – 9:30 PM', lastOrder: '(last order at 9:00 PM)' },
             ],
           },
         ],
@@ -125,8 +126,8 @@ export const outletGroups: OutletGroup[] = [
         blocks: [
           {
             rows: [
-              { dayRange: 'Monday to Friday', time: '5:30 a.m. – 10:00 p.m.' },
-              { dayRange: 'Saturday, Sunday & PH', time: '6:00 a.m. – 9:00 p.m.' },
+              { dayRange: 'Monday to Friday', time: '5:30 AM – 10:00 PM' },
+              { dayRange: 'Saturday, Sunday & PH', time: '6:00 AM – 9:00 PM' },
             ],
           },
         ],
@@ -136,25 +137,25 @@ export const outletGroups: OutletGroup[] = [
         blocks: [
           {
             rows: [
-              { dayRange: 'Daily', time: '6:00 a.m. – 9:30 p.m.' },
+              { dayRange: 'Daily', time: '6:00 AM – 9:30 PM' },
             ],
           },
         ],
       },
       {
         name: 'Tennis',
-        blocks: [{ rows: [{ dayRange: 'Daily', time: '7:00 a.m. – 10:00 p.m.' }] }],
+        blocks: [{ rows: [{ dayRange: 'Daily', time: '7:00 AM – 10:00 PM' }] }],
       },
       {
         name: 'Squash',
-        blocks: [{ rows: [{ dayRange: 'Daily', time: '6:00 a.m. – 10:00 p.m.' }] }],
+        blocks: [{ rows: [{ dayRange: 'Daily', time: '6:00 AM – 10:00 PM' }] }],
       },
       {
         name: 'sên Spa',
         blocks: [
           {
             rows: [
-              { dayRange: 'Tuesday to Sunday', time: '10:00 a.m. – 9:00 p.m.' },
+              { dayRange: 'Tuesday to Sunday', time: '10:00 AM – 9:00 PM' },
               { dayRange: 'Closed Mondays', time: '' },
             ],
           },
@@ -175,7 +176,7 @@ export const outletGroups: OutletGroup[] = [
         blocks: [
           {
             rows: [
-              { dayRange: 'Tuesday to Sunday', time: '9:00 a.m. – 7:00 p.m.' },
+              { dayRange: 'Tuesday to Sunday', time: '9:00 AM – 7:00 PM' },
               { dayRange: 'Closed Mondays', time: '' },
             ],
           },
@@ -183,7 +184,7 @@ export const outletGroups: OutletGroup[] = [
       },
       {
         name: 'The Quad Poolside',
-        blocks: [{ rows: [{ dayRange: 'Daily', time: '10:00 a.m. – 6:00 p.m.' }] }],
+        blocks: [{ rows: [{ dayRange: 'Daily', time: '10:00 AM – 6:00 PM' }] }],
       },
       {
         name: 'The Quad Studios',
@@ -194,7 +195,7 @@ export const outletGroups: OutletGroup[] = [
         blocks: [
           {
             rows: [
-              { dayRange: 'Tuesday to Sunday', time: '12:00 p.m. – 9:00 p.m.' },
+              { dayRange: 'Tuesday to Sunday', time: '12:00 PM – 9:00 PM' },
             ],
           },
         ],
@@ -207,25 +208,25 @@ export const outletGroups: OutletGroup[] = [
     cards: [
       {
         name: 'Thinkspace',
-        blocks: [{ rows: [{ dayRange: 'Daily', time: '8:00 a.m. – 10:00 p.m.' }] }],
+        blocks: [{ rows: [{ dayRange: 'Daily', time: '8:00 AM – 10:00 PM' }] }],
       },
       {
         name: 'Library',
-        blocks: [{ rows: [{ dayRange: 'Daily', time: '9:00 a.m. – 9:00 p.m.' }] }],
+        blocks: [{ rows: [{ dayRange: 'Daily', time: '9:00 AM – 9:00 PM' }] }],
       },
       {
         name: 'Meeting Rooms & Business Center',
-        blocks: [{ rows: [{ dayRange: 'Daily', time: '9:00 a.m. – 7:00 p.m.' }] }],
+        blocks: [{ rows: [{ dayRange: 'Daily', time: '9:00 AM – 7:00 PM' }] }],
       },
       {
         name: 'The Bowling Alley',
         blocks: [
           {
             rows: [
-              { dayRange: 'Monday to Thursday', time: '12:00 p.m. – 7:00 p.m.' },
-              { dayRange: 'Friday', time: '12:00 p.m. – 8:00 p.m.' },
-              { dayRange: 'Saturday', time: '10:30 a.m. – 8:00 p.m.' },
-              { dayRange: 'Sunday', time: '9:30 a.m. – 7:00 p.m.' },
+              { dayRange: 'Monday to Thursday', time: '12:00 PM – 7:00 PM' },
+              { dayRange: 'Friday', time: '12:00 PM – 8:00 PM' },
+              { dayRange: 'Saturday', time: '10:30 AM – 8:00 PM' },
+              { dayRange: 'Sunday', time: '9:30 AM – 7:00 PM' },
             ],
           },
         ],
@@ -241,8 +242,8 @@ export const outletGroups: OutletGroup[] = [
         blocks: [
           {
             rows: [
-              { dayRange: 'Monday to Friday', time: '9:00 a.m. – 7:00 p.m.' },
-              { dayRange: 'Saturday', time: '9:00 a.m. – 5:00 p.m.' },
+              { dayRange: 'Monday to Friday', time: '9:00 AM – 7:00 PM' },
+              { dayRange: 'Saturday', time: '9:00 AM – 5:00 PM' },
               { dayRange: 'Closed Sundays & PH', time: '' },
             ],
           },
@@ -253,8 +254,8 @@ export const outletGroups: OutletGroup[] = [
         blocks: [
           {
             rows: [
-              { dayRange: 'Monday to Friday', time: '12:00 p.m. – 7:00 p.m.' },
-              { dayRange: 'Saturday', time: '1:00 p.m. – 8:00 p.m.' },
+              { dayRange: 'Monday to Friday', time: '12:00 PM – 7:00 PM' },
+              { dayRange: 'Saturday', time: '1:00 PM – 8:00 PM' },
               { dayRange: 'Closed Sundays', time: '' },
             ],
           },
