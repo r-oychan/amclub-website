@@ -10,31 +10,31 @@ const EXPLORE_LINKS = [
 ];
 
 const ABOUT_LINKS = [
-  { label: 'Club News', href: '#' },
-  { label: 'Gallery', href: '#' },
-  { label: 'Advertising & Sponsorships', href: '#' },
+  { label: 'Club News', href: '/home-sub/news' },
+  { label: 'Gallery', href: '/home-sub/gallery' },
+  { label: 'Advertising & Sponsorships', href: '/home-sub/advertise-with-us' },
   { label: 'Contact Us', href: '/home-sub/contact-us' },
 ];
 
 const MEMBER_LINKS = [
   { label: 'Login', href: 'https://amclub-portal.iontone.com/#/login', external: true },
-  { label: 'Reciprocal Clubs', href: '#' },
-  { label: 'Refer a Friend', href: '#' },
-  { label: 'Eagles Reward Program', href: '#' },
+  { label: 'Reciprocal Clubs', href: '/home-sub/reciprocal-clubs' },
+  { label: 'Refer a Friend', href: '/home-sub/refer-a-friend' },
+  { label: 'Niche Group Loyalty Program', href: '/home-sub/niche-group-loyalty-program' },
 ];
 
 const LEGAL_LINKS = [
   { label: 'Club Constitution', href: '/documents/club-constitution.pdf', external: true },
   { label: 'Club By-laws', href: '/documents/club-bylaws.pdf', external: true },
-  { label: 'Data Protection', href: '#' },
-  { label: 'Privacy Statement', href: '#' },
+  { label: 'Data Protection', href: '/home-sub/data-protection' },
+  { label: 'Privacy Statement', href: '/home-sub/privacy-statement' },
 ];
 
 const SOCIALS = [
   { label: 'Instagram', href: 'https://www.instagram.com/americanclubsingapore/', icon: InstagramIcon },
-  { label: 'Facebook', href: '#', icon: FacebookIcon },
-  { label: 'LinkedIn', href: '#', icon: LinkedInIcon },
-  { label: 'WhatsApp', href: '#', icon: WhatsAppIcon },
+  { label: 'Facebook', href: 'https://www.facebook.com/AmericanClubSingapore/', icon: FacebookIcon },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/company/the-american-club-singapore', icon: LinkedInIcon },
+  { label: 'WhatsApp', href: 'https://www.whatsapp.com/channel/0029Vb6eMBREawdpTErdKE47', icon: WhatsAppIcon },
 ];
 
 const LOGO_URL = 'https://framerusercontent.com/images/jYpgpsEhknSxMZJWxquvCab3o.webp';
