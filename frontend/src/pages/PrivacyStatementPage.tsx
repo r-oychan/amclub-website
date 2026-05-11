@@ -276,7 +276,7 @@ function NestedBulletList({ items }: { items: { text: string; sub?: string[] }[]
 export default function PrivacyStatementPage() {
   return (
     <PageFade loaded={true}>
-      <section className="bg-bg pt-20 pb-24 md:pt-28 md:pb-32">
+      <section className="bg-bg pt-36 pb-24 md:pt-44 md:pb-32 lg:pt-52">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <header className="mb-10 border-b border-primary/15 pb-8">
             <p
