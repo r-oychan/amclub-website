@@ -72,6 +72,9 @@ interface VenueData {
       cta: { label: string; href: string };
     }[];
   };
+  teamMembers?: { name: string; role: string; bio?: string; image?: string }[];
+  teamHeading?: string;
+  bottomCtas?: { label: string; href: string; isExternal?: boolean }[];
   faq?: { question: string; answer: string }[];
 }
 
@@ -105,6 +108,9 @@ function staticFallback(section: string, slug: string): VenueData | null {
     ctas: sp.ctas,
     extraSections: sp.extraSections,
     promoCards: sp.promoCards,
+    teamMembers: sp.teamMembers,
+    teamHeading: sp.teamHeading,
+    bottomCtas: sp.bottomCtas,
     faq: sp.faq,
   };
 }
@@ -171,6 +177,9 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           ctas: api.ctas?.length ? api.ctas : fallback?.ctas,
           extraSections: api.extraSections?.length ? api.extraSections : fallback?.extraSections,
           promoCards: api.promoCards ?? fallback?.promoCards,
+          teamMembers: api.teamMembers?.length ? api.teamMembers : fallback?.teamMembers,
+          teamHeading: api.teamHeading ?? fallback?.teamHeading,
+          bottomCtas: api.bottomCtas?.length ? api.bottomCtas : fallback?.bottomCtas,
           faq: api.faq?.length ? api.faq : fallback?.faq,
         });
       } else {
@@ -607,6 +616,102 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Meet the Team ── */}
+      {venue.teamMembers && venue.teamMembers.length > 0 && (
+        <section className="py-16 bg-bg">
+          <div className="max-w-7xl mx-auto px-10">
+            <h2
+              className="font-heading text-primary text-center mb-10"
+              style={{ fontSize: '26.56px', fontWeight: 300, fontStyle: 'italic' }}
+            >
+              {venue.teamHeading ?? 'Meet Our Team'}
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-8">
+              {venue.teamMembers.map((m) => (
+                <div key={m.name} className="flex flex-col items-center text-center">
+                  {m.image ? (
+                    <img
+                      src={m.image}
+                      alt={m.name}
+                      className="w-28 h-28 rounded-full object-cover mb-3"
+                    />
+                  ) : (
+                    <div
+                      aria-hidden
+                      className="w-28 h-28 rounded-full mb-3 flex items-center justify-center bg-white text-primary font-heading"
+                      style={{ fontSize: '32px', fontStyle: 'italic', fontWeight: 300 }}
+                    >
+                      {m.name.charAt(0)}
+                    </div>
+                  )}
+                  <p
+                    className="font-heading text-primary"
+                    style={{ fontSize: '20.8px', fontWeight: 700, letterSpacing: '-0.416px' }}
+                  >
+                    {m.name}
+                  </p>
+                  <p
+                    className="text-text-dark/70 mt-1"
+                    style={{ fontSize: '13.6px', lineHeight: '19px' }}
+                  >
+                    {m.role}
+                  </p>
+                  {m.bio && (
+                    <p
+                      className="text-text-dark/80 mt-2"
+                      style={{ fontSize: '14.4px', lineHeight: '20px' }}
+                    >
+                      {m.bio}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Bottom CTAs (e.g. duplicate Programs Price List link) ── */}
+      {venue.bottomCtas && venue.bottomCtas.length > 0 && (
+        <section className="py-12 bg-white">
+          <div className="max-w-7xl mx-auto px-10 flex flex-wrap justify-center gap-3">
+            {venue.bottomCtas.map((cta) => {
+              const linkClass =
+                'inline-flex items-center gap-2 bg-white rounded-full text-primary uppercase hover:shadow-md transition-shadow border border-primary/10';
+              const linkStyle = {
+                padding: '12px 16px 12px 24px',
+                fontSize: '13.6px',
+                fontWeight: 700,
+                letterSpacing: '0.04em',
+                boxShadow: 'rgba(32, 99, 171, 0.07) 0px 20px 19px -12px',
+              } as const;
+              const inner = (
+                <>
+                  {cta.label}
+                  <CtaIcon name="arrow" size={20} className="text-accent" />
+                </>
+              );
+              return cta.isExternal ? (
+                <a
+                  key={cta.label}
+                  href={cta.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={linkClass}
+                  style={linkStyle}
+                >
+                  {inner}
+                </a>
+              ) : (
+                <Link key={cta.label} to={cta.href} className={linkClass} style={linkStyle}>
+                  {inner}
+                </Link>
+              );
+            })}
           </div>
         </section>
       )}

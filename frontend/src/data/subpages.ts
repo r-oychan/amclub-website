@@ -30,6 +30,11 @@ export interface SubpageData {
       cta: { label: string; href: string };
     }[];
   };
+  /** Optional roster shown as a "Meet the Team" section. */
+  teamMembers?: { name: string; role: string; bio?: string; image?: string }[];
+  teamHeading?: string;
+  /** Extra CTAs rendered at the bottom of the page (e.g. duplicate price-list link). */
+  bottomCtas?: { label: string; href: string; isExternal?: boolean }[];
   faq?: { question: string; answer: string }[];
 }
 
@@ -391,6 +396,66 @@ export const fitnessSubpages: SubpageData[] = [
         },
       ],
     },
+    teamHeading: 'Meet Our Team',
+    teamMembers: [
+      { name: 'Greg',      role: 'Aquatics Manager & Head Swim Coach' },
+      { name: 'Zack',      role: 'Aquatics Coordinator' },
+      { name: 'Hariz',     role: 'Assistant Swim Coach & Coordinator' },
+      { name: 'Abdul',     role: 'Chief Lifeguard Trainer' },
+      { name: 'Marc',      role: 'Swim Coach' },
+      { name: 'Rodel',     role: 'Swim Coach / Lifeguard Trainer' },
+      { name: 'Ben',       role: 'Swim Coach / Lifeguard Trainer' },
+      { name: 'Francesca', role: 'Swim Coach' },
+      { name: 'Caroline',  role: 'Part-time Swim Coach' },
+      { name: 'Daniel',    role: 'Part-time Swim Coach' },
+      { name: 'Yat',       role: 'Part-time Swim Coach / Lifeguard Trainer' },
+      { name: 'Sia',       role: 'Part-time Lifeguard Trainer' },
+    ],
+    bottomCtas: [
+      { label: 'View Programs Price List', href: '/documents/fitness/aquatics-program-price-list.pdf', isExternal: true },
+    ],
+    faq: [
+      {
+        question: "How do I determine my child's swim level?",
+        answer:
+          "Book a free assessment for children over three years old by emailing aquatics@amclub.org.sg or submitting the assessment form at the Aquatics Counter. Babies and toddlers do not require assessment as levels are age-based.",
+      },
+      {
+        question: 'Can I enroll after the term has started?',
+        answer:
+          'Yes — enrollment is possible at any point subject to class availability. Submit an enrollment form to the Aquatics Counter and the team will respond within five working days.',
+      },
+      {
+        question: 'When will my child move to the next level?',
+        answer:
+          "There is no fixed duration. Once an instructor confirms the swimmer confidently completes all required skills, the Aquatics Coordinator runs a level assessment. The Spring and Fall programs also include dedicated assessment weeks.",
+      },
+      {
+        question: "Will swimming lessons be held if it's raining?",
+        answer:
+          'Lessons continue during light rain but are cancelled for thunder, lightning, or extremely heavy rain. Call the Aquatics Counter at 6739-4470 (or the office at 6739-4450) thirty minutes before class to confirm.',
+      },
+      {
+        question: 'I missed my class. Can I attend a make-up class?',
+        answer:
+          'With nearly 900 weekly swimmers and limited resources, the Club is unable to offer make-up classes.',
+      },
+      {
+        question: 'What if my child is sick?',
+        answer:
+          "Present a Medical Certificate covering the missed lesson dates at the Aquatics Counter within one week, or before the end of the month. Receipts are not accepted in place of an MC.",
+      },
+      {
+        question: 'Are Guests able to enroll in the Starfish Swim School Program?',
+        answer:
+          'Guests may only enroll in the Aquastars program and swimming camps. Terms and conditions apply — please check with the Aquatics Counter for details.',
+      },
+      {
+        question: 'How do I withdraw my child from a program?',
+        answer:
+          'Submit a cancellation request at the Aquatics Counter at least two weeks before the final lesson date. Phone cancellations are not accepted.',
+      },
+    ],
   },
   {
     slug: 'aquatics-swimamerica',
