@@ -52,7 +52,7 @@ async function upsertFitnessPage({ media }) {
       logo: media['fRArJiszmhGHpOFTkbxpn8pcnAY.png'].id,
       ctas: [
         { label: 'Learn More', href: '/fitness/sen-spa', variant: 'primary' },
-        { label: 'View Menu', href: '/fitness/sen-spa', variant: 'primary' },
+        { label: 'View Menu & Promotions', href: '/documents/fitness/sen-spa-menu.pdf', variant: 'primary', isExternal: true },
       ],
     },
     aquatics: {
@@ -91,10 +91,10 @@ async function upsertFitnessPage({ media }) {
       textBgColor: '#272E3D',
       textTheme: 'light',
       ctas: [
-        { label: 'Private Trainings',     href: '/fitness/gym',     variant: 'outline', bordered: true },
-        { label: 'Group Fitness Class',   href: '/fitness/gym',     variant: 'outline', bordered: true },
-        { label: 'Pilates',               href: '/fitness/pilates', variant: 'outline', bordered: true },
-        { label: 'Learn More',            href: '/fitness/gym',     variant: 'outline', bordered: true },
+        { label: 'Personal Training & Group Fitness Classes', href: '/documents/fitness/personal-training-group-fitness-class.pdf', variant: 'outline', bordered: true, isExternal: true },
+        { label: 'Group Fitness Class Schedule',              href: '/documents/fitness/group-fitness-class-schedule.jpg',         variant: 'outline', bordered: true, isExternal: true },
+        { label: 'Pilates Class Schedule',                    href: '/documents/fitness/pilates-group-class-schedule.jpeg',        variant: 'outline', bordered: true, isExternal: true },
+        { label: 'Learn More',                                href: '/fitness/gym',                                                variant: 'outline', bordered: true },
       ],
     },
     tennis: {
@@ -108,7 +108,7 @@ async function upsertFitnessPage({ media }) {
       textTheme: 'light',
       ctas: [
         { label: 'Learn More', href: '/fitness/tennis', variant: 'primary' },
-        { label: 'Group Fitness Programs', href: '/fitness/tennis', variant: 'primary' },
+        { label: 'Term Schedule', href: '/documents/fitness/tennis-summer-term-schedule-2026.pdf', variant: 'primary', isExternal: true },
       ],
     },
     moreActivities: {

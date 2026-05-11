@@ -92,7 +92,7 @@ export default function FitnessPage() {
   const overlays: { key: string; props: ReturnType<typeof overlayProps> }[] = [
     { key: 'senSpa',          props: overlayProps(data.senSpa) },
     { key: 'aquatics',        props: overlayProps(data.aquatics) },
-    { key: 'connectDiscover', props: overlayProps(data.connectDiscover) },
+    // Connect & Discover is intentionally hidden until content is finalized.
     { key: 'gym',             props: overlayProps(data.gym) },
     { key: 'tennis',          props: overlayProps(data.tennis) },
   ];

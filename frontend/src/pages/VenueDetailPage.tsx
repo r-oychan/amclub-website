@@ -32,6 +32,9 @@ interface VenueData {
   id?: number;
   name: string;
   slug: string;
+  /** Optional override of the section's default parent label/href (used by nested entries like aquatics programs). */
+  parentSection?: string;
+  parentHref?: string;
   description: string;
   detailedDescription?: unknown[];
   openingHours?: unknown[];
@@ -87,6 +90,8 @@ function staticFallback(section: string, slug: string): VenueData | null {
   return {
     name: sp.name,
     slug: sp.slug,
+    parentSection: sp.parentSection,
+    parentHref: sp.parentHref,
     description: sp.description,
     cuisineType: sp.type,
     locationLevel: sp.level,
@@ -123,22 +128,30 @@ const STRIPE_PATTERN_SVG =
   'url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22126%22 height=%22126%22%3E%3Cpath d=%22M126 0v21.584L21.584 126H0v-17.585L108.415 0H126Zm0 108.414V126h-17.586L126 108.414Zm0-84v39.171L63.585 126H24.414L126 24.414Zm0 42v39.17L105.584 126h-39.17L126 66.414ZM105.586 0 0 105.586V66.415L66.415 0h39.171Zm-42 0L0 63.586V24.415L24.415 0h39.171Zm-42 0L0 21.586V0h21.586Z%22 fill=%22rgb(136,136,136,0.2)%22 fill-rule=%22evenodd%22/%3E%3C/svg%3E")';
 
 export default function VenueDetailPage({ section: sectionProp }: { section?: string }) {
-  const { section: sectionParam, slug } = useParams<{ section: string; slug: string }>();
+  const { section: sectionParam, slug: slugParam, subSlug } = useParams<{
+    section: string;
+    slug: string;
+    subSlug: string;
+  }>();
   const section = sectionProp ?? sectionParam;
+  // When a sub-slug is present (e.g. /fitness/aquatics/swimamerica), the
+  // detail entry is registered under `<slug>-<subSlug>` in subpages.ts so it
+  // stays unique across the section.
+  const lookupSlug = subSlug ? `${slugParam}-${subSlug}` : slugParam;
   const [venue, setVenue] = useState<VenueData | null>(null);
   const [loading, setLoading] = useState(true);
 
   const config = section ? SECTION_MAP[section] : undefined;
 
   useEffect(() => {
-    if (!config || !slug || !section) return;
+    if (!config || !lookupSlug || !section) return;
     const load = async () => {
       setLoading(true);
       // Strapi v5's `populate=*` only goes one level deep, which leaves
       // operatingHoursSections.rows empty. List each relation explicitly and
       // deep-populate the nested rows.
       const params: Record<string, string> = {
-        'filters[slug][$eq]': slug,
+        'filters[slug][$eq]': lookupSlug,
         'populate[image]': 'true',
         'populate[gallery]': 'true',
         'populate[ctas]': 'true',
@@ -146,7 +159,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
         'populate[operatingHoursSections][populate]': '*',
       };
       const items = await fetchAPI<VenueData[]>(config.apiPath, params);
-      const fallback = staticFallback(section, slug);
+      const fallback = staticFallback(section, lookupSlug);
       if (items && items.length > 0) {
         const api = items[0];
         // Enrich with static fallback for fields missing from CMS
@@ -166,7 +179,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
       setLoading(false);
     };
     load();
-  }, [config, slug, section]);
+  }, [config, lookupSlug, section]);
 
   if (!config) {
     return (
@@ -233,6 +246,11 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
     img.url.startsWith('http') ? img.url : `${img.url}`
   );
 
+  // Nested entries (e.g. aquatics programs) carry their own parent label/href
+  // so the breadcrumb + back link point one level up instead of the section root.
+  const effectiveParentLabel = venue.parentSection ?? config.parentLabel;
+  const effectiveParentHref = venue.parentHref ?? config.parentHref;
+
   return (
     <>
       {/* ── Hero Banner ── */}
@@ -240,8 +258,8 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
 
       {/* ── Breadcrumb ── */}
       <DetailBreadcrumb
-        parentLabel={config.parentLabel}
-        parentHref={config.parentHref}
+        parentLabel={effectiveParentLabel}
+        parentHref={effectiveParentHref}
         currentName={venue.name}
       />
 
@@ -610,7 +628,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
       <section className="py-10 bg-bg">
         <div className="max-w-7xl mx-auto px-10">
           <Link
-            to={config.parentHref}
+            to={effectiveParentHref}
             className="inline-flex items-center gap-2.5 font-bold uppercase text-primary hover:text-accent transition-colors"
             style={{ fontSize: '14.4px', letterSpacing: '0.576px' }}
           >
@@ -623,7 +641,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                 strokeLinejoin="round"
               />
             </svg>
-            Back to {config.parentLabel}
+            Back to {effectiveParentLabel}
           </Link>
         </div>
       </section>

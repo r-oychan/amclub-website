@@ -112,6 +112,7 @@ export function OverlaySection({
                 href={cta.href}
                 dark={isDark}
                 icon={cta.icon ?? 'arrow'}
+                isExternal={cta.isExternal}
               />
             ) : (
               <ArrowLink

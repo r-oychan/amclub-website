@@ -32,6 +32,7 @@ export default function App() {
             <Route path="/dining/:slug" element={<VenueDetailPage section="dining" />} />
             <Route path="/fitness" element={<FitnessPage />} />
             <Route path="/fitness/:slug" element={<VenueDetailPage section="fitness" />} />
+            <Route path="/fitness/:slug/:subSlug" element={<VenueDetailPage section="fitness" />} />
             <Route path="/kids" element={<KidsPage />} />
             <Route path="/kids/:slug" element={<VenueDetailPage section="kids" />} />
             <Route path="/event-spaces" element={<EventSpacesPage />} />

@@ -55,19 +55,19 @@ export function BorderedArrowLink({
   href,
   dark = false,
   icon = 'arrow',
+  isExternal = false,
 }: {
   label: string;
   href: string;
   dark?: boolean;
   icon?: CtaIconName | null;
+  isExternal?: boolean;
 }) {
-  return (
-    <Link
-      to={href}
-      className={`flex items-center gap-2 py-2.5 border-l-[3px] border-accent pl-4 transition-colors duration-200 ${
-        dark ? 'hover:border-white' : ''
-      }`}
-    >
+  const className = `flex items-center gap-2 py-2.5 border-l-[3px] border-accent pl-4 transition-colors duration-200 ${
+    dark ? 'hover:border-white' : ''
+  }`;
+  const inner = (
+    <>
       <span
         className={`text-[14.4px] leading-[1.4] font-bold uppercase tracking-[0.04em] ${
           dark ? 'text-white/90 hover:text-white' : 'text-primary'
@@ -76,6 +76,18 @@ export function BorderedArrowLink({
         {label}
       </span>
       <CtaIcon name={icon} size={24} className={dark ? 'text-secondary' : 'text-accent'} />
+    </>
+  );
+  if (isExternal) {
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
+        {inner}
+      </a>
+    );
+  }
+  return (
+    <Link to={href} className={className}>
+      {inner}
     </Link>
   );
 }
