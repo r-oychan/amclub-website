@@ -12,18 +12,71 @@ const ctx = initEnv();
 const PROMO_DIR = join(ROOT, 'media', 'dining', 'promotions');
 
 // Promotions to seed. `imageFile` resolves against media/dining/promotions/.
-// Use absolute kebab-case filenames so paths stay portable across environments.
+// Filenames follow `<restaurant-slug>-<promo-name>.<ext>` so the auto-discovery
+// fallback can tag them correctly if this list ever falls out of date.
 const PROMOTIONS = [
   {
-    title: 'Grillhouse Seasonal Brews',
+    title: 'November Food & Beverage Specials',
+    slug: 'november-food-and-beverage-specials',
+    summary: 'A delicious lineup of classics and creative twists across The 2nd Floor, Grillhouse, Union Bar, Tradewinds and Central.',
+    restaurantTag: 'club-wide',
+    imageFile: 'club-wide-november-food-and-beverage-specials.jpg',
+    ctas: [],
+    order: 1,
+  },
+  {
+    title: '12 Days of Christmas Special',
+    slug: 'central-12-days-of-christmas-special',
+    summary: 'Twelve days of festive treats, exclusive offers and a daily dose of surprises at Central.',
+    restaurantTag: 'central',
+    imageFile: 'central-12-days-of-christmas-special.jpg',
+    ctas: [],
+    order: 2,
+  },
+  {
+    title: 'Central Daily Specials',
+    slug: 'central-daily-specials',
+    summary: 'Daily promotions on coffee, bagels, smoothies, wraps and weekend treats at Central.',
+    restaurantTag: 'central',
+    imageFile: 'central-daily-specials.jpg',
+    ctas: [],
+    order: 3,
+  },
+  {
+    title: "Smokin' Sundays",
+    slug: 'grillhouse-smokin-sundays',
+    summary: 'A specially curated selection of grilled mains, hearty sides and BBQ flavors to wind down your Sunday at Grillhouse.',
+    restaurantTag: 'grillhouse',
+    imageFile: 'grillhouse-smokin-sundays.jpg',
+    ctas: [],
+    order: 4,
+  },
+  {
+    title: 'Seasonal Brews',
     slug: 'grillhouse-seasonal-brews',
     summary: 'A curated rotation of craft beers, paired with Grillhouse classics.',
     restaurantTag: 'grillhouse',
-    validFrom: '2026-05-01',
-    validTo: '2026-05-31',
     imageFile: 'grillhouse-seasonal-brews.jpg',
-    ctas: [{ label: 'Reserve a Table', icon: 'arrow' }],
-    order: 1,
+    ctas: [],
+    order: 5,
+  },
+  {
+    title: 'The Ultimate Happy Hour',
+    slug: 'the-2nd-floor-ultimate-happy-hour',
+    summary: '1-for-1 drinks by the glass on Tuesdays to Fridays, 5:30 – 7:00 PM. Free wine corkage every Tuesday.',
+    restaurantTag: 'the-2nd-floor',
+    imageFile: 'the-2nd-floor-ultimate-happy-hour.jpg',
+    ctas: [],
+    order: 6,
+  },
+  {
+    title: 'Salad Bar Buffet',
+    slug: 'tradewinds-salad-bar-buffet',
+    summary: 'All-you-can-eat salad bar every Monday to Wednesday, 11:00 AM – 2:30 PM, with beverage specials.',
+    restaurantTag: 'tradewinds',
+    imageFile: 'tradewinds-salad-bar-buffet.jpg',
+    ctas: [],
+    order: 7,
   },
 ];
 

@@ -25,6 +25,8 @@ const PUBLIC_FIND_TYPES = [
   'api::news-article.news-article',
   'api::news-page.news-page',
   'api::contact-us-page.contact-us-page',
+  'api::dining-promotion.dining-promotion',
+  'api::dining-promotions-page.dining-promotions-page',
 ];
 
 async function grantPublicReadAccess(strapi: any) {
