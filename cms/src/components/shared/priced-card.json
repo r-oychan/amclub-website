@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_shared_priced_cards",
+  "info": {
+    "displayName": "Priced Card",
+    "icon": "tag",
+    "description": "Individual membership pricing card (joining-fees page)"
+  },
+  "options": {},
+  "attributes": {
+    "name": { "type": "string", "required": true },
+    "description": { "type": "text" },
+    "feeLabel": { "type": "string" },
+    "feeAmount": { "type": "string" },
+    "breakdown": { "type": "text" },
+    "badge": { "type": "string" },
+    "badgeTone": {
+      "type": "enumeration",
+      "enum": ["positive", "negative"],
+      "default": "positive"
+    }
+  }
+}

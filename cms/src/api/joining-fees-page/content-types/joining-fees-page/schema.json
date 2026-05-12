@@ -1,0 +1,58 @@
+{
+  "kind": "singleType",
+  "collectionName": "joining_fees_pages",
+  "info": {
+    "singularName": "joining-fees-page",
+    "pluralName": "joining-fees-pages",
+    "displayName": "Joining Fees Page",
+    "description": "Membership joining-fees page content"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": { "type": "string" },
+    "individualHeading": { "type": "string" },
+    "individualSubheading": { "type": "text" },
+    "individualCtas": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link",
+      "max": 4
+    },
+    "individualCards": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.priced-card"
+    },
+    "corporateHeading": { "type": "string" },
+    "corporateIntro1": { "type": "text" },
+    "corporateIntro2": { "type": "text" },
+    "corporateCtas": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link",
+      "max": 4
+    },
+    "corporateCards": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.corporate-class-card"
+    },
+    "nominationFeeHeading": { "type": "string" },
+    "nominationFeeBody": { "type": "text" },
+    "refundHeading": { "type": "string" },
+    "refundBody": { "type": "text" },
+    "additionalNotesHeading": { "type": "string" },
+    "additionalNotes": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.text-line"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
+  }
+}

@@ -112,6 +112,10 @@ interface VenueData {
     footnote?: string;
   }[];
   faq?: { question: string; answer: string }[];
+  downloads?: {
+    heading?: string;
+    items: { label: string; href: string; isExternal?: boolean }[];
+  };
   tierCards?: {
     heading?: string;
     subheading?: string;
@@ -161,6 +165,9 @@ function staticFallback(section: string, slug: string): VenueData | null {
     imagePanels: sp.imagePanels,
     cardSections: sp.cardSections,
     faq: sp.faq,
+    operatingHoursSections: sp.operatingHoursSections,
+    locationContact: sp.locationContact ?? null,
+    downloads: sp.downloads,
     tierCards: sp.tierCards,
   };
 }
@@ -269,6 +276,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           imagePanels: api.imagePanels?.length ? api.imagePanels : fallback?.imagePanels,
           cardSections: api.cardSections?.length ? api.cardSections : fallback?.cardSections,
           faq: api.faq?.length ? api.faq : fallback?.faq,
+          downloads: api.downloads ?? fallback?.downloads,
           tierCards: api.tierCards ?? fallback?.tierCards,
         });
       } else {
@@ -633,6 +641,40 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                   >
                     {venue.capacity}
                   </p>
+                </DetailSection>
+              )}
+
+              {/* ── Forms You'll Need (downloadable PDFs) ── */}
+              {venue.downloads && venue.downloads.items.length > 0 && (
+                <DetailSection icon="menu" title={venue.downloads.heading ?? "Forms You'll Need"}>
+                  <ul className="flex flex-col" style={{ gap: '8px' }}>
+                    {venue.downloads.items.map((item) => (
+                      <li key={item.label}>
+                        <a
+                          href={item.href}
+                          target={item.isExternal ? '_blank' : undefined}
+                          rel={item.isExternal ? 'noopener noreferrer' : undefined}
+                          className="inline-flex items-center gap-3 text-accent hover:underline"
+                          style={{ fontSize: '17.6px', lineHeight: '26.4px', fontWeight: 400 }}
+                        >
+                          <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            aria-hidden="true"
+                            className="shrink-0"
+                          >
+                            <path
+                              d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2ZM18 20H6V4H13V9H18V20ZM9 13H15V15H9V13ZM9 16H13V18H9V16Z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                          {item.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
                 </DetailSection>
               )}
             </div>

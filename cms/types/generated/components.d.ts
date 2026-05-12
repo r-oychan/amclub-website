@@ -316,6 +316,20 @@ export interface BlocksPartnerOrganizations extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksPartyPackages extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_party_packages';
+  info: {
+    description: 'Heading + 3-column grid of kids party packages with download links';
+    displayName: 'Party Packages';
+    icon: 'gift';
+  };
+  attributes: {
+    heading: Schema.Attribute.String;
+    items: Schema.Attribute.Component<'shared.party-package-item', true>;
+    subheading: Schema.Attribute.Text;
+  };
+}
+
 export interface BlocksPrivateEventPackages extends Struct.ComponentSchema {
   collectionName: 'components_blocks_private_event_packages';
   info: {
@@ -488,6 +502,22 @@ export interface SharedCateringSubBanner extends Struct.ComponentSchema {
     cta: Schema.Attribute.Component<'shared.link', false>;
     heading: Schema.Attribute.String;
     image: Schema.Attribute.Media<'images'>;
+  };
+}
+
+export interface SharedCorporateClassCard extends Struct.ComponentSchema {
+  collectionName: 'components_shared_corporate_class_cards';
+  info: {
+    description: 'Corporate membership class card (joining-fees page)';
+    displayName: 'Corporate Class Card';
+    icon: 'briefcase';
+  };
+  attributes: {
+    annualFee: Schema.Attribute.String;
+    badge: Schema.Attribute.String;
+    className: Schema.Attribute.String & Schema.Attribute.Required;
+    joiningFee: Schema.Attribute.String;
+    nominees: Schema.Attribute.String;
   };
 }
 
@@ -676,6 +706,68 @@ export interface SharedPartnerLogo extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedPartyPackageItem extends Struct.ComponentSchema {
+  collectionName: 'components_shared_party_package_items';
+  info: {
+    description: 'Card for a kids party package: image, name, download link';
+    displayName: 'Party Package Item';
+    icon: 'gift';
+  };
+  attributes: {
+    cta: Schema.Attribute.Component<'shared.link', false>;
+    image: Schema.Attribute.Media<'images'>;
+    imageAlt: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface SharedPricedCard extends Struct.ComponentSchema {
+  collectionName: 'components_shared_priced_cards';
+  info: {
+    description: 'Individual membership pricing card (joining-fees page)';
+    displayName: 'Priced Card';
+    icon: 'tag';
+  };
+  attributes: {
+    badge: Schema.Attribute.String;
+    badgeTone: Schema.Attribute.Enumeration<['positive', 'negative']> &
+      Schema.Attribute.DefaultTo<'positive'>;
+    breakdown: Schema.Attribute.Text;
+    description: Schema.Attribute.Text;
+    feeAmount: Schema.Attribute.String;
+    feeLabel: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface SharedReferralColumnHeadings extends Struct.ComponentSchema {
+  collectionName: 'components_shared_referral_column_headings';
+  info: {
+    description: 'Header labels for the referral rewards table';
+    displayName: 'Referral Column Headings';
+    icon: 'table';
+  };
+  attributes: {
+    newMember: Schema.Attribute.String;
+    referrer: Schema.Attribute.String;
+    type: Schema.Attribute.String;
+  };
+}
+
+export interface SharedReferralRow extends Struct.ComponentSchema {
+  collectionName: 'components_shared_referral_rows';
+  info: {
+    description: 'Single row in the referral rewards table';
+    displayName: 'Referral Row';
+    icon: 'users';
+  };
+  attributes: {
+    newMember: Schema.Attribute.String;
+    referrer: Schema.Attribute.String;
+    type: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface SharedScheduleRow extends Struct.ComponentSchema {
   collectionName: 'components_shared_schedule_rows';
   info: {
@@ -736,6 +828,63 @@ export interface SharedTabItem extends Struct.ComponentSchema {
     image: Schema.Attribute.Media<'images'>;
     isExternal: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     label: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface SharedTeamMember extends Struct.ComponentSchema {
+  collectionName: 'components_shared_team_members';
+  info: {
+    description: 'Person tile with avatar + optional bio modal image';
+    displayName: 'Team Member';
+    icon: 'user';
+  };
+  attributes: {
+    bio: Schema.Attribute.Text;
+    bioImage: Schema.Attribute.Media<'images'>;
+    coachLink: Schema.Attribute.String;
+    image: Schema.Attribute.Media<'images'>;
+    imageOffsetX: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<50>;
+    imageOffsetY: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<50>;
+    imageZoom: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+          min: 0.5;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<1>;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    role: Schema.Attribute.String;
+  };
+}
+
+export interface SharedTextLine extends Struct.ComponentSchema {
+  collectionName: 'components_shared_text_lines';
+  info: {
+    description: 'A single text bullet for free-form list components';
+    displayName: 'Text Line';
+    icon: 'list';
+  };
+  attributes: {
+    text: Schema.Attribute.Text & Schema.Attribute.Required;
   };
 }
 
@@ -807,6 +956,7 @@ declare module '@strapi/strapi' {
       'blocks.operating-hours-section': BlocksOperatingHoursSection;
       'blocks.overlay-section': BlocksOverlaySection;
       'blocks.partner-organizations': BlocksPartnerOrganizations;
+      'blocks.party-packages': BlocksPartyPackages;
       'blocks.private-event-packages': BlocksPrivateEventPackages;
       'blocks.stats-counter': BlocksStatsCounter;
       'blocks.tabs-section': BlocksTabsSection;
@@ -818,6 +968,7 @@ declare module '@strapi/strapi' {
       'shared.award-item': SharedAwardItem;
       'shared.catering-pillar': SharedCateringPillar;
       'shared.catering-sub-banner': SharedCateringSubBanner;
+      'shared.corporate-class-card': SharedCorporateClassCard;
       'shared.event-package-item': SharedEventPackageItem;
       'shared.feature-item': SharedFeatureItem;
       'shared.footer-column': SharedFooterColumn;
@@ -828,10 +979,16 @@ declare module '@strapi/strapi' {
       'shared.nav-item': SharedNavItem;
       'shared.partner-group': SharedPartnerGroup;
       'shared.partner-logo': SharedPartnerLogo;
+      'shared.party-package-item': SharedPartyPackageItem;
+      'shared.priced-card': SharedPricedCard;
+      'shared.referral-column-headings': SharedReferralColumnHeadings;
+      'shared.referral-row': SharedReferralRow;
       'shared.schedule-row': SharedScheduleRow;
       'shared.seo': SharedSeo;
       'shared.stat-item': SharedStatItem;
       'shared.tab-item': SharedTabItem;
+      'shared.team-member': SharedTeamMember;
+      'shared.text-line': SharedTextLine;
       'shared.three-col-item': SharedThreeColItem;
       'shared.timeline-slide': SharedTimelineSlide;
       'shared.venue-row': SharedVenueRow;

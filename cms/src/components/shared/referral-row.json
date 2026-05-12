@@ -1,0 +1,14 @@
+{
+  "collectionName": "components_shared_referral_rows",
+  "info": {
+    "displayName": "Referral Row",
+    "icon": "users",
+    "description": "Single row in the referral rewards table"
+  },
+  "options": {},
+  "attributes": {
+    "type": { "type": "string", "required": true },
+    "referrer": { "type": "string" },
+    "newMember": { "type": "string" }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "collectionName": "components_shared_text_lines",
+  "info": {
+    "displayName": "Text Line",
+    "icon": "list",
+    "description": "A single text bullet for free-form list components"
+  },
+  "options": {},
+  "attributes": {
+    "text": { "type": "text", "required": true }
+  }
+}

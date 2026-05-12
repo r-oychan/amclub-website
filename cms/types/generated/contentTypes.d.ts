@@ -587,7 +587,7 @@ export interface ApiDiningPromotionDiningPromotion
   extends Struct.CollectionTypeSchema {
   collectionName: 'dining_promotions';
   info: {
-    description: 'A monthly dining promotion flyer shown on /dining/promotions';
+    description: 'A monthly dining promotion flyer shown on /dining/dining-promotion';
     displayName: 'Dining Promotion';
     pluralName: 'dining-promotions';
     singularName: 'dining-promotion';
@@ -644,7 +644,7 @@ export interface ApiDiningPromotionsPageDiningPromotionsPage
   extends Struct.SingleTypeSchema {
   collectionName: 'dining_promotions_pages';
   info: {
-    description: 'Landing page for /dining/promotions \u2014 hero, intro, restaurant filter tabs';
+    description: 'Landing page for /dining/dining-promotion \u2014 hero, intro, restaurant filter tabs';
     displayName: 'Dining Promotions Page';
     pluralName: 'dining-promotions-pages';
     singularName: 'dining-promotions-page';
@@ -828,16 +828,22 @@ export interface ApiEventEvent extends Struct.CollectionTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    ctas: Schema.Attribute.Component<'shared.link', true>;
     date: Schema.Attribute.Date & Schema.Attribute.Required;
     description: Schema.Attribute.Text;
+    dressCode: Schema.Attribute.String;
     featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     image: Schema.Attribute.Media<'images'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::event.event'> &
       Schema.Attribute.Private;
+    location: Schema.Attribute.String;
+    longDescription: Schema.Attribute.RichText;
     publishedAt: Schema.Attribute.DateTime;
+    reservation: Schema.Attribute.String;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
+    time: Schema.Attribute.String;
     title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -900,6 +906,8 @@ export interface ApiFacilityFacility extends Struct.CollectionTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    teamHeading: Schema.Attribute.String;
+    teamMembers: Schema.Attribute.Component<'shared.team-member', true>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1158,6 +1166,67 @@ export interface ApiHomePageHomePage extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiJoiningFeesPageJoiningFeesPage
+  extends Struct.SingleTypeSchema {
+  collectionName: 'joining_fees_pages';
+  info: {
+    description: 'Membership joining-fees page content';
+    displayName: 'Joining Fees Page';
+    pluralName: 'joining-fees-pages';
+    singularName: 'joining-fees-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    additionalNotes: Schema.Attribute.Component<'shared.text-line', true>;
+    additionalNotesHeading: Schema.Attribute.String;
+    corporateCards: Schema.Attribute.Component<
+      'shared.corporate-class-card',
+      true
+    >;
+    corporateCtas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+        },
+        number
+      >;
+    corporateHeading: Schema.Attribute.String;
+    corporateIntro1: Schema.Attribute.Text;
+    corporateIntro2: Schema.Attribute.Text;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    individualCards: Schema.Attribute.Component<'shared.priced-card', true>;
+    individualCtas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+        },
+        number
+      >;
+    individualHeading: Schema.Attribute.String;
+    individualSubheading: Schema.Attribute.Text;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::joining-fees-page.joining-fees-page'
+    > &
+      Schema.Attribute.Private;
+    nominationFeeBody: Schema.Attribute.Text;
+    nominationFeeHeading: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    refundBody: Schema.Attribute.Text;
+    refundHeading: Schema.Attribute.String;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiKidsPageKidsPage extends Struct.SingleTypeSchema {
   collectionName: 'kids_pages';
   info: {
@@ -1184,6 +1253,7 @@ export interface ApiKidsPageKidsPage extends Struct.SingleTypeSchema {
     > &
       Schema.Attribute.Private;
     parties: Schema.Attribute.Component<'blocks.overlay-section', false>;
+    partyPackages: Schema.Attribute.Component<'blocks.party-packages', false>;
     publishedAt: Schema.Attribute.DateTime;
     safety: Schema.Attribute.Component<'blocks.feature-grid', false>;
     seo: Schema.Attribute.Component<'shared.seo', false>;
@@ -1305,6 +1375,47 @@ export interface ApiNewsPageNewsPage extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiReferralPageReferralPage extends Struct.SingleTypeSchema {
+  collectionName: 'referral_pages';
+  info: {
+    description: 'Membership referral page content';
+    displayName: 'Referral Page';
+    pluralName: 'referral-pages';
+    singularName: 'referral-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    body: Schema.Attribute.Text;
+    columnHeadings: Schema.Attribute.Component<
+      'shared.referral-column-headings',
+      false
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    cta: Schema.Attribute.Component<'shared.link', false>;
+    footnote: Schema.Attribute.Text;
+    heading: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::referral-page.referral-page'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    rewardsLabel: Schema.Attribute.String;
+    rewardsSubLabel: Schema.Attribute.String;
+    rows: Schema.Attribute.Component<'shared.referral-row', true>;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiRestaurantRestaurant extends Struct.CollectionTypeSchema {
   collectionName: 'restaurants';
   info: {
@@ -1398,6 +1509,7 @@ export interface ApiTestimonialTestimonial extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    video: Schema.Attribute.Media<'videos'>;
     videoUrl: Schema.Attribute.String;
   };
 }
@@ -1997,10 +2109,12 @@ declare module '@strapi/strapi' {
       'api::gallery-page.gallery-page': ApiGalleryPageGalleryPage;
       'api::header.header': ApiHeaderHeader;
       'api::home-page.home-page': ApiHomePageHomePage;
+      'api::joining-fees-page.joining-fees-page': ApiJoiningFeesPageJoiningFeesPage;
       'api::kids-page.kids-page': ApiKidsPageKidsPage;
       'api::membership-page.membership-page': ApiMembershipPageMembershipPage;
       'api::news-article.news-article': ApiNewsArticleNewsArticle;
       'api::news-page.news-page': ApiNewsPageNewsPage;
+      'api::referral-page.referral-page': ApiReferralPageReferralPage;
       'api::restaurant.restaurant': ApiRestaurantRestaurant;
       'api::testimonial.testimonial': ApiTestimonialTestimonial;
       'api::venue.venue': ApiVenueVenue;

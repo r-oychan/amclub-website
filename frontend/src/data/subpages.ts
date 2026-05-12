@@ -12,6 +12,19 @@ export interface SubpageData {
   image?: string;
   parentSection: string;
   parentHref: string;
+  /**
+   * Rich operating-hours blocks. Each block renders as one DetailSection
+   * with a clock icon, title, and a grid of day/time rows.
+   */
+  operatingHoursSections?: {
+    title: string;
+    rows?: { dayRange: string; time: string; lastOrder?: string }[];
+  }[];
+  /**
+   * Inline location & contact module. Falls back to the legacy
+   * `level`/`phone`/`email` fields when this isn't set.
+   */
+  locationContact?: { locationLevel?: string; phone?: string; email?: string };
   ctas?: { label: string; href: string; isExternal?: boolean }[];
   extraSections?: {
     title: string;
@@ -99,7 +112,16 @@ export interface SubpageData {
   }[];
   faq?: { question: string; answer: string }[];
   /**
-   * 4-column tier card grid (Eagles Rewards). Each card renders a
+   * "Forms You'll Need" download list — rendered as a DetailSection on
+   * the right of the venue's main two-column layout. Each entry produces
+   * one orange PDF-icon row that opens the file in a new tab.
+   */
+  downloads?: {
+    heading?: string;
+    items: { label: string; href: string; isExternal?: boolean }[];
+  };
+  /**
+   * 4-column tier card grid (Niche Group Membership). Each card renders a
    * radial-gradient + stripe-pattern "membership card" image above the
    * tier name, short eligibility blurb, and a checkmark benefits list.
    */
@@ -1234,19 +1256,84 @@ export const eventSpacesSubpages: SubpageData[] = [
 export const membershipSubpages: SubpageData[] = [
   {
     slug: 'start-application',
-    name: 'Start Application',
+    name: 'Start an Application',
     type: 'Application',
     description:
-      'Your journey to becoming a Member at The American Club starts here. Get to know the requirements to start your application.',
-    hours: 'Mon-Fri 12pm-7pm, Sat 1pm-8pm (Closed Sunday)',
-    level: 'Level 1 Lobby',
-    phone: '6737 3411',
-    email: 'membership@amclub.org.sg',
+      'Your journey to becoming a Member at The American Club starts here.\n\nGet to know the requirements to start your application.\n\nAll the items outlined in the Application Checklist must be submitted. Incomplete applications will not be accepted.',
     image:
       'https://framerusercontent.com/images/ALiDWPH3U3VnmiEzcoEet6lPIk.jpeg',
     parentSection: 'Membership',
     parentHref: '/membership',
-    ctas: [{ label: 'Application Checklist', href: '#' }],
+    ctas: [
+      {
+        label: 'Application Checklist',
+        href:
+          'https://469380fc.delivery.rocketcdn.me/wp-content/uploads/2023/07/CSV-MO-04-Membership-Application-Checklist-Jul-2023.pdf',
+        isExternal: true,
+      },
+    ],
+    operatingHoursSections: [
+      {
+        title: 'Membership Office Operating Hours',
+        rows: [
+          { dayRange: 'Monday to Friday', time: '12:00 p.m. – 7:00 p.m.' },
+          { dayRange: 'Saturday', time: '1:00 p.m. – 8:00 p.m.' },
+          { dayRange: '', time: 'Closed on Sunday' },
+        ],
+      },
+    ],
+    locationContact: {
+      locationLevel: 'Level 1 Lobby (Opposite Tradewinds)',
+      phone: '6737 3411',
+      email: 'membership@amclub.org.sg',
+    },
+    downloads: {
+      heading: "Forms You'll Need",
+      items: [
+        {
+          label: 'Application Checklist',
+          href:
+            'https://469380fc.delivery.rocketcdn.me/wp-content/uploads/2023/07/CSV-MO-04-Membership-Application-Checklist-Jul-2023.pdf',
+          isExternal: true,
+        },
+        {
+          label: 'Application Form',
+          href:
+            'https://469380fc.delivery.rocketcdn.me/wp-content/uploads/2022/06/CSV-MO-08_Application_Form_for_Corporate_Membership.pdf',
+          isExternal: true,
+        },
+        {
+          label: 'Endorsement Form',
+          href:
+            'https://469380fc.delivery.rocketcdn.me/wp-content/uploads/2022/06/CSV-MO-09_Endorsement_Form.pdf',
+          isExternal: true,
+        },
+        {
+          label: 'Junior Membership Application Form',
+          href:
+            'https://469380fc.delivery.rocketcdn.me/wp-content/uploads/2022/06/CSV-MO-10_Junior_Membership_Application_Form.pdf',
+          isExternal: true,
+        },
+        {
+          label: 'PDPA Acknowledgement Form',
+          href:
+            'https://469380fc.delivery.rocketcdn.me/wp-content/uploads/2022/06/CSV-MO-11_PDPA_Acknowledgement_Form.pdf',
+          isExternal: true,
+        },
+        {
+          label: 'GIRO Payment Form',
+          href:
+            'https://469380fc.delivery.rocketcdn.me/wp-content/uploads/2022/06/CSV-MO-12_GIRO_Payment_Form.pdf',
+          isExternal: true,
+        },
+        {
+          label: 'Car Registration Form',
+          href:
+            'https://469380fc.delivery.rocketcdn.me/wp-content/uploads/2022/06/CSV-MO-13_Car_Registration_Form.pdf',
+          isExternal: true,
+        },
+      ],
+    },
   },
   {
     slug: 'joining-fees',

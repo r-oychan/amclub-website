@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_shared_corporate_class_cards",
+  "info": {
+    "displayName": "Corporate Class Card",
+    "icon": "briefcase",
+    "description": "Corporate membership class card (joining-fees page)"
+  },
+  "options": {},
+  "attributes": {
+    "className": { "type": "string", "required": true },
+    "nominees": { "type": "string" },
+    "joiningFee": { "type": "string" },
+    "annualFee": { "type": "string" },
+    "badge": { "type": "string" }
+  }
+}

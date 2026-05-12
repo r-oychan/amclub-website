@@ -1,23 +1,28 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
+import { fetchAPI } from '../lib/api';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
 import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
 import { CtaIcon } from '../components/shared/CtaIcon';
+import { REFERRAL_FALLBACK, type ReferralData, type ReferralRow } from '../data/referral';
 
-const REFERRAL_FORM_URL = 'https://amclub.jotform.com/250639099479878';
-
-interface Row {
-  type: string;
-  referrer: string;
-  newMember: string;
+interface StrapiReferralPage {
+  title?: string;
+  heading?: string;
+  body?: string;
+  cta?: { label?: string; href?: string; isExternal?: boolean };
+  rewardsLabel?: string;
+  rewardsSubLabel?: string;
+  columnHeadings?: { type?: string; referrer?: string; newMember?: string };
+  rows?: ReferralRow[];
+  footnote?: string;
 }
 
-const ROWS: Row[] = [
-  { type: 'Ordinary', referrer: '$500', newMember: '$250' },
-  { type: 'Annual Payment Plan', referrer: '$200', newMember: '$100' },
-  { type: 'Term', referrer: '$200', newMember: '$100' },
-];
+function pickStr(api: string | undefined, fb: string): string {
+  return api && api.trim() ? api : fb;
+}
 
-export default function ReferralPage() {
+export function ReferralView({ data }: { data: ReferralData }) {
   return (
     <>
       <DetailHeroBanner />
@@ -40,33 +45,47 @@ export default function ReferralPage() {
                 lineHeight: '42.24px',
               }}
             >
-              Refer a Friend
+              {data.heading}
             </h1>
             <p
               className="text-text-dark/80 max-w-2xl"
               style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
             >
-              Introduce a friend to become a Member of The American Club and get rewarded with Club
-              dining vouchers.
+              {data.body}
             </p>
-            <a
-              href={REFERRAL_FORM_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full bg-primary text-white uppercase hover:opacity-90 transition-opacity"
-              style={{
-                padding: '12px 16px 12px 24px',
-                fontSize: '13.6px',
-                fontWeight: 700,
-                letterSpacing: '0.04em',
-              }}
-            >
-              Make a Referral
-              <CtaIcon name="arrow" size={20} className="text-secondary" />
-            </a>
+            {data.ctaIsExternal ? (
+              <a
+                href={data.ctaHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-primary text-white uppercase hover:opacity-90 transition-opacity"
+                style={{
+                  padding: '12px 16px 12px 24px',
+                  fontSize: '13.6px',
+                  fontWeight: 700,
+                  letterSpacing: '0.04em',
+                }}
+              >
+                {data.ctaLabel}
+                <CtaIcon name="arrow" size={20} className="text-secondary" />
+              </a>
+            ) : (
+              <Link
+                to={data.ctaHref}
+                className="inline-flex items-center gap-2 rounded-full bg-primary text-white uppercase hover:opacity-90 transition-opacity"
+                style={{
+                  padding: '12px 16px 12px 24px',
+                  fontSize: '13.6px',
+                  fontWeight: 700,
+                  letterSpacing: '0.04em',
+                }}
+              >
+                {data.ctaLabel}
+                <CtaIcon name="arrow" size={20} className="text-secondary" />
+              </Link>
+            )}
           </div>
 
-          {/* Rewards table card */}
           <div
             className="bg-white relative"
             style={{ padding: '40px 48px', borderRadius: '8px' }}
@@ -85,13 +104,13 @@ export default function ReferralPage() {
                     fill="currentColor"
                   />
                 </svg>
-                Rewards
+                {data.rewardsLabel}
               </div>
               <p
                 className="text-text-dark/60"
                 style={{ fontSize: '12.8px', letterSpacing: '0.01em' }}
               >
-                (Club Dining Vouchers)
+                {data.rewardsSubLabel}
               </p>
             </div>
             <div
@@ -102,25 +121,25 @@ export default function ReferralPage() {
                 className="text-primary uppercase"
                 style={{ fontSize: '13.6px', fontWeight: 700, letterSpacing: '0.04em' }}
               >
-                Referred Membership Type
+                {data.columnHeadings.type}
               </p>
               <p
                 className="text-primary uppercase"
                 style={{ fontSize: '13.6px', fontWeight: 700, letterSpacing: '0.04em' }}
               >
-                Referrer
+                {data.columnHeadings.referrer}
               </p>
               <p
                 className="text-primary uppercase"
                 style={{ fontSize: '13.6px', fontWeight: 700, letterSpacing: '0.04em' }}
               >
-                New Member
+                {data.columnHeadings.newMember}
               </p>
-              {ROWS.map((row, i) => (
+              {data.rows.map((row) => (
                 <div key={row.type} className="contents">
                   <div
                     className="border-t border-text-dark/10"
-                    style={{ gridColumn: '1 / -1', height: 0, marginTop: i === 0 ? '0' : '0' }}
+                    style={{ gridColumn: '1 / -1', height: 0 }}
                   />
                   <p
                     className="font-heading text-text-dark"
@@ -170,8 +189,7 @@ export default function ReferralPage() {
             className="text-text-dark/70 text-center italic"
             style={{ fontSize: '13.6px', lineHeight: '20px' }}
           >
-            *Referral form must be completed to be eligible for rewards. Each referral is valid for
-            six months only.
+            {data.footnote}
           </p>
         </div>
       </section>
@@ -198,4 +216,42 @@ export default function ReferralPage() {
       </section>
     </>
   );
+}
+
+export default function ReferralPage() {
+  const [data, setData] = useState<ReferralData>(REFERRAL_FALLBACK);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const api = await fetchAPI<StrapiReferralPage>('/referral-page', {
+        'populate[cta]': '*',
+        'populate[columnHeadings]': '*',
+        'populate[rows]': '*',
+      });
+      if (cancelled || !api) return;
+      const fb = REFERRAL_FALLBACK;
+      setData({
+        heading: pickStr(api.heading, fb.heading),
+        body: pickStr(api.body, fb.body),
+        ctaLabel: pickStr(api.cta?.label, fb.ctaLabel),
+        ctaHref: pickStr(api.cta?.href, fb.ctaHref),
+        ctaIsExternal: api.cta?.isExternal ?? fb.ctaIsExternal,
+        rewardsLabel: pickStr(api.rewardsLabel, fb.rewardsLabel),
+        rewardsSubLabel: pickStr(api.rewardsSubLabel, fb.rewardsSubLabel),
+        columnHeadings: {
+          type: pickStr(api.columnHeadings?.type, fb.columnHeadings.type),
+          referrer: pickStr(api.columnHeadings?.referrer, fb.columnHeadings.referrer),
+          newMember: pickStr(api.columnHeadings?.newMember, fb.columnHeadings.newMember),
+        },
+        rows: api.rows && api.rows.length > 0 ? api.rows : fb.rows,
+        footnote: pickStr(api.footnote, fb.footnote),
+      });
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return <ReferralView data={data} />;
 }

@@ -1,0 +1,14 @@
+{
+  "collectionName": "components_shared_referral_column_headings",
+  "info": {
+    "displayName": "Referral Column Headings",
+    "icon": "table",
+    "description": "Header labels for the referral rewards table"
+  },
+  "options": {},
+  "attributes": {
+    "type": { "type": "string" },
+    "referrer": { "type": "string" },
+    "newMember": { "type": "string" }
+  }
+}

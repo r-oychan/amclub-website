@@ -8,6 +8,8 @@ const PUBLIC_FIND_TYPES = [
   'api::fitness-page.fitness-page',
   'api::kids-page.kids-page',
   'api::membership-page.membership-page',
+  'api::joining-fees-page.joining-fees-page',
+  'api::referral-page.referral-page',
   'api::event-spaces-page.event-spaces-page',
   'api::whats-on-page.whats-on-page',
   'api::header.header',

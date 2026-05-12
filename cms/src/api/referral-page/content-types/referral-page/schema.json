@@ -1,0 +1,41 @@
+{
+  "kind": "singleType",
+  "collectionName": "referral_pages",
+  "info": {
+    "singularName": "referral-page",
+    "pluralName": "referral-pages",
+    "displayName": "Referral Page",
+    "description": "Membership referral page content"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": { "type": "string" },
+    "heading": { "type": "string" },
+    "body": { "type": "text" },
+    "cta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.link"
+    },
+    "rewardsLabel": { "type": "string" },
+    "rewardsSubLabel": { "type": "string" },
+    "columnHeadings": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.referral-column-headings"
+    },
+    "rows": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.referral-row"
+    },
+    "footnote": { "type": "text" },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
+  }
+}
