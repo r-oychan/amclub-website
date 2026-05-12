@@ -6,6 +6,7 @@ import { OverlaySection } from '../components/blocks/OverlaySection';
 import { ThreeColGrid } from '../components/blocks/ThreeColGrid';
 import { QuadSection } from '../components/kids/QuadSection';
 import { ChildSafetySection } from '../components/kids/ChildSafetySection';
+import { KidsPartyPackages } from '../components/kids/KidsPartyPackages';
 import { PageFade } from '../components/shared/PageFade';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
@@ -29,6 +30,11 @@ interface StrapiKidsPage {
   hero?: { heading: string; subheading?: string; variant?: 'full' | 'compact'; backgroundImage?: StrapiMedia };
   hangout?: StrapiOverlaySection;
   parties?: StrapiOverlaySection;
+  partyPackages?: {
+    heading?: string;
+    subheading?: string;
+    items?: { name: string; image?: StrapiMedia; imageAlt?: string; cta?: StrapiLink }[];
+  };
   learning?: {
     heading?: string; subheading?: string;
     columns?: '2' | '3';
@@ -88,6 +94,17 @@ export default function KidsPage() {
   const hangoutP = overlayProps(data.hangout);
   const partiesP = overlayProps(data.parties);
 
+  const partyPackageItems = (data.partyPackages?.items ?? [])
+    .filter((i) => i.image)
+    .map((i) => ({
+      name: i.name,
+      image: mediaUrl(i.image) ?? '',
+      imageAlt: i.imageAlt ?? i.name,
+      cta: i.cta
+        ? { label: i.cta.label, href: i.cta.href ?? '#', isExternal: i.cta.isExternal }
+        : undefined,
+    }));
+
   const learningItems = (data.learning?.items ?? []).map((i) => ({
     heading: i.heading,
     description: i.description ?? '',
@@ -112,6 +129,14 @@ export default function KidsPage() {
 
       {hangoutP && <OverlaySection {...hangoutP} />}
       {partiesP && <OverlaySection {...partiesP} />}
+
+      {partyPackageItems.length > 0 && (
+        <KidsPartyPackages
+          heading={data.partyPackages?.heading}
+          subheading={data.partyPackages?.subheading}
+          items={partyPackageItems}
+        />
+      )}
 
       {data.learning && learningItems.length > 0 && (
         <ThreeColGrid

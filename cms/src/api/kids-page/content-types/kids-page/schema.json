@@ -30,6 +30,11 @@
       "repeatable": false,
       "component": "blocks.overlay-section"
     },
+    "partyPackages": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.party-packages"
+    },
     "learning": {
       "type": "component",
       "repeatable": false,

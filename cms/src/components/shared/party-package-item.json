@@ -1,0 +1,27 @@
+{
+  "collectionName": "components_shared_party_package_items",
+  "info": {
+    "displayName": "Party Package Item",
+    "icon": "gift",
+    "description": "Card for a kids party package: image, name, download link"
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "imageAlt": {
+      "type": "string"
+    },
+    "cta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.link"
+    }
+  }
+}

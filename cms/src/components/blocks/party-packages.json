@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_blocks_party_packages",
+  "info": {
+    "displayName": "Party Packages",
+    "icon": "gift",
+    "description": "Heading + 3-column grid of kids party packages with download links"
+  },
+  "attributes": {
+    "heading": {
+      "type": "string"
+    },
+    "subheading": {
+      "type": "text"
+    },
+    "items": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.party-package-item"
+    }
+  }
+}

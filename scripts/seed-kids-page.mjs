@@ -18,6 +18,9 @@ const IMAGES = [
   'party-bg.png',
   'camps.jpg',
   'classes.jpg',
+  'quadstudio.jpeg',
+  'bowling-alley.jpeg',
+  'union-bar.jpeg',
 ];
 
 async function upsertKidsPage({ media }) {
@@ -53,6 +56,48 @@ async function upsertKidsPage({ media }) {
       textBgImage: media['party-bg.png'].id,
       textTheme: 'dark',
       ctas: [{ label: 'Learn More', href: '/kids/kids-parties', variant: 'primary' }],
+    },
+    partyPackages: {
+      heading: 'Parties Made Easy',
+      subheading: "Fun-filled kids' party packages designed for memorable celebrations.",
+      items: [
+        {
+          name: 'The Quad Studio Party Package',
+          image: media['quadstudio.jpeg'].id,
+          imageAlt: 'The Quad Studio Party Package',
+          cta: {
+            label: 'Download Brochure',
+            href: '/documents/kids/the-quad-studios-party-package.pdf',
+            isExternal: true,
+            variant: 'text',
+            icon: 'arrow',
+          },
+        },
+        {
+          name: 'The Bowling Alley Party Package',
+          image: media['bowling-alley.jpeg'].id,
+          imageAlt: 'The Bowling Alley Party Package',
+          cta: {
+            label: 'Download Brochure',
+            href: '/documents/kids/the-bowling-alley-party-package.pdf',
+            isExternal: true,
+            variant: 'text',
+            icon: 'arrow',
+          },
+        },
+        {
+          name: 'Union Bar x The Bowling Alley',
+          image: media['union-bar.jpeg'].id,
+          imageAlt: 'Union Bar x The Bowling Alley',
+          cta: {
+            label: 'View Menu',
+            href: '/documents/kids/union-bar-bowling-alley-menu.jpg',
+            isExternal: true,
+            variant: 'text',
+            icon: 'arrow',
+          },
+        },
+      ],
     },
     learning: {
       heading: 'Where Learning Meets Fun, All Year Long',
