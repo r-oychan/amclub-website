@@ -927,7 +927,6 @@ export const fitnessSubpages: SubpageData[] = [
     slug: 'multi-purpose-court',
     name: 'Multi-Purpose Court',
     type: 'Sports',
-    hideGallery: true,
     description:
       'The Bowling Alley offers best-in-class awesome, anytime fun. From casual family outings, couples\' night, birthday parties, Junior Members\' nights and corporate events, The Bowling Alley offers entertainment that\'s right up your alley.\n\nOur Brunswick bowling lanes are oiled and maintained regularly to provide the best experience. For those who want a colorful twist to their usual games, the Cosmic Bowling feature provides multi-colored disco lights and catchy beats. The state-of-the-art LED lights and pin deck glow lighting feature are sure to impress your friends and family.',
     hours:
@@ -1184,12 +1183,6 @@ export const eventSpacesSubpages: SubpageData[] = [
     level: 'Level 3',
     phone: '6739-4380',
     email: 'library@amclub.org.sg',
-    gallery: [
-      'https://framerusercontent.com/images/2gNmctJVC1I9lffaFGiqKf9P8.png',
-      'https://framerusercontent.com/images/2VKLhXrO2yNLn6QSbYvd0Bd23nY.png',
-      'https://framerusercontent.com/images/7mXY2aYGtMVZ5srLDtfuB7tIpQQ.png',
-      'https://framerusercontent.com/images/CADhSQAdQrad7CbYicTtb19zM.png',
-    ],
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
   },
