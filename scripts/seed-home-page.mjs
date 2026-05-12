@@ -158,13 +158,13 @@ const SOCIAL_MEDIA = [
 ];
 
 // Slot the social posts into the existing "moments" testimonial slider.
-// All cards are branded as "American Club" and link to the American Club Instagram.
-// slug, quote, image filename, video filename (optional), order
+// All cards are branded as "American Club" and link to their specific post.
+// slug, quote, image filename, video filename (optional), postUrl, order
 const TESTIMONIALS = [
-  ['stars-stripes-breakfast', 'Stars, Stripes & Big Breakfast Bites', 'stars-stripes-breakfast.jpg', 'stars-stripes-breakfast.mp4', 1],
-  ['mahjong-social',          'Mahjong Social',                       'mahjong-social.jpg',          'mahjong-social.mp4',          2],
-  ['shaken-not-sorry',        'Shaken not Sorry',                     'shaken-not-sorry.jpg',        null,                          3],
-  ['daddy-daughter-dance',    'Daddy Daughter Dance',                 'daddy-daughter-dance.jpg',    null,                          4],
+  ['stars-stripes-breakfast', 'Stars, Stripes & Big Breakfast Bites', 'stars-stripes-breakfast.jpg', 'stars-stripes-breakfast.mp4', 'https://www.instagram.com/reels/DUiQHUrgeK-/', 1],
+  ['mahjong-social',          'Mahjong Social',                       'mahjong-social.jpg',          'mahjong-social.mp4',          'https://www.instagram.com/p/DUz9gdFgYXs/',     2],
+  ['shaken-not-sorry',        'Shaken not Sorry',                     'shaken-not-sorry.jpg',        null,                          'https://www.instagram.com/p/DW6DPmhgYl_/',     3],
+  ['daddy-daughter-dance',    'Daddy Daughter Dance',                 'daddy-daughter-dance.jpg',    null,                          'https://www.instagram.com/p/DXoQXI7AfHN/',     4],
 ];
 
 const FAQ_ITEMS = [
@@ -214,7 +214,7 @@ async function ensureEvent(category, title, date, imageId) {
   }
 }
 
-async function ensureTestimonial(slug, quote, imageId, videoId, order) {
+async function ensureTestimonial(slug, quote, imageId, videoId, postUrl, order) {
   if (DRY) { console.log(`  [dry] upsert testimonial: ${slug}`); return { documentId: `dry-${slug}`, slug }; }
   const existing = await findOneBySlug('testimonials', slug);
   const payload = {
@@ -224,7 +224,7 @@ async function ensureTestimonial(slug, quote, imageId, videoId, order) {
     photo: imageId,
     video: videoId ?? null,
     ctaLabel: 'Watch More',
-    ctaUrl: AMCLUB_INSTAGRAM,
+    ctaUrl: postUrl,
     order,
     publishedAt: new Date().toISOString(),
   };
@@ -414,12 +414,13 @@ async function main() {
 
   console.log('\n[4/6] Testimonials…');
   const testimonialIds = [];
-  for (const [slug, quote, imgName, vidName, order] of TESTIMONIALS) {
+  for (const [slug, quote, imgName, vidName, postUrl, order] of TESTIMONIALS) {
     const t = await ensureTestimonial(
       slug,
       quote,
       media[imgName]?.id ?? null,
       vidName ? media[vidName]?.id ?? null : null,
+      postUrl,
       order,
     );
     testimonialIds.push(t.documentId);

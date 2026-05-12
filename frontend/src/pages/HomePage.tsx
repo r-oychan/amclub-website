@@ -186,7 +186,7 @@ const MOMENTS_FALLBACK: Array<{
     cta: 'Watch More',
     image: '/images/social/stars-stripes-breakfast.jpg',
     video: '/images/social/stars-stripes-breakfast.mp4',
-    href: AMCLUB_INSTAGRAM,
+    href: 'https://www.instagram.com/reels/DUiQHUrgeK-/',
   },
   {
     name: 'American Club',
@@ -194,21 +194,21 @@ const MOMENTS_FALLBACK: Array<{
     cta: 'Watch More',
     image: '/images/social/mahjong-social.jpg',
     video: '/images/social/mahjong-social.mp4',
-    href: AMCLUB_INSTAGRAM,
+    href: 'https://www.instagram.com/p/DUz9gdFgYXs/',
   },
   {
     name: 'American Club',
     quote: 'Shaken not Sorry',
     cta: 'Watch More',
     image: '/images/social/shaken-not-sorry.jpg',
-    href: AMCLUB_INSTAGRAM,
+    href: 'https://www.instagram.com/p/DW6DPmhgYl_/',
   },
   {
     name: 'American Club',
     quote: 'Daddy Daughter Dance',
     cta: 'Watch More',
     image: '/images/social/daddy-daughter-dance.jpg',
-    href: AMCLUB_INSTAGRAM,
+    href: 'https://www.instagram.com/p/DXoQXI7AfHN/',
   },
 ];
 
@@ -292,7 +292,8 @@ export default function HomePage() {
   const moments = data?.moments;
   // CMS testimonials are kept for migration but, until the deployed Strapi is
   // re-seeded with the new social-style posts (memberName = "American Club"),
-  // render the local fallback so every card is branded consistently.
+  // render the local fallback so every card is branded consistently. Each
+  // card links out to its own social post URL (t.ctaUrl), not a shared profile link.
   const cmsMomentItems = (moments?.testimonials ?? [])
     .filter((t) => t.memberName === 'American Club')
     .map((t) => ({
@@ -301,7 +302,7 @@ export default function HomePage() {
       cta: t.ctaLabel,
       image: mediaUrl(t.photo),
       video: mediaUrl(t.video),
-      href: AMCLUB_INSTAGRAM,
+      href: t.ctaUrl || AMCLUB_INSTAGRAM,
     }));
   const momentItems = cmsMomentItems.length > 0 ? cmsMomentItems : MOMENTS_FALLBACK;
 
