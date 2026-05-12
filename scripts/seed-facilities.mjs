@@ -21,29 +21,22 @@ const FITNESS_DIR = join(ROOT, 'media', 'fitness');
 const DRY = isDryRun();
 const ctx = initEnv();
 
-const TEAM_FILES = [
-  'azhar-zainudin.png',
-  'jorge-pinilla.png',
-  'herman-ali.png',
-  'reduan-ariffin.png',
-  'sharassalam-rasak.png',
-  'ethan-lee.png',
-  'ezequiel-suarez.png',
-  'jarek-grela.png',
-  'jose-nino.png',
+// Headshot (small avatar) + bio card (modal). Same filenames as
+// frontend/public/images/fitness/team/ — bare slug for the headshot, -bio.png
+// suffix for the full bio card.
+const TENNIS_TEAM = [
+  { name: 'Azhar Zainudin',    role: 'Director of Tennis',             image: 'azhar-zainudin.jpg',    bio: 'azhar-zainudin-bio.png' },
+  { name: 'Jorge Pinilla',     role: 'Director of Player Development', image: 'jorge-pinilla.png',     bio: 'jorge-pinilla-bio.png' },
+  { name: 'Herman Ali',        role: 'Senior Tennis Professional',     image: 'herman-ali.jpg',        bio: 'herman-ali-bio.png' },
+  { name: 'Reduan Ariffin',    role: 'Tennis Professional',            image: 'reduan-ariffin.jpg',    bio: 'reduan-ariffin-bio.png' },
+  { name: 'Sharassalam Rasak', role: 'Tennis Professional',            image: 'sharassalam-rasak.jpg', bio: 'sharassalam-rasak-bio.png' },
+  { name: 'Ethan Lee',         role: 'Tennis Professional',            image: 'ethan-lee.jpg',         bio: 'ethan-lee-bio.png' },
+  { name: 'Ezequiel Suarez',   role: 'Tennis Professional',            image: 'ezequiel-suarez.jpg',   bio: 'ezequiel-suarez-bio.png' },
+  { name: 'Jarek Grela',       role: 'Tennis Professional',            image: 'jarek-grela.png',       bio: 'jarek-grela-bio.png' },
+  { name: 'Jose Nino',         role: 'Tennis Professional',            image: 'jose-nino.jpg',         bio: 'jose-nino-bio.png' },
 ];
 
-const TENNIS_TEAM = [
-  { name: 'Azhar Zainudin',    role: 'Director of Tennis',             file: 'azhar-zainudin.png' },
-  { name: 'Jorge Pinilla',     role: 'Director of Player Development', file: 'jorge-pinilla.png' },
-  { name: 'Herman Ali',        role: 'Senior Tennis Professional',     file: 'herman-ali.png' },
-  { name: 'Reduan Ariffin',    role: 'Tennis Professional',            file: 'reduan-ariffin.png' },
-  { name: 'Sharassalam Rasak', role: 'Tennis Professional',            file: 'sharassalam-rasak.png' },
-  { name: 'Ethan Lee',         role: 'Tennis Professional',            file: 'ethan-lee.png' },
-  { name: 'Ezequiel Suarez',   role: 'Tennis Professional',            file: 'ezequiel-suarez.png' },
-  { name: 'Jarek Grela',       role: 'Tennis Professional',            file: 'jarek-grela.png' },
-  { name: 'Jose Nino',         role: 'Tennis Professional',            file: 'jose-nino.png' },
-];
+const TEAM_FILES = TENNIS_TEAM.flatMap((m) => [m.image, m.bio]);
 
 const TENNIS = {
   name: 'Tennis',
@@ -58,7 +51,7 @@ const TENNIS = {
   imageFile: 'tennis.jpeg',
   ctas: [
     { label: 'Book a Court', href: 'mailto:sportscounter@amclub.org.sg', isExternal: true, variant: 'primary', icon: 'mail' },
-    { label: 'TAC Book App Tutorial', href: '/documents/fitness/tac-book-app-download-tutorial.pdf', isExternal: true, variant: 'primary', icon: 'external' },
+    { label: 'TAC Book App Tutorial', href: '/documents/fitness/tac-book-app-download-tutorial.pdf', isExternal: true, variant: 'primary', icon: 'arrow' },
   ],
   teamHeading: 'Meet Our Team',
 };
@@ -75,9 +68,9 @@ const SQUASH = {
   email: 'sportscenter@amclub.org.sg',
   imageFile: 'Squash.jpeg',
   ctas: [
-    { label: 'View Rates', href: '/documents/fitness/squash-private-lesson-rates.jpg', isExternal: true, variant: 'primary', icon: 'external' },
-    { label: 'Coach Profiles', href: '/documents/fitness/squash-coach-profiles.pdf', isExternal: true, variant: 'primary', icon: 'external' },
-    { label: 'Booking Policy', href: '/documents/fitness/squash-courts-booking-policy.pdf', isExternal: true, variant: 'primary', icon: 'external' },
+    { label: 'View Rates', href: '/documents/fitness/squash-private-lesson-rates.jpg', isExternal: true, variant: 'primary', icon: 'arrow' },
+    { label: 'Coach Profiles', href: '/documents/fitness/squash-coach-profiles.pdf', isExternal: true, variant: 'primary', icon: 'arrow' },
+    { label: 'Booking Policy', href: '/documents/fitness/squash-courts-booking-policy.pdf', isExternal: true, variant: 'primary', icon: 'arrow' },
   ],
 };
 
@@ -116,8 +109,8 @@ async function upsertTennisFacility({ teamMedia, heroImageId }) {
   const teamMembers = TENNIS_TEAM.map((m, idx) => ({
     name: m.name,
     role: m.role,
-    image: teamMedia[m.file]?.id,
-    bioImage: teamMedia[m.file]?.id,
+    image: teamMedia[m.image]?.id,
+    bioImage: teamMedia[m.bio]?.id,
     order: idx,
   }));
 
