@@ -1017,19 +1017,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                         : 'w-28 h-28 rounded-full object-cover mb-3'
                     }
                   />
-                ) : (
-                  <div
-                    aria-hidden
-                    className={
-                      isCard
-                        ? 'w-full aspect-[5/7] flex items-center justify-center bg-white text-primary font-heading'
-                        : 'w-28 h-28 rounded-full mb-3 flex items-center justify-center bg-white text-primary font-heading'
-                    }
-                    style={{ fontSize: isCard ? '64px' : '32px', fontStyle: 'italic', fontWeight: 300 }}
-                  >
-                    {m.name.charAt(0)}
-                  </div>
-                );
+                ) : null;
                 if (isCard) {
                   return (
                     <div key={m.name} className="flex flex-col overflow-hidden">
@@ -1038,20 +1026,8 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                   );
                 }
                 const expandable = !!m.bioImage;
-                return (
-                  <div key={m.name} className="flex flex-col items-center text-center">
-                    {expandable ? (
-                      <button
-                        type="button"
-                        onClick={() => setBioModal({ image: m.bioImage!, name: m.name })}
-                        className="appearance-none bg-transparent p-0 cursor-zoom-in transition-transform hover:scale-[1.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full"
-                        aria-label={`View bio for ${m.name}`}
-                      >
-                        {avatar}
-                      </button>
-                    ) : (
-                      avatar
-                    )}
+                const nameBlock = (
+                  <>
                     <p
                       className="font-heading text-primary"
                       style={{ fontSize: '20.8px', fontWeight: 700, letterSpacing: '-0.416px' }}
@@ -1064,6 +1040,47 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                     >
                       {m.role}
                     </p>
+                  </>
+                );
+                // No headshot: still let the bio open via the name, but skip
+                // the placeholder letter circle (looked broken on Zack/Desmond).
+                if (!avatar && expandable) {
+                  return (
+                    <div key={m.name} className="flex flex-col items-center text-center">
+                      <button
+                        type="button"
+                        onClick={() => setBioModal({ image: m.bioImage!, name: m.name })}
+                        className="appearance-none bg-transparent p-0 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded transition-transform hover:scale-[1.02] hover:text-accent text-center"
+                        aria-label={`View bio for ${m.name}`}
+                      >
+                        {nameBlock}
+                      </button>
+                      {m.bio && (
+                        <p
+                          className="text-text-dark/80 mt-2"
+                          style={{ fontSize: '14.4px', lineHeight: '20px' }}
+                        >
+                          {m.bio}
+                        </p>
+                      )}
+                    </div>
+                  );
+                }
+                return (
+                  <div key={m.name} className="flex flex-col items-center text-center">
+                    {avatar && (expandable ? (
+                      <button
+                        type="button"
+                        onClick={() => setBioModal({ image: m.bioImage!, name: m.name })}
+                        className="appearance-none bg-transparent p-0 cursor-zoom-in transition-transform hover:scale-[1.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full"
+                        aria-label={`View bio for ${m.name}`}
+                      >
+                        {avatar}
+                      </button>
+                    ) : (
+                      avatar
+                    ))}
+                    {nameBlock}
                     {m.bio && (
                       <p
                         className="text-text-dark/80 mt-2"
