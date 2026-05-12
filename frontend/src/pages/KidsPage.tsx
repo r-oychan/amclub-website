@@ -94,7 +94,7 @@ export default function KidsPage() {
   const hangoutP = overlayProps(data.hangout);
   const partiesP = overlayProps(data.parties);
 
-  const partyPackageItems = (data.partyPackages?.items ?? [])
+  const cmsPartyPackageItems = (data.partyPackages?.items ?? [])
     .filter((i) => i.image)
     .map((i) => ({
       name: i.name,
@@ -104,6 +104,58 @@ export default function KidsPage() {
         ? { label: i.cta.label, href: i.cta.href ?? '#', isExternal: i.cta.isExternal }
         : undefined,
     }));
+
+  // Fallback content while the deployed Strapi catches up with the new
+  // `partyPackages` component (see project memory: new media fields don't
+  // persist on this project until migrations land). Once Strapi returns
+  // partyPackages, the CMS data takes over automatically.
+  const fallbackPartyPackages = {
+    heading: 'Parties Made Easy',
+    subheading: "Fun-filled kids' party packages designed for memorable celebrations.",
+    items: [
+      {
+        name: 'The Quad Studio Party Package',
+        image:
+          'https://amclubdata28a57492.blob.core.windows.net/media/uploads/quadstudio_a820344edb.jpeg',
+        imageAlt: 'The Quad Studio Party Package',
+        cta: {
+          label: 'Download Brochure',
+          href: '/documents/kids/the-quad-studios-party-package.pdf',
+          isExternal: true,
+        },
+      },
+      {
+        name: 'The Bowling Alley Party Package',
+        image:
+          'https://amclubdata28a57492.blob.core.windows.net/media/uploads/bowling_alley_256914ebd6.jpeg',
+        imageAlt: 'The Bowling Alley Party Package',
+        cta: {
+          label: 'Download Brochure',
+          href: '/documents/kids/the-bowling-alley-party-package.pdf',
+          isExternal: true,
+        },
+      },
+      {
+        name: 'Union Bar x The Bowling Alley',
+        image: `${STRAPI_URL}/uploads/union_bar_4a8862c1e3.jpeg`,
+        imageAlt: 'Union Bar x The Bowling Alley',
+        cta: {
+          label: 'View Menu',
+          href: '/documents/kids/union-bar-bowling-alley-menu.jpg',
+          isExternal: true,
+        },
+      },
+    ],
+  };
+
+  const partyPackages =
+    cmsPartyPackageItems.length > 0
+      ? {
+          heading: data.partyPackages?.heading,
+          subheading: data.partyPackages?.subheading,
+          items: cmsPartyPackageItems,
+        }
+      : fallbackPartyPackages;
 
   const learningItems = (data.learning?.items ?? []).map((i) => ({
     heading: i.heading,
@@ -130,13 +182,12 @@ export default function KidsPage() {
       {hangoutP && <OverlaySection {...hangoutP} />}
       {partiesP && <OverlaySection {...partiesP} />}
 
-      {partyPackageItems.length > 0 && (
-        <KidsPartyPackages
-          heading={data.partyPackages?.heading}
-          subheading={data.partyPackages?.subheading}
-          items={partyPackageItems}
-        />
-      )}
+      <KidsPartyPackages
+        heading={partyPackages.heading}
+        subheading={partyPackages.subheading}
+        items={partyPackages.items}
+      />
+
 
       {data.learning && learningItems.length > 0 && (
         <ThreeColGrid
