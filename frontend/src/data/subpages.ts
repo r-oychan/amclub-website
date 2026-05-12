@@ -1082,8 +1082,7 @@ export const eventSpacesSubpages: SubpageData[] = [
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
-      { label: 'View Brochure', href: '#' },
-      { label: 'Enquire Now', href: '#' },
+      { label: 'Enquire Now', href: 'mailto:catering@amclub.org.sg', isExternal: true },
     ],
   },
   {
@@ -1097,8 +1096,8 @@ export const eventSpacesSubpages: SubpageData[] = [
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
-      { label: 'View Capacity Chart', href: '#' },
-      { label: 'Enquire Now', href: '#' },
+      { label: 'View Capacity Chart', href: '/documents/event-spaces/capacity-chart.pdf', isExternal: true },
+      { label: 'Enquire Now', href: 'mailto:catering@amclub.org.sg', isExternal: true },
     ],
   },
   {
@@ -1197,8 +1196,8 @@ export const eventSpacesSubpages: SubpageData[] = [
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
-      { label: 'Services & Rates', href: '#' },
-      { label: '360 Virtual Tour', href: '#' },
+      { label: 'Service & Rates', href: '#' },
+      { label: 'Boardroom Bundle Package', href: '/documents/event-spaces/boardroom-bundle-package.jpg', isExternal: true },
     ],
   },
 ];
