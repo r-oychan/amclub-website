@@ -645,7 +645,7 @@ export const fitnessSubpages: SubpageData[] = [
             heading: 'Personal Training',
             description:
               'Achieve your fitness goals faster with one-on-one sessions tailored to your needs, guided by our experienced Personal Trainers.',
-            image: '/images/fitness/gym.jpeg',
+            image: '/images/fitness/gym-personal-training.jpeg',
             imageAlt: 'Personal trainer guiding a member through a dumbbell row',
             cta: {
               label: 'Explore',
@@ -657,7 +657,7 @@ export const fitnessSubpages: SubpageData[] = [
             heading: 'Group Fitness Classes',
             description:
               'Energize your workout and stay motivated in a fun, supportive environment with our variety of group classes designed for all fitness levels.',
-            image: '/images/fitness/groupclass.jpeg',
+            image: '/images/fitness/gym-group-fitness-classes.jpeg',
             imageAlt: 'Members performing a kettlebell squat group fitness class',
             cta: {
               label: 'Explore',
