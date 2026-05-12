@@ -41,7 +41,7 @@
     "imageZoom": {
       "type": "decimal",
       "default": 1,
-      "min": 1,
+      "min": 0.5,
       "max": 4
     },
     "order": {

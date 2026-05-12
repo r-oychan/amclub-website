@@ -3,6 +3,15 @@
 // headshots and upserts each facility entry. CTAs that link to PDFs/images
 // reference static paths served from frontend/public/documents/fitness/.
 //
+// HOW TO RUN — this is a Node ES module, not a shell script:
+//   node scripts/seed-facilities.mjs --dry-run   # preview only
+//   node scripts/seed-facilities.mjs             # live: writes to Strapi
+// Do NOT `source` it from bash/zsh — that will try to parse the JS as shell
+// and fail on the parentheses in this comment.
+//
+// Targets the Strapi instance in cms/.env.seed (deployed Azure by default).
+// To seed local Strapi, swap in cms/.env.seed.local first.
+//
 // Known limitation: newly-added media fields on this project's local Strapi
 // may not persist via REST PUT (see project_strapi_media_relations memory).
 // PUT will return 200 with the ids you sent, but a follow-up populate may
@@ -28,13 +37,13 @@ const ctx = initEnv();
 // The CMS exposes these for fine-tuning per coach (decimal, 0–100 / 1–4).
 const TENNIS_TEAM = [
   { name: 'Azhar Zainudin',    role: 'Director of Tennis',             image: 'azhar-zainudin.jpg',    bio: 'azhar-zainudin-bio.png',    offX: 48, offY: 35, zoom: 2.0 },
-  { name: 'Jorge Pinilla',     role: 'Director of Player Development', image: 'jorge-pinilla.png',     bio: 'jorge-pinilla-bio.png',     offX: 44, offY: 30, zoom: 2.0 },
+  { name: 'Jorge Pinilla',     role: 'Director of Player Development', image: 'jorge-pinilla-headshot.png', bio: 'jorge-pinilla-bio.png',     offX: 44, offY: 30, zoom: 2.0 },
   { name: 'Herman Ali',        role: 'Senior Tennis Professional',     image: 'herman-ali.jpg',        bio: 'herman-ali-bio.png',        offX: 48, offY: 22, zoom: 2.0 },
   { name: 'Reduan Ariffin',    role: 'Tennis Professional',            image: 'reduan-ariffin.jpg',    bio: 'reduan-ariffin-bio.png',    offX: 48, offY: 30, zoom: 1.8 },
   { name: 'Sharassalam Rasak', role: 'Tennis Professional',            image: 'sharassalam-rasak.jpg', bio: 'sharassalam-rasak-bio.png', offX: 48, offY: 28, zoom: 2.0 },
   { name: 'Ethan Lee',         role: 'Tennis Professional',            image: 'ethan-lee.jpg',         bio: 'ethan-lee-bio.png',         offX: 48, offY: 25, zoom: 2.0 },
   { name: 'Ezequiel Suarez',   role: 'Tennis Professional',            image: 'ezequiel-suarez.jpg',   bio: 'ezequiel-suarez-bio.png',   offX: 52, offY: 30, zoom: 2.0 },
-  { name: 'Jarek Grela',       role: 'Tennis Professional',            image: 'jarek-grela.png',       bio: 'jarek-grela-bio.png',       offX: 48, offY: 22, zoom: 2.2 },
+  { name: 'Jarek Grela',       role: 'Tennis Professional',            image: 'jarek-grela-headshot.png', bio: 'jarek-grela-bio.png',       offX: 48, offY: 22, zoom: 2.2 },
   { name: 'Jose Nino',         role: 'Tennis Professional',            image: 'jose-nino.jpg',         bio: 'jose-nino-bio.png',         offX: 48, offY: 18, zoom: 2.0 },
 ];
 

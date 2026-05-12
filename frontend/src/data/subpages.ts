@@ -96,6 +96,22 @@ export interface SubpageData {
     footnote?: string;
   }[];
   faq?: { question: string; answer: string }[];
+  /**
+   * 4-column tier card grid (Eagles Rewards). Each card renders a
+   * radial-gradient + stripe-pattern "membership card" image above the
+   * tier name, short eligibility blurb, and a checkmark benefits list.
+   */
+  tierCards?: {
+    heading?: string;
+    subheading?: string;
+    cards: {
+      name: string;
+      description: string;
+      benefits: string[];
+      gradientFrom: string;
+      gradientTo: string;
+    }[];
+  };
 }
 
 const PLACEHOLDER_FAQ: { question: string; answer: string }[] = [
@@ -729,13 +745,13 @@ export const fitnessSubpages: SubpageData[] = [
     teamHeading: 'Meet Our Team',
     teamMembers: [
       { name: 'Azhar Zainudin',    role: 'Director of Tennis',             image: '/images/fitness/team/azhar-zainudin.jpg',    bioImage: '/images/fitness/team/azhar-zainudin-bio.png',    imageOffsetX: 48, imageOffsetY: 35, imageZoom: 2.0 },
-      { name: 'Jorge Pinilla',     role: 'Director of Player Development', image: '/images/fitness/team/jorge-pinilla.png',     bioImage: '/images/fitness/team/jorge-pinilla-bio.png',     imageOffsetX: 44, imageOffsetY: 30, imageZoom: 2.0 },
+      { name: 'Jorge Pinilla',     role: 'Director of Player Development', image: '/images/fitness/team/jorge-pinilla-headshot.png', bioImage: '/images/fitness/team/jorge-pinilla-bio.png',     imageOffsetX: 44, imageOffsetY: 30, imageZoom: 2.0 },
       { name: 'Herman Ali',        role: 'Senior Tennis Professional',     image: '/images/fitness/team/herman-ali.jpg',        bioImage: '/images/fitness/team/herman-ali-bio.png',        imageOffsetX: 48, imageOffsetY: 22, imageZoom: 2.0 },
       { name: 'Reduan Ariffin',    role: 'Tennis Professional',            image: '/images/fitness/team/reduan-ariffin.jpg',    bioImage: '/images/fitness/team/reduan-ariffin-bio.png',    imageOffsetX: 48, imageOffsetY: 30, imageZoom: 1.8 },
       { name: 'Sharassalam Rasak', role: 'Tennis Professional',            image: '/images/fitness/team/sharassalam-rasak.jpg', bioImage: '/images/fitness/team/sharassalam-rasak-bio.png', imageOffsetX: 48, imageOffsetY: 28, imageZoom: 2.0 },
       { name: 'Ethan Lee',         role: 'Tennis Professional',            image: '/images/fitness/team/ethan-lee.jpg',         bioImage: '/images/fitness/team/ethan-lee-bio.png',         imageOffsetX: 48, imageOffsetY: 25, imageZoom: 2.0 },
       { name: 'Ezequiel Suarez',   role: 'Tennis Professional',            image: '/images/fitness/team/ezequiel-suarez.jpg',   bioImage: '/images/fitness/team/ezequiel-suarez-bio.png',   imageOffsetX: 52, imageOffsetY: 30, imageZoom: 2.0 },
-      { name: 'Jarek Grela',       role: 'Tennis Professional',            image: '/images/fitness/team/jarek-grela.png',       bioImage: '/images/fitness/team/jarek-grela-bio.png',       imageOffsetX: 48, imageOffsetY: 22, imageZoom: 2.2 },
+      { name: 'Jarek Grela',       role: 'Tennis Professional',            image: '/images/fitness/team/jarek-grela-headshot.png', bioImage: '/images/fitness/team/jarek-grela-bio.png',       imageOffsetX: 48, imageOffsetY: 22, imageZoom: 2.2 },
       { name: 'Jose Nino',         role: 'Tennis Professional',            image: '/images/fitness/team/jose-nino.jpg',         bioImage: '/images/fitness/team/jose-nino-bio.png',         imageOffsetX: 48, imageOffsetY: 18, imageZoom: 2.0 },
     ],
     imagePanels: [
@@ -1262,16 +1278,87 @@ export const membershipSubpages: SubpageData[] = [
   },
   {
     slug: 'the-eagles-rewards-program',
-    name: 'The Eagles Rewards Program',
+    name: 'Niche Group Membership',
     type: 'Loyalty',
     description:
-      'The American Club Eagles Rewards program rewards Members for their membership tenure or spending. VIP Gold, 10K, 15K & Elite are the four tiers.',
+      'The American Club Niche Group Membership rewards Members for their membership tenure or spending. VIP Gold, 10K, 15K & Elite are the four tiers.',
     phone: '6739-4331',
     email: 'membership@amclub.org.sg',
     image:
       'https://framerusercontent.com/images/9Wx98RDzkCICF2QMOXQadZLRTH4.jpg',
     parentSection: 'Membership',
     parentHref: '/membership',
+    tierCards: {
+      heading: 'The Niche Group Membership Tiers',
+      subheading:
+        'From your first tier to the highest level, each level brings added benefits created to enrich your time at your Club.',
+      cards: [
+        {
+          name: 'Elite Membership',
+          description:
+            'A minimum of $20,000 cumulative calendar year spending, excluding monthly dues.',
+          gradientFrom: 'rgb(158, 158, 158)',
+          gradientTo: 'rgb(9, 18, 51)',
+          benefits: [
+            'Welcome dining voucher worth $250 and $150 sên Spa voucher.',
+            'Annual welcome gift.',
+            'Wedding Anniversary Privilege.',
+            'Exclusive privileges during birthday month',
+            'Annual Elite party invites.',
+            'Up to 25% dining discounts.',
+            'Up to 20% off treatments at sên Spa.',
+            'Membership card replacement fee waiver ($10 for the first card replacement, $50 for subsequent replacements).',
+            'Ad-hoc discounts for products, events etc.',
+            'Free parking for two cars (fee waiver will be applied at the next annual billing cycle in July).',
+          ],
+        },
+        {
+          name: 'VIP Gold',
+          description:
+            'Members are accorded this status based on a minimum tenure of 25 years of active membership.',
+          gradientFrom: 'rgb(255, 231, 158)',
+          gradientTo: 'rgb(150, 121, 59)',
+          benefits: [
+            'A welcome dining voucher worth $200.',
+            'Exclusive privileges during birthday month',
+            'Annual VIP party invites.',
+            'Up to 20% dining discounts.',
+            'Up to 20% off treatments at sên Spa.',
+            'Ad-hoc discounts for products, events etc.',
+          ],
+        },
+        {
+          name: '15K Membership',
+          description:
+            'A minimum of $20,000 cumulative calendar year spending, excluding monthly dues.',
+          gradientFrom: 'rgb(53, 173, 242)',
+          gradientTo: 'rgb(30, 86, 156)',
+          benefits: [
+            'A welcome dining voucher worth $200.',
+            'Exclusive privileges during birthday month',
+            'Up to 20% dining discounts.',
+            'Up to 15% off treatments at sên Spa.',
+            'Membership card replacement fee waiver ($10 for the first card replacement, $50 for subsequent replacements).',
+            'Ad-hoc discounts for products, events etc.',
+            'Free parking for one car (fee waiver will be applied at the next annual billing cycle in July).',
+          ],
+        },
+        {
+          name: '10K Membership',
+          description:
+            'A minimum of $10,000 cumulative calendar year spending, excluding monthly dues.',
+          gradientFrom: 'rgb(129, 97, 255)',
+          gradientTo: 'rgb(56, 38, 128)',
+          benefits: [
+            'Exclusive privileges during birthday month',
+            'Up to 15% dining discounts.',
+            'Up to 15% off treatments at sên Spa.',
+            'Membership card replacement fee waiver ($10 for the first card replacement, $50 for subsequent replacements).',
+            'Ad-hoc discounts for products, events etc.',
+          ],
+        },
+      ],
+    },
   },
   {
     slug: 'reciprocal-clubs',
