@@ -44,6 +44,9 @@
       "min": 0.5,
       "max": 4
     },
+    "coachLink": {
+      "type": "string"
+    },
     "order": {
       "type": "integer",
       "default": 0

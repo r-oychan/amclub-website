@@ -1,5 +1,5 @@
 import { useParams, useLocation, Link } from 'react-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { fetchAPI } from '../lib/api';
 import { getSubpage } from '../data/subpages';
 import { Button } from '../components/shared/Button';
@@ -81,6 +81,8 @@ interface VenueData {
     imageOffsetY?: number;
     /** Avatar zoom multiplier (1 = fit, >1 zooms in further). Default 1. */
     imageZoom?: number;
+    /** Optional coach-detail URL. When set and no bioImage exists, clicking the avatar navigates here. */
+    coachLink?: string;
   }[];
   teamHeading?: string;
   teamLayout?: 'circle' | 'card';
@@ -1168,7 +1170,9 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                     </div>
                   );
                 }
-                const expandable = !!m.bioImage;
+                const hasModal = !!m.bioImage;
+                const hasLink = !hasModal && !!m.coachLink;
+                const linkIsExternal = hasLink && /^https?:\/\//i.test(m.coachLink!);
                 const nameBlock = (
                   <>
                     <p
@@ -1185,19 +1189,75 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                     </p>
                   </>
                 );
-                // No headshot: still let the bio open via the name, but skip
-                // the placeholder letter circle (looked broken on Zack/Desmond).
-                if (!avatar && expandable) {
-                  return (
-                    <div key={m.name} className="flex flex-col items-center text-center">
+                // Avatar wrapper: button → bioImage modal, anchor → coachLink, plain otherwise.
+                const wrapAvatar = (inner: ReactNode) => {
+                  if (hasModal) {
+                    return (
                       <button
                         type="button"
                         onClick={() => setBioModal({ image: m.bioImage!, name: m.name })}
-                        className="appearance-none bg-transparent p-0 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded transition-transform hover:scale-[1.02] hover:text-accent text-center"
+                        className="appearance-none bg-transparent p-0 cursor-zoom-in transition-transform hover:scale-[1.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full"
                         aria-label={`View bio for ${m.name}`}
                       >
-                        {nameBlock}
+                        {inner}
                       </button>
+                    );
+                  }
+                  if (hasLink) {
+                    return linkIsExternal ? (
+                      <a
+                        href={m.coachLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block transition-transform hover:scale-[1.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full"
+                        aria-label={`View bio for ${m.name}`}
+                      >
+                        {inner}
+                      </a>
+                    ) : (
+                      <Link
+                        to={m.coachLink!}
+                        className="block transition-transform hover:scale-[1.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full"
+                        aria-label={`View bio for ${m.name}`}
+                      >
+                        {inner}
+                      </Link>
+                    );
+                  }
+                  return inner;
+                };
+                // No headshot: still allow opening via name (bio modal) or link.
+                if (!avatar && (hasModal || hasLink)) {
+                  return (
+                    <div key={m.name} className="flex flex-col items-center text-center">
+                      {hasModal ? (
+                        <button
+                          type="button"
+                          onClick={() => setBioModal({ image: m.bioImage!, name: m.name })}
+                          className="appearance-none bg-transparent p-0 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded transition-transform hover:scale-[1.02] hover:text-accent text-center"
+                          aria-label={`View bio for ${m.name}`}
+                        >
+                          {nameBlock}
+                        </button>
+                      ) : linkIsExternal ? (
+                        <a
+                          href={m.coachLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="cursor-pointer transition-colors hover:text-accent"
+                          aria-label={`View bio for ${m.name}`}
+                        >
+                          {nameBlock}
+                        </a>
+                      ) : (
+                        <Link
+                          to={m.coachLink!}
+                          className="cursor-pointer transition-colors hover:text-accent"
+                          aria-label={`View bio for ${m.name}`}
+                        >
+                          {nameBlock}
+                        </Link>
+                      )}
                       {m.bio && (
                         <p
                           className="text-text-dark/80 mt-2"
@@ -1211,18 +1271,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                 }
                 return (
                   <div key={m.name} className="flex flex-col items-center text-center">
-                    {avatar && (expandable ? (
-                      <button
-                        type="button"
-                        onClick={() => setBioModal({ image: m.bioImage!, name: m.name })}
-                        className="appearance-none bg-transparent p-0 cursor-zoom-in transition-transform hover:scale-[1.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full"
-                        aria-label={`View bio for ${m.name}`}
-                      >
-                        {avatar}
-                      </button>
-                    ) : (
-                      avatar
-                    ))}
+                    {avatar && wrapAvatar(avatar)}
                     {nameBlock}
                     {m.bio && (
                       <p

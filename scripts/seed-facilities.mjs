@@ -25,6 +25,7 @@ import { initEnv, api, findOneBySlug, uploadAll, isDryRun } from './seed-helpers
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 const TEAM_DIR = join(ROOT, 'media', 'fitness', 'team');
+const AQUATICS_TEAM_DIR = join(ROOT, 'media', 'fitness', 'team-aquatics');
 const FACILITY_DIR = join(ROOT, 'media', 'fitness', 'detail');
 const FITNESS_DIR = join(ROOT, 'media', 'fitness');
 const DRY = isDryRun();
@@ -48,6 +49,43 @@ const TENNIS_TEAM = [
 ];
 
 const TEAM_FILES = TENNIS_TEAM.flatMap((m) => [m.image, m.bio]);
+
+// Aquatics roster (12 coaches). Only 5 have public bio pages on amclub.org.sg;
+// the rest are tile-only (no click action) until coach profiles are authored.
+const AQUATICS_TEAM = [
+  { name: 'Greg',      role: 'Aquatics Manager & Head Swim Coach',      image: 'greg.jpg',      offX: 48, offY: 22, zoom: 1.8, link: 'https://amclub.org.sg/fitness-and-leisure/aquatics/aquatics-head-coach-greg/' },
+  { name: 'Zack',      role: 'Aquatics Coordinator',                     image: 'zack.jpg',      offX: 48, offY: 25, zoom: 1.8, link: 'https://amclub.org.sg/fitness-and-leisure/aquatics/aquatics-coordinator-zack/' },
+  { name: 'Hariz',     role: 'Assistant Swim Coach & Coordinator',       image: 'hariz.jpg',     offX: 48, offY: 28, zoom: 1.8, link: 'https://amclub.org.sg/fitness-and-leisure/aquatics/assistant-coach-coordinator-hariz/' },
+  { name: 'Abdul',     role: 'Chief Lifeguard Trainer',                  image: 'abdul.jpg',     offX: 48, offY: 25, zoom: 1.8, link: 'https://amclub.org.sg/fitness-and-leisure/aquatics/chief-lifeguard-abdul/' },
+  { name: 'Marc',      role: 'Swim Coach',                               image: 'marc.png',      offX: 48, offY: 35, zoom: 1.4 },
+  { name: 'Rodel',     role: 'Swim Coach / Lifeguard Trainer',           image: 'rodel.jpg',     offX: 48, offY: 22, zoom: 1.8, link: 'https://amclub.org.sg/fitness-and-leisure/aquatics/coach-lifeguard-trainer-rodel/' },
+  { name: 'Ben',       role: 'Swim Coach / Lifeguard Trainer',           image: 'ben.jpeg',      offX: 48, offY: 28, zoom: 2.0 },
+  { name: 'Francesca', role: 'Swim Coach',                               image: 'francesca.jpg', offX: 48, offY: 32, zoom: 1.7 },
+  { name: 'Caroline',  role: 'Part-time Swim Coach',                     image: 'caroline.jpg',  offX: 48, offY: 25, zoom: 1.8 },
+  { name: 'Daniel',    role: 'Part-time Swim Coach',                     image: 'daniel.jpg',    offX: 48, offY: 25, zoom: 1.8 },
+  { name: 'Yat',       role: 'Part-time Swim Coach / Lifeguard Trainer', image: 'yat.jpg',       offX: 48, offY: 22, zoom: 1.6 },
+  { name: 'Sia',       role: 'Part-time Lifeguard Trainer',              image: 'sia.jpg',       offX: 50, offY: 30, zoom: 1.5 },
+];
+
+const AQUATICS_TEAM_FILES = AQUATICS_TEAM.map((m) => m.image);
+
+const AQUATICS = {
+  name: 'Aquatics',
+  slug: 'aquatics',
+  category: 'fitness',
+  categoryLabel: 'Aquatics',
+  description:
+    "Dive into world-class swimming at The American Club's aquatics facilities — from learn-to-swim and competitive training to lap swimming and aqua fitness. Our aquatics team holds international certifications and welcomes swimmers of every age and ability.",
+  locationLevel: 'Level 1',
+  phone: '6739-4490',
+  email: 'aquatics@amclub.org.sg',
+  imageFile: 'aquatics.jpg',
+  ctas: [
+    { label: 'Request Swim Assessment', href: 'https://amclub.jotform.com/252501876973062', isExternal: true, variant: 'primary', icon: 'arrow' },
+    { label: 'Programs Price List',     href: '/documents/fitness/aquatics-program-price-list.pdf', isExternal: true, variant: 'primary', icon: 'arrow' },
+  ],
+  teamHeading: 'Meet Our Team',
+};
 
 const TENNIS = {
   name: 'Tennis',
@@ -160,37 +198,107 @@ async function upsertTennisFacility({ teamMedia, heroImageId }) {
   return resp.data;
 }
 
+async function upsertAquaticsFacility({ teamMedia, heroImageId, includeCoachLink = true }) {
+  const teamMembers = AQUATICS_TEAM.map((m, idx) => {
+    const base = {
+      name: m.name,
+      role: m.role,
+      image: teamMedia[m.image]?.id,
+      imageOffsetX: m.offX,
+      imageOffsetY: m.offY,
+      imageZoom: m.zoom,
+      order: idx,
+    };
+    // coachLink is a newer field; older deployed schemas reject it. Set only when supported.
+    if (includeCoachLink && m.link) base.coachLink = m.link;
+    return base;
+  });
+
+  const payload = {
+    name: AQUATICS.name,
+    slug: AQUATICS.slug,
+    category: AQUATICS.category,
+    categoryLabel: AQUATICS.categoryLabel,
+    description: AQUATICS.description,
+    locationLevel: AQUATICS.locationLevel,
+    phone: AQUATICS.phone,
+    email: AQUATICS.email,
+    image: heroImageId,
+    ctas: AQUATICS.ctas,
+    teamHeading: AQUATICS.teamHeading,
+    teamMembers,
+    publishedAt: new Date().toISOString(),
+  };
+
+  if (DRY) {
+    console.log(`  [dry] upsert facility aquatics (members=${teamMembers.length})`);
+    return { documentId: 'dry-aquatics' };
+  }
+
+  const existing = await findOneBySlug(ctx, 'facilities', AQUATICS.slug);
+  if (existing) {
+    const resp = await api(ctx, `/facilities/${existing.documentId}`, { method: 'PUT', body: { data: payload } });
+    console.log(`  ✓ updated facility aquatics (documentId=${existing.documentId})`);
+    return resp.data;
+  }
+  const resp = await api(ctx, '/facilities', { method: 'POST', body: { data: payload } });
+  console.log(`  ✓ created facility aquatics (documentId=${resp.data?.documentId})`);
+  return resp.data;
+}
+
 async function main() {
   console.log(`Strapi base: ${ctx.BASE}`);
   console.log(`Mode:        ${DRY ? 'DRY-RUN' : 'LIVE'}`);
 
-  console.log('\n[1/5] Uploading squash hero image…');
+  console.log('\n[1/7] Uploading squash hero image…');
   const squashHeroMedia = await uploadAll(ctx, FITNESS_DIR, [SQUASH.imageFile], { dry: DRY });
   const squashHeroId = squashHeroMedia[SQUASH.imageFile]?.id;
 
-  console.log('\n[2/5] Upserting squash facility…');
+  console.log('\n[2/7] Upserting squash facility…');
   try {
     await upsertSquashFacility({ heroImageId: squashHeroId });
   } catch (e) {
     console.error(`  ✗ squash upsert failed: ${e.message}`);
   }
 
-  console.log('\n[3/5] Uploading team headshots…');
-  const teamMedia = await uploadAll(ctx, TEAM_DIR, TEAM_FILES, { dry: DRY });
+  console.log('\n[3/7] Uploading tennis team headshots + bio cards…');
+  const tennisTeamMedia = await uploadAll(ctx, TEAM_DIR, TEAM_FILES, { dry: DRY });
 
-  console.log('\n[4/5] Uploading tennis hero image…');
+  console.log('\n[4/7] Uploading tennis hero image…');
   const tennisHeroMedia = await uploadAll(ctx, FACILITY_DIR, [TENNIS.imageFile], { dry: DRY });
   const tennisHeroId = tennisHeroMedia[TENNIS.imageFile]?.id;
 
-  console.log('\n[5/5] Upserting tennis facility…');
+  console.log('\n[5/7] Upserting tennis facility…');
   try {
-    await upsertTennisFacility({ teamMedia, heroImageId: tennisHeroId });
+    await upsertTennisFacility({ teamMedia: tennisTeamMedia, heroImageId: tennisHeroId });
   } catch (e) {
     console.error(`  ✗ tennis upsert failed: ${e.message}`);
   }
 
+  console.log('\n[6/7] Uploading aquatics team headshots…');
+  const aquaticsTeamMedia = await uploadAll(ctx, AQUATICS_TEAM_DIR, AQUATICS_TEAM_FILES, { dry: DRY });
+
+  console.log('\n[7/7] Uploading aquatics hero image + upserting facility…');
+  const aquaticsHeroMedia = await uploadAll(ctx, FACILITY_DIR, [AQUATICS.imageFile], { dry: DRY });
+  const aquaticsHeroId = aquaticsHeroMedia[AQUATICS.imageFile]?.id;
+  try {
+    await upsertAquaticsFacility({ teamMedia: aquaticsTeamMedia, heroImageId: aquaticsHeroId });
+  } catch (e) {
+    if (/coachLink/.test(e.message)) {
+      console.warn(`  ! deployed schema rejected coachLink; retrying without it`);
+      try {
+        await upsertAquaticsFacility({ teamMedia: aquaticsTeamMedia, heroImageId: aquaticsHeroId, includeCoachLink: false });
+      } catch (e2) {
+        console.error(`  ✗ aquatics upsert failed: ${e2.message}`);
+      }
+    } else {
+      console.error(`  ✗ aquatics upsert failed: ${e.message}`);
+    }
+  }
+
   console.log('\nDone. Verify with:');
   console.log(`  curl "${ctx.BASE}/api/facilities?filters[slug][$eq]=tennis&populate[teamMembers][populate]=*"`);
+  console.log(`  curl "${ctx.BASE}/api/facilities?filters[slug][$eq]=aquatics&populate[teamMembers][populate]=*"`);
   console.log(`  curl "${ctx.BASE}/api/facilities?filters[slug][$eq]=squash&populate[ctas]=true"`);
 }
 main().catch((e) => { console.error('\nERROR:', e.message); process.exit(1); });
