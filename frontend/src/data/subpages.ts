@@ -35,6 +35,26 @@ export interface SubpageData {
   teamHeading?: string;
   /** Extra CTAs rendered at the bottom of the page (e.g. duplicate price-list link). */
   bottomCtas?: { label: string; href: string; isExternal?: boolean }[];
+  /**
+   * Full-width image+text panels rendered between the main two-column section
+   * and the promo cards. Used for sections like Framer's "Tennis Programs"
+   * and "Tennis Etiquette" — image on one side, structured text on the other.
+   * Each panel can optionally include grouped operating-hours blocks; omit
+   * them for pure-text panels (e.g. etiquette).
+   */
+  imagePanels?: {
+    image: string;
+    imageAlt?: string;
+    /** Side that holds the image. Defaults to alternating starting from 'left'. */
+    imagePosition?: 'left' | 'right';
+    heading: string;
+    cta?: { label: string; href: string; isExternal?: boolean };
+    subheading?: string;
+    body?: string;
+    bullets?: string[];
+    operatingHours?: { title: string; rows: string[] }[];
+    footnote?: string;
+  }[];
   faq?: { question: string; answer: string }[];
 }
 
@@ -633,25 +653,36 @@ export const fitnessSubpages: SubpageData[] = [
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [
-      { label: 'Summer Term 2026 Schedule', href: '/documents/fitness/tennis-summer-term-schedule-2026.pdf', isExternal: true },
       { label: 'Book a Court', href: 'mailto:sportscounter@amclub.org.sg', isExternal: true },
     ],
-    extraSections: [
+    imagePanels: [
       {
-        title: 'Tennis Socials',
-        content:
+        image: '/images/fitness/tennis-program.jpeg',
+        imageAlt: 'Tennis Programs at The American Club',
+        imagePosition: 'left',
+        heading: 'Tennis Programs',
+        cta: {
+          label: 'Summer Term 2026 Schedule',
+          href: '/documents/fitness/tennis-summer-term-schedule-2026.pdf',
+          isExternal: true,
+        },
+        subheading: 'Tennis Socials',
+        body:
           'Join our Tennis Socials and keep fit while making new friends! Socials are open to players of all levels and played in 30-minute intervals. Participants may arrive anytime during the duration of the socials.',
-        bullets: [
-          "Men's Social — Every Monday, 6:30 PM – 9:00 PM",
-          "Ladies' Social — Every Wednesday, 9:00 AM – 11:30 AM",
-          'Stroke of The Week — Every Tuesday, 10:00 AM – 11:00 AM; Every Wednesday, 6:00 PM – 7:00 PM',
-          'Friday Night Mixed Social — Every last Friday of the month, 7:00 PM – 9:30 PM',
-          'Registration is available on the TAC Book app 48 hours in advance.',
+        operatingHours: [
+          { title: "Men's Social",            rows: ['Every Monday, 6:30 PM – 9:00 PM'] },
+          { title: "Ladies' Social",          rows: ['Every Wednesday, 9:00 AM – 11:30 AM'] },
+          { title: 'Stroke of The Week',      rows: ['Every Tuesday, 10:00 AM – 11:00 AM', 'Every Wednesday, 6:00 PM – 7:00 PM'] },
+          { title: 'Friday Night Mixed Social', rows: ['Every last Friday of the month, 7:00 PM – 9:30 PM'] },
         ],
+        footnote: 'Registration is available on the TAC Book app 48 hours in advance.',
       },
       {
-        title: 'Tennis Etiquette',
-        content: 'Punctuality & Cancellation Policy',
+        image: '/images/fitness/tennis-etiquette.jpeg',
+        imageAlt: 'Tennis etiquette at The American Club',
+        imagePosition: 'right',
+        heading: 'Tennis Etiquette',
+        subheading: 'Punctuality & Cancellation Policy',
         bullets: [
           'Please arrive 5 minutes early and sign up at the Sports Counter before you head up to the Tennis Courts.',
           'Arriving late will limit the time of your game. Should you be late, please call in advance at 6739-4312 / 6739-4451.',
@@ -659,9 +690,6 @@ export const fitnessSubpages: SubpageData[] = [
           'Cancellations must be made at least 4 hours in advance.',
         ],
       },
-    ],
-    bottomCtas: [
-      { label: 'Download Summer Term 2026 Schedule', href: '/documents/fitness/tennis-summer-term-schedule-2026.pdf', isExternal: true },
     ],
   },
   {

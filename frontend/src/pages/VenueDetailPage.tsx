@@ -75,6 +75,18 @@ interface VenueData {
   teamMembers?: { name: string; role: string; bio?: string; image?: string }[];
   teamHeading?: string;
   bottomCtas?: { label: string; href: string; isExternal?: boolean }[];
+  imagePanels?: {
+    image: string;
+    imageAlt?: string;
+    imagePosition?: 'left' | 'right';
+    heading: string;
+    cta?: { label: string; href: string; isExternal?: boolean };
+    subheading?: string;
+    body?: string;
+    bullets?: string[];
+    operatingHours?: { title: string; rows: string[] }[];
+    footnote?: string;
+  }[];
   faq?: { question: string; answer: string }[];
 }
 
@@ -111,6 +123,7 @@ function staticFallback(section: string, slug: string): VenueData | null {
     teamMembers: sp.teamMembers,
     teamHeading: sp.teamHeading,
     bottomCtas: sp.bottomCtas,
+    imagePanels: sp.imagePanels,
     faq: sp.faq,
   };
 }
@@ -193,6 +206,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           teamMembers: api.teamMembers?.length ? api.teamMembers : fallback?.teamMembers,
           teamHeading: api.teamHeading ?? fallback?.teamHeading,
           bottomCtas: api.bottomCtas?.length ? api.bottomCtas : fallback?.bottomCtas,
+          imagePanels: api.imagePanels?.length ? api.imagePanels : fallback?.imagePanels,
           faq: api.faq?.length ? api.faq : fallback?.faq,
         });
       } else {
@@ -567,6 +581,155 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           </div>
         </div>
       </section>
+
+      {/* ── Image + Text Panels (e.g. Tennis Programs, Tennis Etiquette) ── */}
+      {venue.imagePanels && venue.imagePanels.length > 0 && (
+        <section className="bg-bg pb-16">
+          <div className="max-w-7xl mx-auto px-10 flex flex-col gap-16">
+            {venue.imagePanels.map((panel, idx) => {
+              const imageOnLeft = (panel.imagePosition ?? (idx % 2 === 0 ? 'left' : 'right')) === 'left';
+              const imgEl = (
+                <div className={imageOnLeft ? 'lg:col-start-1 lg:col-end-7' : 'lg:col-start-7 lg:col-end-13'}>
+                  <img
+                    src={panel.image}
+                    alt={panel.imageAlt ?? panel.heading}
+                    className="w-full aspect-[4/3] object-cover"
+                  />
+                </div>
+              );
+              const textEl = (
+                <div
+                  className={`${
+                    imageOnLeft ? 'lg:col-start-8 lg:col-end-13' : 'lg:col-start-1 lg:col-end-6'
+                  } flex flex-col gap-5`}
+                >
+                  <h2
+                    className="font-heading text-primary"
+                    style={{
+                      fontSize: '38.4px',
+                      fontWeight: 300,
+                      fontStyle: 'italic',
+                      letterSpacing: '-1.152px',
+                      lineHeight: '42.24px',
+                    }}
+                  >
+                    {panel.heading}
+                  </h2>
+
+                  {panel.cta && (
+                    <div>
+                      {panel.cta.isExternal ? (
+                        <a
+                          href={panel.cta.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-2 text-accent uppercase tracking-[0.04em] font-bold hover:opacity-80 transition-opacity"
+                          style={{ fontSize: '13.6px' }}
+                        >
+                          {panel.cta.label}
+                          <CtaIcon name="arrow" size={20} className="text-accent" />
+                        </a>
+                      ) : (
+                        <Link
+                          to={panel.cta.href}
+                          className="inline-flex items-center gap-2 text-accent uppercase tracking-[0.04em] font-bold hover:opacity-80 transition-opacity"
+                          style={{ fontSize: '13.6px' }}
+                        >
+                          {panel.cta.label}
+                          <CtaIcon name="arrow" size={20} className="text-accent" />
+                        </Link>
+                      )}
+                    </div>
+                  )}
+
+                  {panel.subheading && (
+                    <h3
+                      className="font-heading text-primary"
+                      style={{ fontSize: '20.8px', fontWeight: 700, letterSpacing: '-0.416px' }}
+                    >
+                      {panel.subheading}
+                    </h3>
+                  )}
+
+                  {panel.body && (
+                    <p
+                      className="text-text-dark"
+                      style={{ fontSize: '17.6px', fontWeight: 400, lineHeight: '24.64px' }}
+                    >
+                      {panel.body}
+                    </p>
+                  )}
+
+                  {panel.bullets && panel.bullets.length > 0 && (
+                    <ul className="list-disc pl-5 flex flex-col gap-2">
+                      {panel.bullets.map((b, i) => (
+                        <li
+                          key={i}
+                          className="text-text-dark"
+                          style={{ fontSize: '17.6px', lineHeight: '24.64px' }}
+                        >
+                          {b}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  {panel.operatingHours && panel.operatingHours.length > 0 && (
+                    <div className="flex flex-col gap-4">
+                      {panel.operatingHours.map((block, i) => (
+                        <div key={i}>
+                          <h4
+                            className="font-heading text-primary mb-1"
+                            style={{ fontSize: '17.6px', fontWeight: 700 }}
+                          >
+                            {block.title}
+                          </h4>
+                          {block.rows.map((row, j) => (
+                            <p
+                              key={j}
+                              className="text-text-dark"
+                              style={{ fontSize: '17.6px', lineHeight: '24.64px' }}
+                            >
+                              {row}
+                            </p>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {panel.footnote && (
+                    <p
+                      className="text-text-dark/70 italic"
+                      style={{ fontSize: '15.2px', lineHeight: '22px' }}
+                    >
+                      {panel.footnote}
+                    </p>
+                  )}
+                </div>
+              );
+              return (
+                <div
+                  key={`${panel.heading}-${idx}`}
+                  className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start"
+                >
+                  {imageOnLeft ? (
+                    <>
+                      {imgEl}
+                      {textEl}
+                    </>
+                  ) : (
+                    <>
+                      {textEl}
+                      {imgEl}
+                    </>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* ── Promo Cards ── */}
       {venue.promoCards && (
