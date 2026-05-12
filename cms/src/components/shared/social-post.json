@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_shared_social_posts",
+  "info": {
+    "displayName": "Social Post",
+    "icon": "picture",
+    "description": "A single social media tile (image or autoplaying short video)"
+  },
+  "attributes": {
+    "title": { "type": "string" },
+    "platform": {
+      "type": "enumeration",
+      "enum": ["instagram", "facebook", "tiktok", "youtube"],
+      "default": "instagram"
+    },
+    "href": { "type": "string" },
+    "image": { "type": "media", "multiple": false, "allowedTypes": ["images"] },
+    "video": { "type": "media", "multiple": false, "allowedTypes": ["videos"] },
+    "caption": { "type": "text" }
+  }
+}

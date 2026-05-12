@@ -6,6 +6,8 @@ import { CardGrid } from '../components/blocks/CardGrid';
 import { FeatureGrid } from '../components/blocks/FeatureGrid';
 import { TabsSection } from '../components/blocks/TabsSection';
 import { TestimonialSlider } from '../components/blocks/TestimonialSlider';
+import { SocialFeed } from '../components/blocks/SocialFeed';
+import type { SocialPlatform } from '../components/blocks/SocialFeed';
 import { FaqAccordion } from '../components/blocks/FaqAccordion';
 import { PageFade } from '../components/shared/PageFade';
 
@@ -75,6 +77,22 @@ type StrapiTestimonialSlider = {
   dark?: boolean;
   testimonials?: StrapiTestimonial[];
 };
+type StrapiSocialPost = {
+  title?: string;
+  platform?: SocialPlatform;
+  href?: string;
+  image?: StrapiMedia;
+  video?: StrapiMedia;
+  caption?: string;
+};
+type StrapiSocialFeed = {
+  label?: string;
+  heading?: string;
+  description?: string;
+  cta?: StrapiLink;
+  dark?: boolean;
+  posts?: StrapiSocialPost[];
+};
 type StrapiFaqBlockChild = { type?: string; text?: string; children?: StrapiFaqBlockChild[] };
 type StrapiFaqBlock = { type?: string; children?: StrapiFaqBlockChild[] };
 type StrapiFaqItem = {
@@ -98,6 +116,7 @@ interface StrapiHomePage {
   services?: StrapiFeatureGrid;
   experience?: StrapiTabsSection;
   moments?: StrapiTestimonialSlider;
+  social?: StrapiSocialFeed;
   faq?: StrapiFaqSection;
 }
 
@@ -166,6 +185,41 @@ const DUMMY_FAQ_ANSWERS: { match: RegExp; answer: string }[] = [
     match: /guest|visitor|access|reciprocal/i,
     answer:
       'Members may sponsor guests in line with the House Rules. Reciprocal Club privileges are available worldwide — visit the Reciprocal Clubs section for the current list and booking instructions.',
+  },
+];
+
+const SOCIAL_FALLBACK_POSTS: Array<{
+  title?: string;
+  platform?: SocialPlatform;
+  href?: string;
+  image?: string;
+  video?: string;
+}> = [
+  {
+    title: 'Stars, Stripes & Breakfast Bites',
+    platform: 'instagram',
+    href: 'https://www.instagram.com/americanclubsingapore/',
+    image: '/images/social/stars-stripes-breakfast.jpg',
+    video: '/images/social/stars-stripes-breakfast.mp4',
+  },
+  {
+    title: 'Mahjong Social',
+    platform: 'instagram',
+    href: 'https://www.instagram.com/americanclubsingapore/',
+    image: '/images/social/mahjong-social.jpg',
+    video: '/images/social/mahjong-social.mp4',
+  },
+  {
+    title: 'Shaken not Sorry',
+    platform: 'instagram',
+    href: 'https://www.instagram.com/americanclubsingapore/',
+    image: '/images/social/shaken-not-sorry.jpg',
+  },
+  {
+    title: 'Daddy Daughter Dance',
+    platform: 'instagram',
+    href: 'https://www.instagram.com/americanclubsingapore/',
+    image: '/images/social/daddy-daughter-dance.jpg',
   },
 ];
 
@@ -255,6 +309,19 @@ export default function HomePage() {
     href: t.ctaUrl,
   }));
 
+  const social = data?.social;
+  const cmsSocialPosts = (social?.posts ?? [])
+    .map((p) => ({
+      title: p.title,
+      platform: p.platform,
+      href: p.href,
+      image: mediaUrl(p.image),
+      video: mediaUrl(p.video),
+      caption: p.caption,
+    }))
+    .filter((p) => p.image || p.video);
+  const socialPosts = cmsSocialPosts.length > 0 ? cmsSocialPosts : SOCIAL_FALLBACK_POSTS;
+
   const faq = data?.faq;
   const faqItems = (faq?.items ?? []).map((i) => ({
     question: i.question,
@@ -324,6 +391,23 @@ export default function HomePage() {
           heading={moments.heading ?? ''}
           cta={link(moments.cta)}
           items={momentItems}
+        />
+      )}
+
+      {socialPosts.length > 0 && (
+        <SocialFeed
+          label={social?.label ?? 'Social'}
+          heading={social?.heading ?? 'Follow our latest moments'}
+          description={social?.description}
+          cta={
+            link(social?.cta) ?? {
+              label: 'Follow Us @americanclubsingapore',
+              href: 'https://www.instagram.com/americanclubsingapore/',
+              isExternal: true,
+            }
+          }
+          dark={social?.dark ?? false}
+          posts={socialPosts}
         />
       )}
 

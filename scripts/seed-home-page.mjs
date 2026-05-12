@@ -21,6 +21,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 const MEDIA_DIR = join(ROOT, 'media', 'home');
+const SOCIAL_DIR = join(ROOT, 'media', 'social');
 const ENV_PATH = join(ROOT, 'cms', '.env.seed');
 
 const DRY = process.argv.includes('--dry-run');
@@ -154,6 +155,23 @@ const TESTIMONIALS = [
   ['Emma Chen',        'Sunday brunch with the family at the Grillhouse',            'about-1.jpeg',                    'https://www.instagram.com/americanclubsingapore/', 5],
 ];
 
+const SOCIAL_IMAGES = [
+  'stars-stripes-breakfast.jpg',
+  'stars-stripes-breakfast.mp4',
+  'mahjong-social.jpg',
+  'mahjong-social.mp4',
+  'shaken-not-sorry.jpg',
+  'daddy-daughter-dance.jpg',
+];
+
+const SOCIAL_POSTS = [
+  // title, platform, href, image filename, video filename (optional)
+  ['Stars, Stripes & Breakfast Bites', 'instagram', 'https://www.instagram.com/americanclubsingapore/', 'stars-stripes-breakfast.jpg', 'stars-stripes-breakfast.mp4'],
+  ['Mahjong Social',                   'instagram', 'https://www.instagram.com/americanclubsingapore/', 'mahjong-social.jpg',          'mahjong-social.mp4'],
+  ['Shaken not Sorry',                 'instagram', 'https://www.instagram.com/americanclubsingapore/', 'shaken-not-sorry.jpg',        null],
+  ['Daddy Daughter Dance',             'instagram', 'https://www.instagram.com/americanclubsingapore/', 'daddy-daughter-dance.jpg',    null],
+];
+
 const FAQ_ITEMS = [
   // question, category, order  (answer empty per D8)
   ['What types of membership do you offer?',          'membership', 1],
@@ -240,7 +258,7 @@ async function ensureFaqItem(question, category, order) {
   }
 }
 
-async function upsertHomePage({ media, eventsCat, testimonialIds, faqIds }) {
+async function upsertHomePage({ media, socialMedia, eventsCat, testimonialIds, faqIds }) {
   const data = {
     title: 'Home',
     hero: {
@@ -342,6 +360,25 @@ async function upsertHomePage({ media, eventsCat, testimonialIds, faqIds }) {
       dark: true,
       testimonials: testimonialIds,
     },
+    social: {
+      label: 'Social',
+      heading: 'Follow our latest moments',
+      description: 'Member events, club moments, and snapshots from around the Club — straight from our feed.',
+      dark: false,
+      cta: {
+        label: 'Follow Us @americanclubsingapore',
+        href: 'https://www.instagram.com/americanclubsingapore/',
+        isExternal: true,
+        variant: 'primary',
+      },
+      posts: SOCIAL_POSTS.map(([title, platform, href, imgName, vidName]) => ({
+        title,
+        platform,
+        href,
+        image: socialMedia?.[imgName]?.id,
+        video: vidName ? socialMedia?.[vidName]?.id : undefined,
+      })),
+    },
     faq: {
       label: 'FAQ',
       heading: 'Your Questions, Answered',
@@ -378,6 +415,15 @@ async function main() {
     media[name] = m;
     console.log(`  ✓ ${name.padEnd(40)} → id=${m.id}`);
   }
+  const socialMedia = {};
+  for (const name of SOCIAL_IMAGES) {
+    const path = join(SOCIAL_DIR, name);
+    try { statSync(path); } catch { console.log(`  ! skip ${name} (missing)`); continue; }
+    if (DRY) { socialMedia[name] = { id: 0, name }; console.log(`  [dry] upload social/${name}`); continue; }
+    const m = await uploadFile(path);
+    socialMedia[name] = m;
+    console.log(`  ✓ social/${name.padEnd(36)} → id=${m.id}`);
+  }
 
   console.log('\n[2/6] Event categories…');
   const cats = {};
@@ -409,7 +455,7 @@ async function main() {
   }
 
   console.log('\n[6/6] Home Page single type…');
-  await upsertHomePage({ media, eventsCat: cats, testimonialIds, faqIds });
+  await upsertHomePage({ media, socialMedia, eventsCat: cats, testimonialIds, faqIds });
   console.log('  ✓ home-page upserted');
 
   console.log('\nDone.');
