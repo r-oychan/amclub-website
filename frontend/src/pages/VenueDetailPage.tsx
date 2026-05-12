@@ -70,7 +70,18 @@ interface VenueData {
       cta: { label: string; href: string };
     }[];
   };
-  teamMembers?: { name: string; role: string; bio?: string; image?: string; bioImage?: string }[];
+  teamMembers?: {
+    name: string;
+    role: string;
+    bio?: string;
+    image?: string;
+    bioImage?: string;
+    /** Avatar framing within the circular mask. 0–100 (percent), default 50. */
+    imageOffsetX?: number;
+    imageOffsetY?: number;
+    /** Avatar zoom multiplier (1 = fit, >1 zooms in further). Default 1. */
+    imageZoom?: number;
+  }[];
   teamHeading?: string;
   teamLayout?: 'circle' | 'card';
   bottomCtas?: { label: string; href: string; isExternal?: boolean }[];
@@ -1007,16 +1018,35 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
             >
               {venue.teamMembers.map((m) => {
                 const isCard = venue.teamLayout === 'card';
+                const offX = m.imageOffsetX ?? 50;
+                const offY = m.imageOffsetY ?? 50;
+                const zoom = m.imageZoom ?? 1;
+                const imgStyle = {
+                  objectPosition: `${offX}% ${offY}%`,
+                  ...(zoom !== 1
+                    ? { transform: `scale(${zoom})`, transformOrigin: `${offX}% ${offY}%` }
+                    : null),
+                } as const;
                 const avatar = m.image ? (
-                  <img
-                    src={m.image}
-                    alt={m.name}
-                    className={
-                      isCard
-                        ? 'w-full aspect-[5/7] object-cover bg-[#1a1a1a]'
-                        : 'w-28 h-28 rounded-full object-cover mb-3'
-                    }
-                  />
+                  isCard ? (
+                    <img
+                      src={m.image}
+                      alt={m.name}
+                      className="w-full aspect-[5/7] object-cover bg-[#1a1a1a]"
+                      style={imgStyle}
+                    />
+                  ) : (
+                    // Wrap so transform: scale on the img stays clipped to the
+                    // circle; img inside object-covers the box at offsetX/Y.
+                    <div className="w-28 h-28 rounded-full overflow-hidden mb-3 bg-bg">
+                      <img
+                        src={m.image}
+                        alt={m.name}
+                        className="w-full h-full object-cover"
+                        style={imgStyle}
+                      />
+                    </div>
+                  )
                 ) : null;
                 if (isCard) {
                   return (

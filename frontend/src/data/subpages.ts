@@ -30,7 +30,18 @@ export interface SubpageData {
     }[];
   };
   /** Optional roster shown as a "Meet the Team" section. */
-  teamMembers?: { name: string; role: string; bio?: string; image?: string; bioImage?: string }[];
+  teamMembers?: {
+    name: string;
+    role: string;
+    bio?: string;
+    image?: string;
+    bioImage?: string;
+    /** Avatar framing within the circular mask (CSS object-position, 0–100 percent, default 50). */
+    imageOffsetX?: number;
+    imageOffsetY?: number;
+    /** Avatar zoom multiplier (1 = fit, >1 zooms in). Default 1. */
+    imageZoom?: number;
+  }[];
   teamHeading?: string;
   /**
    * Visual layout for the team grid.
@@ -717,15 +728,15 @@ export const fitnessSubpages: SubpageData[] = [
     ],
     teamHeading: 'Meet Our Team',
     teamMembers: [
-      { name: 'Azhar Zainudin',    role: 'Director of Tennis',             image: '/images/fitness/team/azhar-zainudin.jpg',    bioImage: '/images/fitness/team/azhar-zainudin-bio.png' },
-      { name: 'Jorge Pinilla',     role: 'Director of Player Development', image: '/images/fitness/team/jorge-pinilla.png',     bioImage: '/images/fitness/team/jorge-pinilla-bio.png' },
-      { name: 'Herman Ali',        role: 'Senior Tennis Professional',     image: '/images/fitness/team/herman-ali.jpg',        bioImage: '/images/fitness/team/herman-ali-bio.png' },
-      { name: 'Reduan Ariffin',    role: 'Tennis Professional',            image: '/images/fitness/team/reduan-ariffin.jpg',    bioImage: '/images/fitness/team/reduan-ariffin-bio.png' },
-      { name: 'Sharassalam Rasak', role: 'Tennis Professional',            image: '/images/fitness/team/sharassalam-rasak.jpg', bioImage: '/images/fitness/team/sharassalam-rasak-bio.png' },
-      { name: 'Ethan Lee',         role: 'Tennis Professional',            image: '/images/fitness/team/ethan-lee.jpg',         bioImage: '/images/fitness/team/ethan-lee-bio.png' },
-      { name: 'Ezequiel Suarez',   role: 'Tennis Professional',            image: '/images/fitness/team/ezequiel-suarez.jpg',   bioImage: '/images/fitness/team/ezequiel-suarez-bio.png' },
-      { name: 'Jarek Grela',       role: 'Tennis Professional',            image: '/images/fitness/team/jarek-grela.png',       bioImage: '/images/fitness/team/jarek-grela-bio.png' },
-      { name: 'Jose Nino',         role: 'Tennis Professional',            image: '/images/fitness/team/jose-nino.jpg',         bioImage: '/images/fitness/team/jose-nino-bio.png' },
+      { name: 'Azhar Zainudin',    role: 'Director of Tennis',             image: '/images/fitness/team/azhar-zainudin.jpg',    bioImage: '/images/fitness/team/azhar-zainudin-bio.png',    imageOffsetX: 48, imageOffsetY: 35, imageZoom: 2.0 },
+      { name: 'Jorge Pinilla',     role: 'Director of Player Development', image: '/images/fitness/team/jorge-pinilla.png',     bioImage: '/images/fitness/team/jorge-pinilla-bio.png',     imageOffsetX: 44, imageOffsetY: 30, imageZoom: 2.0 },
+      { name: 'Herman Ali',        role: 'Senior Tennis Professional',     image: '/images/fitness/team/herman-ali.jpg',        bioImage: '/images/fitness/team/herman-ali-bio.png',        imageOffsetX: 48, imageOffsetY: 22, imageZoom: 2.0 },
+      { name: 'Reduan Ariffin',    role: 'Tennis Professional',            image: '/images/fitness/team/reduan-ariffin.jpg',    bioImage: '/images/fitness/team/reduan-ariffin-bio.png',    imageOffsetX: 48, imageOffsetY: 30, imageZoom: 1.8 },
+      { name: 'Sharassalam Rasak', role: 'Tennis Professional',            image: '/images/fitness/team/sharassalam-rasak.jpg', bioImage: '/images/fitness/team/sharassalam-rasak-bio.png', imageOffsetX: 48, imageOffsetY: 28, imageZoom: 2.0 },
+      { name: 'Ethan Lee',         role: 'Tennis Professional',            image: '/images/fitness/team/ethan-lee.jpg',         bioImage: '/images/fitness/team/ethan-lee-bio.png',         imageOffsetX: 48, imageOffsetY: 25, imageZoom: 2.0 },
+      { name: 'Ezequiel Suarez',   role: 'Tennis Professional',            image: '/images/fitness/team/ezequiel-suarez.jpg',   bioImage: '/images/fitness/team/ezequiel-suarez-bio.png',   imageOffsetX: 52, imageOffsetY: 30, imageZoom: 2.0 },
+      { name: 'Jarek Grela',       role: 'Tennis Professional',            image: '/images/fitness/team/jarek-grela.png',       bioImage: '/images/fitness/team/jarek-grela-bio.png',       imageOffsetX: 48, imageOffsetY: 22, imageZoom: 2.2 },
+      { name: 'Jose Nino',         role: 'Tennis Professional',            image: '/images/fitness/team/jose-nino.jpg',         bioImage: '/images/fitness/team/jose-nino-bio.png',         imageOffsetX: 48, imageOffsetY: 18, imageZoom: 2.0 },
     ],
     imagePanels: [
       {

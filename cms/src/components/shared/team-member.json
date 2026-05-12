@@ -26,6 +26,24 @@
       "multiple": false,
       "allowedTypes": ["images"]
     },
+    "imageOffsetX": {
+      "type": "decimal",
+      "default": 50,
+      "min": 0,
+      "max": 100
+    },
+    "imageOffsetY": {
+      "type": "decimal",
+      "default": 50,
+      "min": 0,
+      "max": 100
+    },
+    "imageZoom": {
+      "type": "decimal",
+      "default": 1,
+      "min": 1,
+      "max": 4
+    },
     "order": {
       "type": "integer",
       "default": 0

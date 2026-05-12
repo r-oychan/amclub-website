@@ -24,16 +24,18 @@ const ctx = initEnv();
 // Headshot (small avatar) + bio card (modal). Same filenames as
 // frontend/public/images/fitness/team/ — bare slug for the headshot, -bio.png
 // suffix for the full bio card.
+// offX/offY/zoom auto-derived by inspecting each headshot's face center.
+// The CMS exposes these for fine-tuning per coach (decimal, 0–100 / 1–4).
 const TENNIS_TEAM = [
-  { name: 'Azhar Zainudin',    role: 'Director of Tennis',             image: 'azhar-zainudin.jpg',    bio: 'azhar-zainudin-bio.png' },
-  { name: 'Jorge Pinilla',     role: 'Director of Player Development', image: 'jorge-pinilla.png',     bio: 'jorge-pinilla-bio.png' },
-  { name: 'Herman Ali',        role: 'Senior Tennis Professional',     image: 'herman-ali.jpg',        bio: 'herman-ali-bio.png' },
-  { name: 'Reduan Ariffin',    role: 'Tennis Professional',            image: 'reduan-ariffin.jpg',    bio: 'reduan-ariffin-bio.png' },
-  { name: 'Sharassalam Rasak', role: 'Tennis Professional',            image: 'sharassalam-rasak.jpg', bio: 'sharassalam-rasak-bio.png' },
-  { name: 'Ethan Lee',         role: 'Tennis Professional',            image: 'ethan-lee.jpg',         bio: 'ethan-lee-bio.png' },
-  { name: 'Ezequiel Suarez',   role: 'Tennis Professional',            image: 'ezequiel-suarez.jpg',   bio: 'ezequiel-suarez-bio.png' },
-  { name: 'Jarek Grela',       role: 'Tennis Professional',            image: 'jarek-grela.png',       bio: 'jarek-grela-bio.png' },
-  { name: 'Jose Nino',         role: 'Tennis Professional',            image: 'jose-nino.jpg',         bio: 'jose-nino-bio.png' },
+  { name: 'Azhar Zainudin',    role: 'Director of Tennis',             image: 'azhar-zainudin.jpg',    bio: 'azhar-zainudin-bio.png',    offX: 48, offY: 35, zoom: 2.0 },
+  { name: 'Jorge Pinilla',     role: 'Director of Player Development', image: 'jorge-pinilla.png',     bio: 'jorge-pinilla-bio.png',     offX: 44, offY: 30, zoom: 2.0 },
+  { name: 'Herman Ali',        role: 'Senior Tennis Professional',     image: 'herman-ali.jpg',        bio: 'herman-ali-bio.png',        offX: 48, offY: 22, zoom: 2.0 },
+  { name: 'Reduan Ariffin',    role: 'Tennis Professional',            image: 'reduan-ariffin.jpg',    bio: 'reduan-ariffin-bio.png',    offX: 48, offY: 30, zoom: 1.8 },
+  { name: 'Sharassalam Rasak', role: 'Tennis Professional',            image: 'sharassalam-rasak.jpg', bio: 'sharassalam-rasak-bio.png', offX: 48, offY: 28, zoom: 2.0 },
+  { name: 'Ethan Lee',         role: 'Tennis Professional',            image: 'ethan-lee.jpg',         bio: 'ethan-lee-bio.png',         offX: 48, offY: 25, zoom: 2.0 },
+  { name: 'Ezequiel Suarez',   role: 'Tennis Professional',            image: 'ezequiel-suarez.jpg',   bio: 'ezequiel-suarez-bio.png',   offX: 52, offY: 30, zoom: 2.0 },
+  { name: 'Jarek Grela',       role: 'Tennis Professional',            image: 'jarek-grela.png',       bio: 'jarek-grela-bio.png',       offX: 48, offY: 22, zoom: 2.2 },
+  { name: 'Jose Nino',         role: 'Tennis Professional',            image: 'jose-nino.jpg',         bio: 'jose-nino-bio.png',         offX: 48, offY: 18, zoom: 2.0 },
 ];
 
 const TEAM_FILES = TENNIS_TEAM.flatMap((m) => [m.image, m.bio]);
@@ -111,6 +113,9 @@ async function upsertTennisFacility({ teamMedia, heroImageId }) {
     role: m.role,
     image: teamMedia[m.image]?.id,
     bioImage: teamMedia[m.bio]?.id,
+    imageOffsetX: m.offX,
+    imageOffsetY: m.offY,
+    imageZoom: m.zoom,
     order: idx,
   }));
 
