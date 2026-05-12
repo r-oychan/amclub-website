@@ -26,7 +26,7 @@ export function PromoCell() {
           <p className="text-[17.6px] font-light leading-[1.4] text-primary mb-5">
             Browse the latest dining experiences and seasonal highlights.
           </p>
-          <ArrowLink label="View All Dining Promotions" href="/dining/promotions" icon="arrow" />
+          <ArrowLink label="View All Dining Promotions" href="/dining/dining-promotion" icon="arrow" />
         </div>
 
         {/* Flyer fan — Framer arrangement, 145×168 container */}

@@ -32,7 +32,7 @@ const RESTAURANTS = [
       { label: 'View Menu', file: 'central-menu-1.pdf' },
       { label: 'Specials Menu', file: 'central-menu-2.pdf' },
     ],
-    ctas: [{ label: 'Promotions', href: '/dining/promotions', icon: 'arrow' }],
+    ctas: [{ label: 'Promotions', href: '/dining/dining-promotion', icon: 'arrow' }],
     operatingHoursSections: [
       { title: 'Operating Hours', rows: [
         { dayRange: 'Monday to Friday', time: '7:00 AM - 6:00 PM' },
@@ -50,7 +50,7 @@ const RESTAURANTS = [
       { label: 'View Menu', file: 'grillhouse-main-menu.pdf' },
       { label: 'Tiki Bar Menu', file: 'tiki-bar-beverage-menu.pdf' },
     ],
-    ctas: [{ label: 'Promotions', href: '/dining/promotions', icon: 'arrow' }],
+    ctas: [{ label: 'Promotions', href: '/dining/dining-promotion', icon: 'arrow' }],
     operatingHoursSections: [
       { title: 'Grillhouse Operating Hours', rows: [
         { dayRange: 'Sunday to Thursday', time: '11:00 AM - 9:00 PM', lastOrder: 'Last order at 8:30 PM' },
@@ -73,7 +73,7 @@ const RESTAURANTS = [
       { label: 'View Menu', file: 'tsf-ala-carte-menu.pdf' },
       { label: 'Wine Menu', file: 'tsf-wine-menu.pdf' },
     ],
-    ctas: [{ label: 'Promotions', href: '/dining/promotions', icon: 'arrow' }],
+    ctas: [{ label: 'Promotions', href: '/dining/dining-promotion', icon: 'arrow' }],
     operatingHoursSections: [
       { title: 'Operating Hours', rows: [
         { dayRange: 'Tuesday to Sunday', time: '6:00 PM - 10:00 PM', lastOrder: 'Last order at 9:30 PM' },
@@ -105,7 +105,7 @@ const RESTAURANTS = [
     menuFiles: [
       { label: 'View Menu', file: 'tradewinds-menu.pdf' },
     ],
-    ctas: [{ label: 'Promotions', href: '/dining/promotions', icon: 'arrow' }],
+    ctas: [{ label: 'Promotions', href: '/dining/dining-promotion', icon: 'arrow' }],
     operatingHoursSections: [
       { title: 'Operating Hours', rows: [
         { dayRange: 'Daily', time: '6:30 AM - 10:30 PM', lastOrder: 'Last order at 10:00 PM' },

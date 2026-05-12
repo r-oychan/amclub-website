@@ -5,7 +5,7 @@
     "singularName": "dining-promotion",
     "pluralName": "dining-promotions",
     "displayName": "Dining Promotion",
-    "description": "A monthly dining promotion flyer shown on /dining/promotions"
+    "description": "A monthly dining promotion flyer shown on /dining/dining-promotion"
   },
   "options": {
     "draftAndPublish": true

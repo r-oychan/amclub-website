@@ -5,7 +5,7 @@
     "singularName": "dining-promotions-page",
     "pluralName": "dining-promotions-pages",
     "displayName": "Dining Promotions Page",
-    "description": "Landing page for /dining/promotions — hero, intro, restaurant filter tabs"
+    "description": "Landing page for /dining/dining-promotion — hero, intro, restaurant filter tabs"
   },
   "options": {
     "draftAndPublish": true
