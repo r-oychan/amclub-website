@@ -583,10 +583,13 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
         </div>
       </section>
 
-      {/* ── Image + Text Panels (e.g. Tennis Programs, Tennis Etiquette) ── */}
+      {/* ── Image + Text Panels (e.g. Tennis Programs, Tennis Etiquette) ──
+          Mirrors the hero's two-column layout (52% image / flex text, 60px gap,
+          sticky image by default) and reuses the hero's CTA pill + DetailSection
+          treatments so every panel reads as the same component. */}
       {venue.imagePanels && venue.imagePanels.length > 0 && (
-        <section className="bg-bg pb-16">
-          <div className="max-w-7xl mx-auto px-10 flex flex-col gap-16">
+        <section className="bg-bg pb-[120px]">
+          <div className="max-w-7xl mx-auto px-10 flex flex-col" style={{ gap: '120px' }}>
             {venue.imagePanels.map((panel, idx) => {
               const imageOnLeft = (panel.imagePosition ?? (idx % 2 === 0 ? 'left' : 'right')) === 'left';
               // By default the image stays pinned near the top of the viewport
@@ -594,22 +597,20 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
               // the panel to opt back into the row's normal flow.
               const stick = !panel.slideWithText;
               const imgEl = (
-                <div className={imageOnLeft ? 'lg:col-start-1 lg:col-end-7' : 'lg:col-start-7 lg:col-end-13'}>
+                <div className="lg:w-[52%] shrink-0">
                   <div className={stick ? 'lg:sticky lg:top-[120px]' : ''}>
-                    <img
-                      src={panel.image}
-                      alt={panel.imageAlt ?? panel.heading}
-                      className="w-full aspect-[4/3] object-cover"
-                    />
+                    <div className="overflow-hidden">
+                      <img
+                        src={panel.image}
+                        alt={panel.imageAlt ?? panel.heading}
+                        className="w-full h-auto object-cover"
+                      />
+                    </div>
                   </div>
                 </div>
               );
               const textEl = (
-                <div
-                  className={`${
-                    imageOnLeft ? 'lg:col-start-8 lg:col-end-13' : 'lg:col-start-1 lg:col-end-6'
-                  } flex flex-col gap-5`}
-                >
+                <div className="flex flex-col flex-1" style={{ gap: '32px' }}>
                   <h2
                     className="font-heading text-primary"
                     style={{
@@ -623,79 +624,127 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                     {panel.heading}
                   </h2>
 
-                  {panel.cta && (
-                    <div>
-                      {panel.cta.isExternal ? (
-                        <a
-                          href={panel.cta.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 text-accent uppercase tracking-[0.04em] font-bold hover:opacity-80 transition-opacity"
-                          style={{ fontSize: '13.6px' }}
-                        >
-                          {panel.cta.label}
-                          <CtaIcon name="arrow" size={20} className="text-accent" />
-                        </a>
-                      ) : (
-                        <Link
-                          to={panel.cta.href}
-                          className="inline-flex items-center gap-2 text-accent uppercase tracking-[0.04em] font-bold hover:opacity-80 transition-opacity"
-                          style={{ fontSize: '13.6px' }}
-                        >
-                          {panel.cta.label}
-                          <CtaIcon name="arrow" size={20} className="text-accent" />
-                        </Link>
-                      )}
-                    </div>
-                  )}
-
-                  {panel.subheading && (
-                    <h3
-                      className="font-heading text-primary"
-                      style={{ fontSize: '20.8px', fontWeight: 700, letterSpacing: '-0.416px' }}
-                    >
-                      {panel.subheading}
-                    </h3>
-                  )}
+                  {panel.cta && (() => {
+                    const linkClass =
+                      'inline-flex items-center gap-2 bg-white rounded-full text-primary uppercase hover:shadow-md transition-shadow self-start';
+                    const linkStyle = {
+                      padding: '12px 16px 12px 24px',
+                      fontSize: '13.6px',
+                      fontWeight: 700,
+                      letterSpacing: '0.04em',
+                      boxShadow: 'rgba(32, 99, 171, 0.07) 0px 20px 19px -12px',
+                    } as const;
+                    const inner = (
+                      <>
+                        {panel.cta.label}
+                        <CtaIcon name="arrow" size={20} className="text-accent" />
+                      </>
+                    );
+                    return panel.cta.isExternal ? (
+                      <a
+                        href={panel.cta.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={linkClass}
+                        style={linkStyle}
+                      >
+                        {inner}
+                      </a>
+                    ) : (
+                      <Link to={panel.cta.href} className={linkClass} style={linkStyle}>
+                        {inner}
+                      </Link>
+                    );
+                  })()}
 
                   {panel.body && (
                     <p
                       className="text-text-dark"
-                      style={{ fontSize: '17.6px', fontWeight: 400, lineHeight: '24.64px' }}
+                      style={{ fontSize: '19.2px', fontWeight: 400, lineHeight: '26.88px' }}
                     >
                       {panel.body}
                     </p>
                   )}
 
-                  {panel.bullets && panel.bullets.length > 0 && (
-                    <ul className="list-disc pl-5 flex flex-col gap-2">
+                  {panel.subheading && (() => {
+                    // Prefer clock when the subsection carries scheduled hours;
+                    // otherwise pick the closest semantic icon by title.
+                    const subIcon = panel.operatingHours && panel.operatingHours.length > 0
+                      ? 'clock'
+                      : resolveIcon(panel.subheading);
+                    return (
+                      <DetailSection icon={subIcon} title={panel.subheading}>
+                        <div className="flex flex-col" style={{ gap: '20px' }}>
+                          {panel.bullets && panel.bullets.length > 0 && (
+                            <ul className="list-disc pl-6 flex flex-col" style={{ gap: '8px' }}>
+                              {panel.bullets.map((b, i) => (
+                                <li
+                                  key={i}
+                                  className="text-text-dark"
+                                  style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
+                                >
+                                  {b}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                          {panel.operatingHours && panel.operatingHours.length > 0 && (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
+                              {panel.operatingHours.map((block, i) => (
+                                <div key={i} className="flex flex-col gap-1">
+                                  <p
+                                    className="text-text-dark"
+                                    style={{ fontSize: '17.6px', fontWeight: 700, lineHeight: '24.64px' }}
+                                  >
+                                    {block.title}
+                                  </p>
+                                  {block.rows.map((row, j) => (
+                                    <p
+                                      key={j}
+                                      className="text-text-dark"
+                                      style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
+                                    >
+                                      {row}
+                                    </p>
+                                  ))}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </DetailSection>
+                    );
+                  })()}
+
+                  {/* If there's no subheading, bullets/operatingHours still render unwrapped. */}
+                  {!panel.subheading && panel.bullets && panel.bullets.length > 0 && (
+                    <ul className="list-disc pl-6 flex flex-col" style={{ gap: '8px' }}>
                       {panel.bullets.map((b, i) => (
                         <li
                           key={i}
                           className="text-text-dark"
-                          style={{ fontSize: '17.6px', lineHeight: '24.64px' }}
+                          style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
                         >
                           {b}
                         </li>
                       ))}
                     </ul>
                   )}
-
-                  {panel.operatingHours && panel.operatingHours.length > 0 && (
-                    <div className="flex flex-col gap-4">
+                  {!panel.subheading && panel.operatingHours && panel.operatingHours.length > 0 && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
                       {panel.operatingHours.map((block, i) => (
-                        <div key={i}>
-                          <h4
-                            className="font-heading text-primary mb-1"
-                            style={{ fontSize: '17.6px', fontWeight: 700 }}
+                        <div key={i} className="flex flex-col gap-1">
+                          <p
+                            className="text-text-dark"
+                            style={{ fontSize: '17.6px', fontWeight: 700, lineHeight: '24.64px' }}
                           >
                             {block.title}
-                          </h4>
+                          </p>
                           {block.rows.map((row, j) => (
                             <p
                               key={j}
                               className="text-text-dark"
-                              style={{ fontSize: '17.6px', lineHeight: '24.64px' }}
+                              style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
                             >
                               {row}
                             </p>
@@ -718,7 +767,8 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
               return (
                 <div
                   key={`${panel.heading}-${idx}`}
-                  className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start"
+                  className="flex flex-col lg:flex-row items-start"
+                  style={{ gap: '60px' }}
                 >
                   {imageOnLeft ? (
                     <>
