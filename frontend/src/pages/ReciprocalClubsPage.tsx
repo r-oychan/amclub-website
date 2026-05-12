@@ -5,7 +5,7 @@ import { DetailSection } from '../components/detail/DetailSection';
 import { CtaIcon } from '../components/shared/CtaIcon';
 import { ImagePanelSlideshow, type SlideshowSlide } from '../components/blocks/ImagePanelSlideshow';
 
-const RECIPROCAL_LIST_URL = '#';
+const RECIPROCAL_LIST_URL = '/documents/membership/reciprocal-club-list.pdf';
 const LETTER_OF_INTRODUCTION_URL = 'https://amclub.jotform.com/250954923764972';
 const TOWER_CLUB_URL = '#';
 
@@ -137,7 +137,7 @@ export default function ReciprocalClubsPage() {
                 Membership Without Borders
               </h1>
               <div className="flex flex-wrap gap-3">
-                <Pill href={RECIPROCAL_LIST_URL} label="List of Reciprocal Clubs" />
+                <Pill href={RECIPROCAL_LIST_URL} label="List of Reciprocal Clubs" external />
                 <Pill href={LETTER_OF_INTRODUCTION_URL} label="Letter of Introduction Application" external />
               </div>
               <p
