@@ -69,6 +69,126 @@ const AQUATICS_TEAM = [
 
 const AQUATICS_TEAM_FILES = AQUATICS_TEAM.map((m) => m.image);
 
+// Coach detail entries. Mirrors frontend/src/data/coaches.ts and is seeded
+// into the coach collection so /coaches/<section>/<slug> can fetch from CMS.
+const AQUATICS_COACHES = [
+  {
+    slug: 'greg',
+    name: 'Greg Fasala',
+    role: 'Aquatics Manager & Head Coach',
+    photoFile: 'greg.jpg',
+    bio:
+      "Coach Greg boasts a wealth of experience in swim coaching, coupled with a distinguished past as an Olympic medalist. His commitment to nurturing the swimming community extends to coaching both adult Masters swimmers and aspiring competitive swimmers within The American Club.",
+    expertise: ['Adult Learn to Swim', 'Adult Squads', 'Competitive Swim Squads'],
+    qualifications: [
+      'Australian Representative at the Olympics 1984 — Silver medal',
+      'Australian Representative at the Commonwealth Games 1982 — 1 Gold & 1 Silver',
+      'Australian Representative at the Commonwealth Games 1986 — 2 Gold & 1 Bronze',
+      'Australian Representative at the World Championships 1983',
+      'Awarded OAM (Order of Australia Medal) by the Prime Minister of Australia',
+      'Australian Swimming Ambassador',
+      'SwimAmerica Program Director',
+      'ASCTA Silver Coach',
+      'Austswim — Teacher of Swimming',
+      'Austswim — Teacher of Infant Aquatics',
+      'Austswim — Competency Supervisor',
+      'International Lifeguard Training Program (Ellis & Associates) — Lifeguard Trainer (2021)',
+      'International Lifeguard Training Program (Ellis & Associates) — Lifeguard',
+      'International Lifeguard Training Program (Ellis & Associates) — CPR/AED',
+      'International Lifeguard Training Program (Ellis & Associates) — First Aid',
+    ],
+    order: 0,
+  },
+  {
+    slug: 'zack',
+    name: 'Zack Leong',
+    role: 'Aquatics Coordinator',
+    photoFile: 'zack.jpg',
+    bio:
+      "Zack is a passionate and dedicated swim coach with close to a decade of experience helping individuals of all ages and skill levels achieve their swimming goals. Whether you're a beginner looking to conquer your fear of water or a seasoned swimmer aiming for personal bests, he will help guide you and your child into the right classes to unlock your full aquatic potential.",
+    expertise: ['Adult Learn to Swim', 'Children Learn to Swim'],
+    qualifications: [
+      'SwimAmerica Program Director',
+      'International Lifeguard Training Program (Ellis & Associates) — Lifeguard',
+      'International Lifeguard Training Program (Ellis & Associates) — CPR/AED',
+      'International Lifeguard Training Program (Ellis & Associates) — First Aid',
+      'ASCA Level 1 & 2',
+      'Austswim — Teacher of Swimming',
+      'Swim Australia — Teacher of Babies & Toddlers',
+      'SG Coach — Theory 1',
+    ],
+    order: 1,
+  },
+  {
+    slug: 'hariz',
+    name: 'Hariz Zailani',
+    role: 'Assistant Coach & Coordinator',
+    photoFile: 'hariz.jpg',
+    bio:
+      "Hariz's passion for teaching — which he had from a young age — combined with his love for sports eventually led him to a coaching career. Armed with knowledge from his Sports and Exercise Sciences studies at BSC and his love for swimming, Hariz has evolved into a devoted coach. His journey began as a teacher for the Babies Learn to Swim program, and he has since progressed to Assistant Coach. He now works closely with Head Coach Greg Fasala to nurture the Development and Competitive Squad and help them achieve their full potential.",
+    expertise: [
+      'Toddler Learn to Swim',
+      'Fundamental Swimming Strokes',
+      'Swimming for Beginners',
+      'Competitive Swimming',
+      'Strength and Conditioning for Aquatics',
+    ],
+    qualifications: [
+      'Royal Lifesaving — Bronze Medallion',
+      'SwimAmerica Program Director',
+      'International Lifeguard Training Program (Ellis & Associates) — Lifeguard',
+      'International Lifeguard Training Program (Ellis & Associates) — CPR/AED',
+      'International Lifeguard Training Program (Ellis & Associates) — First Aid',
+      'AustSwim Teacher of Babies and Toddlers',
+      'Values and Principles in Sport',
+      'Singapore Life Saving — Certificate 123',
+    ],
+    order: 2,
+  },
+  {
+    slug: 'abdul',
+    name: 'Abdul Latip',
+    role: 'Chief Lifeguard',
+    photoFile: 'abdul.jpg',
+    bio:
+      "With 30 years of service and loyalty under his belt, Abdul is no stranger to anyone in The American Club. He earned his Chief Lifeguard title by managing the club's emergency procedures and handling numerous critical situations — more emergency cases than he can count, and countless lives saved both in and out of the pool. Abdul prioritizes pool safety enforcement to maintain a secure environment for members.",
+    expertise: ['Adult Learn to Swim', 'Children Learn to Swim'],
+    qualifications: [
+      'International Lifeguard Training Program (Ellis & Associates) — Lifeguard',
+      'International Lifeguard Training Program (Ellis & Associates) — CPR/AED',
+      'International Lifeguard Training Program (Ellis & Associates) — First Aid',
+      'The American Club — Team Leader for First Responders',
+      'The American Club — Club-Wide Safety Officer',
+      'The American Club — Crisis Management Team Member',
+    ],
+    order: 3,
+  },
+  {
+    slug: 'rodel',
+    name: 'Rodel Pajo',
+    role: 'Swim Coach / Lifeguard Trainer',
+    photoFile: 'rodel.jpg',
+    bio:
+      "Rodel is dedicated to developing swimmer potential through customized coaching that emphasises building strong foundations, refining stroke techniques, and always promoting water safety. His lifeguard instructor credentials include certifications in CPR, First Aid, and lifeguarding instruction.",
+    expertise: [
+      'Adult Learn to Swim',
+      'Fundamental Swimming Strokes',
+      'Swimming for Beginners',
+      'Water Safety Education',
+    ],
+    qualifications: [
+      'SwimAmerica Coach',
+      'International Lifeguard Training Program (Ellis & Associates) — Lifeguard Trainer (2019, 2021, 2023)',
+      'International Lifeguard Training Program (Ellis & Associates) — Lifeguard',
+      'International Lifeguard Training Program (Ellis & Associates) — CPR/AED',
+      'International Lifeguard Training Program (Ellis & Associates) — First Aid',
+      'Philippines Red Cross (2010)',
+      'ASCA Level 1 & 2 International (American Swimming Coaches Association)',
+    ],
+    order: 4,
+  },
+];
+
 const AQUATICS = {
   name: 'Aquatics',
   slug: 'aquatics',
@@ -198,6 +318,36 @@ async function upsertTennisFacility({ teamMedia, heroImageId }) {
   return resp.data;
 }
 
+async function upsertCoach(c, photoId, section) {
+  const payload = {
+    name: c.name,
+    slug: c.slug,
+    role: c.role,
+    section,
+    photo: photoId,
+    bio: c.bio,
+    expertise: c.expertise.join('\n'),
+    qualifications: c.qualifications.join('\n'),
+    order: c.order ?? 0,
+    publishedAt: new Date().toISOString(),
+  };
+
+  if (DRY) {
+    console.log(`  [dry] upsert coach ${c.slug}`);
+    return { documentId: `dry-coach-${c.slug}` };
+  }
+
+  const existing = await findOneBySlug(ctx, 'coaches', c.slug);
+  if (existing) {
+    const resp = await api(ctx, `/coaches/${existing.documentId}`, { method: 'PUT', body: { data: payload } });
+    console.log(`  ✓ updated coach ${c.slug} (documentId=${existing.documentId})`);
+    return resp.data;
+  }
+  const resp = await api(ctx, '/coaches', { method: 'POST', body: { data: payload } });
+  console.log(`  ✓ created coach ${c.slug} (documentId=${resp.data?.documentId})`);
+  return resp.data;
+}
+
 async function upsertAquaticsFacility({ teamMedia, heroImageId, includeCoachLink = true }) {
   const teamMembers = AQUATICS_TEAM.map((m, idx) => {
     const base = {
@@ -250,35 +400,35 @@ async function main() {
   console.log(`Strapi base: ${ctx.BASE}`);
   console.log(`Mode:        ${DRY ? 'DRY-RUN' : 'LIVE'}`);
 
-  console.log('\n[1/7] Uploading squash hero image…');
+  console.log('\n[1/8] Uploading squash hero image…');
   const squashHeroMedia = await uploadAll(ctx, FITNESS_DIR, [SQUASH.imageFile], { dry: DRY });
   const squashHeroId = squashHeroMedia[SQUASH.imageFile]?.id;
 
-  console.log('\n[2/7] Upserting squash facility…');
+  console.log('\n[2/8] Upserting squash facility…');
   try {
     await upsertSquashFacility({ heroImageId: squashHeroId });
   } catch (e) {
     console.error(`  ✗ squash upsert failed: ${e.message}`);
   }
 
-  console.log('\n[3/7] Uploading tennis team headshots + bio cards…');
+  console.log('\n[3/8] Uploading tennis team headshots + bio cards…');
   const tennisTeamMedia = await uploadAll(ctx, TEAM_DIR, TEAM_FILES, { dry: DRY });
 
-  console.log('\n[4/7] Uploading tennis hero image…');
+  console.log('\n[4/8] Uploading tennis hero image…');
   const tennisHeroMedia = await uploadAll(ctx, FACILITY_DIR, [TENNIS.imageFile], { dry: DRY });
   const tennisHeroId = tennisHeroMedia[TENNIS.imageFile]?.id;
 
-  console.log('\n[5/7] Upserting tennis facility…');
+  console.log('\n[5/8] Upserting tennis facility…');
   try {
     await upsertTennisFacility({ teamMedia: tennisTeamMedia, heroImageId: tennisHeroId });
   } catch (e) {
     console.error(`  ✗ tennis upsert failed: ${e.message}`);
   }
 
-  console.log('\n[6/7] Uploading aquatics team headshots…');
+  console.log('\n[6/8] Uploading aquatics team headshots…');
   const aquaticsTeamMedia = await uploadAll(ctx, AQUATICS_TEAM_DIR, AQUATICS_TEAM_FILES, { dry: DRY });
 
-  console.log('\n[7/7] Uploading aquatics hero image + upserting facility…');
+  console.log('\n[7/8] Uploading aquatics hero image + upserting facility…');
   const aquaticsHeroMedia = await uploadAll(ctx, FACILITY_DIR, [AQUATICS.imageFile], { dry: DRY });
   const aquaticsHeroId = aquaticsHeroMedia[AQUATICS.imageFile]?.id;
   try {
@@ -296,9 +446,20 @@ async function main() {
     }
   }
 
+  console.log('\n[8/8] Upserting aquatics coach detail entries…');
+  for (const c of AQUATICS_COACHES) {
+    const photoId = aquaticsTeamMedia[c.photoFile]?.id;
+    try {
+      await upsertCoach(c, photoId, 'aquatics');
+    } catch (e) {
+      console.error(`  ✗ coach ${c.slug} failed: ${e.message}`);
+    }
+  }
+
   console.log('\nDone. Verify with:');
   console.log(`  curl "${ctx.BASE}/api/facilities?filters[slug][$eq]=tennis&populate[teamMembers][populate]=*"`);
   console.log(`  curl "${ctx.BASE}/api/facilities?filters[slug][$eq]=aquatics&populate[teamMembers][populate]=*"`);
+  console.log(`  curl "${ctx.BASE}/api/coaches?filters[section][$eq]=aquatics&populate[photo]=true"`);
   console.log(`  curl "${ctx.BASE}/api/facilities?filters[slug][$eq]=squash&populate[ctas]=true"`);
 }
 main().catch((e) => { console.error('\nERROR:', e.message); process.exit(1); });

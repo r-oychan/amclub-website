@@ -14,9 +14,11 @@ import JoiningFeesPage from './pages/JoiningFeesPage';
 import ReferralPage from './pages/ReferralPage';
 import ReciprocalClubsPage from './pages/ReciprocalClubsPage';
 import WhatsOnPage from './pages/WhatsOnPage';
+import EventDetailPage from './pages/EventDetailPage';
 import NewsPage from './pages/NewsPage';
 import GalleryPage from './pages/GalleryPage';
 import VenueDetailPage from './pages/VenueDetailPage';
+import CoachDetailPage from './pages/CoachDetailPage';
 import ContactUsPage from './pages/ContactUsPage';
 import PrivacyStatementPage from './pages/PrivacyStatementPage';
 
@@ -36,6 +38,7 @@ export default function App() {
             <Route path="/fitness" element={<FitnessPage />} />
             <Route path="/fitness/:slug" element={<VenueDetailPage section="fitness" />} />
             <Route path="/fitness/:slug/:subSlug" element={<VenueDetailPage section="fitness" />} />
+            <Route path="/coaches/:section/:slug" element={<CoachDetailPage />} />
             <Route path="/kids" element={<KidsPage />} />
             <Route path="/kids/:slug" element={<VenueDetailPage section="kids" />} />
             <Route path="/event-spaces" element={<EventSpacesPage />} />
@@ -46,6 +49,7 @@ export default function App() {
             <Route path="/membership/reciprocal-clubs" element={<ReciprocalClubsPage />} />
             <Route path="/membership/:slug" element={<VenueDetailPage section="membership" />} />
             <Route path="/whats-on" element={<WhatsOnPage />} />
+            <Route path="/whats-on/:slug" element={<EventDetailPage />} />
             <Route path="/home-sub/news" element={<NewsPage />} />
             <Route path="/home-sub/gallery" element={<GalleryPage />} />
             <Route path="/home-sub/contact-us" element={<ContactUsPage />} />
