@@ -6,8 +6,6 @@ import { CardGrid } from '../components/blocks/CardGrid';
 import { FeatureGrid } from '../components/blocks/FeatureGrid';
 import { TabsSection } from '../components/blocks/TabsSection';
 import { TestimonialSlider } from '../components/blocks/TestimonialSlider';
-import { SocialFeed } from '../components/blocks/SocialFeed';
-import type { SocialPlatform } from '../components/blocks/SocialFeed';
 import { FaqAccordion } from '../components/blocks/FaqAccordion';
 import { PageFade } from '../components/shared/PageFade';
 
@@ -67,6 +65,7 @@ type StrapiTestimonial = {
   memberName: string;
   quote: string;
   photo?: StrapiMedia;
+  video?: StrapiMedia;
   ctaLabel?: string;
   ctaUrl?: string;
 };
@@ -76,22 +75,6 @@ type StrapiTestimonialSlider = {
   cta?: StrapiLink;
   dark?: boolean;
   testimonials?: StrapiTestimonial[];
-};
-type StrapiSocialPost = {
-  title?: string;
-  platform?: SocialPlatform;
-  href?: string;
-  image?: StrapiMedia;
-  video?: StrapiMedia;
-  caption?: string;
-};
-type StrapiSocialFeed = {
-  label?: string;
-  heading?: string;
-  description?: string;
-  cta?: StrapiLink;
-  dark?: boolean;
-  posts?: StrapiSocialPost[];
 };
 type StrapiFaqBlockChild = { type?: string; text?: string; children?: StrapiFaqBlockChild[] };
 type StrapiFaqBlock = { type?: string; children?: StrapiFaqBlockChild[] };
@@ -116,7 +99,6 @@ interface StrapiHomePage {
   services?: StrapiFeatureGrid;
   experience?: StrapiTabsSection;
   moments?: StrapiTestimonialSlider;
-  social?: StrapiSocialFeed;
   faq?: StrapiFaqSection;
 }
 
@@ -188,38 +170,45 @@ const DUMMY_FAQ_ANSWERS: { match: RegExp; answer: string }[] = [
   },
 ];
 
-const SOCIAL_FALLBACK_POSTS: Array<{
-  title?: string;
-  platform?: SocialPlatform;
-  href?: string;
+const AMCLUB_INSTAGRAM = 'https://www.instagram.com/americanclubsingapore/';
+
+const MOMENTS_FALLBACK: Array<{
+  name: string;
+  quote: string;
+  cta?: string;
   image?: string;
   video?: string;
+  href?: string;
 }> = [
   {
-    title: 'Stars, Stripes & Breakfast Bites',
-    platform: 'instagram',
-    href: 'https://www.instagram.com/americanclubsingapore/',
+    name: 'American Club',
+    quote: 'Stars, Stripes & Big Breakfast Bites',
+    cta: 'Watch More',
     image: '/images/social/stars-stripes-breakfast.jpg',
     video: '/images/social/stars-stripes-breakfast.mp4',
+    href: AMCLUB_INSTAGRAM,
   },
   {
-    title: 'Mahjong Social',
-    platform: 'instagram',
-    href: 'https://www.instagram.com/americanclubsingapore/',
+    name: 'American Club',
+    quote: 'Mahjong Social',
+    cta: 'Watch More',
     image: '/images/social/mahjong-social.jpg',
     video: '/images/social/mahjong-social.mp4',
+    href: AMCLUB_INSTAGRAM,
   },
   {
-    title: 'Shaken not Sorry',
-    platform: 'instagram',
-    href: 'https://www.instagram.com/americanclubsingapore/',
+    name: 'American Club',
+    quote: 'Shaken not Sorry',
+    cta: 'Watch More',
     image: '/images/social/shaken-not-sorry.jpg',
+    href: AMCLUB_INSTAGRAM,
   },
   {
-    title: 'Daddy Daughter Dance',
-    platform: 'instagram',
-    href: 'https://www.instagram.com/americanclubsingapore/',
+    name: 'American Club',
+    quote: 'Daddy Daughter Dance',
+    cta: 'Watch More',
     image: '/images/social/daddy-daughter-dance.jpg',
+    href: AMCLUB_INSTAGRAM,
   },
 ];
 
@@ -301,26 +290,20 @@ export default function HomePage() {
     .filter((c) => c.src);
 
   const moments = data?.moments;
-  const momentItems = (moments?.testimonials ?? []).map((t) => ({
-    name: t.memberName,
-    quote: t.quote,
-    cta: t.ctaLabel,
-    image: mediaUrl(t.photo),
-    href: t.ctaUrl,
-  }));
-
-  const social = data?.social;
-  const cmsSocialPosts = (social?.posts ?? [])
-    .map((p) => ({
-      title: p.title,
-      platform: p.platform,
-      href: p.href,
-      image: mediaUrl(p.image),
-      video: mediaUrl(p.video),
-      caption: p.caption,
-    }))
-    .filter((p) => p.image || p.video);
-  const socialPosts = cmsSocialPosts.length > 0 ? cmsSocialPosts : SOCIAL_FALLBACK_POSTS;
+  // CMS testimonials are kept for migration but, until the deployed Strapi is
+  // re-seeded with the new social-style posts (memberName = "American Club"),
+  // render the local fallback so every card is branded consistently.
+  const cmsMomentItems = (moments?.testimonials ?? [])
+    .filter((t) => t.memberName === 'American Club')
+    .map((t) => ({
+      name: 'American Club',
+      quote: t.quote,
+      cta: t.ctaLabel,
+      image: mediaUrl(t.photo),
+      video: mediaUrl(t.video),
+      href: AMCLUB_INSTAGRAM,
+    }));
+  const momentItems = cmsMomentItems.length > 0 ? cmsMomentItems : MOMENTS_FALLBACK;
 
   const faq = data?.faq;
   const faqItems = (faq?.items ?? []).map((i) => ({
@@ -385,29 +368,18 @@ export default function HomePage() {
         />
       )}
 
-      {moments && momentItems.length > 0 && (
+      {momentItems.length > 0 && (
         <TestimonialSlider
-          label={moments.label}
-          heading={moments.heading ?? ''}
-          cta={link(moments.cta)}
-          items={momentItems}
-        />
-      )}
-
-      {socialPosts.length > 0 && (
-        <SocialFeed
-          label={social?.label ?? 'Social'}
-          heading={social?.heading ?? 'Follow our latest moments'}
-          description={social?.description}
+          label={moments?.label ?? 'Moments'}
+          heading={moments?.heading ?? 'Moments that matter, captured and shared by you'}
           cta={
-            link(social?.cta) ?? {
-              label: 'Follow Us @americanclubsingapore',
-              href: 'https://www.instagram.com/americanclubsingapore/',
+            link(moments?.cta) ?? {
+              label: 'Follow Our Socials',
+              href: AMCLUB_INSTAGRAM,
               isExternal: true,
             }
           }
-          dark={social?.dark ?? false}
-          posts={socialPosts}
+          items={momentItems}
         />
       )}
 

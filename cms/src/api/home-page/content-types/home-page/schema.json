@@ -45,11 +45,6 @@
       "repeatable": false,
       "component": "blocks.testimonial-slider"
     },
-    "social": {
-      "type": "component",
-      "repeatable": false,
-      "component": "blocks.social-feed"
-    },
     "faq": {
       "type": "component",
       "repeatable": false,

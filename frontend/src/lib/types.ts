@@ -72,6 +72,7 @@ export interface TestimonialItem {
   quote: string;
   cta?: string;
   image?: string;
+  video?: string;
   href?: string;
 }
 

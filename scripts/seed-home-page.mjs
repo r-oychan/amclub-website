@@ -146,16 +146,9 @@ const EVENTS = [
   ['Fitness & Wellness',  'Adult Team Tennis Challenge 2025',                      '2026-12-30', 'event-9-tennis-challenge.jpg'],
 ];
 
-const TESTIMONIALS = [
-  // name, quote, image filename, ctaUrl, order
-  ['Ronald Williams',  'Abuzz with Independence Day cheer on July 1',                'event-3-scarily-fun-fridays.jpg', 'https://www.instagram.com/americanclubsingapore/', 1],
-  ['Sarah Grey',       'A multitude of culinary experience for your tastebuds',      'event-2-pedal-to-victory.jpg',    'https://www.instagram.com/americanclubsingapore/', 2],
-  ['Matthew Hallen',   'Fantastic evening of glitz, glamor and giving',              'event-4-smokin-sundays.jpg',      'https://www.instagram.com/americanclubsingapore/', 3],
-  ['Joseph Gunner',    'Abuzz with Independence Day cheer on July 1',                'about-2.jpeg',                    'https://www.instagram.com/americanclubsingapore/', 4],
-  ['Emma Chen',        'Sunday brunch with the family at the Grillhouse',            'about-1.jpeg',                    'https://www.instagram.com/americanclubsingapore/', 5],
-];
+const AMCLUB_INSTAGRAM = 'https://www.instagram.com/americanclubsingapore/';
 
-const SOCIAL_IMAGES = [
+const SOCIAL_MEDIA = [
   'stars-stripes-breakfast.jpg',
   'stars-stripes-breakfast.mp4',
   'mahjong-social.jpg',
@@ -164,12 +157,14 @@ const SOCIAL_IMAGES = [
   'daddy-daughter-dance.jpg',
 ];
 
-const SOCIAL_POSTS = [
-  // title, platform, href, image filename, video filename (optional)
-  ['Stars, Stripes & Breakfast Bites', 'instagram', 'https://www.instagram.com/americanclubsingapore/', 'stars-stripes-breakfast.jpg', 'stars-stripes-breakfast.mp4'],
-  ['Mahjong Social',                   'instagram', 'https://www.instagram.com/americanclubsingapore/', 'mahjong-social.jpg',          'mahjong-social.mp4'],
-  ['Shaken not Sorry',                 'instagram', 'https://www.instagram.com/americanclubsingapore/', 'shaken-not-sorry.jpg',        null],
-  ['Daddy Daughter Dance',             'instagram', 'https://www.instagram.com/americanclubsingapore/', 'daddy-daughter-dance.jpg',    null],
+// Slot the social posts into the existing "moments" testimonial slider.
+// All cards are branded as "American Club" and link to the American Club Instagram.
+// slug, quote, image filename, video filename (optional), order
+const TESTIMONIALS = [
+  ['stars-stripes-breakfast', 'Stars, Stripes & Big Breakfast Bites', 'stars-stripes-breakfast.jpg', 'stars-stripes-breakfast.mp4', 1],
+  ['mahjong-social',          'Mahjong Social',                       'mahjong-social.jpg',          'mahjong-social.mp4',          2],
+  ['shaken-not-sorry',        'Shaken not Sorry',                     'shaken-not-sorry.jpg',        null,                          3],
+  ['daddy-daughter-dance',    'Daddy Daughter Dance',                 'daddy-daughter-dance.jpg',    null,                          4],
 ];
 
 const FAQ_ITEMS = [
@@ -219,21 +214,20 @@ async function ensureEvent(category, title, date, imageId) {
   }
 }
 
-async function ensureTestimonial(name, quote, imageId, ctaUrl, order) {
-  const slug = slugify(name);
-  if (DRY) { console.log(`  [dry] upsert testimonial: ${name}`); return { documentId: `dry-${slug}`, slug }; }
+async function ensureTestimonial(slug, quote, imageId, videoId, order) {
+  if (DRY) { console.log(`  [dry] upsert testimonial: ${slug}`); return { documentId: `dry-${slug}`, slug }; }
   const existing = await findOneBySlug('testimonials', slug);
   const payload = {
-    memberName: name,
+    memberName: 'American Club',
     slug,
     quote,
     photo: imageId,
+    video: videoId ?? null,
     ctaLabel: 'Watch More',
-    ctaUrl,
+    ctaUrl: AMCLUB_INSTAGRAM,
     order,
     publishedAt: new Date().toISOString(),
   };
-  if (DRY) { console.log(`  [dry] upsert testimonial: ${name}`); return { documentId: `dry-${slug}`, slug }; }
   if (existing) {
     const r = await api(`/testimonials/${existing.documentId}`, { method: 'PUT', body: { data: payload } });
     return r.data;
@@ -258,7 +252,7 @@ async function ensureFaqItem(question, category, order) {
   }
 }
 
-async function upsertHomePage({ media, socialMedia, eventsCat, testimonialIds, faqIds }) {
+async function upsertHomePage({ media, eventsCat, testimonialIds, faqIds }) {
   const data = {
     title: 'Home',
     hero: {
@@ -356,28 +350,9 @@ async function upsertHomePage({ media, socialMedia, eventsCat, testimonialIds, f
     moments: {
       label: 'Moments',
       heading: 'Moments that matter, captured and shared by you',
-      cta: { label: 'Follow Our Socials', href: 'https://www.instagram.com/americanclubsingapore/', isExternal: true, variant: 'primary' },
+      cta: { label: 'Follow Our Socials', href: AMCLUB_INSTAGRAM, isExternal: true, variant: 'primary' },
       dark: true,
       testimonials: testimonialIds,
-    },
-    social: {
-      label: 'Social',
-      heading: 'Follow our latest moments',
-      description: 'Member events, club moments, and snapshots from around the Club — straight from our feed.',
-      dark: false,
-      cta: {
-        label: 'Follow Us @americanclubsingapore',
-        href: 'https://www.instagram.com/americanclubsingapore/',
-        isExternal: true,
-        variant: 'primary',
-      },
-      posts: SOCIAL_POSTS.map(([title, platform, href, imgName, vidName]) => ({
-        title,
-        platform,
-        href,
-        image: socialMedia?.[imgName]?.id,
-        video: vidName ? socialMedia?.[vidName]?.id : undefined,
-      })),
     },
     faq: {
       label: 'FAQ',
@@ -415,13 +390,12 @@ async function main() {
     media[name] = m;
     console.log(`  ✓ ${name.padEnd(40)} → id=${m.id}`);
   }
-  const socialMedia = {};
-  for (const name of SOCIAL_IMAGES) {
+  for (const name of SOCIAL_MEDIA) {
     const path = join(SOCIAL_DIR, name);
-    try { statSync(path); } catch { console.log(`  ! skip ${name} (missing)`); continue; }
-    if (DRY) { socialMedia[name] = { id: 0, name }; console.log(`  [dry] upload social/${name}`); continue; }
+    try { statSync(path); } catch { console.log(`  ! skip social/${name} (missing)`); continue; }
+    if (DRY) { media[name] = { id: 0, name }; console.log(`  [dry] upload social/${name}`); continue; }
     const m = await uploadFile(path);
-    socialMedia[name] = m;
+    media[name] = m;
     console.log(`  ✓ social/${name.padEnd(36)} → id=${m.id}`);
   }
 
@@ -440,10 +414,16 @@ async function main() {
 
   console.log('\n[4/6] Testimonials…');
   const testimonialIds = [];
-  for (const [name, quote, imgName, ctaUrl, order] of TESTIMONIALS) {
-    const t = await ensureTestimonial(name, quote, media[imgName]?.id ?? 0, ctaUrl, order);
+  for (const [slug, quote, imgName, vidName, order] of TESTIMONIALS) {
+    const t = await ensureTestimonial(
+      slug,
+      quote,
+      media[imgName]?.id ?? null,
+      vidName ? media[vidName]?.id ?? null : null,
+      order,
+    );
     testimonialIds.push(t.documentId);
-    console.log(`  ✓ ${name}`);
+    console.log(`  ✓ ${slug}`);
   }
 
   console.log('\n[5/6] FAQ items…');
@@ -455,7 +435,7 @@ async function main() {
   }
 
   console.log('\n[6/6] Home Page single type…');
-  await upsertHomePage({ media, socialMedia, eventsCat: cats, testimonialIds, faqIds });
+  await upsertHomePage({ media, eventsCat: cats, testimonialIds, faqIds });
   console.log('  ✓ home-page upserted');
 
   console.log('\nDone.');

@@ -143,13 +143,25 @@ function MomentCard({ item }: { item: TestimonialItem }) {
       {...wrapperProps}
       className="group relative flex-shrink-0 w-[280px] md:w-[320px] aspect-[320/520] rounded-3xl overflow-hidden snap-start shadow-xl bg-primary-dark"
     >
-      {item.image && (
+      {item.video ? (
+        <video
+          src={item.video}
+          poster={item.image}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="metadata"
+          aria-hidden="true"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+      ) : item.image ? (
         <img
           src={item.image}
           alt=""
           className="absolute inset-0 w-full h-full object-cover"
         />
-      )}
+      ) : null}
       <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/10 to-black/70" />
 
       {/* Instagram name pill — top, centered, translucent white */}
