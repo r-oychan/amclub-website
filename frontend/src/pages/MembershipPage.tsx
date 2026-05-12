@@ -3,7 +3,6 @@ import { fetchAPI, STRAPI_URL } from '../lib/api';
 import { Hero } from '../components/blocks/Hero';
 import { CtaBanner } from '../components/blocks/CtaBanner';
 import { FeatureGrid } from '../components/blocks/FeatureGrid';
-import { FaqAccordion } from '../components/blocks/FaqAccordion';
 import { OverlaySection } from '../components/blocks/OverlaySection';
 import { MembershipCommunityCollage } from '../components/blocks/MembershipCommunityCollage';
 import { MembershipPrograms } from '../components/blocks/MembershipPrograms';
@@ -36,11 +35,8 @@ interface StrapiMembershipPage {
   findRightCta?: StrapiCtaBanner;
   findMembershipImage?: StrapiMedia;
   programs?: { heading?: string; cards?: StrapiFeatureItem[] };
-  faq?: { heading?: string; ctas?: StrapiLink[]; items?: { question: string }[] };
   beginJourneyCta?: StrapiCtaBanner;
 }
-
-interface StrapiFaqItem { documentId: string; question: string }
 
 const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
   if (!m?.url) return undefined;
@@ -48,8 +44,24 @@ const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
   return `${STRAPI_URL}${m.url}`;
 };
 
+// Real destinations for CTAs the CMS still seeds with placeholder hrefs.
+// When the seed runs against a Strapi instance that supports component
+// updates these can be removed; until then we patch the href client-side.
+const CTA_OVERRIDES: Record<string, { href: string; isExternal: boolean }> = {
+  'Book a Club Tour': {
+    href: 'https://amclub.jotform.com/260813837273966?parentURL=https%3A%2F%2Famclub.org.sg%2Fmembership-enquiry-form%2F&jsForm=true',
+    isExternal: true,
+  },
+};
+
 const linksOf = (ls?: StrapiLink[]) =>
-  (ls ?? []).map((l) => ({ label: l.label, href: l.href ?? '#', isExternal: l.isExternal }));
+  (ls ?? []).map((l) => {
+    const override = CTA_OVERRIDES[l.label];
+    if (override && (!l.href || l.href === '#')) {
+      return { label: l.label, href: override.href, isExternal: override.isExternal };
+    }
+    return { label: l.label, href: l.href ?? '#', isExternal: l.isExternal };
+  });
 
 // Fallback assets served from /public/membership/ — used until the CMS schema
 // migration adds first-class media fields for these slots.
@@ -71,34 +83,25 @@ const FALLBACK_FIND_MEMBERSHIP_IMAGE = '/membership/find-membership-lobby.jpg';
 
 export default function MembershipPage() {
   const [data, setData] = useState<StrapiMembershipPage | null>(null);
-  const [faqs, setFaqs] = useState<StrapiFaqItem[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const [page, faqList] = await Promise.all([
-        fetchAPI<StrapiMembershipPage>('/membership-page', {
-          'populate[hero][populate]': '*',
-          'populate[joinCta][populate]': '*',
-          'populate[joinCommunityImages]': '*',
-          'populate[intro]': '*',
-          'populate[benefits][populate][features][populate]': '*',
-          'populate[benefitIcons]': '*',
-          'populate[findRightCta][populate]': '*',
-          'populate[findMembershipImage]': '*',
-          'populate[programs][populate][cards][populate]': '*',
-          'populate[faq][populate]': '*',
-          'populate[beginJourneyCta][populate]': '*',
-        }),
-        fetchAPI<StrapiFaqItem[]>('/faq-items', {
-          'sort[0]': 'order:asc',
-          'pagination[limit]': '4',
-        }),
-      ]);
+      const page = await fetchAPI<StrapiMembershipPage>('/membership-page', {
+        'populate[hero][populate]': '*',
+        'populate[joinCta][populate]': '*',
+        'populate[joinCommunityImages]': '*',
+        'populate[intro]': '*',
+        'populate[benefits][populate][features][populate]': '*',
+        'populate[benefitIcons]': '*',
+        'populate[findRightCta][populate]': '*',
+        'populate[findMembershipImage]': '*',
+        'populate[programs][populate][cards][populate]': '*',
+        'populate[beginJourneyCta][populate]': '*',
+      });
       if (cancelled) return;
       setData(page);
-      setFaqs(faqList ?? []);
       setLoaded(true);
     })();
     return () => { cancelled = true; };
@@ -130,8 +133,6 @@ export default function MembershipPage() {
     : FALLBACK_COMMUNITY_IMAGES.map((src) => ({ src, alt: '' }));
 
   const findImage = mediaUrl(data.findMembershipImage) ?? FALLBACK_FIND_MEMBERSHIP_IMAGE;
-
-  const faqItems = faqs.map((f) => ({ question: f.question, answer: '' }));
 
   return (
     <PageFade loaded={loaded}>
@@ -184,14 +185,6 @@ export default function MembershipPage() {
 
       {programCards.length > 0 && (
         <MembershipPrograms cards={programCards} />
-      )}
-
-      {data.faq && faqItems.length > 0 && (
-        <FaqAccordion
-          heading={data.faq.heading ?? 'Your Questions, Answered'}
-          ctas={linksOf(data.faq.ctas)}
-          items={faqItems}
-        />
       )}
 
       {data.beginJourneyCta && (

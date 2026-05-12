@@ -110,6 +110,17 @@ interface VenueData {
     footnote?: string;
   }[];
   faq?: { question: string; answer: string }[];
+  tierCards?: {
+    heading?: string;
+    subheading?: string;
+    cards: {
+      name: string;
+      description: string;
+      benefits: string[];
+      gradientFrom: string;
+      gradientTo: string;
+    }[];
+  };
 }
 
 const SECTION_MAP: Record<string, { apiPath: string; parentLabel: string; parentHref: string }> = {
@@ -148,6 +159,7 @@ function staticFallback(section: string, slug: string): VenueData | null {
     imagePanels: sp.imagePanels,
     cardSections: sp.cardSections,
     faq: sp.faq,
+    tierCards: sp.tierCards,
   };
 }
 
@@ -255,6 +267,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           imagePanels: api.imagePanels?.length ? api.imagePanels : fallback?.imagePanels,
           cardSections: api.cardSections?.length ? api.cardSections : fallback?.cardSections,
           faq: api.faq?.length ? api.faq : fallback?.faq,
+          tierCards: api.tierCards ?? fallback?.tierCards,
         });
       } else {
         setVenue(fallback);
@@ -624,6 +637,106 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           </div>
         </div>
       </section>
+
+      {/* ── 4-col Tier Cards (Eagles Rewards) ── */}
+      {venue.tierCards && venue.tierCards.cards.length > 0 && (
+        <section className="bg-bg pb-[120px]">
+          <div className="max-w-7xl mx-auto px-10 flex flex-col" style={{ gap: '48px' }}>
+            {(venue.tierCards.heading || venue.tierCards.subheading) && (
+              <div className="text-center flex flex-col" style={{ gap: '16px' }}>
+                {venue.tierCards.heading && (
+                  <h2
+                    className="font-heading text-primary"
+                    style={{
+                      fontSize: '38.4px',
+                      fontWeight: 300,
+                      fontStyle: 'italic',
+                      letterSpacing: '-1.152px',
+                      lineHeight: '42.24px',
+                    }}
+                  >
+                    {venue.tierCards.heading}
+                  </h2>
+                )}
+                {venue.tierCards.subheading && (
+                  <p
+                    className="text-text-dark/70 max-w-3xl mx-auto"
+                    style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
+                  >
+                    {venue.tierCards.subheading}
+                  </p>
+                )}
+              </div>
+            )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              {venue.tierCards.cards.map((card, i) => (
+                <div key={`${card.name}-${i}`} className="flex flex-col" style={{ gap: '24px' }}>
+                  {/* Card image: radial gradient + diagonal stripe overlay */}
+                  <div
+                    aria-hidden
+                    className="w-full mx-auto rounded-2xl"
+                    style={{
+                      aspectRatio: '252 / 238',
+                      maxWidth: '252px',
+                      backgroundImage: `${STRIPE_PATTERN_SVG}, radial-gradient(119% 122% at -32% -2.8%, ${card.gradientFrom} 0%, ${card.gradientTo} 100%)`,
+                      backgroundSize: '126px, auto',
+                      backgroundRepeat: 'repeat, no-repeat',
+                    }}
+                  />
+                  <h3
+                    className="font-heading text-primary"
+                    style={{
+                      fontSize: '26.56px',
+                      fontWeight: 300,
+                      fontStyle: 'italic',
+                      letterSpacing: '-0.797px',
+                      lineHeight: '32px',
+                    }}
+                  >
+                    {card.name}
+                  </h3>
+                  <p
+                    className="text-text-dark"
+                    style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
+                  >
+                    {card.description}
+                  </p>
+                  <h4
+                    className="font-heading text-primary"
+                    style={{
+                      fontSize: '17.6px',
+                      fontWeight: 700,
+                      letterSpacing: '0.04em',
+                      textTransform: 'uppercase',
+                      marginTop: '4px',
+                    }}
+                  >
+                    Benefits
+                  </h4>
+                  <ul className="flex flex-col" style={{ gap: '12px' }}>
+                    {card.benefits.map((b, j) => (
+                      <li
+                        key={j}
+                        className="text-text-dark flex"
+                        style={{ fontSize: '15.2px', lineHeight: '22px', gap: '10px' }}
+                      >
+                        <span
+                          aria-hidden
+                          className="text-accent shrink-0"
+                          style={{ fontWeight: 700, lineHeight: '22px' }}
+                        >
+                          ✓
+                        </span>
+                        <span>{b}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── 2-col Image + Text Cards (e.g. Gym: Personal Training / Group Fitness Classes) ──
           Mirrors the Framer prototype's white card grid: image on top, italic

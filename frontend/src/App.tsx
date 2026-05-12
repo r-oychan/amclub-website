@@ -10,6 +10,9 @@ import FitnessPage from './pages/FitnessPage';
 import KidsPage from './pages/KidsPage';
 import EventSpacesPage from './pages/EventSpacesPage';
 import MembershipPage from './pages/MembershipPage';
+import JoiningFeesPage from './pages/JoiningFeesPage';
+import ReferralPage from './pages/ReferralPage';
+import ReciprocalClubsPage from './pages/ReciprocalClubsPage';
 import WhatsOnPage from './pages/WhatsOnPage';
 import NewsPage from './pages/NewsPage';
 import GalleryPage from './pages/GalleryPage';
@@ -38,6 +41,9 @@ export default function App() {
             <Route path="/event-spaces" element={<EventSpacesPage />} />
             <Route path="/event-spaces/:slug" element={<VenueDetailPage section="event-spaces" />} />
             <Route path="/membership" element={<MembershipPage />} />
+            <Route path="/membership/joining-fees" element={<JoiningFeesPage />} />
+            <Route path="/membership/referal" element={<ReferralPage />} />
+            <Route path="/membership/reciprocal-clubs" element={<ReciprocalClubsPage />} />
             <Route path="/membership/:slug" element={<VenueDetailPage section="membership" />} />
             <Route path="/whats-on" element={<WhatsOnPage />} />
             <Route path="/home-sub/news" element={<NewsPage />} />

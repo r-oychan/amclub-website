@@ -92,7 +92,7 @@ async function upsertMembershipPage({ media }) {
     programs: {
       cards: [
         { heading: 'Refer & Be Rewarded',          description: 'Extend the privilege of membership to your family and friends, and enjoy exclusive rewards through our referral program.', image: media['program-refer.png'].id,          cta: { label: 'Learn More', href: '#', variant: 'text' } },
-        { heading: 'The Eagle Rewards Program',    description: 'A tiered rewards experience that offers elevated recognition and privileges as you enjoy more of the Club.',                  image: media['program-eagle-rewards.png'].id, cta: { label: 'Learn More', href: '#', variant: 'text' } },
+        { heading: 'Niche Group Membership',        description: 'A tiered membership experience that offers elevated recognition and privileges as you enjoy more of the Club.',                image: media['program-eagle-rewards.png'].id, cta: { label: 'Learn More', href: '/membership/the-eagles-rewards-program', variant: 'text' } },
         { heading: 'Reciprocal Clubs',             description: 'Enjoy privileged access to over 150 distinguished private clubs worldwide, extending the comfort and prestige of membership wherever you travel.', image: media['program-reciprocal.jpg'].id, cta: { label: 'Learn More', href: '#', variant: 'text' } },
       ],
     },
