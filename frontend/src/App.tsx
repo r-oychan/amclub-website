@@ -43,7 +43,7 @@ export default function App() {
             <Route path="/home-sub/news" element={<NewsPage />} />
             <Route path="/home-sub/gallery" element={<GalleryPage />} />
             <Route path="/home-sub/contact-us" element={<ContactUsPage />} />
-            <Route path="/home-sub/privacy-statement" element={<PrivacyStatementPage />} />
+            <Route path="/privacy-statement" element={<PrivacyStatementPage />} />
             <Route path="/home-sub/:slug" element={<VenueDetailPage section="home-sub" />} />
           </Routes>
         </main>

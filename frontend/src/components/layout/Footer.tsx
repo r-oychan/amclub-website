@@ -26,7 +26,7 @@ const MEMBER_LINKS = [
 const LEGAL_LINKS = [
   { label: 'Club Constitution', href: '/documents/club-constitution.pdf', external: true },
   { label: 'Club By-laws', href: '/documents/club-bylaws.pdf', external: true },
-  { label: 'Privacy Statement', href: '/home-sub/privacy-statement' },
+  { label: 'Privacy Statement', href: '/privacy-statement' },
 ];
 
 const SOCIALS = [
