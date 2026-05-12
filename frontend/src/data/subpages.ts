@@ -10,7 +10,6 @@ export interface SubpageData {
   capacity?: string;
   dressCode?: string;
   image?: string;
-  gallery?: string[];
   parentSection: string;
   parentHref: string;
   ctas?: { label: string; href: string; isExternal?: boolean }[];
@@ -31,10 +30,34 @@ export interface SubpageData {
     }[];
   };
   /** Optional roster shown as a "Meet the Team" section. */
-  teamMembers?: { name: string; role: string; bio?: string; image?: string }[];
+  teamMembers?: { name: string; role: string; bio?: string; image?: string; bioImage?: string }[];
   teamHeading?: string;
+  /**
+   * Visual layout for the team grid.
+   * - `'circle'` (default): small circular headshot avatars; suited for portrait shots.
+   * - `'card'`: rectangle tiles that show the full image uncropped; suited for
+   *   full-bio-card images (like amclub.org.sg's PT/Pilates profile cards).
+   */
+  teamLayout?: 'circle' | 'card';
   /** Extra CTAs rendered at the bottom of the page (e.g. duplicate price-list link). */
   bottomCtas?: { label: string; href: string; isExternal?: boolean }[];
+  /**
+   * 2-column image + heading + description + EXPLORE link card grid, rendered
+   * between the main two-column section and the imagePanels block. Mirrors the
+   * Framer prototype's "Personal Training / Group Fitness Classes" cards on the
+   * Gym page. Each entry produces one card row (typically `cards.length === 2`).
+   */
+  cardSections?: {
+    heading?: string;
+    subheading?: string;
+    cards: {
+      heading: string;
+      description: string;
+      image: string;
+      imageAlt?: string;
+      cta?: { label: string; href: string; isExternal?: boolean };
+    }[];
+  }[];
   /**
    * Full-width image+text panels rendered between the main two-column section
    * and the promo cards. Used for sections like Framer's "Tennis Programs"
@@ -615,28 +638,59 @@ export const fitnessSubpages: SubpageData[] = [
         ],
       },
     ],
+    cardSections: [
+      {
+        cards: [
+          {
+            heading: 'Personal Training',
+            description:
+              'Achieve your fitness goals faster with one-on-one sessions tailored to your needs, guided by our experienced Personal Trainers.',
+            image: '/images/fitness/gym.jpeg',
+            imageAlt: 'Personal trainer guiding a member through a dumbbell row',
+            cta: {
+              label: 'Explore',
+              href: '/documents/fitness/personal-training-group-fitness-class.pdf',
+              isExternal: true,
+            },
+          },
+          {
+            heading: 'Group Fitness Classes',
+            description:
+              'Energize your workout and stay motivated in a fun, supportive environment with our variety of group classes designed for all fitness levels.',
+            image: '/images/fitness/groupclass.jpeg',
+            imageAlt: 'Members performing a kettlebell squat group fitness class',
+            cta: {
+              label: 'Explore',
+              href: '/documents/fitness/group-fitness-class-schedule.jpg',
+              isExternal: true,
+            },
+          },
+        ],
+      },
+    ],
     teamHeading: 'Personal Trainers',
+    teamLayout: 'card',
     teamMembers: [
-      { name: 'Mubin',    role: 'Personal Trainer' },
-      { name: 'Robert',   role: 'Personal Trainer' },
-      { name: 'Liza',     role: 'Personal Trainer' },
-      { name: 'Irfan',    role: 'Personal Trainer' },
-      { name: 'Flinson',  role: 'Personal Trainer' },
-      { name: 'Ewan',     role: 'Personal Trainer' },
-      { name: 'Eric',     role: 'Personal Trainer' },
-      { name: 'Elaine',   role: 'Personal Trainer' },
-      { name: 'Ashton',   role: 'Personal Trainer' },
-      { name: 'Adrian',   role: 'Personal Trainer' },
-      { name: 'Yattz',    role: 'Personal Trainer' },
-      { name: 'Nadesh',   role: 'Personal Trainer' },
-      { name: 'Sam',      role: 'Personal Trainer' },
-      { name: 'Crystal',  role: 'Personal Trainer' },
-      { name: 'Jenny',    role: 'Personal Trainer' },
-      { name: 'Vanan',    role: 'Personal Trainer' },
-      { name: 'Ghazali',  role: 'Personal Trainer' },
-      { name: 'Andyn',    role: 'Personal Trainer' },
-      { name: 'Zack',     role: 'Personal Trainer' },
-      { name: 'Desmond',  role: 'Personal Trainer' },
+      { name: 'Mubin',    role: 'Personal Trainer', image: '/images/fitness/team-pt/mubin.png' },
+      { name: 'Robert',   role: 'Personal Trainer', image: '/images/fitness/team-pt/robert.png' },
+      { name: 'Liza',     role: 'Personal Trainer', image: '/images/fitness/team-pt/liza.png' },
+      { name: 'Irfan',    role: 'Personal Trainer', image: '/images/fitness/team-pt/irfan.png' },
+      { name: 'Flinson',  role: 'Personal Trainer', image: '/images/fitness/team-pt/flinson.png' },
+      { name: 'Ewan',     role: 'Personal Trainer', image: '/images/fitness/team-pt/ewan.png' },
+      { name: 'Eric',     role: 'Personal Trainer', image: '/images/fitness/team-pt/eric.png' },
+      { name: 'Elaine',   role: 'Personal Trainer', image: '/images/fitness/team-pt/elaine.png' },
+      { name: 'Ashton',   role: 'Personal Trainer', image: '/images/fitness/team-pt/ashton.png' },
+      { name: 'Adrian',   role: 'Personal Trainer', image: '/images/fitness/team-pt/adrian.png' },
+      { name: 'Yattz',    role: 'Personal Trainer', image: '/images/fitness/team-pt/yattz.png' },
+      { name: 'Nadesh',   role: 'Personal Trainer', image: '/images/fitness/team-pt/nadesh.png' },
+      { name: 'Sam',      role: 'Personal Trainer', image: '/images/fitness/team-pt/sam.png' },
+      { name: 'Crystal',  role: 'Personal Trainer', image: '/images/fitness/team-pt/crystal.png' },
+      { name: 'Jenny',    role: 'Personal Trainer', image: '/images/fitness/team-pt/jenny.png' },
+      { name: 'Vanan',    role: 'Personal Trainer', image: '/images/fitness/team-pt/vanan.png' },
+      { name: 'Ghazali',  role: 'Personal Trainer', image: '/images/fitness/team-pt/ghazali.png' },
+      { name: 'Andyn',    role: 'Personal Trainer', image: '/images/fitness/team-pt/andyn.png' },
+      { name: 'Zack',     role: 'Personal Trainer', image: '/images/fitness/team-pt/zack.png' },
+      { name: 'Desmond',  role: 'Personal Trainer', image: '/images/fitness/team-pt/desmond.png' },
     ],
     bottomCtas: [
       { label: 'View Pilates Class Schedule', href: '/documents/fitness/pilates-group-class-schedule.jpeg', isExternal: true },
@@ -660,6 +714,19 @@ export const fitnessSubpages: SubpageData[] = [
     parentHref: '/fitness',
     ctas: [
       { label: 'Book a Court', href: 'mailto:sportscounter@amclub.org.sg', isExternal: true },
+      { label: 'TAC Book App Tutorial', href: '/documents/fitness/tac-book-app-download-tutorial.pdf', isExternal: true },
+    ],
+    teamHeading: 'Meet Our Team',
+    teamMembers: [
+      { name: 'Azhar Zainudin',    role: 'Director of Tennis',             image: '/images/fitness/team/azhar-zainudin.png',    bioImage: '/images/fitness/team/azhar-zainudin.png' },
+      { name: 'Jorge Pinilla',     role: 'Director of Player Development', image: '/images/fitness/team/jorge-pinilla.png',     bioImage: '/images/fitness/team/jorge-pinilla.png' },
+      { name: 'Herman Ali',        role: 'Senior Tennis Professional',     image: '/images/fitness/team/herman-ali.png',        bioImage: '/images/fitness/team/herman-ali.png' },
+      { name: 'Reduan Ariffin',    role: 'Tennis Professional',            image: '/images/fitness/team/reduan-ariffin.png',    bioImage: '/images/fitness/team/reduan-ariffin.png' },
+      { name: 'Sharassalam Rasak', role: 'Tennis Professional',            image: '/images/fitness/team/sharassalam-rasak.png', bioImage: '/images/fitness/team/sharassalam-rasak.png' },
+      { name: 'Ethan Lee',         role: 'Tennis Professional',            image: '/images/fitness/team/ethan-lee.png',         bioImage: '/images/fitness/team/ethan-lee.png' },
+      { name: 'Ezequiel Suarez',   role: 'Tennis Professional',            image: '/images/fitness/team/ezequiel-suarez.png',   bioImage: '/images/fitness/team/ezequiel-suarez.png' },
+      { name: 'Jarek Grela',       role: 'Tennis Professional',            image: '/images/fitness/team/jarek-grela.png',       bioImage: '/images/fitness/team/jarek-grela.png' },
+      { name: 'Jose Nino',         role: 'Tennis Professional',            image: '/images/fitness/team/jose-nino.png',         bioImage: '/images/fitness/team/jose-nino.png' },
     ],
     imagePanels: [
       {
@@ -713,8 +780,9 @@ export const fitnessSubpages: SubpageData[] = [
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [
-      { label: 'View Rates', href: '#' },
-      { label: 'Coach Profiles', href: '#' },
+      { label: 'View Rates', href: '/documents/fitness/squash-private-lesson-rates.jpg', isExternal: true },
+      { label: 'Coach Profiles', href: '/documents/fitness/squash-coach-profiles.pdf', isExternal: true },
+      { label: 'Booking Policy', href: '/documents/fitness/squash-courts-booking-policy.pdf', isExternal: true },
     ],
     extraSections: [
       {
@@ -745,11 +813,42 @@ export const fitnessSubpages: SubpageData[] = [
     level: 'Level 2',
     phone: '6739-4312 (Sports Counter), 6739-4465 (Pilates Studio)',
     email: 'sportscounter@amclub.org.sg',
+    image: '/images/fitness/pilates.jpeg',
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [
       { label: 'View Price List', href: '/documents/fitness/pilates-price-list.docx', isExternal: true },
       { label: 'View Class Schedule', href: '/documents/fitness/pilates-group-class-schedule.jpeg', isExternal: true },
+    ],
+    cardSections: [
+      {
+        cards: [
+          {
+            heading: 'Group Classes',
+            description:
+              'Join small-group Reformer, Mat & Reformer Fusion sessions that build core strength and improve mobility under the guidance of our PAI-certified instructors.',
+            image: '/images/fitness/groupclass.jpeg',
+            imageAlt: 'Members in a group Pilates Reformer class',
+            cta: {
+              label: 'Explore',
+              href: '/documents/fitness/pilates-group-class-schedule.jpeg',
+              isExternal: true,
+            },
+          },
+          {
+            heading: 'Private Sessions',
+            description:
+              'Work one-on-one with a Pilates Coach for tailored programming on the Reformer, Cadillac, or Chair — ideal for rehabilitation, sport-specific training, or accelerating your progress.',
+            image: '/images/fitness/pilates.jpeg',
+            imageAlt: 'A Pilates Coach guiding a member through a Reformer exercise',
+            cta: {
+              label: 'Explore',
+              href: '/documents/fitness/pilates-price-list.docx',
+              isExternal: true,
+            },
+          },
+        ],
+      },
     ],
     extraSections: [
       {
@@ -779,14 +878,15 @@ export const fitnessSubpages: SubpageData[] = [
       },
     ],
     teamHeading: 'Pilates Instructors',
+    teamLayout: 'card',
     teamMembers: [
-      { name: 'Annie Agoncillo', role: 'Pilates Coach' },
-      { name: 'Alvan Chan',      role: 'Pilates Coach' },
-      { name: 'Anthea Lee',      role: 'Pilates Instructor' },
-      { name: 'Felicia Tan',     role: 'Pilates Trainer' },
-      { name: 'Mary Sng',        role: 'Pilates Trainer' },
-      { name: 'Chua Li Li',      role: 'Pilates Trainer' },
-      { name: 'Danielle Chue',   role: 'Pilates Trainer' },
+      { name: 'Annie Agoncillo', role: 'Pilates Coach',      image: '/images/fitness/team-pilates/annie-agoncillo.png' },
+      { name: 'Alvan Chan',      role: 'Pilates Coach',      image: '/images/fitness/team-pilates/alvan-chan.jpg' },
+      { name: 'Anthea Lee',      role: 'Pilates Instructor', image: '/images/fitness/team-pilates/anthea-lee.png' },
+      { name: 'Felicia Tan',     role: 'Pilates Coach',      image: '/images/fitness/team-pilates/felicia-tan.png' },
+      { name: 'Mary Sng',        role: 'Pilates Coach',      image: '/images/fitness/team-pilates/mary-sng.png' },
+      { name: 'Chua Li Li',      role: 'Pilates Coach',      image: '/images/fitness/team-pilates/chua-li-li.png' },
+      { name: 'Danielle Chue',   role: 'Pilates Coach',      image: '/images/fitness/team-pilates/danielle-chue.png' },
     ],
     bottomCtas: [
       { label: 'Download Class Schedule', href: '/documents/fitness/pilates-group-class-schedule.jpeg', isExternal: true },
@@ -825,8 +925,9 @@ export const fitnessSubpages: SubpageData[] = [
   },
   {
     slug: 'multi-purpose-court',
-    name: 'Multipurpose Court',
+    name: 'Multi-Purpose Court',
     type: 'Sports',
+    hideGallery: true,
     description:
       'The Bowling Alley offers best-in-class awesome, anytime fun. From casual family outings, couples\' night, birthday parties, Junior Members\' nights and corporate events, The Bowling Alley offers entertainment that\'s right up your alley.\n\nOur Brunswick bowling lanes are oiled and maintained regularly to provide the best experience. For those who want a colorful twist to their usual games, the Cosmic Bowling feature provides multi-colored disco lights and catchy beats. The state-of-the-art LED lights and pin deck glow lighting feature are sure to impress your friends and family.',
     hours:
@@ -842,8 +943,8 @@ export const fitnessSubpages: SubpageData[] = [
     faq: [...PLACEHOLDER_FAQ],
   },
   {
-    slug: 'other-activities',
-    name: 'Golf Activities',
+    slug: 'golf',
+    name: 'Golf',
     type: 'Golf',
     description:
       'For our Golf Enthusiasts, we offer off-site golf programs in collaboration with partner golf courses, designed for Members who enjoy hitting the greens. These programs include casual rounds, practice sessions, and friendly competitions, providing a great way to play, improve your game, and connect with fellow members.',
@@ -855,7 +956,6 @@ export const fitnessSubpages: SubpageData[] = [
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [{ label: 'Stay Updated', href: '#' }],
-    faq: [...PLACEHOLDER_FAQ],
   },
 ];
 

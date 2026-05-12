@@ -169,8 +169,8 @@ const DEFAULT_HEADER: HeaderData = {
         {
           heading: 'Activities',
           links: [
-            { label: 'Golfing Activities', href: '/fitness/other-activities' },
-            { label: 'Multi-purpose Court', href: '/fitness/multi-purpose-court' },
+            { label: 'Golf', href: '/fitness/golf' },
+            { label: 'Multi-Purpose Court', href: '/fitness/multi-purpose-court' },
             { label: 'Squash', href: '/fitness/squash' },
           ],
         },
