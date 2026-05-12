@@ -1176,6 +1176,7 @@ export const homeSubpages: SubpageData[] = [
     type: '',
     description:
       'Reach a community of over 11,000 engaged Members at The American Club.\n\nWith a suite of targeted communication channels, we provide advertising opportunities that connect your message with our Member community in a thoughtful and purposeful way.',
+    image: '/marketing/news-article-march-2023.jpg',
     parentSection: 'The American Club',
     parentHref: '/home',
     ctas: [
