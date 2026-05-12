@@ -1,0 +1,189 @@
+#!/usr/bin/env node
+// Seed fitness facilities (tennis, squash). Uploads hero images + team
+// headshots and upserts each facility entry. CTAs that link to PDFs/images
+// reference static paths served from frontend/public/documents/fitness/.
+//
+// Known limitation: newly-added media fields on this project's local Strapi
+// may not persist via REST PUT (see project_strapi_media_relations memory).
+// PUT will return 200 with the ids you sent, but a follow-up populate may
+// return the field empty. The frontend fallback in
+// frontend/src/data/subpages.ts is the safety net.
+
+import { join, resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { initEnv, api, findOneBySlug, uploadAll, isDryRun } from './seed-helpers.mjs';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const ROOT = resolve(__dirname, '..');
+const TEAM_DIR = join(ROOT, 'media', 'fitness', 'team');
+const FACILITY_DIR = join(ROOT, 'media', 'fitness', 'detail');
+const FITNESS_DIR = join(ROOT, 'media', 'fitness');
+const DRY = isDryRun();
+const ctx = initEnv();
+
+const TEAM_FILES = [
+  'azhar-zainudin.png',
+  'jorge-pinilla.png',
+  'herman-ali.png',
+  'reduan-ariffin.png',
+  'sharassalam-rasak.png',
+  'ethan-lee.png',
+  'ezequiel-suarez.png',
+  'jarek-grela.png',
+  'jose-nino.png',
+];
+
+const TENNIS_TEAM = [
+  { name: 'Azhar Zainudin',    role: 'Director of Tennis',             file: 'azhar-zainudin.png' },
+  { name: 'Jorge Pinilla',     role: 'Director of Player Development', file: 'jorge-pinilla.png' },
+  { name: 'Herman Ali',        role: 'Senior Tennis Professional',     file: 'herman-ali.png' },
+  { name: 'Reduan Ariffin',    role: 'Tennis Professional',            file: 'reduan-ariffin.png' },
+  { name: 'Sharassalam Rasak', role: 'Tennis Professional',            file: 'sharassalam-rasak.png' },
+  { name: 'Ethan Lee',         role: 'Tennis Professional',            file: 'ethan-lee.png' },
+  { name: 'Ezequiel Suarez',   role: 'Tennis Professional',            file: 'ezequiel-suarez.png' },
+  { name: 'Jarek Grela',       role: 'Tennis Professional',            file: 'jarek-grela.png' },
+  { name: 'Jose Nino',         role: 'Tennis Professional',            file: 'jose-nino.png' },
+];
+
+const TENNIS = {
+  name: 'Tennis',
+  slug: 'tennis',
+  category: 'fitness',
+  categoryLabel: 'Racquet Sports',
+  description:
+    "For Tennis enthusiasts, the Club offers four state-of-the-art artificial grass courts with sand infill which is an ideal surface for both coaching and recreational play.",
+  locationLevel: 'Basement 2',
+  phone: '6739-4312',
+  email: 'sportscounter@amclub.org.sg',
+  imageFile: 'tennis.jpeg',
+  ctas: [
+    { label: 'Book a Court', href: 'mailto:sportscounter@amclub.org.sg', isExternal: true, variant: 'primary', icon: 'mail' },
+    { label: 'TAC Book App Tutorial', href: '/documents/fitness/tac-book-app-download-tutorial.pdf', isExternal: true, variant: 'primary', icon: 'external' },
+  ],
+  teamHeading: 'Meet Our Team',
+};
+
+const SQUASH = {
+  name: 'Squash',
+  slug: 'squash',
+  category: 'fitness',
+  categoryLabel: 'Racquet Sports',
+  description:
+    'The Club features two state-of-the-art Squash Courts with a covered outdoor gallery area. We run an active calendar of events throughout the year for our Squash enthusiasts including Squash Box Ladder, Handicap and Open Tournament and Inter-Club Leagues.\n\nGroup and private lessons are available.',
+  locationLevel: 'Basement 2',
+  phone: '6739 4312',
+  email: 'sportscenter@amclub.org.sg',
+  imageFile: 'Squash.jpeg',
+  ctas: [
+    { label: 'View Rates', href: '/documents/fitness/squash-private-lesson-rates.jpg', isExternal: true, variant: 'primary', icon: 'external' },
+    { label: 'Coach Profiles', href: '/documents/fitness/squash-coach-profiles.pdf', isExternal: true, variant: 'primary', icon: 'external' },
+    { label: 'Booking Policy', href: '/documents/fitness/squash-courts-booking-policy.pdf', isExternal: true, variant: 'primary', icon: 'external' },
+  ],
+};
+
+async function upsertSquashFacility({ heroImageId }) {
+  const payload = {
+    name: SQUASH.name,
+    slug: SQUASH.slug,
+    category: SQUASH.category,
+    categoryLabel: SQUASH.categoryLabel,
+    description: SQUASH.description,
+    locationLevel: SQUASH.locationLevel,
+    phone: SQUASH.phone,
+    email: SQUASH.email,
+    image: heroImageId,
+    ctas: SQUASH.ctas,
+    publishedAt: new Date().toISOString(),
+  };
+
+  if (DRY) {
+    console.log(`  [dry] upsert facility squash (ctas=${SQUASH.ctas.length})`);
+    return { documentId: 'dry-squash' };
+  }
+
+  const existing = await findOneBySlug(ctx, 'facilities', SQUASH.slug);
+  if (existing) {
+    const resp = await api(ctx, `/facilities/${existing.documentId}`, { method: 'PUT', body: { data: payload } });
+    console.log(`  ✓ updated facility squash (documentId=${existing.documentId})`);
+    return resp.data;
+  }
+  const resp = await api(ctx, '/facilities', { method: 'POST', body: { data: payload } });
+  console.log(`  ✓ created facility squash (documentId=${resp.data?.documentId})`);
+  return resp.data;
+}
+
+async function upsertTennisFacility({ teamMedia, heroImageId }) {
+  const teamMembers = TENNIS_TEAM.map((m, idx) => ({
+    name: m.name,
+    role: m.role,
+    image: teamMedia[m.file]?.id,
+    bioImage: teamMedia[m.file]?.id,
+    order: idx,
+  }));
+
+  const payload = {
+    name: TENNIS.name,
+    slug: TENNIS.slug,
+    category: TENNIS.category,
+    categoryLabel: TENNIS.categoryLabel,
+    description: TENNIS.description,
+    locationLevel: TENNIS.locationLevel,
+    phone: TENNIS.phone,
+    email: TENNIS.email,
+    image: heroImageId,
+    ctas: TENNIS.ctas,
+    teamHeading: TENNIS.teamHeading,
+    teamMembers,
+    publishedAt: new Date().toISOString(),
+  };
+
+  if (DRY) {
+    console.log(`  [dry] upsert facility tennis (members=${teamMembers.length})`);
+    return { documentId: 'dry-tennis' };
+  }
+
+  const existing = await findOneBySlug(ctx, 'facilities', TENNIS.slug);
+  if (existing) {
+    const resp = await api(ctx, `/facilities/${existing.documentId}`, { method: 'PUT', body: { data: payload } });
+    console.log(`  ✓ updated facility tennis (documentId=${existing.documentId})`);
+    return resp.data;
+  }
+  const resp = await api(ctx, '/facilities', { method: 'POST', body: { data: payload } });
+  console.log(`  ✓ created facility tennis (documentId=${resp.data?.documentId})`);
+  return resp.data;
+}
+
+async function main() {
+  console.log(`Strapi base: ${ctx.BASE}`);
+  console.log(`Mode:        ${DRY ? 'DRY-RUN' : 'LIVE'}`);
+
+  console.log('\n[1/5] Uploading squash hero image…');
+  const squashHeroMedia = await uploadAll(ctx, FITNESS_DIR, [SQUASH.imageFile], { dry: DRY });
+  const squashHeroId = squashHeroMedia[SQUASH.imageFile]?.id;
+
+  console.log('\n[2/5] Upserting squash facility…');
+  try {
+    await upsertSquashFacility({ heroImageId: squashHeroId });
+  } catch (e) {
+    console.error(`  ✗ squash upsert failed: ${e.message}`);
+  }
+
+  console.log('\n[3/5] Uploading team headshots…');
+  const teamMedia = await uploadAll(ctx, TEAM_DIR, TEAM_FILES, { dry: DRY });
+
+  console.log('\n[4/5] Uploading tennis hero image…');
+  const tennisHeroMedia = await uploadAll(ctx, FACILITY_DIR, [TENNIS.imageFile], { dry: DRY });
+  const tennisHeroId = tennisHeroMedia[TENNIS.imageFile]?.id;
+
+  console.log('\n[5/5] Upserting tennis facility…');
+  try {
+    await upsertTennisFacility({ teamMedia, heroImageId: tennisHeroId });
+  } catch (e) {
+    console.error(`  ✗ tennis upsert failed: ${e.message}`);
+  }
+
+  console.log('\nDone. Verify with:');
+  console.log(`  curl "${ctx.BASE}/api/facilities?filters[slug][$eq]=tennis&populate[teamMembers][populate]=*"`);
+  console.log(`  curl "${ctx.BASE}/api/facilities?filters[slug][$eq]=squash&populate[ctas]=true"`);
+}
+main().catch((e) => { console.error('\nERROR:', e.message); process.exit(1); });

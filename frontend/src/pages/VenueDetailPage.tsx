@@ -7,7 +7,6 @@ import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
 import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
 import { DetailSection } from '../components/detail/DetailSection';
 import { ContactRow } from '../components/detail/ContactRow';
-import { PhotoGallery } from '../components/detail/PhotoGallery';
 import { FaqAccordion } from '../components/blocks/FaqAccordion';
 import { CtaIcon, type CtaIconName } from '../components/shared/CtaIcon';
 
@@ -45,7 +44,6 @@ interface VenueData {
   email?: string;
   hours?: string;
   image?: { url: string; alternativeText?: string };
-  gallery?: { url: string; alternativeText?: string }[];
   cuisineType?: string;
   cuisineIconSlug?: string;
   /** Facility-side equivalents of cuisineType / cuisineIconSlug */
@@ -72,9 +70,21 @@ interface VenueData {
       cta: { label: string; href: string };
     }[];
   };
-  teamMembers?: { name: string; role: string; bio?: string; image?: string }[];
+  teamMembers?: { name: string; role: string; bio?: string; image?: string; bioImage?: string }[];
   teamHeading?: string;
+  teamLayout?: 'circle' | 'card';
   bottomCtas?: { label: string; href: string; isExternal?: boolean }[];
+  cardSections?: {
+    heading?: string;
+    subheading?: string;
+    cards: {
+      heading: string;
+      description: string;
+      image: string;
+      imageAlt?: string;
+      cta?: { label: string; href: string; isExternal?: boolean };
+    }[];
+  }[];
   imagePanels?: {
     image: string;
     imageAlt?: string;
@@ -117,14 +127,15 @@ function staticFallback(section: string, slug: string): VenueData | null {
     dressCode: sp.dressCode,
     capacity: sp.capacity,
     image: sp.image ? { url: sp.image } : undefined,
-    gallery: sp.gallery?.map((url) => ({ url })),
     ctas: sp.ctas,
     extraSections: sp.extraSections,
     promoCards: sp.promoCards,
     teamMembers: sp.teamMembers,
     teamHeading: sp.teamHeading,
+    teamLayout: sp.teamLayout,
     bottomCtas: sp.bottomCtas,
     imagePanels: sp.imagePanels,
+    cardSections: sp.cardSections,
     faq: sp.faq,
   };
 }
@@ -160,7 +171,21 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
   const lookupSlug = subSlug ? `${slugParam}-${subSlug}` : slugParam;
   const [venue, setVenue] = useState<VenueData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [bioModal, setBioModal] = useState<{ image: string; name: string } | null>(null);
   const location = useLocation();
+
+  // Close bio modal on Esc; lock background scroll while open.
+  useEffect(() => {
+    if (!bioModal) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setBioModal(null); };
+    document.addEventListener('keydown', onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [bioModal]);
 
   const config = section ? SECTION_MAP[section] : undefined;
 
@@ -186,28 +211,38 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
       const params: Record<string, string> = {
         'filters[slug][$eq]': lookupSlug,
         'populate[image]': 'true',
-        'populate[gallery]': 'true',
         'populate[ctas]': 'true',
         'populate[locationContact]': 'true',
         'populate[operatingHoursSections][populate]': '*',
+        'populate[teamMembers][populate]': '*',
       };
       const items = await fetchAPI<VenueData[]>(config.apiPath, params);
       const fallback = staticFallback(section, lookupSlug);
       if (items && items.length > 0) {
         const api = items[0];
+        // Strapi v5 returns media as `{ url, alternativeText, ... }`; the team
+        // grid renders `image`/`bioImage` as plain string paths, so flatten.
+        const apiTeam = api.teamMembers?.map((m) => ({
+          ...m,
+          image: typeof m.image === 'string' ? m.image : (m.image as { url?: string } | undefined)?.url,
+          bioImage:
+            typeof m.bioImage === 'string'
+              ? m.bioImage
+              : (m.bioImage as { url?: string } | undefined)?.url,
+        }));
         // Enrich with static fallback for fields missing from CMS
         setVenue({
           ...fallback,
           ...api,
           image: api.image ?? fallback?.image,
-          gallery: api.gallery?.length ? api.gallery : fallback?.gallery,
           ctas: api.ctas?.length ? api.ctas : fallback?.ctas,
           extraSections: api.extraSections?.length ? api.extraSections : fallback?.extraSections,
           promoCards: api.promoCards ?? fallback?.promoCards,
-          teamMembers: api.teamMembers?.length ? api.teamMembers : fallback?.teamMembers,
+          teamMembers: apiTeam?.length ? apiTeam : fallback?.teamMembers,
           teamHeading: api.teamHeading ?? fallback?.teamHeading,
           bottomCtas: api.bottomCtas?.length ? api.bottomCtas : fallback?.bottomCtas,
           imagePanels: api.imagePanels?.length ? api.imagePanels : fallback?.imagePanels,
+          cardSections: api.cardSections?.length ? api.cardSections : fallback?.cardSections,
           faq: api.faq?.length ? api.faq : fallback?.faq,
         });
       } else {
@@ -278,10 +313,6 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
             },
           ]
         : [];
-
-  const galleryUrls = venue.gallery?.map((img) =>
-    img.url.startsWith('http') ? img.url : `${img.url}`
-  );
 
   // Nested entries (e.g. aquatics programs) carry their own parent label/href
   // so the breadcrumb + back link point one level up instead of the section root.
@@ -583,6 +614,110 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
         </div>
       </section>
 
+      {/* ── 2-col Image + Text Cards (e.g. Gym: Personal Training / Group Fitness Classes) ──
+          Mirrors the Framer prototype's white card grid: image on top, italic
+          serif heading, body copy, then an EXPLORE arrow link. Renders 2-up on
+          desktop, stacks on mobile. */}
+      {venue.cardSections && venue.cardSections.length > 0 && (
+        <section className="bg-bg pb-[120px]">
+          <div className="max-w-7xl mx-auto px-10 flex flex-col" style={{ gap: '60px' }}>
+            {venue.cardSections.map((group, gIdx) => (
+              <div key={`cardgroup-${gIdx}`} className="flex flex-col" style={{ gap: '32px' }}>
+                {(group.heading || group.subheading) && (
+                  <div className="text-center flex flex-col" style={{ gap: '12px' }}>
+                    {group.heading && (
+                      <h2
+                        className="font-heading text-primary"
+                        style={{
+                          fontSize: '26.56px',
+                          fontWeight: 300,
+                          fontStyle: 'italic',
+                          letterSpacing: '-0.797px',
+                        }}
+                      >
+                        {group.heading}
+                      </h2>
+                    )}
+                    {group.subheading && (
+                      <p
+                        className="text-text-dark/70 max-w-2xl mx-auto"
+                        style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
+                      >
+                        {group.subheading}
+                      </p>
+                    )}
+                  </div>
+                )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                  {group.cards.map((card, cIdx) => {
+                    const inner = (
+                      <div className="bg-white overflow-hidden flex flex-col h-full transition-shadow hover:shadow-md">
+                        <div className="aspect-[4/3] overflow-hidden">
+                          <img
+                            src={card.image}
+                            alt={card.imageAlt ?? card.heading}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div
+                          className="flex flex-col items-center text-center px-8"
+                          style={{ paddingTop: '32px', paddingBottom: '32px', gap: '16px' }}
+                        >
+                          <h3
+                            className="font-heading text-primary"
+                            style={{
+                              fontSize: '26.56px',
+                              fontWeight: 300,
+                              fontStyle: 'italic',
+                              letterSpacing: '-0.797px',
+                              lineHeight: '32px',
+                            }}
+                          >
+                            {card.heading}
+                          </h3>
+                          <p
+                            className="text-text-dark"
+                            style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
+                          >
+                            {card.description}
+                          </p>
+                          {card.cta && (
+                            <span
+                              className="inline-flex items-center gap-2 text-primary uppercase mt-2"
+                              style={{ fontSize: '13.6px', fontWeight: 700, letterSpacing: '0.04em' }}
+                            >
+                              {card.cta.label}
+                              <CtaIcon name="arrow" size={18} className="text-accent" />
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                    const key = `${card.heading}-${cIdx}`;
+                    if (!card.cta) return <div key={key}>{inner}</div>;
+                    return card.cta.isExternal ? (
+                      <a
+                        key={key}
+                        href={card.cta.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block h-full"
+                      >
+                        {inner}
+                      </a>
+                    ) : (
+                      <Link key={key} to={card.cta.href} className="block h-full">
+                        {inner}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* ── Image + Text Panels (e.g. Tennis Programs, Tennis Etiquette) ──
           Mirrors the hero's two-column layout (52% image / flex text, 60px gap,
           sticky image by default) and reuses the hero's CTA pill + DetailSection
@@ -863,46 +998,83 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
             >
               {venue.teamHeading ?? 'Meet Our Team'}
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-8">
-              {venue.teamMembers.map((m) => (
-                <div key={m.name} className="flex flex-col items-center text-center">
-                  {m.image ? (
-                    <img
-                      src={m.image}
-                      alt={m.name}
-                      className="w-28 h-28 rounded-full object-cover mb-3"
-                    />
-                  ) : (
-                    <div
-                      aria-hidden
-                      className="w-28 h-28 rounded-full mb-3 flex items-center justify-center bg-white text-primary font-heading"
-                      style={{ fontSize: '32px', fontStyle: 'italic', fontWeight: 300 }}
-                    >
-                      {m.name.charAt(0)}
+            <div
+              className={
+                venue.teamLayout === 'card'
+                  ? 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6'
+                  : 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-8'
+              }
+            >
+              {venue.teamMembers.map((m) => {
+                const isCard = venue.teamLayout === 'card';
+                const avatar = m.image ? (
+                  <img
+                    src={m.image}
+                    alt={m.name}
+                    className={
+                      isCard
+                        ? 'w-full aspect-[5/7] object-cover bg-[#1a1a1a]'
+                        : 'w-28 h-28 rounded-full object-cover mb-3'
+                    }
+                  />
+                ) : (
+                  <div
+                    aria-hidden
+                    className={
+                      isCard
+                        ? 'w-full aspect-[5/7] flex items-center justify-center bg-white text-primary font-heading'
+                        : 'w-28 h-28 rounded-full mb-3 flex items-center justify-center bg-white text-primary font-heading'
+                    }
+                    style={{ fontSize: isCard ? '64px' : '32px', fontStyle: 'italic', fontWeight: 300 }}
+                  >
+                    {m.name.charAt(0)}
+                  </div>
+                );
+                if (isCard) {
+                  return (
+                    <div key={m.name} className="flex flex-col overflow-hidden">
+                      {avatar}
                     </div>
-                  )}
-                  <p
-                    className="font-heading text-primary"
-                    style={{ fontSize: '20.8px', fontWeight: 700, letterSpacing: '-0.416px' }}
-                  >
-                    {m.name}
-                  </p>
-                  <p
-                    className="text-text-dark/70 mt-1"
-                    style={{ fontSize: '13.6px', lineHeight: '19px' }}
-                  >
-                    {m.role}
-                  </p>
-                  {m.bio && (
+                  );
+                }
+                const expandable = !!m.bioImage;
+                return (
+                  <div key={m.name} className="flex flex-col items-center text-center">
+                    {expandable ? (
+                      <button
+                        type="button"
+                        onClick={() => setBioModal({ image: m.bioImage!, name: m.name })}
+                        className="appearance-none bg-transparent p-0 cursor-zoom-in transition-transform hover:scale-[1.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full"
+                        aria-label={`View bio for ${m.name}`}
+                      >
+                        {avatar}
+                      </button>
+                    ) : (
+                      avatar
+                    )}
                     <p
-                      className="text-text-dark/80 mt-2"
-                      style={{ fontSize: '14.4px', lineHeight: '20px' }}
+                      className="font-heading text-primary"
+                      style={{ fontSize: '20.8px', fontWeight: 700, letterSpacing: '-0.416px' }}
                     >
-                      {m.bio}
+                      {m.name}
                     </p>
-                  )}
-                </div>
-              ))}
+                    <p
+                      className="text-text-dark/70 mt-1"
+                      style={{ fontSize: '13.6px', lineHeight: '19px' }}
+                    >
+                      {m.role}
+                    </p>
+                    {m.bio && (
+                      <p
+                        className="text-text-dark/80 mt-2"
+                        style={{ fontSize: '14.4px', lineHeight: '20px' }}
+                      >
+                        {m.bio}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -949,11 +1121,6 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
         </section>
       )}
 
-      {/* ── Photo Gallery ── */}
-      {galleryUrls && galleryUrls.length > 0 && (
-        <PhotoGallery images={galleryUrls} />
-      )}
-
       {/* ── FAQ ── */}
       {venue.faq && venue.faq.length > 0 && (
         <FaqAccordion
@@ -983,6 +1150,39 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           </Link>
         </div>
       </section>
+
+      {/* ── Team member bio modal (click avatar in Meet Our Team) ── */}
+      {bioModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${bioModal.name} bio`}
+          onClick={() => setBioModal(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative max-w-[90vw] max-h-[90vh] flex"
+          >
+            <img
+              src={bioModal.image}
+              alt={`${bioModal.name} bio`}
+              className="max-w-full max-h-[90vh] object-contain rounded-lg shadow-xl bg-white"
+            />
+            <button
+              type="button"
+              onClick={() => setBioModal(null)}
+              aria-label="Close"
+              className="absolute -top-3 -right-3 w-10 h-10 rounded-full bg-white text-primary shadow-lg flex items-center justify-center hover:bg-primary hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }

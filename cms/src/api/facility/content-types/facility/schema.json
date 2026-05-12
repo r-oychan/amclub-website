@@ -86,6 +86,14 @@
       "multiple": true,
       "allowedTypes": ["images"]
     },
+    "teamHeading": {
+      "type": "string"
+    },
+    "teamMembers": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.team-member"
+    },
     "seo": {
       "type": "component",
       "repeatable": false,
