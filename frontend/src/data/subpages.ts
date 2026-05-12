@@ -47,6 +47,12 @@ export interface SubpageData {
     imageAlt?: string;
     /** Side that holds the image. Defaults to alternating starting from 'left'. */
     imagePosition?: 'left' | 'right';
+    /**
+     * When true, the image scrolls together with the text column (its row's
+     * normal flow). Default false → image is sticky to the top so it stays in
+     * view while a long text column scrolls past it.
+     */
+    slideWithText?: boolean;
     heading: string;
     cta?: { label: string; href: string; isExternal?: boolean };
     subheading?: string;

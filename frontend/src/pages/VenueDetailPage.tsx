@@ -79,6 +79,7 @@ interface VenueData {
     image: string;
     imageAlt?: string;
     imagePosition?: 'left' | 'right';
+    slideWithText?: boolean;
     heading: string;
     cta?: { label: string; href: string; isExternal?: boolean };
     subheading?: string;
@@ -588,13 +589,19 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           <div className="max-w-7xl mx-auto px-10 flex flex-col gap-16">
             {venue.imagePanels.map((panel, idx) => {
               const imageOnLeft = (panel.imagePosition ?? (idx % 2 === 0 ? 'left' : 'right')) === 'left';
+              // By default the image stays pinned near the top of the viewport
+              // while a long text column scrolls past. Pass `slideWithText` on
+              // the panel to opt back into the row's normal flow.
+              const stick = !panel.slideWithText;
               const imgEl = (
                 <div className={imageOnLeft ? 'lg:col-start-1 lg:col-end-7' : 'lg:col-start-7 lg:col-end-13'}>
-                  <img
-                    src={panel.image}
-                    alt={panel.imageAlt ?? panel.heading}
-                    className="w-full aspect-[4/3] object-cover"
-                  />
+                  <div className={stick ? 'lg:sticky lg:top-[120px]' : ''}>
+                    <img
+                      src={panel.image}
+                      alt={panel.imageAlt ?? panel.heading}
+                      className="w-full aspect-[4/3] object-cover"
+                    />
+                  </div>
                 </div>
               );
               const textEl = (
