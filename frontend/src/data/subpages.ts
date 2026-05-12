@@ -1267,8 +1267,7 @@ export const membershipSubpages: SubpageData[] = [
     ctas: [
       {
         label: 'Application Checklist',
-        href:
-          'https://469380fc.delivery.rocketcdn.me/wp-content/uploads/2023/07/CSV-MO-04-Membership-Application-Checklist-Jul-2023.pdf',
+        href: '/documents/membership/forms/application-checklist.pdf',
         isExternal: true,
       },
     ],
@@ -1290,48 +1289,13 @@ export const membershipSubpages: SubpageData[] = [
     downloads: {
       heading: "Forms You'll Need",
       items: [
-        {
-          label: 'Application Checklist',
-          href:
-            'https://469380fc.delivery.rocketcdn.me/wp-content/uploads/2023/07/CSV-MO-04-Membership-Application-Checklist-Jul-2023.pdf',
-          isExternal: true,
-        },
-        {
-          label: 'Application Form',
-          href:
-            'https://469380fc.delivery.rocketcdn.me/wp-content/uploads/2022/06/CSV-MO-08_Application_Form_for_Corporate_Membership.pdf',
-          isExternal: true,
-        },
-        {
-          label: 'Endorsement Form',
-          href:
-            'https://469380fc.delivery.rocketcdn.me/wp-content/uploads/2022/06/CSV-MO-09_Endorsement_Form.pdf',
-          isExternal: true,
-        },
-        {
-          label: 'Junior Membership Application Form',
-          href:
-            'https://469380fc.delivery.rocketcdn.me/wp-content/uploads/2022/06/CSV-MO-10_Junior_Membership_Application_Form.pdf',
-          isExternal: true,
-        },
-        {
-          label: 'PDPA Acknowledgement Form',
-          href:
-            'https://469380fc.delivery.rocketcdn.me/wp-content/uploads/2022/06/CSV-MO-11_PDPA_Acknowledgement_Form.pdf',
-          isExternal: true,
-        },
-        {
-          label: 'GIRO Payment Form',
-          href:
-            'https://469380fc.delivery.rocketcdn.me/wp-content/uploads/2022/06/CSV-MO-12_GIRO_Payment_Form.pdf',
-          isExternal: true,
-        },
-        {
-          label: 'Car Registration Form',
-          href:
-            'https://469380fc.delivery.rocketcdn.me/wp-content/uploads/2022/06/CSV-MO-13_Car_Registration_Form.pdf',
-          isExternal: true,
-        },
+        { label: 'Application Checklist',              href: '/documents/membership/forms/application-checklist.pdf',              isExternal: true },
+        { label: 'Application Form',                   href: '/documents/membership/forms/membership-application-form.pdf',        isExternal: true },
+        { label: 'Endorsement Form',                   href: '/documents/membership/forms/endorsement-form.pdf',                   isExternal: true },
+        { label: 'Junior Membership Application Form', href: '/documents/membership/forms/junior-membership-application-form.pdf', isExternal: true },
+        { label: 'PDPA Acknowledgement Form',          href: '/documents/membership/forms/pdpa-acknowledgement-form.pdf',          isExternal: true },
+        { label: 'GIRO Payment Form',                  href: '/documents/membership/forms/giro-payment-form.pdf',                  isExternal: true },
+        { label: 'Car Registration Form',              href: '/documents/membership/forms/car-registration-form.pdf',              isExternal: true },
       ],
     },
   },
