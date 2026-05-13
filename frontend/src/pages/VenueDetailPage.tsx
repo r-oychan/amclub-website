@@ -59,9 +59,15 @@ interface VenueData {
   ctas?: { label: string; href: string; isExternal?: boolean; icon?: CtaIconName | null }[];
   extraSections?: {
     title: string;
-    content: string;
+    content?: string;
     bullets?: string[];
     contactRows?: { label: string; value: string }[];
+    groups?: {
+      heading?: string;
+      paragraphs?: string[];
+      bullets?: string[];
+      footer?: string;
+    }[];
   }[];
   promoCards?: {
     heading: string;
@@ -607,7 +613,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
               {venue.extraSections?.map((extra, i) => (
                 <DetailSection key={i} icon={resolveIcon(extra.title)} title={extra.title}>
                   <div className="flex flex-col" style={{ gap: '16px' }}>
-                    {extra.content.split('\n').map((line, j) => (
+                    {extra.content?.split('\n').filter(Boolean).map((line, j) => (
                       <p
                         key={j}
                         className="text-text-dark"
@@ -629,6 +635,49 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                         ))}
                       </ul>
                     )}
+                    {extra.groups && extra.groups.length > 0 && extra.groups.map((g, gIdx) => (
+                      <div key={`g-${gIdx}`} className="flex flex-col" style={{ gap: '12px', marginTop: gIdx === 0 ? '8px' : '16px' }}>
+                        {g.heading && (
+                          <p
+                            className="text-primary"
+                            style={{ fontSize: '17.6px', fontWeight: 700, lineHeight: '24.64px' }}
+                          >
+                            {g.heading}
+                          </p>
+                        )}
+                        {g.paragraphs?.map((p, pIdx) => (
+                          <p
+                            key={pIdx}
+                            className="text-text-dark"
+                            style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
+                          >
+                            {p}
+                          </p>
+                        ))}
+                        {g.bullets && g.bullets.length > 0 && (
+                          <ul className="list-disc pl-6 flex flex-col" style={{ gap: '8px' }}>
+                            {g.bullets.map((b, bIdx) => (
+                              <li
+                                key={bIdx}
+                                className="text-text-dark"
+                                style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
+                              >
+                                {b}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                        {g.footer && g.footer.split('\n').filter(Boolean).map((line, fIdx) => (
+                          <p
+                            key={`f-${fIdx}`}
+                            className="text-text-dark"
+                            style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
+                          >
+                            {line}
+                          </p>
+                        ))}
+                      </div>
+                    ))}
                     {extra.contactRows && extra.contactRows.length > 0 && (
                       <div
                         className="grid"

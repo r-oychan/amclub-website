@@ -35,9 +35,20 @@ export interface SubpageData {
   ctas?: { label: string; href: string; isExternal?: boolean }[];
   extraSections?: {
     title: string;
-    content: string;
+    content?: string;
     bullets?: string[];
     contactRows?: { label: string; value: string }[];
+    /**
+     * Nested sub-blocks rendered after content/bullets. Used when one
+     * extraSection holds several mini-sections (e.g. Camps' "For Ages 4–7"
+     * and "For Ages 8 & Above" both live under "Upcoming Camps").
+     */
+    groups?: {
+      heading?: string;
+      paragraphs?: string[];
+      bullets?: string[];
+      footer?: string;
+    }[];
   }[];
   promoCards?: {
     heading: string;
@@ -1293,6 +1304,41 @@ export const kidsSubpages: SubpageData[] = [
       { label: '4 – 7 Years Registration', href: 'https://forms.office.com/pages/responsepage.aspx?id=tNI3gQWbQ0ue5Ad0V1MxKig5SVI1jCxHmIfXpkheevZUQVhSUTFDVlY2QzEyREJDTVpVVTg3OE44TSQlQCN0PWcu&route=shorturl', isExternal: true },
       { label: '8 Years & Above Schedule', href: '/documents/kids/8-12-camp-schedule.pdf', isExternal: true },
       { label: '8 Years & Above Registration', href: 'https://forms.office.com/pages/responsepage.aspx?id=tNI3gQWbQ0ue5Ad0V1MxKig5SVI1jCxHmIfXpkheevZUQVBNREpQRUc1TUdIR1RYUk1IRUFPRDMyUyQlQCN0PWcu&route=shorturl', isExternal: true },
+    ],
+    extraSections: [
+      {
+        title: 'Upcoming Camps',
+        content:
+          'Camp Eagle Explorers – Winter 2025\nWeek 1: December 15 – 19, 2025\nWeek 2: December 22 – 26, 2025\nNo camp on December 25, 2025\nWeek 3: December 29, 2025 – January 2, 2026\nNo camp on January 1, 2026\nWeek 4: January 5 – 9, 2026\n\nMake this holiday unforgettable with a Winter Camp packed with fun and discovery for kids!',
+        groups: [
+          {
+            heading: 'For ages 4 – 7',
+            paragraphs: ['Our on-site camp is packed with fun festive themed activities such as:'],
+            bullets: ['Christmas-themed Crafts', 'Snow Play', 'Team-building Activities', 'Jr. Masterchef'],
+            footer:
+              'and more!\nMembers: $130 per day, $650 per week\nGuests: $150 per day, $750 per week\nView the full camp schedule and sign up using the links below.',
+          },
+          {
+            heading: 'For ages 8 and up',
+            paragraphs: [
+              'Explorers can enjoy adventurous and holiday-themed activities outside the Club, including:',
+            ],
+            bullets: ['Snow City', 'Rock Climbing', 'Mini Golf', 'Ice Cream Museum'],
+            footer:
+              'and more!\nMembers: $140 per day, $700 per week\nGuests: $160 per day, $800 per week\nView the full camp schedule and sign up using the links below.',
+          },
+        ],
+      },
+      {
+        title: 'Terms and Conditions',
+        bullets: [
+          '10K & 15K Niche Group Members are entitled to a 5% discount',
+          'VIP & Elite Niche Group Members are entitled to a 8% discount',
+          'Get 5% off when siblings attend together',
+          'Only one discount can be applied per participant and cannot be combined',
+          'Daily rates are available',
+        ],
+      },
     ],
     quote: {
       heading: 'What parents say about our camps',
