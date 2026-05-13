@@ -61,7 +61,7 @@ const AQUATICS_TEAM = [
   { name: 'Rodel',     role: 'Swim Coach / Lifeguard Trainer',           image: 'rodel.jpg',     offX: 48, offY: 22, zoom: 1.8, link: '/coaches/aquatics/rodel' },
   { name: 'Ben',       role: 'Swim Coach / Lifeguard Trainer',           image: 'ben.jpeg',      offX: 48, offY: 28, zoom: 2.0 },
   { name: 'Francesca', role: 'Swim Coach',                               image: 'francesca.jpg', offX: 48, offY: 32, zoom: 1.7 },
-  { name: 'Caroline',  role: 'Part-time Swim Coach',                     image: 'caroline.jpg',  offX: 48, offY: 25, zoom: 1.8 },
+  { name: 'Caroline',  role: 'Part-time Swim Coach',                     image: 'caroline.jpg',  offX: 42, offY: 32, zoom: 1.25 },
   { name: 'Daniel',    role: 'Part-time Swim Coach',                     image: 'daniel.jpg',    offX: 48, offY: 25, zoom: 1.8 },
   { name: 'Yat',       role: 'Part-time Swim Coach / Lifeguard Trainer', image: 'yat.jpg',       offX: 48, offY: 22, zoom: 1.6 },
   { name: 'Sia',       role: 'Part-time Lifeguard Trainer',              image: 'sia.jpg',       offX: 50, offY: 30, zoom: 1.5 },
@@ -205,6 +205,34 @@ const AQUATICS = {
     { label: 'Programs Price List',     href: '/documents/fitness/aquatics-program-price-list.pdf', isExternal: true, variant: 'primary', icon: 'arrow' },
   ],
   teamHeading: 'Meet Our Team',
+  // Structured operating-hours blocks. Pool / peak-hours / office groups
+  // collapse into one "Operating Hours" DetailSection on the frontend.
+  operatingHoursSections: [
+    {
+      title: 'Pool Operating Hours',
+      rows: [
+        {
+          dayRange: 'Daily',
+          time: '6:00 AM – 9:00 PM',
+          note: 'Lifeguards are on duty daily from 7:00 AM – 7:00 PM.',
+        },
+      ],
+    },
+    {
+      title: 'Social lap swimming is unavailable during these peak hours',
+      rows: [
+        { dayRange: 'Mondays to Fridays', time: '4:30 PM – 6:00 PM' },
+        { dayRange: 'Saturdays',          time: '8:00 AM – 11:30 AM' },
+      ],
+    },
+    {
+      title: 'Aquatics Office Operating Hours',
+      rows: [
+        { dayRange: 'Weekdays',  time: '9:30 AM – 6:00 PM' },
+        { dayRange: 'Saturdays', time: '9:00 AM – 12:00 PM', note: 'Closed on Sundays' },
+      ],
+    },
+  ],
 };
 
 const TENNIS = {
@@ -377,6 +405,7 @@ async function upsertAquaticsFacility({ teamMedia, heroImageId, includeCoachLink
     ctas: AQUATICS.ctas,
     teamHeading: AQUATICS.teamHeading,
     teamMembers,
+    operatingHoursSections: AQUATICS.operatingHoursSections,
     publishedAt: new Date().toISOString(),
   };
 
