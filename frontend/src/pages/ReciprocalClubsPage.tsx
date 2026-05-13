@@ -23,8 +23,8 @@ const HOURS_BLOCKS: { title: string; rows: { day: string; lines: string[] }[] }[
   {
     title: 'Tower Club Operating Hours',
     rows: [
-      { day: 'Mondays to Fridays', lines: ['7:30 a.m. – 11:00 p.m.'] },
-      { day: 'Saturdays', lines: ['9:00 a.m. – 11:00 p.m.'] },
+      { day: 'Mondays to Fridays', lines: ['7:30 AM – 11:00 PM'] },
+      { day: 'Saturdays', lines: ['9:00 AM – 11:00 PM'] },
     ],
   },
   {
@@ -33,12 +33,12 @@ const HOURS_BLOCKS: { title: string; rows: { day: string; lines: string[] }[] }[
       {
         day: 'Mondays to Fridays',
         lines: [
-          'Breakfast: 7:30 a.m. – 10:30 a.m.',
-          'Lunch: 11:30 a.m. – 2:30 p.m.',
-          'Dinner: 6:30 p.m. – 11:00 p.m.',
+          'Breakfast: 7:30 AM – 10:30 AM',
+          'Lunch: 11:30 AM – 2:30 PM',
+          'Dinner: 6:30 PM – 11:00 PM',
         ],
       },
-      { day: 'Saturdays', lines: ['Dinner: 6:30 p.m. – 11:00 p.m.'] },
+      { day: 'Saturdays', lines: ['Dinner: 6:30 PM – 11:00 PM'] },
     ],
   },
   {
@@ -46,14 +46,14 @@ const HOURS_BLOCKS: { title: string; rows: { day: string; lines: string[] }[] }[
     rows: [
       {
         day: 'Mondays to Saturdays',
-        lines: ['Lunch: 11:30 a.m. – 2:30 p.m.', 'Dinner: 6:30 p.m. – 11:00 p.m.'],
+        lines: ['Lunch: 11:30 AM – 2:30 PM', 'Dinner: 6:30 PM – 11:00 PM'],
       },
     ],
   },
   {
     title: 'Straits Bar (Level 64)',
     rows: [
-      { day: 'Mondays to Saturdays', lines: ['All day dining from 11:30 a.m. – 11:00 p.m.'] },
+      { day: 'Mondays to Saturdays', lines: ['All day dining from 11:30 AM – 11:00 PM'] },
     ],
   },
 ];

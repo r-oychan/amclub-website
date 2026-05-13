@@ -25,7 +25,7 @@ export interface SubpageData {
    */
   operatingHoursSections?: {
     title: string;
-    rows?: { dayRange: string; time: string; lastOrder?: string }[];
+    rows?: { dayRange: string; time: string; lastOrder?: string; note?: string }[];
   }[];
   /**
    * Inline location & contact module. Falls back to the legacy
@@ -291,7 +291,23 @@ export const diningSubpages: SubpageData[] = [
     description:
       'Welcome to a casual poolside dining restaurant – perfect for families with children and swimmers looking to have a delicious meal.\n\nDevour authentic American cuisine featuring Texas-style BBQ, mouth-watering burgers, delicious pizzas and salads with ice-cold American beer and special Grillhouse shakes.',
     hours:
-      'Grillhouse\nSunday to Thursday: 11:00 AM – 9:00 PM (Last order at 8:30 PM)\nFriday: 11:00 AM – 9:30 PM (Last order at 9:00 PM)\nSaturday: 8:30 AM – 9:30 PM (Last order at 9:00 PM)\n\nTiki Bar\nFridays & Saturdays: 11:30 AM – 12:00 AM (Last order at 11:30 PM)\nSundays: 11:30 AM – 11:00 PM (Last order at 10:30 PM)',
+      'Grillhouse\nSunday to Thursday: 11:00 AM – 9:00 PM (Last order at 8:30 PM)\nFriday and Saturday: 11:00 AM – 9:30 PM (Last order at 9:00 PM)\n\nTiki Bar\nFridays & Saturdays: 11:30 AM – 12:00 AM (Last order at 11:30 PM)\nSundays: 11:30 AM – 11:00 PM (Last order at 10:30 PM)',
+    operatingHoursSections: [
+      {
+        title: 'Grillhouse Operating Hours',
+        rows: [
+          { dayRange: 'Sunday to Thursday',  time: '11:00 AM - 9:00 PM', lastOrder: 'Last order at 8:30 PM' },
+          { dayRange: 'Friday and Saturday', time: '11:00 AM - 9:30 PM', lastOrder: 'Last order at 9:00 PM' },
+        ],
+      },
+      {
+        title: 'Tiki Bar Operating Hours',
+        rows: [
+          { dayRange: 'Fridays & Saturdays', time: '11:30 AM - 12:00 AM', lastOrder: 'Last order at 11:30 PM' },
+          { dayRange: 'Sundays',             time: '11:30 AM - 11:00 PM', lastOrder: 'Last order at 10:30 PM' },
+        ],
+      },
+    ],
     level: 'Level 1',
     phone: '6739 4357',
     email: 'grillhouse@amclub.org.sg',
@@ -1317,7 +1333,7 @@ export const kidsSubpages: SubpageData[] = [
           {
             heading: '4 – 7 Years Old',
             paragraphs: [
-              '9:00 a.m. – 3:00 p.m.',
+              '9:00 AM – 3:00 PM',
               'The Quad Studios & various locations around Singapore',
             ],
             footer:
@@ -1326,7 +1342,7 @@ export const kidsSubpages: SubpageData[] = [
           {
             heading: '8 Years Old & Above',
             paragraphs: [
-              '9:00 a.m. – 3:00 p.m.',
+              '9:00 AM – 3:00 PM',
               'The Quad Studios & various locations around Singapore',
             ],
             footer:
@@ -1639,8 +1655,8 @@ export const membershipSubpages: SubpageData[] = [
       {
         title: 'Membership Office Operating Hours',
         rows: [
-          { dayRange: 'Monday to Friday', time: '12:00 p.m. – 7:00 p.m.' },
-          { dayRange: 'Saturday', time: '1:00 p.m. – 8:00 p.m.' },
+          { dayRange: 'Monday to Friday', time: '12:00 PM – 7:00 PM' },
+          { dayRange: 'Saturday', time: '1:00 PM – 8:00 PM' },
           { dayRange: '', time: 'Closed on Sunday' },
         ],
       },

@@ -3,7 +3,7 @@
   "info": {
     "displayName": "Schedule Row",
     "icon": "calendar",
-    "description": "A single row inside an operating-hours section (day range + time + optional last-order note)"
+    "description": "A single row inside an operating-hours section (day range + start–end time + optional last-order + optional note)"
   },
   "attributes": {
     "dayRange": {
@@ -15,6 +15,9 @@
       "required": true
     },
     "lastOrder": {
+      "type": "string"
+    },
+    "note": {
       "type": "string"
     }
   }

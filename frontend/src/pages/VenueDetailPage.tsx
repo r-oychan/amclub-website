@@ -17,6 +17,7 @@ interface ScheduleRow {
   dayRange: string;
   time: string;
   lastOrder?: string;
+  note?: string;
 }
 
 interface OperatingHoursSection {
@@ -580,6 +581,14 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                             style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
                           >
                             {row.lastOrder}
+                          </p>
+                        )}
+                        {row.note && (
+                          <p
+                            className="text-text-dark/70 italic"
+                            style={{ fontSize: '15.2px', lineHeight: '22px' }}
+                          >
+                            {row.note}
                           </p>
                         )}
                       </div>
