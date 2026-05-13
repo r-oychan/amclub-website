@@ -24,7 +24,7 @@ export interface SubpageData {
    * with a clock icon, title, and a grid of day/time rows.
    */
   operatingHoursSections?: {
-    title: string;
+    title?: string;
     rows?: { dayRange: string; time: string; lastOrder?: string; note?: string }[];
   }[];
   /**
@@ -53,9 +53,18 @@ export interface SubpageData {
   promoCards?: {
     heading: string;
     description: string;
+    /**
+     * Layout variant.
+     * - `'card'` (default): image-on-top card with subtitle + title + CTA below.
+     * - `'overlay'`: full-bleed image with title + CTA label overlaid in white at
+     *   the bottom. Matches Framer's "Our Aquatic Programs" 5-up grid.
+     */
+    variant?: 'card' | 'overlay';
+    /** Optional fixed column count for the grid. Defaults to 3 for `card`, 5 for `overlay`. */
+    columns?: number;
     cards: {
       title: string;
-      subtitle: string;
+      subtitle?: string;
       image: string;
       cta: { label: string; href: string };
     }[];
@@ -480,6 +489,12 @@ export const diningSubpages: SubpageData[] = [
     description:
       'Essentials is your convenient one-stop shop for everyday needs – featuring exclusive items imported directly from the US, as well as pantry staples, seasonal treats, premium beverages, baking supplies, and laundry services.\n\nEssentials2Go!, our online platform, makes shopping effortless – available for home delivery or self-collection at Essentials, whichever suits you best.',
     hours: 'Daily\n8:00 AM – 8:00 PM',
+    operatingHoursSections: [
+      {
+        title: 'Opening Hours',
+        rows: [{ dayRange: 'Daily', time: '8:00 AM - 8:00 PM' }],
+      },
+    ],
     level: 'Level 1',
     phone: '6739 4332',
     email: 'essentials@amclub.org.sg',
@@ -487,7 +502,7 @@ export const diningSubpages: SubpageData[] = [
       '/uploads/services/essentials.jpeg',
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
-    ctas: [{ label: 'Essentials2Go!', href: '#' }],
+    ctas: [{ label: 'Essentials2Go!', href: 'https://amclub.jotform.com/253312807189965', isExternal: true }],
   },
   {
     slug: 'tac2go',
@@ -562,6 +577,32 @@ export const fitnessSubpages: SubpageData[] = [
       'Our Aquatics Team is dedicated to enriching lives through swimming, offering programs for all ages – from babies and toddlers to school-age children and adults.\n\nOur Aquatics program features SwimAmerica, a nationally recognized learn-to-swim program from the United States developed by the American Swimming Coaches Association. Using techniques inspired by world-class and Olympic swimmers, SwimAmerica follows a structured, progressive approach that helps beginners build confidence, proper technique, and strong swimming fundamentals in a safe and effective way.\n\nMembers can further enhance their experience through private lessons, holiday swim camps, intensive stroke clinics, and a variety of in-house swim meets. On weekends, the whole family can enjoy fun in the water with inflatables and play structures.',
     hours:
       'Pool Operating Hours\nDaily: 6:00 AM – 9:00 PM\nLifeguards on duty daily 7:00 AM – 7:00 PM\n\nAquatics Office\nWeekdays: 9:30 AM – 6:00 PM\nSaturdays: 9:00 AM – 12:00 PM\nClosed on Sundays',
+    operatingHoursSections: [
+      {
+        title: 'Pool Operating Hours',
+        rows: [
+          {
+            dayRange: 'Daily',
+            time: '6:00 AM – 9:00 PM',
+            note: 'Lifeguards are on duty daily from 7:00 AM – 7:00 PM.',
+          },
+        ],
+      },
+      {
+        title: 'Social lap swimming is unavailable during these peak hours',
+        rows: [
+          { dayRange: 'Mondays to Fridays', time: '4:30 PM – 6:00 PM' },
+          { dayRange: 'Saturdays',          time: '8:00 AM – 11:30 AM' },
+        ],
+      },
+      {
+        title: 'Aquatics Office Operating Hours',
+        rows: [
+          { dayRange: 'Weekdays',  time: '9:30 AM – 6:00 PM' },
+          { dayRange: 'Saturdays', time: '9:00 AM – 12:00 PM', note: 'Closed on Sundays' },
+        ],
+      },
+    ],
     level: 'Level 1',
     phone: '6739 4450',
     email: 'aquatics@amclub.org.sg',
@@ -575,35 +616,33 @@ export const fitnessSubpages: SubpageData[] = [
     ],
     promoCards: {
       heading: 'Our Aquatic Programs',
-      description: '',
+      description:
+        "The Club's teaching program builds skills through simple, achievable progressions, while the Swim Team focuses on guiding junior swimmers into competitive swimming.",
+      variant: 'overlay',
+      columns: 5,
       cards: [
         {
           title: 'SwimAmerica',
-          subtitle: 'Learn-to-Swim',
           image: '/images/fitness/programs/aquatic-program-swimamerica.jpeg',
           cta: { label: 'View More', href: '/fitness/aquatics/swimamerica' },
         },
         {
           title: 'Swim Team',
-          subtitle: 'Competitive Swimming',
           image: '/images/fitness/programs/aquatic-program-swim-team.jpg',
           cta: { label: 'View More', href: '/fitness/aquatics/swim-team' },
         },
         {
           title: 'Masters Swimming',
-          subtitle: 'Adult Training',
           image: '/images/fitness/programs/aquatic-program-masters-swimming.jpg',
           cta: { label: 'View More', href: '/fitness/aquatics/masters-swimming' },
         },
         {
           title: 'Aquatics Group Fitness Classes',
-          subtitle: 'Water Workouts',
           image: '/images/fitness/programs/aquatic-program-group-class.jpg',
           cta: { label: 'View More', href: '/fitness/aquatics/group-fitness-classes' },
         },
         {
           title: 'Infant & Toddlers',
-          subtitle: 'Water Confidence',
           image: '/images/fitness/programs/aquatic-program-infant-toddlers.jpg',
           cta: { label: 'View More', href: '/fitness/aquatics/infants-toddlers' },
         },
@@ -619,7 +658,7 @@ export const fitnessSubpages: SubpageData[] = [
       { name: 'Rodel',     role: 'Swim Coach / Lifeguard Trainer',              image: '/images/fitness/team-aquatics/rodel.jpg',     imageOffsetX: 48, imageOffsetY: 22, imageZoom: 1.8, coachLink: '/coaches/aquatics/rodel' },
       { name: 'Ben',       role: 'Swim Coach / Lifeguard Trainer',              image: '/images/fitness/team-aquatics/ben.jpeg',      imageOffsetX: 48, imageOffsetY: 28, imageZoom: 2.0 },
       { name: 'Francesca', role: 'Swim Coach',                                  image: '/images/fitness/team-aquatics/francesca.jpg', imageOffsetX: 48, imageOffsetY: 32, imageZoom: 1.7 },
-      { name: 'Caroline',  role: 'Part-time Swim Coach',                        image: '/images/fitness/team-aquatics/caroline.jpg',  imageOffsetX: 48, imageOffsetY: 25, imageZoom: 1.8 },
+      { name: 'Caroline',  role: 'Part-time Swim Coach',                        image: '/images/fitness/team-aquatics/caroline.jpg',  imageOffsetX: 42, imageOffsetY: 32, imageZoom: 1.25 },
       { name: 'Daniel',    role: 'Part-time Swim Coach',                        image: '/images/fitness/team-aquatics/daniel.jpg',    imageOffsetX: 48, imageOffsetY: 25, imageZoom: 1.8 },
       { name: 'Yat',       role: 'Part-time Swim Coach / Lifeguard Trainer',    image: '/images/fitness/team-aquatics/yat.jpg',       imageOffsetX: 48, imageOffsetY: 22, imageZoom: 1.6 },
       { name: 'Sia',       role: 'Part-time Lifeguard Trainer',                 image: '/images/fitness/team-aquatics/sia.jpg',       imageOffsetX: 50, imageOffsetY: 30, imageZoom: 1.5 },

@@ -188,8 +188,8 @@ async function upsertDiningPage({ heroMedia, servMedia }) {
       heading: 'Club Favorites, Straight to Your Door',
       subheading: 'Savor your favorite Club dishes and curated wines from the comfort of home, with delivery and takeaway services at your fingertips.',
       cards: [
-        { heading: 'TAC2Go!',     description: 'Savor your Club favorites in the comforts of your own home.',                            image: servMedia['tac2go.jpeg'].id,    cta: { label: 'Order Now', href: '/dining/tac2go',     variant: 'text', icon: 'arrow' } },
-        { heading: 'Bottles2Go!', description: "Bringing the Club's cellar to your home with a curated range of premium wines.",        image: servMedia['bottles2go.jpg'].id, cta: { label: 'Order Now', href: '/dining/bottles2go', variant: 'text', icon: 'arrow' } },
+        { heading: 'TAC2Go!',     description: 'Savor your Club favorites in the comforts of your own home.',                     image: servMedia['tac2go.jpeg'].id,    cta: { label: 'Order Now', href: 'https://amclub.jotform.com/252650968518973', isExternal: true, variant: 'text', icon: 'arrow' } },
+        { heading: 'Bottles2Go!', description: "Bringing the Club's cellar to your home with a curated range of premium wines.", image: servMedia['bottles2go.jpg'].id, cta: { label: 'Order Now', href: 'https://amclub.jotform.com/252638314015956', isExternal: true, variant: 'text', icon: 'arrow' } },
       ],
     },
     essentials: {
@@ -202,8 +202,8 @@ async function upsertDiningPage({ heroMedia, servMedia }) {
       textBgColor: '#F5F4F2',
       textTheme: 'dark',
       ctas: [
-        { label: 'Essentials2Go!',                       href: '/dining/essentials', variant: 'primary', icon: 'arrow' },
-        { label: 'Retail Store & Laundry Services',      href: '/dining/essentials', variant: 'primary', icon: 'arrow' },
+        { label: 'Essentials2Go!',                  href: 'https://amclub.jotform.com/253312807189965', isExternal: true, variant: 'primary', icon: 'arrow' },
+        { label: 'Retail Store & Laundry Services', href: '/dining/essentials',                                            variant: 'primary', icon: 'arrow' },
       ],
     },
     finalCta: {
