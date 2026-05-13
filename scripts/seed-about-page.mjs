@@ -33,12 +33,13 @@ const IMAGES = [
   'heritage-1966.jpg', 'heritage-1970.jpg', 'heritage-1978.jpg',
   'heritage-1983.jpg', 'heritage-1989.jpg', 'heritage-1990.jpeg',
   'heritage-2000.jpg', 'heritage-2015.jpg',
-  // committee (general): 14 known portraits — Vijay Jote & Rachael Gartman pending
+  // committee (general): 16 portraits
   'gc-daniel-gewirtz.png', 'gc-tessa-pang.png', 'gc-kate-park.png',
   'gc-terry-kim.png', 'gc-alisha-barnes.png', 'gc-charles-santos.png',
   'gc-kenny-liu.png', 'gc-marcella-sullivan.png', 'gc-michael-schindler.png',
-  'gc-ngiam-siew-wei.png', 'gc-ted-teo.png',
+  'gc-ngiam-siew-wei.png', 'gc-ted-teo.png', 'gc-vijay-jote.png',
   'gc-michelle-reeb.png', 'gc-autumn-vavoso.png', 'gc-sandra-johnson.png',
+  'gc-rachael-gartman.png',
   // advocacy
   'advocacy-aside.png',
   // management 6
@@ -77,11 +78,11 @@ const COMMITTEE = [
   ['Michael Schindler',  'Member at Large',                                                  'gc-michael-schindler.png',  'general-committee', 9],
   ['Ngiam Siew Wei',     'Member at Large',                                                  'gc-ngiam-siew-wei.png',     'general-committee', 10],
   ['Ted Teo',            'Member at Large',                                                  'gc-ted-teo.png',            'general-committee', 11],
-  ['Vijay Jote',         'Member at Large',                                                  null,                        'general-committee', 12],
+  ['Vijay Jote',         'Member at Large',                                                  'gc-vijay-jote.png',         'general-committee', 12],
   ['Michelle Reeb',      'American Association of Singapore Representative',                 'gc-michelle-reeb.png',      'general-committee', 13],
   ['Autumn Vavoso',      "American Women's Association Representative",                      'gc-autumn-vavoso.png',      'general-committee', 14],
   ['Sandra Johnson',     'Canadian Association of Singapore Representative',                 'gc-sandra-johnson.png',     'general-committee', 15],
-  ['Rachael Gartman',    'US Embassy Representative',                                        null,                        'general-committee', 16],
+  ['Rachael Gartman',    'US Embassy Representative',                                        'gc-rachael-gartman.png',    'general-committee', 16],
 
   // Management
   ['Christine Kaelbel-Sheares', 'General Manager',                          'mgmt-christine.jpeg', 'management', 1,
