@@ -53,12 +53,12 @@ const TEAM_FILES = TENNIS_TEAM.flatMap((m) => [m.image, m.bio]);
 // Aquatics roster (12 coaches). Only 5 have public bio pages on amclub.org.sg;
 // the rest are tile-only (no click action) until coach profiles are authored.
 const AQUATICS_TEAM = [
-  { name: 'Greg',      role: 'Aquatics Manager & Head Swim Coach',      image: 'greg.jpg',      offX: 48, offY: 22, zoom: 1.8, link: 'https://amclub.org.sg/fitness-and-leisure/aquatics/aquatics-head-coach-greg/' },
-  { name: 'Zack',      role: 'Aquatics Coordinator',                     image: 'zack.jpg',      offX: 48, offY: 25, zoom: 1.8, link: 'https://amclub.org.sg/fitness-and-leisure/aquatics/aquatics-coordinator-zack/' },
-  { name: 'Hariz',     role: 'Assistant Swim Coach & Coordinator',       image: 'hariz.jpg',     offX: 48, offY: 28, zoom: 1.8, link: 'https://amclub.org.sg/fitness-and-leisure/aquatics/assistant-coach-coordinator-hariz/' },
-  { name: 'Abdul',     role: 'Chief Lifeguard Trainer',                  image: 'abdul.jpg',     offX: 48, offY: 25, zoom: 1.8, link: 'https://amclub.org.sg/fitness-and-leisure/aquatics/chief-lifeguard-abdul/' },
+  { name: 'Greg',      role: 'Aquatics Manager & Head Swim Coach',      image: 'greg.jpg',      offX: 48, offY: 22, zoom: 1.8, link: '/coaches/aquatics/greg' },
+  { name: 'Zack',      role: 'Aquatics Coordinator',                     image: 'zack.jpg',      offX: 48, offY: 25, zoom: 1.8, link: '/coaches/aquatics/zack' },
+  { name: 'Hariz',     role: 'Assistant Swim Coach & Coordinator',       image: 'hariz.jpg',     offX: 48, offY: 28, zoom: 1.8, link: '/coaches/aquatics/hariz' },
+  { name: 'Abdul',     role: 'Chief Lifeguard Trainer',                  image: 'abdul.jpg',     offX: 48, offY: 25, zoom: 1.8, link: '/coaches/aquatics/abdul' },
   { name: 'Marc',      role: 'Swim Coach',                               image: 'marc.png',      offX: 48, offY: 35, zoom: 1.4 },
-  { name: 'Rodel',     role: 'Swim Coach / Lifeguard Trainer',           image: 'rodel.jpg',     offX: 48, offY: 22, zoom: 1.8, link: 'https://amclub.org.sg/fitness-and-leisure/aquatics/coach-lifeguard-trainer-rodel/' },
+  { name: 'Rodel',     role: 'Swim Coach / Lifeguard Trainer',           image: 'rodel.jpg',     offX: 48, offY: 22, zoom: 1.8, link: '/coaches/aquatics/rodel' },
   { name: 'Ben',       role: 'Swim Coach / Lifeguard Trainer',           image: 'ben.jpeg',      offX: 48, offY: 28, zoom: 2.0 },
   { name: 'Francesca', role: 'Swim Coach',                               image: 'francesca.jpg', offX: 48, offY: 32, zoom: 1.7 },
   { name: 'Caroline',  role: 'Part-time Swim Coach',                     image: 'caroline.jpg',  offX: 48, offY: 25, zoom: 1.8 },
