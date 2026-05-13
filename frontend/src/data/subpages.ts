@@ -215,6 +215,23 @@ export interface SubpageData {
       imageAlt?: string;
     }[];
   };
+  /**
+   * 3-col card grid for wedding/event packages. Each card shows a striped
+   * placeholder image, italic serif heading, thin divider, a tagline
+   * subheading, a "PACKAGE DETAILS" label, and a checkmark bullet list.
+   */
+  packageCards?: {
+    heading?: string;
+    subheading?: string;
+    columns?: 2 | 3;
+    cards: {
+      heading: string;
+      tagline: string;
+      detailsLabel?: string;
+      benefits: string[];
+      image?: string;
+    }[];
+  };
 }
 
 const PLACEHOLDER_FAQ: { question: string; answer: string }[] = [
@@ -1626,6 +1643,78 @@ export const eventSpacesSubpages: SubpageData[] = [
     ctas: [
       { label: 'Enquire Now', href: 'mailto:catering@amclub.org.sg', isExternal: true },
     ],
+    venueCards: {
+      columns: 2,
+      cards: [
+        {
+          heading: 'The Galbraith Ballroom',
+          capacity: 'Up to 40 pax',
+          description:
+            'A grand, pillar-less ballroom created for unforgettable "I do" moments. With elegant layouts, seamless audiovisual support, and dedicated event coordination, the space transforms effortlessly from a heartfelt ceremony to an evening of dining and dancing – an enchanting setting for celebrating your love story in style.',
+          image: '/uploads/venue_galbraith_bf8613655b.jpeg',
+          imageAlt: 'The Galbraith Ballroom',
+        },
+        {
+          heading: 'The 2nd Floor',
+          capacity: 'Up to 40 pax',
+          description:
+            'An intimate and refined setting for smaller weddings and cocktail receptions, The 2nd Floor offers couples a beautifully curated space for a celebration that feels personal, elegant, and effortlessly memorable.',
+          image: '/uploads/the_2nd_floor_7b3419fa1b.jpeg',
+          imageAlt: 'The 2nd Floor',
+        },
+      ],
+    },
+    packageCards: {
+      heading: 'Packages',
+      columns: 3,
+      cards: [
+        {
+          heading: 'The Classic Collection',
+          tagline: 'Ideal for intimate weddings and couples seeking a refined yet simple celebration',
+          benefits: [
+            'Exclusive use of The Galbraith Ballroom for up to 4 hours',
+            'Elegant round table setup with your choice of linen',
+            'Complimentary use of stage and projection system for speeches and visual displays',
+            'Fresh floral centerpiece for each table',
+            'Complimentary parking for the bridal car',
+            'One bottle of wine per table (red or white)',
+            'Champagne toast for the couple',
+            'Ambient background music to set the perfect mood',
+          ],
+        },
+        {
+          heading: 'The Signature Collection',
+          tagline: 'For mid-sized weddings with personalized touches and elevated flair',
+          benefits: [
+            'Exclusive use of The Galbraith Ballroom for up to 4 hours',
+            'Elegant round table setup with your choice of linen',
+            'Complimentary use of stage and projection system for speeches and visual displays',
+            'Fresh floral centerpiece for each table & enhanced floral centerpiece for the VIP table',
+            'Complimentary parking for 5 vehicles',
+            '20-liter barrel of beer for your guests to enjoy',
+            'Champagne toast for the couple',
+            'Curated background music playlist tailored to your celebration',
+          ],
+        },
+        {
+          heading: 'The Prestige Collection',
+          tagline: 'Our most comprehensive package, designed for a truly premium wedding experience',
+          benefits: [
+            'Exclusive use of The Galbraith Ballroom for up to 4 hours',
+            'Elegant round table setup with your choice of linen',
+            'Complimentary use of stage and projection system for speeches and visual displays',
+            'Fresh floral centerpiece for each table & enhanced floral centerpiece for the VIP table',
+            'Complimentary parking for 5 vehicles',
+            'Professional photographer included for 2 hours',
+            'Champagne toast for the couple',
+            'One bottle of wine per table (red or white)',
+            '20-liter barrel of beer for your guests to enjoy',
+            'Curated background music playlist tailored to your celebration',
+            'Exclusive door gifts for your guests',
+          ],
+        },
+      ],
+    },
   },
   {
     slug: 'corporate-functions',

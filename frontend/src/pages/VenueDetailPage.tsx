@@ -170,6 +170,18 @@ interface VenueData {
       imageAlt?: string;
     }[];
   };
+  packageCards?: {
+    heading?: string;
+    subheading?: string;
+    columns?: 2 | 3;
+    cards: {
+      heading: string;
+      tagline: string;
+      detailsLabel?: string;
+      benefits: string[];
+      image?: string;
+    }[];
+  };
 }
 
 const SECTION_MAP: Record<string, { apiPath: string; parentLabel: string; parentHref: string }> = {
@@ -217,6 +229,7 @@ function staticFallback(section: string, slug: string): VenueData | null {
     downloads: sp.downloads,
     tierCards: sp.tierCards,
     venueCards: sp.venueCards,
+    packageCards: sp.packageCards,
   };
 }
 
@@ -345,6 +358,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           downloads: api.downloads ?? fallback?.downloads,
           tierCards: api.tierCards ?? fallback?.tierCards,
           venueCards: api.venueCards ?? fallback?.venueCards,
+          packageCards: api.packageCards ?? fallback?.packageCards,
         });
       } else {
         setVenue(fallback);
@@ -1142,6 +1156,112 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                       >
                         {card.description}
                       </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
+
+      {/* ── 3-col Package Cards (Wedding Celebrations: Classic / Signature / Prestige) ──
+          Striped placeholder image, italic serif heading, divider, tagline
+          subheading, "PACKAGE DETAILS" label, then a checkmark bullet list. */}
+      {venue.packageCards && venue.packageCards.cards.length > 0 && (() => {
+        const cols = venue.packageCards.columns ?? 3;
+        const colsClass = cols === 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-3';
+        return (
+          <section className="bg-bg pb-[120px]">
+            <div className="max-w-7xl mx-auto px-10 flex flex-col" style={{ gap: '48px' }}>
+              {(venue.packageCards.heading || venue.packageCards.subheading) && (
+                <div className="text-center flex flex-col" style={{ gap: '16px' }}>
+                  {venue.packageCards.heading && (
+                    <h2
+                      className="font-heading text-primary"
+                      style={{
+                        fontSize: '38.4px',
+                        fontWeight: 300,
+                        fontStyle: 'italic',
+                        letterSpacing: '-1.152px',
+                        lineHeight: '42.24px',
+                      }}
+                    >
+                      {venue.packageCards.heading}
+                    </h2>
+                  )}
+                  {venue.packageCards.subheading && (
+                    <p
+                      className="text-text-dark/70 max-w-3xl mx-auto"
+                      style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
+                    >
+                      {venue.packageCards.subheading}
+                    </p>
+                  )}
+                </div>
+              )}
+              <div className={`grid ${colsClass} gap-8`}>
+                {venue.packageCards.cards.map((card, i) => (
+                  <div key={`${card.heading}-${i}`} className="flex flex-col bg-white">
+                    {card.image ? (
+                      <div className="aspect-square overflow-hidden">
+                        <img
+                          src={card.image}
+                          alt={card.heading}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        aria-hidden
+                        className="aspect-square w-full"
+                        style={{
+                          backgroundImage: STRIPE_PATTERN_SVG,
+                          backgroundSize: '64px',
+                          backgroundRepeat: 'repeat',
+                        }}
+                      />
+                    )}
+                    <div className="flex flex-col px-8" style={{ paddingTop: '32px', paddingBottom: '32px', gap: '20px' }}>
+                      <h3
+                        className="font-heading text-primary"
+                        style={{
+                          fontSize: '26.56px',
+                          fontWeight: 300,
+                          fontStyle: 'italic',
+                          letterSpacing: '-0.797px',
+                          lineHeight: '32px',
+                        }}
+                      >
+                        {card.heading}
+                      </h3>
+                      <div className="h-px w-12 bg-text-dark/30" aria-hidden />
+                      <p
+                        className="text-primary"
+                        style={{ fontSize: '17.6px', fontWeight: 700, lineHeight: '24.64px' }}
+                      >
+                        {card.tagline}
+                      </p>
+                      <p
+                        className="text-accent uppercase"
+                        style={{ fontSize: '13.6px', fontWeight: 700, letterSpacing: '0.04em' }}
+                      >
+                        {card.detailsLabel ?? 'Package Details'}
+                      </p>
+                      <ul className="flex flex-col" style={{ gap: '12px' }}>
+                        {card.benefits.map((b, j) => (
+                          <li
+                            key={j}
+                            className="text-text-dark flex"
+                            style={{ fontSize: '15.2px', lineHeight: '22px', gap: '10px' }}
+                          >
+                            <span aria-hidden className="text-accent shrink-0" style={{ fontWeight: 700 }}>
+                              ✓
+                            </span>
+                            <span>{b}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
                   </div>
                 ))}
