@@ -68,7 +68,7 @@ export function Header() {
     </NavLink>
   );
 
-  const renderDesktopNavItem = (item: NavItemConfig, fontSize: string) => {
+  const renderDesktopNavItem = (item: NavItemConfig, fontSize: string, alignRight = false) => {
     const hasDropdown = !!item.columns?.length;
     const isOpen = activeDropdown === item.href;
 
@@ -90,7 +90,7 @@ export function Header() {
 
         {hasDropdown && (
           <div
-            className="absolute left-0 top-full z-50 transition-all duration-200 ease-in-out"
+            className={`absolute ${alignRight ? 'right-0' : 'left-0'} top-full z-50 transition-all duration-200 ease-in-out`}
             style={{
               opacity: isOpen ? 1 : 0,
               pointerEvents: isOpen ? 'auto' : 'none',
@@ -220,7 +220,7 @@ export function Header() {
               </Link>
 
               <nav className="flex-1 flex items-center justify-start gap-0.5 pb-0.5">
-                {rightItems.map((item) => renderDesktopNavItem(item, '13.6px'))}
+                {rightItems.map((item) => renderDesktopNavItem(item, '13.6px', true))}
               </nav>
             </div>
           </div>
@@ -271,7 +271,7 @@ export function Header() {
               </Link>
 
               <nav className="flex-1 flex items-center justify-end gap-3 pb-0.5">
-                {rightItems.map((item) => renderDesktopNavItem(item, '13.6px'))}
+                {rightItems.map((item) => renderDesktopNavItem(item, '13.6px', true))}
               </nav>
             </div>
           </div>
