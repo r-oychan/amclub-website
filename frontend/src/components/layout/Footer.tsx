@@ -20,7 +20,7 @@ const MEMBER_LINKS = [
   { label: 'Login', href: 'https://amclub-portal.iontone.com/#/login', external: true },
   { label: 'Reciprocal Clubs', href: '/home-sub/reciprocal-clubs' },
   { label: 'Refer a Friend', href: '/home-sub/refer-a-friend' },
-  { label: 'Niche Group Membership', href: '/membership/the-eagles-rewards-program' },
+  { label: 'Niche Group Membership', href: '/membership/niche-group-membership' },
 ];
 
 const LEGAL_LINKS = [

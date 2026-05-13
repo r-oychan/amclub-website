@@ -63,6 +63,27 @@ const linksOf = (ls?: StrapiLink[]) =>
     return { label: l.label, href: l.href ?? '#', isExternal: l.isExternal };
   });
 
+// Until the deployed CMS programs entry is re-seeded, the three "Membership
+// Programs" cards may carry stale labels (e.g. "The Eagle Rewards Program")
+// and placeholder hrefs ("#"). Map current/legacy headings to the canonical
+// label + slug for this site. Matching is case-insensitive.
+const PROGRAM_CARD_OVERRIDES: { match: RegExp; heading: string; href: string }[] = [
+  { match: /refer/i, heading: 'Refer & Be Rewarded', href: '/membership/referal' },
+  {
+    match: /(eagle|niche)/i,
+    heading: 'Niche Group Membership',
+    href: '/membership/niche-group-membership',
+  },
+  { match: /reciprocal/i, heading: 'Reciprocal Clubs', href: '/membership/reciprocal-clubs' },
+];
+
+function applyProgramCardOverride(heading: string, href: string) {
+  const m = PROGRAM_CARD_OVERRIDES.find((o) => o.match.test(heading));
+  if (!m) return { heading, href };
+  const finalHref = !href || href === '#' ? m.href : href;
+  return { heading: m.heading, href: finalHref };
+}
+
 // Fallback assets served from /public/membership/ — used until the CMS schema
 // migration adds first-class media fields for these slots.
 const FALLBACK_COMMUNITY_IMAGES = [
@@ -118,12 +139,15 @@ export default function MembershipPage() {
     icon: mediaUrl(f.icon) ?? cmsBenefitIcons[i] ?? FALLBACK_BENEFIT_ICONS[i],
   }));
 
-  const programCards = (data.programs?.cards ?? []).map((c) => ({
-    heading: c.heading,
-    description: c.description,
-    image: mediaUrl(c.image),
-    cta: c.cta ? { label: c.cta.label, href: c.cta.href } : undefined,
-  }));
+  const programCards = (data.programs?.cards ?? []).map((c) => {
+    const override = applyProgramCardOverride(c.heading, c.cta?.href ?? '#');
+    return {
+      heading: override.heading,
+      description: c.description,
+      image: mediaUrl(c.image),
+      cta: c.cta ? { label: c.cta.label, href: override.href } : undefined,
+    };
+  });
 
   const cmsJoinImages = (data.joinCommunityImages ?? [])
     .map((m) => ({ src: mediaUrl(m) ?? '', alt: m.alternativeText ?? '' }))

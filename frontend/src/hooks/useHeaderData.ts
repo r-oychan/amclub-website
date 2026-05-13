@@ -245,7 +245,7 @@ const DEFAULT_HEADER: HeaderData = {
           heading: 'Programs',
           links: [
             { label: 'Refer a Friend', href: '/membership/referal' },
-            { label: 'Niche Group Membership', href: '/membership/the-eagles-rewards-program' },
+            { label: 'Niche Group Membership', href: '/membership/niche-group-membership' },
             { label: 'Reciprocal Clubs', href: '/membership/reciprocal-clubs' },
           ],
         },

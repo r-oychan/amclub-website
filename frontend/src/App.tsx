@@ -47,6 +47,10 @@ export default function App() {
             <Route path="/membership/joining-fees" element={<JoiningFeesPage />} />
             <Route path="/membership/referal" element={<ReferralPage />} />
             <Route path="/membership/reciprocal-clubs" element={<ReciprocalClubsPage />} />
+            <Route
+              path="/membership/the-eagles-rewards-program"
+              element={<Navigate to="/membership/niche-group-membership" replace />}
+            />
             <Route path="/membership/:slug" element={<VenueDetailPage section="membership" />} />
             <Route path="/whats-on" element={<WhatsOnPage />} />
             <Route path="/whats-on/:slug" element={<EventDetailPage />} />

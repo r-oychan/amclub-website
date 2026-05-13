@@ -1330,7 +1330,7 @@ export const membershipSubpages: SubpageData[] = [
     ],
   },
   {
-    slug: 'the-eagles-rewards-program',
+    slug: 'niche-group-membership',
     name: 'Niche Group Membership',
     type: 'Loyalty',
     description:
