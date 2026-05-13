@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_shared_html_blocks",
+  "info": {
+    "displayName": "HTML Block",
+    "icon": "code",
+    "description": "Raw HTML content — for articles with text, links, images, and tables"
+  },
+  "attributes": {
+    "html": {
+      "type": "text"
+    }
+  }
+}

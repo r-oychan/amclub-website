@@ -82,3 +82,87 @@ h1, h2, h3, h4, h5, h6 {
   animation-timing-function: linear;
   animation-fill-mode: forwards;
 }
+
+/* Article HTML — for news article bodies stored as raw HTML in CMS */
+.article-html {
+  color: var(--color-text-dark);
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+.article-html > * + * { margin-top: 1.25em; }
+.article-html h1,
+.article-html h2,
+.article-html h3,
+.article-html h4 {
+  color: var(--color-primary);
+  font-family: var(--font-heading);
+  font-weight: 400;
+  line-height: 1.25;
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+  letter-spacing: -0.02em;
+}
+.article-html h1 { font-size: 2rem; }
+.article-html h2 { font-size: 1.6rem; }
+.article-html h3 { font-size: 1.3rem; }
+.article-html h4 { font-size: 1.1rem; }
+.article-html p { margin: 0; }
+.article-html a { color: var(--color-accent); text-decoration: underline; }
+.article-html a:hover { color: var(--color-primary); }
+.article-html strong { font-weight: 700; color: var(--color-primary); }
+.article-html ul,
+.article-html ol { padding-left: 1.5em; }
+.article-html ul { list-style: disc; }
+.article-html ol { list-style: decimal; }
+.article-html li + li { margin-top: 0.35em; }
+.article-html blockquote {
+  border-left: 3px solid var(--color-accent);
+  padding-left: 1em;
+  font-style: italic;
+  color: var(--color-primary);
+}
+.article-html img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 1.5em auto;
+}
+.article-html figure { margin: 1.5em 0; }
+.article-html figure img { margin: 0 auto; }
+.article-html figcaption {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-text-dark);
+  opacity: 0.7;
+  margin-top: 0.5em;
+}
+.article-html table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  font-size: 0.95rem;
+}
+.article-html th,
+.article-html td {
+  border: 1px solid rgba(0, 30, 98, 0.15);
+  padding: 0.65em 0.9em;
+  text-align: left;
+  vertical-align: top;
+}
+.article-html th {
+  background: rgba(0, 30, 98, 0.05);
+  color: var(--color-primary);
+  font-weight: 700;
+}
+.article-html hr {
+  border: 0;
+  border-top: 1px solid rgba(0, 30, 98, 0.15);
+  margin: 2em 0;
+}
+.article-html iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: 0.5rem;
+}

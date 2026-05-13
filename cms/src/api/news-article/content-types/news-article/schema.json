@@ -16,6 +16,11 @@
     "image": { "type": "media", "multiple": false, "allowedTypes": ["images"] },
     "category": { "type": "string" },
     "body": { "type": "blocks" },
+    "htmlBody": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.html-block"
+    },
     "order": { "type": "integer", "default": 0 }
   }
 }

@@ -17,6 +17,7 @@ import ReciprocalClubsPage from './pages/ReciprocalClubsPage';
 import WhatsOnPage from './pages/WhatsOnPage';
 import EventDetailPage from './pages/EventDetailPage';
 import NewsPage from './pages/NewsPage';
+import NewsArticlePage from './pages/NewsArticlePage';
 import GalleryPage from './pages/GalleryPage';
 import VenueDetailPage from './pages/VenueDetailPage';
 import CoachDetailPage from './pages/CoachDetailPage';
@@ -58,6 +59,7 @@ export default function App() {
             <Route path="/whats-on" element={<WhatsOnPage />} />
             <Route path="/whats-on/:slug" element={<EventDetailPage />} />
             <Route path="/home-sub/news" element={<NewsPage />} />
+            <Route path="/home-sub/club-news/:slug" element={<NewsArticlePage />} />
             <Route path="/home-sub/gallery" element={<GalleryPage />} />
             <Route path="/home-sub/contact-us" element={<ContactUsPage />} />
             <Route path="/faq" element={<FaqPage />} />
