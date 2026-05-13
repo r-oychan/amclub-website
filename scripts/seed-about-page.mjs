@@ -26,7 +26,10 @@ ctx.ROOT = ROOT;
 const IMAGES = [
   // hero
   'hero-about.jpg',
-  // heritage 8
+  // heritage 16
+  'heritage-1932.jpg', 'heritage-1939.jpg', 'heritage-1948.jpg',
+  'heritage-1951.jpg', 'heritage-1954.jpg', 'heritage-1955.jpg',
+  'heritage-1958.jpg', 'heritage-1963.jpg',
   'heritage-1966.jpg', 'heritage-1970.jpg', 'heritage-1978.jpg',
   'heritage-1983.jpg', 'heritage-1989.jpg', 'heritage-1990.jpeg',
   'heritage-2000.jpg', 'heritage-2015.jpg',
@@ -46,10 +49,12 @@ const IMAGES = [
   'partner-aas.jpg', 'partner-awa.png', 'partner-amcham.jpg', 'partner-cas.png',
   'partner-5.jpg', 'partner-6.jpg', 'partner-7.png',
   'strategic-1.png', 'strategic-2.png',
-  // awards 9
+  // awards 11
   'award-1-isocert.png', 'award-2-platinum.png', 'award-3-tripartite.jpg',
   'award-4-tafep.png', 'award-5-sgclean.png', 'award-6-greenmark.jpg',
   'award-7-water.jpg', 'award-8-bizsafe.jpg', 'award-9-expat.jpg',
+  'Award_Top 5 Social Club in Singapore_2025.jpg',
+  'Award_Top 5 Social Club in Singapore_2026.jpg',
 ];
 
 // HomePage-uploaded reuse: vision/mission image already on Strapi
@@ -89,6 +94,14 @@ const COMMITTEE = [
 ];
 
 const HERITAGE_SLIDES = [
+  ['1932', 'The idea of forming a social club for Americans was first mooted in 1932 by the American Association of Malaya. As the total of 56 Americans residing in Singapore was insufficient to support the proposed club, the plan was put on hold.', 'heritage-1932.jpg'],
+  ['1939', 'In 1939, the American Association made a bid for what nearly became our first Clubhouse — the German Club building. Nearing completion at the outbreak of World War II, the property was confiscated by the Enemy Property Custodian due to Singapore’s status as a British colony. It was eventually destroyed during the war.', 'heritage-1939.jpg'],
+  ['1948', 'Interest in creating a place where Americans in Singapore could connect socially began to grow again.\n\nOn September 10, resident Americans came together to approve the formation of The American Club. Membership was also opened to other nationalities, while keeping the Club’s American spirit at its heart.\n\nJust four days later, on September 14, 1948, The Club officially opened with 146 Members at the Cathay Building on Sophia Road. It began simply — a rented fifth-floor balcony, two slot machines, and a team of five employees — but quickly became a gathering place for the community.', 'heritage-1948.jpg'],
+  ['1951', 'In 1951, Cathay Organization wanted to repossess the space rented to the Club to develop it as part of the new Cathay Hotel. The Club was pressed to find an alternate site. Due to the Club’s inability to find a suitable location over the next 4 years, serious thought was given to a complete liquidation of the Club.', 'heritage-1951.jpg'],
+  ['1954', 'Aided by a donation of $25,000 by Loke Wan Tho (owner of Cathay) towards the acquisition of new premise, and combined with Club surpluses of $50,000 and financing from the Hong Kong and Shanghai Banking Corporation of approximately $150,000, the Club secured the Cycle house at 21 Scott Road for its new premises, which it still occupies today. The old house that stood on the land was torn down and the land was mortgaged, while construction of a 67,000 square foot California-style clubhouse began.', 'heritage-1954.jpg'],
+  ['1955', 'The new clubhouse officially opened in June, featuring a bar, dining room, an office, and Singapore’s first bowling alley. The new 4-lane bowling alley proved to be immensely popular. Back then, there was no air-conditioning in the bowling alley and "pin-boys" had to manually reset the pins after each set, as automatic pinsetters had yet to be invented.', 'heritage-1955.jpg'],
+  ['1958', 'A $30,000 renovation program saw the creation of the Manhattan Room and lounge. The room was thus named for an elegant mural of the Manhattan skyline adorning the entirety of one of its walls. The Club once again became a popular dining and meeting place for the community.', 'heritage-1958.jpg'],
+  ['1963', 'On November 30, 1963, The American Club’s first swimming pool was officially opened. The kidney-shaped pool was a long anticipated facility and its completion was seen as a significant move towards making the Club more family-oriented in its facilities and activities.', 'heritage-1963.jpg'],
   ['1966', 'In what was regarded as "one of the most significant improvements of the Club\'s amenities in its 19-year history", a new Bowling Alley Complex was built, housing an eight-lane bowling alley, an air-conditioned cocktail lounge, a library, a card room, conference rooms, and office for the American community organization.', 'heritage-1966.jpg'],
   ['1970', "The Presidential Room - formed of a rooftop garden room and serving as a cocktail lounge and multi-purpose room - was built. The Eagle's Nest was opened to answer the long-standing need of Members for a casual dining facility accessible from all activity areas. It featured a light meals, snacks and a relaxed dress code.", 'heritage-1970.jpg'],
   ['1978', 'The Club purchased one acre of land on Claymore Hill at $2.29 million for the construction of the Car park and Sports Complex, featuring three squash courts, two air-conditioned racquetball courts, four tennis courts, and an 88-car parking lot.', 'heritage-1978.jpg'],
@@ -123,6 +136,8 @@ const AWARDS = [
   ['Water Efficient Building (Basic) Certification',             'PUB', 'award-7-water.jpg'],
   ['BizSafe Level 3',                                            'Workplace Safety and Health Council', 'award-8-bizsafe.jpg'],
   ['Bronze Winner for the Best Social Club 2024',                'Expat Living', 'award-9-expat.jpg'],
+  ['Top 5 Social Club in Singapore 2025',                        'Expat Living', 'Award_Top 5 Social Club in Singapore_2025.jpg'],
+  ['Top 5 Social Club in Singapore 2026',                        'Expat Living', 'Award_Top 5 Social Club in Singapore_2026.jpg'],
 ];
 
 // ── Upserts ───────────────────────────────────────────────
