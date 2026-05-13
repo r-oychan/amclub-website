@@ -542,24 +542,6 @@ export const diningSubpages: SubpageData[] = [
     ctas: [{ label: 'Essentials2Go!', href: 'https://amclub.jotform.com/253312807189965', isExternal: true }],
   },
   {
-    slug: 'tac2go',
-    name: 'TAC2Go!',
-    type: 'Delivery',
-    description:
-      'Order your favorite Club dishes for delivery or pickup.',
-    parentSection: 'Dining & Retail',
-    parentHref: '/dining',
-  },
-  {
-    slug: 'bottles2go',
-    name: 'Bottles2Go!',
-    type: 'Wine Delivery',
-    description:
-      'Premium wines delivered to your door from The Gourmet Pantry.',
-    parentSection: 'Dining & Retail',
-    parentHref: '/dining',
-  },
-  {
     slug: 'dining-promotion',
     name: 'Dining Promotions',
     type: 'Promotions',

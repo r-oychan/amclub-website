@@ -142,8 +142,8 @@ const DEFAULT_HEADER: HeaderData = {
           heading: 'Promotions & Services',
           links: [
             { label: 'Dining Promotions', href: '/dining/dining-promotion' },
-            { label: 'TAC2Go!', href: '/dining/tac2go' },
-            { label: 'Bottles2Go!', href: '/dining/bottles2go' },
+            { label: 'TAC2Go!', href: 'https://amclub.jotform.com/252650968518973', isExternal: true },
+            { label: 'Bottles2Go!', href: 'https://amclub.jotform.com/252638314015956', isExternal: true },
             { label: 'Essentials', href: '/dining/essentials' },
           ],
         },
