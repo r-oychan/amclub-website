@@ -33,12 +33,11 @@ const IMAGES = [
   'heritage-1966.jpg', 'heritage-1970.jpg', 'heritage-1978.jpg',
   'heritage-1983.jpg', 'heritage-1989.jpg', 'heritage-1990.jpeg',
   'heritage-2000.jpg', 'heritage-2015.jpg',
-  // committee 15
-  'gc-daniel-gewirtz.png', 'gc-tessa-pang.png', 'gc-alisha-barnes.png',
-  'gc-terry-kim.png',
-  'gc-charles-santos.png', 'gc-kate-park.png', 'gc-kenny-liu.png',
-  'gc-marcella-sullivan.png', 'gc-michael-schindler.png', 'gc-ngiam-siew-wei.png',
-  'gc-priyanka-bhalla.png', 'gc-ted-teo.png',
+  // committee (general): 14 known portraits — Vijay Jote & Rachael Gartman pending
+  'gc-daniel-gewirtz.png', 'gc-tessa-pang.png', 'gc-kate-park.png',
+  'gc-terry-kim.png', 'gc-alisha-barnes.png', 'gc-charles-santos.png',
+  'gc-kenny-liu.png', 'gc-marcella-sullivan.png', 'gc-michael-schindler.png',
+  'gc-ngiam-siew-wei.png', 'gc-ted-teo.png',
   'gc-michelle-reeb.png', 'gc-autumn-vavoso.png', 'gc-sandra-johnson.png',
   // advocacy
   'advocacy-aside.png',
@@ -64,24 +63,25 @@ const HOME_REUSE_FROM_HOME = {
 };
 
 // committee-members: name, role, photo filename | null, memberType, order, bio?
-// GC order matches Framer (D2 decision).
+// General Committee order/titles mirror amclub.org.sg/about-us (source of truth).
 const COMMITTEE = [
-  // General Committee — Framer order
+  // General Committee
   ['Daniel Gewirtz',     'President',                                                        'gc-daniel-gewirtz.png',     'general-committee', 1],
-  ['Tessa Pang',         'Secretary',                                                        'gc-tessa-pang.png',         'general-committee', 2],
-  ['Alisha Barnes',      'Secretary',                                                        'gc-alisha-barnes.png',      'general-committee', 3],
+  ['Tessa Pang',         'Vice President',                                                   'gc-tessa-pang.png',         'general-committee', 2],
+  ['Kate Park',          'Secretary',                                                        'gc-kate-park.png',          'general-committee', 3],
   ['Terry Kim',          'Treasurer',                                                        'gc-terry-kim.png',          'general-committee', 4],
-  ['Charles Santos',     'Member at Large',                                                  'gc-charles-santos.png',     'general-committee', 5],
-  ['Kate Park',          'Member at Large',                                                  'gc-kate-park.png',          'general-committee', 6],
+  ['Alisha Barnes',      'Member at Large',                                                  'gc-alisha-barnes.png',      'general-committee', 5],
+  ['Charles Santos',     'Member at Large',                                                  'gc-charles-santos.png',     'general-committee', 6],
   ['Kenny Liu',          'Member at Large',                                                  'gc-kenny-liu.png',          'general-committee', 7],
   ['Marcella Sullivan',  'Member at Large',                                                  'gc-marcella-sullivan.png',  'general-committee', 8],
   ['Michael Schindler',  'Member at Large',                                                  'gc-michael-schindler.png',  'general-committee', 9],
   ['Ngiam Siew Wei',     'Member at Large',                                                  'gc-ngiam-siew-wei.png',     'general-committee', 10],
-  ['Michelle Reeb',      'American Association of Singapore Representative',                 'gc-michelle-reeb.png',      'general-committee', 11],
-  ['Autumn Vavoso',      "American Women's Association Representative",                      'gc-autumn-vavoso.png',      'general-committee', 12],
-  ['Sandra Johnson',     'Canadian Association of Singapore Representative',                 'gc-sandra-johnson.png',     'general-committee', 13],
-  ['Priyanka Bhalla',    'Member at Large',                                                  'gc-priyanka-bhalla.png',    'general-committee', 14],
-  ['Ted Teo',            'Member at Large',                                                  'gc-ted-teo.png',            'general-committee', 15],
+  ['Ted Teo',            'Member at Large',                                                  'gc-ted-teo.png',            'general-committee', 11],
+  ['Vijay Jote',         'Member at Large',                                                  null,                        'general-committee', 12],
+  ['Michelle Reeb',      'American Association of Singapore Representative',                 'gc-michelle-reeb.png',      'general-committee', 13],
+  ['Autumn Vavoso',      "American Women's Association Representative",                      'gc-autumn-vavoso.png',      'general-committee', 14],
+  ['Sandra Johnson',     'Canadian Association of Singapore Representative',                 'gc-sandra-johnson.png',     'general-committee', 15],
+  ['Rachael Gartman',    'US Embassy Representative',                                        null,                        'general-committee', 16],
 
   // Management
   ['Christine Kaelbel-Sheares', 'General Manager',                          'mgmt-christine.jpeg', 'management', 1,
@@ -295,6 +295,27 @@ async function main() {
     const imgId = imgFile ? media[imgFile]?.id ?? null : null;
     await upsertCommitteeMember(name, role, imgId, memberType, order, bio);
     console.log(`  ✓ ${name}`);
+  }
+
+  // Prune stale general-committee members that no longer appear in the source list.
+  const keepGCSlugs = new Set(
+    COMMITTEE
+      .filter(([, , , type]) => type === 'general-committee')
+      .map(([name]) => slugify(name)),
+  );
+  if (DRY) {
+    console.log('  [dry] prune stale general-committee entries (skipped)');
+  } else {
+    const list = await api(
+      ctx,
+      '/committee-members?filters[memberType][$eq]=general-committee&pagination[limit]=100&fields[0]=name&fields[1]=slug',
+    );
+    for (const entry of list.data ?? []) {
+      if (!keepGCSlugs.has(entry.slug)) {
+        await api(ctx, `/committee-members/${entry.documentId}`, { method: 'DELETE' });
+        console.log(`  ✗ pruned stale GC member: ${entry.name}`);
+      }
+    }
   }
 
   console.log('\n[3/3] About Page single type…');
