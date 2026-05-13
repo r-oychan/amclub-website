@@ -1820,7 +1820,7 @@ export const homeSubpages: SubpageData[] = [
     parentHref: '/home',
     ctas: [
       { label: 'View Advertising Rate Card', href: '/documents/ad-rate-card.pdf', isExternal: true },
-      { label: 'Enquire Now', href: '#' },
+      { label: 'Enquire Now', href: 'mailto:marketing@amclub.org.sg', isExternal: true },
     ],
     extraSections: [
       {

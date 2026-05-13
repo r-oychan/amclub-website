@@ -714,7 +714,17 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                                 color: '#000',
                               }}
                             >
-                              {row.value}
+                              {/\S+@\S+\.\S+/.test(row.value) ? (
+                                <a
+                                  href={`mailto:${row.value}`}
+                                  className="hover:underline"
+                                  style={{ color: 'inherit' }}
+                                >
+                                  {row.value}
+                                </a>
+                              ) : (
+                                row.value
+                              )}
                             </p>
                           </div>
                         ))}
