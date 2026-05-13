@@ -12,14 +12,15 @@ function ContactIconSvg({ icon }: { icon: ContactIcon }) {
           viewBox="0 0 24 24"
           fill="none"
           className="shrink-0"
+          aria-hidden="true"
         >
-          <circle cx="12" cy="12" r="4" stroke={TEAL} strokeWidth="1.5" />
           <path
-            d="M12 2V4M12 20V22M2 12H4M20 12H22"
+            d="M12 22s7-7.5 7-13a7 7 0 1 0-14 0c0 5.5 7 13 7 13Z"
             stroke={TEAL}
             strokeWidth="1.5"
-            strokeLinecap="round"
+            strokeLinejoin="round"
           />
+          <circle cx="12" cy="9" r="2.5" stroke={TEAL} strokeWidth="1.5" />
         </svg>
       );
     case 'phone':

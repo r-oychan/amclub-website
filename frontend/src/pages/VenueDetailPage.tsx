@@ -21,7 +21,7 @@ interface ScheduleRow {
 }
 
 interface OperatingHoursSection {
-  title: string;
+  title?: string;
   rows?: ScheduleRow[];
 }
 
@@ -74,9 +74,11 @@ interface VenueData {
   promoCards?: {
     heading: string;
     description: string;
+    variant?: 'card' | 'overlay';
+    columns?: number;
     cards: {
       title: string;
-      subtitle: string;
+      subtitle?: string;
       image: string;
       cta: { label: string; href: string };
     }[];
@@ -557,11 +559,22 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                 ))}
               </div>
 
-              {/* ── Operating Hours (one or many sections, e.g. Grillhouse + Tiki Bar) ── */}
-              {operatingHoursSections.map((section, idx) => (
-                <DetailSection key={`oh-${idx}`} icon="clock" title={section.title}>
+              {/* ── Operating Hours ──
+                  Single-section venues use the section's own title as the
+                  DetailSection heading (e.g. dining's "Opening Hours"). Multi-
+                  section venues (e.g. Aquatics: pool / peak hours / office)
+                  collapse into one "Operating Hours" DetailSection with bold
+                  sub-headings per section. */}
+              {operatingHoursSections.length > 0 && (() => {
+                const useSubHeadings =
+                  operatingHoursSections.length > 1 ||
+                  operatingHoursSections.some((s) => !s.title);
+                const mainTitle = useSubHeadings
+                  ? 'Operating Hours'
+                  : operatingHoursSections[0].title ?? 'Operating Hours';
+                const renderRows = (rows: ScheduleRow[]) => (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
-                    {(section.rows ?? []).map((row, rIdx) => (
+                    {rows.map((row, rIdx) => (
                       <div key={rIdx} className="flex flex-col gap-1">
                         <p
                           className="text-text-dark"
@@ -594,8 +607,35 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                       </div>
                     ))}
                   </div>
-                </DetailSection>
-              ))}
+                );
+                return (
+                  <DetailSection icon="clock" title={mainTitle}>
+                    {useSubHeadings ? (
+                      <div className="flex flex-col" style={{ gap: '24px' }}>
+                        {operatingHoursSections.map((section, idx) => (
+                          <div key={`oh-${idx}`} className="flex flex-col" style={{ gap: '12px' }}>
+                            {section.title && (
+                              <p
+                                className="text-text-dark"
+                                style={{
+                                  fontSize: '17.6px',
+                                  fontWeight: 700,
+                                  lineHeight: '24.64px',
+                                }}
+                              >
+                                {section.title}
+                              </p>
+                            )}
+                            {renderRows(section.rows ?? [])}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      renderRows(operatingHoursSections[0].rows ?? [])
+                    )}
+                  </DetailSection>
+                );
+              })()}
 
               {/* ── Location & Contact (optional CMS module) ── */}
               {locationContact && (
@@ -1214,70 +1254,165 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
         </section>
       )}
 
-      {/* ── Promo Cards ── */}
-      {venue.promoCards && (
-        <section id="our-aquatic-programs" className="py-16 bg-white scroll-mt-24">
-          <div className="max-w-7xl mx-auto px-10">
-            <h2
-              className="font-heading text-primary text-center mb-4"
-              style={{ fontSize: '26.56px', fontWeight: 300, fontStyle: 'italic' }}
-            >
-              {venue.promoCards.heading}
-            </h2>
-            {venue.promoCards.description && (
-              <p
-                className="text-text-dark text-center mb-10"
-                style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
+      {/* ── Promo Cards ──
+          `variant: 'overlay'` renders a 5-up grid (default) of full-bleed
+          program images with the title + CTA label overlaid in white at the
+          bottom over a dark gradient — matches Framer's "Our Aquatic Programs".
+          `variant: 'card'` (default) keeps the original image-on-top card
+          layout with subtitle, title, and arrow CTA below. */}
+      {venue.promoCards && (() => {
+        const variant = venue.promoCards.variant ?? 'card';
+        const cols = venue.promoCards.columns ?? (variant === 'overlay' ? 5 : 3);
+        const colsClass =
+          cols === 5
+            ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'
+            : cols === 4
+              ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+              : cols === 2
+                ? 'grid-cols-1 md:grid-cols-2'
+                : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3';
+        return (
+          <section id="our-aquatic-programs" className="py-16 bg-white scroll-mt-24">
+            <div className="max-w-7xl mx-auto px-10">
+              <h2
+                className="font-heading text-primary text-center mb-4"
+                style={{ fontSize: '26.56px', fontWeight: 300, fontStyle: 'italic' }}
               >
-                {venue.promoCards.description}
-              </p>
-            )}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {venue.promoCards.cards.map((card, i) => (
-                <div key={i} className="bg-bg rounded-lg overflow-hidden shadow-sm">
-                  {card.image && (
-                    <div className="aspect-[16/9] overflow-hidden">
-                      <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
-                    </div>
-                  )}
-                  <div className="p-6 flex flex-col gap-3">
-                    <p
-                      className="text-text-dark/60 uppercase"
-                      style={{ fontSize: '13.6px', letterSpacing: '0.544px' }}
-                    >
-                      {card.subtitle}
-                    </p>
-                    <h3
-                      className="font-heading text-primary"
-                      style={{ fontSize: '20.8px', fontWeight: 700, letterSpacing: '-0.416px' }}
-                    >
-                      {card.title}
-                    </h3>
-                    {card.cta && (
-                      <Link
-                        to={card.cta.href}
-                        className="inline-flex items-center gap-2 text-primary uppercase hover:text-accent transition-colors"
-                        style={{ fontSize: '13.6px', fontWeight: 700, letterSpacing: '0.544px' }}
-                      >
-                        {card.cta.label}
-                        <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
-                          <path
-                            d="M1 13L13 1M13 1H3M13 1V11"
-                            stroke="#DF4661"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
+                {venue.promoCards.heading}
+              </h2>
+              {venue.promoCards.description && (
+                <p
+                  className="text-text-dark text-center mb-10 max-w-3xl mx-auto"
+                  style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
+                >
+                  {venue.promoCards.description}
+                </p>
+              )}
+              <div className={`grid ${colsClass} gap-4`}>
+                {venue.promoCards.cards.map((card, i) => {
+                  if (variant === 'overlay') {
+                    const inner = (
+                      <div className="relative w-full overflow-hidden group" style={{ aspectRatio: '213 / 300' }}>
+                        {card.image && (
+                          <img
+                            src={card.image}
+                            alt={card.title}
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                           />
-                        </svg>
+                        )}
+                        {/* Dark gradient overlay so white text stays legible */}
+                        <div
+                          aria-hidden
+                          className="absolute inset-0"
+                          style={{
+                            background:
+                              'linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,0.55) 100%)',
+                          }}
+                        />
+                        <div
+                          className="absolute inset-x-0 bottom-0 flex flex-col items-center text-center px-2 pb-8"
+                          style={{ gap: '10px' }}
+                        >
+                          <h3
+                            className="text-white"
+                            style={{
+                              fontFamily: 'Lato, sans-serif',
+                              fontSize: '24px',
+                              fontWeight: 700,
+                              lineHeight: '28px',
+                              letterSpacing: '-0.48px',
+                            }}
+                          >
+                            {card.title}
+                          </h3>
+                          {card.cta && (
+                            <span
+                              className="inline-flex items-center gap-1.5 text-white uppercase"
+                              style={{
+                                fontSize: '14.4px',
+                                fontWeight: 700,
+                                letterSpacing: '0.04em',
+                              }}
+                            >
+                              {card.cta.label}
+                              <svg width="18" height="18" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                                <path
+                                  d="M1 13L13 1M13 1H3M13 1V11"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                    const key = `${card.title}-${i}`;
+                    return card.cta ? (
+                      <Link
+                        key={key}
+                        to={card.cta.href}
+                        className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                        aria-label={`${card.title} — ${card.cta.label}`}
+                      >
+                        {inner}
                       </Link>
-                    )}
-                  </div>
-                </div>
-              ))}
+                    ) : (
+                      <div key={key}>{inner}</div>
+                    );
+                  }
+                  // Default card variant
+                  return (
+                    <div key={i} className="bg-bg rounded-lg overflow-hidden shadow-sm">
+                      {card.image && (
+                        <div className="aspect-[16/9] overflow-hidden">
+                          <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
+                        </div>
+                      )}
+                      <div className="p-6 flex flex-col gap-3">
+                        {card.subtitle && (
+                          <p
+                            className="text-text-dark/60 uppercase"
+                            style={{ fontSize: '13.6px', letterSpacing: '0.544px' }}
+                          >
+                            {card.subtitle}
+                          </p>
+                        )}
+                        <h3
+                          className="font-heading text-primary"
+                          style={{ fontSize: '20.8px', fontWeight: 700, letterSpacing: '-0.416px' }}
+                        >
+                          {card.title}
+                        </h3>
+                        {card.cta && (
+                          <Link
+                            to={card.cta.href}
+                            className="inline-flex items-center gap-2 text-primary uppercase hover:text-accent transition-colors"
+                            style={{ fontSize: '13.6px', fontWeight: 700, letterSpacing: '0.544px' }}
+                          >
+                            {card.cta.label}
+                            <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
+                              <path
+                                d="M1 13L13 1M13 1H3M13 1V11"
+                                stroke="#DF4661"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        </section>
-      )}
+          </section>
+        );
+      })()}
 
       {/* ── Meet the Team ── */}
       {venue.teamMembers && venue.teamMembers.length > 0 && (
