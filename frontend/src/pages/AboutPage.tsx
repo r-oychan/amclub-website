@@ -68,6 +68,15 @@ const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
 const linksOf = (ls?: StrapiLink[]) =>
   (ls ?? []).map((l) => ({ label: l.label, href: l.href ?? '#', isExternal: l.isExternal, caption: l.caption }));
 
+// Patch CTAs the CMS still seeds with placeholder hrefs. Once the deployed
+// Strapi entry carries the real URL these overrides become no-ops.
+const CTA_OVERRIDES: Record<string, { href: string; isExternal: boolean }> = {
+  'Book a Club Tour': {
+    href: 'https://amclub.jotform.com/260813837273966?parentURL=https%3A%2F%2Famclub.org.sg%2Fmembership-enquiry-form%2F&jsForm=true',
+    isExternal: true,
+  },
+};
+
 export default function AboutPage() {
   const [data, setData] = useState<StrapiAboutPage | null>(null);
   const [gc, setGc] = useState<StrapiCommitteeMember[]>([]);
@@ -235,7 +244,13 @@ export default function AboutPage() {
         <CtaBanner
           heading={data.ctaBanner.heading}
           body={data.ctaBanner.body ?? ''}
-          ctas={(data.ctaBanner.ctas ?? []).map((c) => ({ label: c.label, href: c.href ?? '#' }))}
+          ctas={(data.ctaBanner.ctas ?? []).map((c) => {
+            const override = CTA_OVERRIDES[c.label];
+            if (override && (!c.href || c.href === '#')) {
+              return { label: c.label, href: override.href, isExternal: override.isExternal };
+            }
+            return { label: c.label, href: c.href ?? '#' };
+          })}
           variant={(data.ctaBanner.variant as 'dark' | 'light' | 'accent' | undefined) ?? 'light'}
         />
       )}
