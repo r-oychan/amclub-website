@@ -230,10 +230,11 @@ export default function HomePage() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      const today = new Date().toISOString().slice(0, 10);
       const [home, evs] = await Promise.all([
         fetchAPI<StrapiHomePage>('/home-page'),
         fetchAPI<StrapiEvent[]>('/events', {
-          'filters[featured][$eq]': 'true',
+          'filters[date][$gte]': today,
           'pagination[limit]': '9',
           'sort[0]': 'date:asc',
           'populate[image]': 'true',
