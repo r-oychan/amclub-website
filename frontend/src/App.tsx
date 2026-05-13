@@ -21,6 +21,7 @@ import GalleryPage from './pages/GalleryPage';
 import VenueDetailPage from './pages/VenueDetailPage';
 import CoachDetailPage from './pages/CoachDetailPage';
 import ContactUsPage from './pages/ContactUsPage';
+import FaqPage from './pages/FaqPage';
 import PrivacyStatementPage from './pages/PrivacyStatementPage';
 
 export default function App() {
@@ -59,6 +60,7 @@ export default function App() {
             <Route path="/home-sub/news" element={<NewsPage />} />
             <Route path="/home-sub/gallery" element={<GalleryPage />} />
             <Route path="/home-sub/contact-us" element={<ContactUsPage />} />
+            <Route path="/faq" element={<FaqPage />} />
             <Route path="/privacy-statement" element={<PrivacyStatementPage />} />
             <Route path="/home-sub/:slug" element={<VenueDetailPage section="home-sub" />} />
           </Routes>

@@ -65,7 +65,8 @@ export interface FeatureItem {
 
 export interface FaqItem {
   question: string;
-  answer: string;
+  /** Plain string for legacy callers, or a React node for blocks-rendered answers. */
+  answer: string | import('react').ReactNode;
 }
 
 export interface TestimonialItem {

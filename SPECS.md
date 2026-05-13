@@ -44,6 +44,8 @@ All page-typed entries use a `content` **dynamiczone** (block-based), populated 
 | `TabsSection.tsx` | `blocks.tabs-section` | Tab labels + content per tab |
 | `TestimonialSlider.tsx` | `blocks.testimonial-slider` | Pulls from `testimonial` collection |
 | `FaqAccordion.tsx` | `blocks.faq-section` | Pulls from `faq-item` collection |
+| `FaqAnswerBlocks.tsx` | n/a | Renders Strapi v5 `blocks` content for FAQ answers (paragraphs, headings, lists, links, inline images) |
+| `FaqPage.tsx` (page) | `faq-page` + `faq-category` + `faq-item` | `/faq` route — groups items by category, one accordion section per category |
 | `TeamGrid.tsx` | `blocks.team-grid` | Pulls from `committee-member` collection |
 | `CtaBanner.tsx` | `blocks.cta-banner` | Heading, subtext, primary + secondary CTA |
 | `OverlaySection.tsx` | `blocks.overlay-section` (or `blocks.cta-banner` + sibling media field) | Full-bleed image with overlay text panel |
@@ -108,6 +110,7 @@ All page-typed entries use a `content` **dynamiczone** (block-based), populated 
 | membership-page | `membership-page` | title, content, seo |
 | whats-on-page | `whats-on-page` | title, content, seo |
 | gallery-page | `gallery-page` | title, introHeading, introBody, heroImage, seo |
+| faq-page | `faq-page` | title, introHeading, introBody, heroImage, seo |
 | header | `header` | logo, navItems (nav-item[]), cta (shared.link) |
 | footer | `footer` | contact (address, phone, email), columns (footer-column[]), logo |
 
@@ -121,7 +124,8 @@ All page-typed entries use a `content` **dynamiczone** (block-based), populated 
 | event-category | `event-category` | name, slug, displayOrder |
 | testimonial | `testimonial` | quote, author, role, image |
 | committee-member | `committee-member` | name, role, image, bio, order |
-| faq-item | `faq-item` | question, answer, order |
+| faq-item | `faq-item` | question, slug, answer (blocks — supports inline images), category (enum, legacy), faqCategory (→ faq-category), order |
+| faq-category | `faq-category` | name, slug, description, displayOrder, faqItems (oneToMany → faq-item) |
 | gallery-album | `gallery-album` | title, slug, coverImage, **images (media[])**, date, photoCount, description, order. One album = one upload group; admins upload all photos for an event into the `images` field of that album entry. |
 
 ---

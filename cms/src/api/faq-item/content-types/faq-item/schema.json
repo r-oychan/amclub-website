@@ -28,6 +28,12 @@
       "enum": ["membership", "facilities", "dining", "events", "general"],
       "default": "general"
     },
+    "faqCategory": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::faq-category.faq-category",
+      "inversedBy": "faqItems"
+    },
     "order": {
       "type": "integer",
       "default": 0
