@@ -263,8 +263,8 @@ export const diningSubpages: SubpageData[] = [
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
     ctas: [
-      { label: 'View Menu', href: '#' },
-      { label: 'Promotions', href: '#' },
+      { label: 'View Menu', href: '/menus/central-menu.pdf', isExternal: true },
+      { label: 'Promotions', href: '/dining/dining-promotion#promo-central' },
     ],
   },
   {
@@ -296,9 +296,9 @@ export const diningSubpages: SubpageData[] = [
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
     ctas: [
-      { label: 'View Menu', href: '#' },
-      { label: 'Reserve a Table', href: '#' },
-      { label: 'Promotions', href: '#' },
+      { label: 'View Menu', href: '/menus/the-2nd-floor-menu.pdf', isExternal: true },
+      { label: 'Reserve a Table', href: 'mailto:2ndfloor@amclub.org.sg', isExternal: true },
+      { label: 'Promotions', href: '/dining/dining-promotion#promo-the-2nd-floor' },
     ],
     extraSections: [
       {
@@ -344,8 +344,8 @@ export const diningSubpages: SubpageData[] = [
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
     ctas: [
-      { label: 'View Menu', href: '#' },
-      { label: 'Promotions', href: '#' },
+      { label: 'View Menu', href: '/menus/tradewinds-menu.pdf', isExternal: true },
+      { label: 'Promotions', href: '/dining/dining-promotion#promo-tradewinds' },
     ],
     extraSections: [
       {
@@ -387,8 +387,8 @@ export const diningSubpages: SubpageData[] = [
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
     ctas: [
-      { label: 'View Menu', href: '#' },
-      { label: 'Promotions', href: '#' },
+      { label: 'View Menu', href: '/menus/grillhouse-menu.pdf', isExternal: true },
+      { label: 'Promotions', href: '/dining/dining-promotion#promo-grillhouse' },
     ],
   },
   {
@@ -416,9 +416,9 @@ export const diningSubpages: SubpageData[] = [
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
     ctas: [
-      { label: 'View Menu', href: '#' },
-      { label: 'Sports Screening Schedule', href: '#' },
-      { label: 'Promotions', href: '#' },
+      { label: 'View Menu', href: '/menus/union-bar-menu.pdf', isExternal: true },
+      { label: 'Sports Screening Schedule', href: '/menus/union-bar-menu.pdf', isExternal: true },
+      { label: 'Promotions', href: '/dining/dining-promotion#promo-union-bar' },
     ],
     extraSections: [
       {
@@ -458,7 +458,9 @@ export const diningSubpages: SubpageData[] = [
       '/uploads/restaurants/the-gourmet-pantry.jpeg',
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
-    ctas: [{ label: 'View Menu', href: '#' }],
+    ctas: [
+      { label: 'View Menu', href: '/menus/the-gourmet-pantry-menu.pdf', isExternal: true },
+    ],
     extraSections: [
       {
         title: 'A Refined Way to Unwind',
@@ -484,7 +486,7 @@ export const diningSubpages: SubpageData[] = [
             'Bringing the Club\'s cellar to your home with a curated range of premium wines.',
           image:
             'https://framerusercontent.com/images/aGxaO43vaHmXI1ULbrj1nuKNM74.jpg',
-          cta: { label: 'Order Now', href: '#' },
+          cta: { label: 'Order Now', href: 'https://amclub.jotform.com/252638314015956' },
         },
       ],
     },

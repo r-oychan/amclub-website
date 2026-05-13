@@ -203,11 +203,20 @@ function groupByTag(promotions: StrapiPromotion[]): Map<RestaurantTag, StrapiPro
   return groups;
 }
 
+function tagFromHash(): RestaurantTag | null {
+  if (typeof window === 'undefined') return null;
+  const slug = window.location.hash.replace(/^#promo-/, '');
+  return slug && (TAG_ORDER as readonly string[]).includes(slug) ? (slug as RestaurantTag) : null;
+}
+
 export default function DiningPromotionsPage() {
   const [data, setData] = useState<StrapiDiningPromotionsPage | null>(null);
   const [promotions, setPromotions] = useState<StrapiPromotion[]>([]);
   const [loaded, setLoaded] = useState(false);
-  const [activeTag, setActiveTag] = useState<RestaurantTag | null>(null);
+  // Seed the active tag from the URL hash if one is present (e.g. arrived via
+  // /dining/dining-promotion#promo-central). Lazy-init so we don't setState
+  // inside an effect.
+  const [activeTag, setActiveTag] = useState<RestaurantTag | null>(() => tagFromHash());
   const sectionRefs = useRef<Map<RestaurantTag, HTMLElement>>(new Map());
 
   useEffect(() => {
@@ -235,7 +244,25 @@ export default function DiningPromotionsPage() {
   // setState inside an effect.
   const displayedActiveTag: RestaurantTag | null = activeTag ?? availableTags[0] ?? null;
 
-  // Scroll-spy: update the sidebar's active tag as the user scrolls between sections.
+  // Scroll to the matching section if the page was opened with a #promo-<tag>
+  // hash (e.g. arrived via a /dining card). Pure side-effect — the active tag
+  // is already seeded from the hash by the useState lazy initializer above.
+  useEffect(() => {
+    if (!loaded || availableTags.length === 0) return;
+    const tag = tagFromHash();
+    if (!tag || !availableTags.includes(tag)) return;
+    // Wait one frame so refs have attached before scrolling.
+    requestAnimationFrame(() => {
+      const el = sectionRefs.current.get(tag);
+      if (!el) return;
+      const top = el.getBoundingClientRect().top + window.scrollY - 96;
+      window.scrollTo({ top, behavior: 'smooth' });
+    });
+  }, [loaded, availableTags]);
+
+  // Scroll-spy: update the sidebar's active tag (and the URL hash) as the
+  // user scrolls between sections. We use replaceState so the browser back
+  // button isn't polluted with every scroll-driven hash change.
   useEffect(() => {
     if (availableTags.length === 0) return;
     const observer = new IntersectionObserver(
@@ -246,7 +273,13 @@ export default function DiningPromotionsPage() {
           .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
         if (visible[0]) {
           const tag = visible[0].target.getAttribute('data-tag') as RestaurantTag | null;
-          if (tag) setActiveTag(tag);
+          if (tag) {
+            setActiveTag(tag);
+            const next = `#promo-${tag}`;
+            if (window.location.hash !== next) {
+              window.history.replaceState(null, '', next);
+            }
+          }
         }
       },
       { rootMargin: '-30% 0px -55% 0px', threshold: 0 },
@@ -262,6 +295,12 @@ export default function DiningPromotionsPage() {
     const top = el.getBoundingClientRect().top + window.scrollY - headerOffset;
     window.scrollTo({ top, behavior: 'smooth' });
     setActiveTag(tag);
+    // Push a new history entry so the back button returns the user to wherever
+    // they came from (e.g. /dining), and the URL reflects the active section.
+    const next = `#promo-${tag}`;
+    if (window.location.hash !== next) {
+      window.history.pushState(null, '', next);
+    }
   };
 
   if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
