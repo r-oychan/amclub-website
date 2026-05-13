@@ -52,6 +52,9 @@ const CTA_OVERRIDES: Record<string, { href: string; isExternal: boolean }> = {
     href: 'https://amclub.jotform.com/260813837273966?parentURL=https%3A%2F%2Famclub.org.sg%2Fmembership-enquiry-form%2F&jsForm=true',
     isExternal: true,
   },
+  'Start Your Application': { href: '/membership/start-application', isExternal: false },
+  'Start an Application': { href: '/membership/start-application', isExternal: false },
+  'Membership Types & Joining Fees': { href: '/membership/joining-fees', isExternal: false },
 };
 
 const linksOf = (ls?: StrapiLink[]) =>
@@ -197,9 +200,9 @@ export default function MembershipPage() {
           textBgColor="#001E62"
           heading={data.findRightCta.heading}
           description={data.findRightCta.body}
-          ctas={(data.findRightCta.ctas ?? []).map((c) => ({
+          ctas={linksOf(data.findRightCta.ctas).map((c) => ({
             label: c.label,
-            href: c.href ?? '#',
+            href: c.href,
             bordered: false,
             icon: 'arrow' as const,
             isExternal: c.isExternal,
