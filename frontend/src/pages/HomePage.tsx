@@ -8,6 +8,7 @@ import { TabsSection } from '../components/blocks/TabsSection';
 import { TestimonialSlider } from '../components/blocks/TestimonialSlider';
 import { FaqAccordion } from '../components/blocks/FaqAccordion';
 import { PageFade } from '../components/shared/PageFade';
+import { EVENT_PLACEHOLDER_IMAGE } from '../lib/events';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string };
@@ -270,7 +271,7 @@ export default function HomePage() {
     category: e.category?.name,
     title: e.title,
     date: formatEventDate(e.date),
-    image: mediaUrl(e.image),
+    image: mediaUrl(e.image) ?? EVENT_PLACEHOLDER_IMAGE,
     href: e.slug ? `/whats-on/${e.slug}` : undefined,
   }));
 
