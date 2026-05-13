@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { initEnv, api, findOneBySlug, uploadAll, uploadFile, slugify, isDryRun } from './seed-helpers.mjs';
+import { initEnv, api, findOneBySlug, uploadAll, slugify, isDryRun } from './seed-helpers.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
@@ -13,7 +13,10 @@ const HERO_DIR = join(ROOT, 'media', 'pages', 'dining');
 const REST_DIR = join(ROOT, 'media', 'restaurants');
 const LOGO_DIR = join(ROOT, 'media', 'logos');
 const SERV_DIR = join(ROOT, 'media', 'services');
-const MENU_ROOT = join(ROOT, 'media', 'dining');
+// Menu PDFs are served as static assets from the frontend's `public/menus/`
+// directory (URL: `/menus/<slug>-menu.pdf`). This lets browsers open them inline
+// in a new tab — Azure Blob Storage (where Strapi uploads go) doesn't set
+// `Content-Disposition: inline`, so PDFs served from there download instead.
 
 const HERO_IMAGES   = ['hero-bg.jpg'];
 const REST_IMAGES   = ['central.jpeg', 'grillhouse.jpeg', 'the-2nd-floor.jpeg', 'the-gourmet-pantry.jpeg', 'tradewinds.jpeg', 'union-bar.jpeg'];
@@ -28,9 +31,8 @@ const RESTAURANTS = [
     name: 'Central', slug: 'central', cuisineType: 'Cafe', cuisineIconSlug: 'cafe',
     description: 'Your favorite coffee, sandwich and chatter spot.',
     imageFile: 'central.jpeg', logoFile: 'central.png', dressCode: null,
-    menuFiles: [
-      { label: 'View Menu', file: 'central-menu-1.pdf' },
-      { label: 'Specials Menu', file: 'central-menu-2.pdf' },
+    menuLinks: [
+      { label: 'View Menu', href: '/menus/central-menu.pdf' },
     ],
     ctas: [{ label: 'Promotions', href: '/dining/dining-promotion', icon: 'arrow' }],
     operatingHoursSections: [
@@ -46,9 +48,8 @@ const RESTAURANTS = [
     name: 'Grillhouse & Tiki Bar', slug: 'grillhouse', cuisineType: 'American BBQ & Grill', cuisineIconSlug: 'american',
     description: 'Welcome to a casual poolside dining restaurant – perfect for families with children and swimmers looking to have a delicious meal.\n\nDevour authentic American cuisine featuring Texas-style BBQ, mouth-watering burgers, delicious pizzas and salads with ice-cold American beer and special Grillhouse shakes.',
     imageFile: 'grillhouse.jpeg', logoFile: 'grillhouse.png', dressCode: null,
-    menuFiles: [
-      { label: 'View Menu', file: 'grillhouse-main-menu.pdf' },
-      { label: 'Tiki Bar Menu', file: 'tiki-bar-beverage-menu.pdf' },
+    menuLinks: [
+      { label: 'View Menu', href: '/menus/grillhouse-menu.pdf' },
     ],
     ctas: [{ label: 'Promotions', href: '/dining/dining-promotion', icon: 'arrow' }],
     operatingHoursSections: [
@@ -69,9 +70,8 @@ const RESTAURANTS = [
     name: 'The 2nd Floor', slug: 'the-2nd-floor', cuisineType: 'Casual Premium Fine Dining', cuisineIconSlug: 'casual-fine-dining',
     description: 'Experience the best of both worlds, where East and West create a fine dining experience.',
     imageFile: 'the-2nd-floor.jpeg', logoFile: 'the-2nd-floor.png', dressCode: 'Smart Casual',
-    menuFiles: [
-      { label: 'View Menu', file: 'tsf-ala-carte-menu.pdf' },
-      { label: 'Wine Menu', file: 'tsf-wine-menu.pdf' },
+    menuLinks: [
+      { label: 'View Menu', href: '/menus/the-2nd-floor-menu.pdf' },
     ],
     ctas: [{ label: 'Promotions', href: '/dining/dining-promotion', icon: 'arrow' }],
     operatingHoursSections: [
@@ -86,8 +86,8 @@ const RESTAURANTS = [
     name: 'The Gourmet Pantry', slug: 'the-gourmet-pantry', cuisineType: 'Wine & Gourmet Store', cuisineIconSlug: 'gourmet',
     description: 'A curated destination for modern tastemakers – offering exceptional wines, artisanal bites, and beautifully crafted tableware.',
     imageFile: 'the-gourmet-pantry.jpeg', logoFile: 'the-gourmet-pantry.png', dressCode: null,
-    menuFiles: [
-      { label: 'View Menu', file: 'gp-food-and-wine-20-mar-26.pdf' },
+    menuLinks: [
+      { label: 'View Menu', href: '/menus/the-gourmet-pantry-menu.pdf' },
     ],
     ctas: [],
     operatingHoursSections: [
@@ -102,8 +102,8 @@ const RESTAURANTS = [
     name: 'Tradewinds', slug: 'tradewinds', cuisineType: 'International', cuisineIconSlug: 'international',
     description: 'All-day casual dining featuring an international menu with flavors from America to Singapore.',
     imageFile: 'tradewinds.jpeg', logoFile: 'tradewinds.png', dressCode: null,
-    menuFiles: [
-      { label: 'View Menu', file: 'tradewinds-menu.pdf' },
+    menuLinks: [
+      { label: 'View Menu', href: '/menus/tradewinds-menu.pdf' },
     ],
     ctas: [{ label: 'Promotions', href: '/dining/dining-promotion', icon: 'arrow' }],
     operatingHoursSections: [
@@ -118,8 +118,8 @@ const RESTAURANTS = [
     name: 'Union Bar', slug: 'union-bar', cuisineType: 'American Bar Food', cuisineIconSlug: 'bar',
     description: 'Kick back after work at this classic American sports bar.',
     imageFile: 'union-bar.jpeg', logoFile: 'the-union-bar.png', dressCode: null,
-    menuFiles: [
-      { label: 'View Menu', file: 'union-bar-main-menu.pdf' },
+    menuLinks: [
+      { label: 'View Menu', href: '/menus/union-bar-menu.pdf' },
     ],
     ctas: [],
     operatingHoursSections: [
@@ -132,26 +132,13 @@ const RESTAURANTS = [
   },
 ];
 
-async function uploadMenuFiles(r) {
-  // Upload each PDF in media/dining/<slug>/<file>; return [{ label, url }, ...]
-  if (!r.menuFiles?.length) return [];
-  const out = [];
-  for (const m of r.menuFiles) {
-    const path = join(MENU_ROOT, r.slug, m.file);
-    if (DRY) { out.push({ label: m.label, url: `#${m.file}` }); continue; }
-    const media = await uploadFile(ctx, path);
-    out.push({ label: m.label, url: media.url });
-  }
-  return out;
-}
-
 async function ensureRestaurant(r, imageId, logoId) {
-  // Upload menu PDFs and convert them to CTAs (max 3 combined with user CTAs).
-  const menuLinks = await uploadMenuFiles(r);
-  if (DRY) { console.log(`  [dry] upsert restaurant: ${r.name} (${menuLinks.length} menu(s))`); return { documentId: `dry-${r.slug}`, slug: r.slug }; }
+  // Menu CTAs point at static PDFs in `frontend/public/menus/`; combined with
+  // user CTAs and capped at 3 total by the schema.
+  if (DRY) { console.log(`  [dry] upsert restaurant: ${r.name} (${(r.menuLinks ?? []).length} menu(s))`); return { documentId: `dry-${r.slug}`, slug: r.slug }; }
   const existing = await findOneBySlug(ctx, 'restaurants', r.slug);
-  const menuCtas = menuLinks.map((m) => ({
-    label: m.label, href: m.url, isExternal: true, variant: 'primary', icon: 'menu',
+  const menuCtas = (r.menuLinks ?? []).map((m) => ({
+    label: m.label, href: m.href, isExternal: true, variant: 'primary', icon: 'menu',
   }));
   const extraCtas = (r.ctas ?? []).map((c) => ({
     label: c.label, href: c.href ?? '#', variant: c.variant ?? 'primary', icon: c.icon ?? 'arrow',

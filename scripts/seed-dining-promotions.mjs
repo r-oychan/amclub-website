@@ -11,16 +11,18 @@ const ctx = initEnv();
 
 const PROMO_DIR = join(ROOT, 'media', 'dining', 'promotions');
 
-// Promotions to seed. `imageFile` resolves against media/dining/promotions/.
-// Filenames follow `<restaurant-slug>-<promo-name>.<ext>` so the auto-discovery
-// fallback can tag them correctly if this list ever falls out of date.
+// Promotions to seed. `imageFiles` (or legacy `imageFile`) resolves against
+// `media/dining/promotions/`. A single promotion may have multiple pages —
+// the page renders them as a slider. Filenames follow
+// `<restaurant-slug>-<promo-name>[-<page>].<ext>` so the auto-discovery
+// fallback can tag and group them when this list falls out of date.
 const PROMOTIONS = [
   {
     title: 'November Food & Beverage Specials',
     slug: 'november-food-and-beverage-specials',
     summary: 'A delicious lineup of classics and creative twists across The 2nd Floor, Grillhouse, Union Bar, Tradewinds and Central.',
     restaurantTag: 'club-wide',
-    imageFile: 'club-wide-november-food-and-beverage-specials.jpg',
+    imageFiles: ['club-wide-november-food-and-beverage-specials.jpg'],
     ctas: [],
     order: 1,
   },
@@ -29,7 +31,7 @@ const PROMOTIONS = [
     slug: 'central-12-days-of-christmas-special',
     summary: 'Twelve days of festive treats, exclusive offers and a daily dose of surprises at Central.',
     restaurantTag: 'central',
-    imageFile: 'central-12-days-of-christmas-special.jpg',
+    imageFiles: ['central-12-days-of-christmas-special.jpg'],
     ctas: [],
     order: 2,
   },
@@ -38,7 +40,7 @@ const PROMOTIONS = [
     slug: 'central-daily-specials',
     summary: 'Daily promotions on coffee, bagels, smoothies, wraps and weekend treats at Central.',
     restaurantTag: 'central',
-    imageFile: 'central-daily-specials.jpg',
+    imageFiles: ['central-daily-specials.jpg'],
     ctas: [],
     order: 3,
   },
@@ -47,7 +49,7 @@ const PROMOTIONS = [
     slug: 'grillhouse-smokin-sundays',
     summary: 'A specially curated selection of grilled mains, hearty sides and BBQ flavors to wind down your Sunday at Grillhouse.',
     restaurantTag: 'grillhouse',
-    imageFile: 'grillhouse-smokin-sundays.jpg',
+    imageFiles: ['grillhouse-smokin-sundays.jpg'],
     ctas: [],
     order: 4,
   },
@@ -56,7 +58,7 @@ const PROMOTIONS = [
     slug: 'grillhouse-seasonal-brews',
     summary: 'A curated rotation of craft beers, paired with Grillhouse classics.',
     restaurantTag: 'grillhouse',
-    imageFile: 'grillhouse-seasonal-brews.jpg',
+    imageFiles: ['grillhouse-seasonal-brews.jpg'],
     ctas: [],
     order: 5,
   },
@@ -65,7 +67,7 @@ const PROMOTIONS = [
     slug: 'the-2nd-floor-ultimate-happy-hour',
     summary: '1-for-1 drinks by the glass on Tuesdays to Fridays, 5:30 – 7:00 PM. Free wine corkage every Tuesday.',
     restaurantTag: 'the-2nd-floor',
-    imageFile: 'the-2nd-floor-ultimate-happy-hour.jpg',
+    imageFiles: ['the-2nd-floor-ultimate-happy-hour.jpg'],
     ctas: [],
     order: 6,
   },
@@ -74,14 +76,22 @@ const PROMOTIONS = [
     slug: 'tradewinds-salad-bar-buffet',
     summary: 'All-you-can-eat salad bar every Monday to Wednesday, 11:00 AM – 2:30 PM, with beverage specials.',
     restaurantTag: 'tradewinds',
-    imageFile: 'tradewinds-salad-bar-buffet.jpg',
+    imageFiles: ['tradewinds-salad-bar-buffet.jpg'],
     ctas: [],
     order: 7,
   },
 ];
 
-async function ensurePromotion(p, imageId) {
-  if (DRY) { console.log(`  [dry] upsert promotion: ${p.title}`); return; }
+function imageFilesOf(p) {
+  if (Array.isArray(p.imageFiles) && p.imageFiles.length) return p.imageFiles;
+  if (p.imageFile) return [p.imageFile];
+  return [];
+}
+
+async function ensurePromotion(p, mediaByFile) {
+  const files = imageFilesOf(p);
+  const ids = files.map((f) => mediaByFile[f]?.id).filter((x) => x != null);
+  if (DRY) { console.log(`  [dry] upsert promotion: ${p.title} (${ids.length} page(s))`); return; }
   const existing = await findOneBySlug(ctx, 'dining-promotions', p.slug);
   const payload = {
     title: p.title,
@@ -90,7 +100,8 @@ async function ensurePromotion(p, imageId) {
     restaurantTag: p.restaurantTag,
     validFrom: p.validFrom,
     validTo: p.validTo,
-    image: imageId,
+    image: ids[0] ?? null,
+    images: ids,
     order: p.order ?? 0,
     ctas: (p.ctas ?? []).slice(0, 2).map((c) => ({
       label: c.label,
@@ -139,29 +150,40 @@ async function main() {
   console.log(`Mode:        ${DRY ? 'DRY-RUN' : 'LIVE'}`);
 
   // Auto-discover any extra flyers dropped into media/dining/promotions/.
-  // Filename → slug + restaurantTag inferred from "<restaurant>_<title>.<ext>"
-  // ie "grillhouse-seasonal-brews.jpg" → tag='grillhouse'. Anything that doesn't
-  // start with a known prefix is treated as "club-wide".
+  // Convention: `<restaurant>-<title>[-<page>].<ext>` (page is a trailing
+  // numeric suffix). Files sharing the same `<restaurant>-<title>` group into
+  // a single promotion with multiple pages, ordered numerically.
   const discovered = readdirSync(PROMO_DIR).filter((f) => /\.(jpe?g|png|webp)$/i.test(f));
-  const known = new Set(PROMOTIONS.map((p) => p.imageFile));
-  for (const f of discovered) if (!known.has(f)) {
+  const knownFiles = new Set(PROMOTIONS.flatMap((p) => imageFilesOf(p)));
+  const TAG_RE = /^(club-wide|central|grillhouse|the-2nd-floor|tradewinds|union-bar|the-gourmet-pantry)[-_](.+?)(?:[-_](\d+))?$/;
+  const newGroups = new Map(); // baseSlug → { tag, files: [{file, page}] }
+  for (const f of discovered) if (!knownFiles.has(f)) {
     const base = f.replace(/\.[^.]+$/, '');
-    const tagMatch = base.match(/^(club-wide|central|grillhouse|the-2nd-floor|tradewinds|union-bar|the-gourmet-pantry)[-_](.+)$/);
-    const tag = tagMatch ? tagMatch[1] : 'club-wide';
-    const slug = base;
+    const m = base.match(TAG_RE);
+    const tag = m ? m[1] : 'club-wide';
+    const titlePart = m ? m[2] : base;
+    const page = m && m[3] ? parseInt(m[3], 10) : 1;
+    const groupKey = `${tag}-${titlePart}`;
+    if (!newGroups.has(groupKey)) newGroups.set(groupKey, { tag, titlePart, files: [] });
+    newGroups.get(groupKey).files.push({ file: f, page });
+  }
+  for (const [groupKey, g] of newGroups) {
+    g.files.sort((a, b) => a.page - b.page);
     PROMOTIONS.push({
-      title: base.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
-      slug, summary: '', restaurantTag: tag, imageFile: f,
+      title: g.titlePart.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+      slug: groupKey, summary: '', restaurantTag: g.tag,
+      imageFiles: g.files.map((x) => x.file),
       validFrom: null, validTo: null, ctas: [], order: 99,
     });
   }
 
   console.log('\n[1/3] Uploading promotion flyers…');
-  const media = await uploadAll(ctx, PROMO_DIR, PROMOTIONS.map((p) => p.imageFile), { dry: DRY });
+  const allFiles = Array.from(new Set(PROMOTIONS.flatMap((p) => imageFilesOf(p))));
+  const media = await uploadAll(ctx, PROMO_DIR, allFiles, { dry: DRY });
 
   console.log('\n[2/3] Upserting promotion entries…');
   for (const p of PROMOTIONS) {
-    await ensurePromotion(p, media[p.imageFile]?.id ?? null);
+    await ensurePromotion(p, media);
     console.log(`  ✓ ${p.title}`);
   }
 
