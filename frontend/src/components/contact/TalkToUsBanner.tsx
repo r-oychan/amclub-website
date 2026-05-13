@@ -4,12 +4,14 @@ interface Props {
   heading?: string;
   ctaLabel?: string;
   ctaHref?: string;
+  ctaIsExternal?: boolean;
 }
 
 export function TalkToUsBanner({
   heading = 'Talk2Us! About Your Club Experience',
   ctaLabel = 'Tell Us What You Think',
-  ctaHref = '#',
+  ctaHref = 'https://amclub.jotform.com/252152095231953',
+  ctaIsExternal = true,
 }: Props) {
   return (
     <section
@@ -38,28 +40,46 @@ export function TalkToUsBanner({
           >
             {heading}
           </h2>
-          <Link
-            to={ctaHref}
-            className="inline-flex items-center gap-2 bg-white rounded-full text-primary uppercase hover:shadow-md transition-shadow"
-            style={{
+          {(() => {
+            const className =
+              'inline-flex items-center gap-2 bg-white rounded-full text-primary uppercase hover:shadow-md transition-shadow';
+            const style = {
               padding: '12px 16px 12px 24px',
               fontSize: '13.6px',
               fontWeight: 700,
               letterSpacing: '0.544px',
               boxShadow: 'rgba(32, 99, 171, 0.07) 0px 20px 19px -12px',
-            }}
-          >
-            {ctaLabel}
-            <svg width="24" height="24" viewBox="0 0 14 14" fill="none">
-              <path
-                d="M1 13L13 1M13 1H3M13 1V11"
-                stroke="#DF4661"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </Link>
+            } as const;
+            const inner = (
+              <>
+                {ctaLabel}
+                <svg width="24" height="24" viewBox="0 0 14 14" fill="none">
+                  <path
+                    d="M1 13L13 1M13 1H3M13 1V11"
+                    stroke="#DF4661"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </>
+            );
+            return ctaIsExternal ? (
+              <a
+                href={ctaHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={className}
+                style={style}
+              >
+                {inner}
+              </a>
+            ) : (
+              <Link to={ctaHref} className={className} style={style}>
+                {inner}
+              </Link>
+            );
+          })()}
         </div>
       </div>
     </section>

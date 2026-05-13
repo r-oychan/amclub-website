@@ -2036,7 +2036,7 @@ export const homeSubpages: SubpageData[] = [
       'https://framerusercontent.com/images/YCNFJanBoXdJFKJlpWh9tMfwrQ.jpg',
     parentSection: 'The American Club',
     parentHref: '/home',
-    ctas: [{ label: 'Tell Us What You Think', href: '#' }],
+    ctas: [{ label: 'Tell Us What You Think', href: 'https://amclub.jotform.com/252152095231953', isExternal: true }],
   },
   {
     slug: 'advertise-with-us',
