@@ -21,6 +21,7 @@ const PUBLIC_FIND_TYPES = [
   'api::venue.venue',
   'api::restaurant.restaurant',
   'api::facility.facility',
+  'api::coach.coach',
   'api::committee-member.committee-member',
   'api::gallery-album.gallery-album',
   'api::gallery-page.gallery-page',
