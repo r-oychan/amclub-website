@@ -17,6 +17,8 @@ build/
 # Temp / generated
 .migration-tmp/
 test-results/
+.news-image-cache/
+.event-image-cache/
 
 # IDE
 .idea/
