@@ -10,6 +10,7 @@ import { ContactRow } from '../components/detail/ContactRow';
 import { FaqAccordion } from '../components/blocks/FaqAccordion';
 import { MarqueeGallery } from '../components/detail/MarqueeGallery';
 import { KidsPartyPackages } from '../components/kids/KidsPartyPackages';
+import { Testimonials } from '../components/blocks/Testimonials';
 import { CtaIcon, type CtaIconName } from '../components/shared/CtaIcon';
 
 interface ScheduleRow {
@@ -1486,62 +1487,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
 
       {/* ── Quotes / Testimonials ── */}
       {venue.quotes && venue.quotes.items.length > 0 && (
-        <section className="bg-bg" style={{ paddingTop: '40px', paddingBottom: '120px' }}>
-          <div className="max-w-7xl mx-auto px-10 flex flex-col" style={{ gap: '48px' }}>
-            {venue.quotes.heading && (
-              <h2
-                className="font-heading text-primary text-center"
-                style={{
-                  fontSize: '38.4px',
-                  fontWeight: 300,
-                  fontStyle: 'italic',
-                  letterSpacing: '-1.152px',
-                  lineHeight: '42.24px',
-                }}
-              >
-                {venue.quotes.heading}
-              </h2>
-            )}
-            <div
-              className={`grid ${venue.quotes.items.length > 1 ? 'md:grid-cols-2' : 'md:grid-cols-1 max-w-3xl mx-auto'} gap-10 md:gap-12`}
-            >
-              {venue.quotes.items.map((q, i) => (
-                <div
-                  key={`${q.attribution ?? i}`}
-                  className="text-center flex flex-col"
-                  style={{ gap: '24px' }}
-                >
-                  <p
-                    className="text-text-dark"
-                    style={{ fontSize: '20px', fontWeight: 400, lineHeight: '30px', fontStyle: 'italic' }}
-                  >
-                    &ldquo;{q.text}&rdquo;
-                  </p>
-                  {(q.attribution || q.role) && (
-                    <div className="flex flex-col" style={{ gap: '4px' }}>
-                      {q.attribution && (
-                        <p
-                          className="text-primary uppercase"
-                          style={{ fontSize: '13.6px', fontWeight: 700, letterSpacing: '0.04em' }}
-                        >
-                          {q.attribution}
-                        </p>
-                      )}
-                      {q.role && (
-                        <p
-                          className="text-text-dark/70"
-                          style={{ fontSize: '15.2px', lineHeight: '22px' }}
-                        >
-                          {q.role}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        <Testimonials heading={venue.quotes.heading} items={venue.quotes.items} />
       )}
 
       {/* ── Marquee Gallery ── */}
