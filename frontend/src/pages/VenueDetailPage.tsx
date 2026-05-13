@@ -158,6 +158,18 @@ interface VenueData {
       gradientTo: string;
     }[];
   };
+  venueCards?: {
+    heading?: string;
+    subheading?: string;
+    columns?: 2 | 3 | 4;
+    cards: {
+      heading: string;
+      capacity?: string;
+      description: string;
+      image: string;
+      imageAlt?: string;
+    }[];
+  };
 }
 
 const SECTION_MAP: Record<string, { apiPath: string; parentLabel: string; parentHref: string }> = {
@@ -204,6 +216,7 @@ function staticFallback(section: string, slug: string): VenueData | null {
     locationContact: sp.locationContact ?? null,
     downloads: sp.downloads,
     tierCards: sp.tierCards,
+    venueCards: sp.venueCards,
   };
 }
 
@@ -331,6 +344,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           quotes: api.quotes ?? fallback?.quotes,
           downloads: api.downloads ?? fallback?.downloads,
           tierCards: api.tierCards ?? fallback?.tierCards,
+          venueCards: api.venueCards ?? fallback?.venueCards,
         });
       } else {
         setVenue(fallback);
@@ -1048,6 +1062,94 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           </div>
         </section>
       )}
+
+      {/* ── 3-col Venue Cards (Corporate Functions facility lineup) ──
+          Square image, left-aligned italic serif heading, thin divider,
+          capacity tagline in accent, then body copy. No CTA — these are
+          presentational summaries that mirror Framer's facility grid. */}
+      {venue.venueCards && venue.venueCards.cards.length > 0 && (() => {
+        const cols = venue.venueCards.columns ?? 3;
+        const colsClass =
+          cols === 4
+            ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4'
+            : cols === 2
+              ? 'grid-cols-1 md:grid-cols-2'
+              : 'grid-cols-1 md:grid-cols-3';
+        return (
+          <section className="bg-bg pb-[120px]">
+            <div className="max-w-7xl mx-auto px-10 flex flex-col" style={{ gap: '48px' }}>
+              {(venue.venueCards.heading || venue.venueCards.subheading) && (
+                <div className="text-center flex flex-col" style={{ gap: '16px' }}>
+                  {venue.venueCards.heading && (
+                    <h2
+                      className="font-heading text-primary"
+                      style={{
+                        fontSize: '38.4px',
+                        fontWeight: 300,
+                        fontStyle: 'italic',
+                        letterSpacing: '-1.152px',
+                        lineHeight: '42.24px',
+                      }}
+                    >
+                      {venue.venueCards.heading}
+                    </h2>
+                  )}
+                  {venue.venueCards.subheading && (
+                    <p
+                      className="text-text-dark/70 max-w-3xl mx-auto"
+                      style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
+                    >
+                      {venue.venueCards.subheading}
+                    </p>
+                  )}
+                </div>
+              )}
+              <div className={`grid ${colsClass} gap-8`}>
+                {venue.venueCards.cards.map((card, i) => (
+                  <div key={`${card.heading}-${i}`} className="flex flex-col bg-white">
+                    <div className="aspect-square overflow-hidden">
+                      <img
+                        src={card.image}
+                        alt={card.imageAlt ?? card.heading}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex flex-col px-8" style={{ paddingTop: '32px', paddingBottom: '32px', gap: '16px' }}>
+                      <h3
+                        className="font-heading text-primary"
+                        style={{
+                          fontSize: '26.56px',
+                          fontWeight: 300,
+                          fontStyle: 'italic',
+                          letterSpacing: '-0.797px',
+                          lineHeight: '32px',
+                        }}
+                      >
+                        {card.heading}
+                      </h3>
+                      <div className="h-px w-12 bg-text-dark/30" aria-hidden />
+                      {card.capacity && (
+                        <p
+                          className="text-accent uppercase"
+                          style={{ fontSize: '13.6px', fontWeight: 700, letterSpacing: '0.04em' }}
+                        >
+                          {card.capacity}
+                        </p>
+                      )}
+                      <p
+                        className="text-text-dark"
+                        style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
+                      >
+                        {card.description}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
 
       {/* ── Image + Text Panels (e.g. Tennis Programs, Tennis Etiquette) ──
           Mirrors the hero's two-column layout (52% image / flex text, 60px gap,

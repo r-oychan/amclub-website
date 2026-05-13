@@ -197,6 +197,24 @@ export interface SubpageData {
       gradientTo: string;
     }[];
   };
+  /**
+   * 3-col facility cards (used on /event-spaces/corporate-functions and
+   * similar pages). Each card shows a square image, italic serif heading,
+   * thin divider, a capacity tagline (e.g. "Up to 40 pax"), and a body
+   * paragraph. No CTA — these are presentational summaries.
+   */
+  venueCards?: {
+    heading?: string;
+    subheading?: string;
+    columns?: 2 | 3 | 4;
+    cards: {
+      heading: string;
+      capacity?: string;
+      description: string;
+      image: string;
+      imageAlt?: string;
+    }[];
+  };
 }
 
 const PLACEHOLDER_FAQ: { question: string; answer: string }[] = [
@@ -1602,8 +1620,7 @@ export const eventSpacesSubpages: SubpageData[] = [
     type: 'Weddings',
     description:
       'Celebrate your love story in a setting as meaningful as the moment itself. From grand receptions to intimate gatherings, the Club offers timeless venues, thoughtful service, and bespoke culinary experiences.',
-    image:
-      'https://framerusercontent.com/images/mVJDWpQ45XvCKY8vEOKrFiKZta0.jpg',
+    image: '/uploads/package_wedding_1fc9c3830f.jpg',
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
@@ -1624,6 +1641,35 @@ export const eventSpacesSubpages: SubpageData[] = [
       { label: 'View Capacity Chart', href: '/documents/event-spaces/capacity-chart.pdf', isExternal: true },
       { label: 'Enquire Now', href: 'mailto:catering@amclub.org.sg', isExternal: true },
     ],
+    venueCards: {
+      columns: 3,
+      cards: [
+        {
+          heading: 'The Galbraith Ballroom',
+          capacity: 'Up to 40 pax',
+          description:
+            "An elegant, pillar-less ballroom ideal for conferences, large-scale meetings, awards nights, and corporate celebrations. Flexible layouts, professional audiovisual support, and a refined setting make it the Club's premier venue for high-profile events.",
+          image: '/uploads/venue_galbraith_bf8613655b.jpeg',
+          imageAlt: 'The Galbraith Ballroom',
+        },
+        {
+          heading: 'Thinkspace Meeting Rooms',
+          capacity: 'Up to 40 pax',
+          description:
+            'Purpose-built for focus and collaboration, our Thinkspace Meeting Rooms offer contemporary spaces for board meetings, workshops, training sessions, and breakouts – featuring presentation technology and flexible seating in a professional, comfortable setting.',
+          image: '/uploads/venue_thinkspace_4f7a2f0111.jpg',
+          imageAlt: 'Thinkspace Meeting Rooms',
+        },
+        {
+          heading: 'The Bowling Alley',
+          capacity: 'Up to 28 pax',
+          description:
+            'A refreshing option for team-building, client entertainment, and informal corporate socials, The Bowling Alley offers a lively setting that blends friendly competition with curated food and beverage experiences.',
+          image: '/uploads/venue_bowling_ebb18420b5.jpeg',
+          imageAlt: 'The Bowling Alley',
+        },
+      ],
+    },
   },
   {
     slug: 'parties',
