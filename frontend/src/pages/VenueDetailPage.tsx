@@ -8,6 +8,8 @@ import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
 import { DetailSection } from '../components/detail/DetailSection';
 import { ContactRow } from '../components/detail/ContactRow';
 import { FaqAccordion } from '../components/blocks/FaqAccordion';
+import { MarqueeGallery } from '../components/detail/MarqueeGallery';
+import { KidsPartyPackages } from '../components/kids/KidsPartyPackages';
 import { CtaIcon, type CtaIconName } from '../components/shared/CtaIcon';
 
 interface ScheduleRow {
@@ -112,6 +114,20 @@ interface VenueData {
     footnote?: string;
   }[];
   faq?: { question: string; answer: string }[];
+  gallery?: {
+    heading?: string;
+    rows: { images: string[]; direction?: 'ltr' | 'rtl'; durationSec?: number }[];
+  };
+  partyPackages?: {
+    heading?: string;
+    subheading?: string;
+    items: {
+      name: string;
+      image: string;
+      imageAlt?: string;
+      cta?: { label: string; href: string; isExternal?: boolean };
+    }[];
+  };
   downloads?: {
     heading?: string;
     items: { label: string; href: string; isExternal?: boolean }[];
@@ -165,6 +181,8 @@ function staticFallback(section: string, slug: string): VenueData | null {
     imagePanels: sp.imagePanels,
     cardSections: sp.cardSections,
     faq: sp.faq,
+    gallery: sp.gallery,
+    partyPackages: sp.partyPackages,
     operatingHoursSections: sp.operatingHoursSections,
     locationContact: sp.locationContact ?? null,
     downloads: sp.downloads,
@@ -276,6 +294,8 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           imagePanels: api.imagePanels?.length ? api.imagePanels : fallback?.imagePanels,
           cardSections: api.cardSections?.length ? api.cardSections : fallback?.cardSections,
           faq: api.faq?.length ? api.faq : fallback?.faq,
+          gallery: api.gallery ?? fallback?.gallery,
+          partyPackages: api.partyPackages ?? fallback?.partyPackages,
           downloads: api.downloads ?? fallback?.downloads,
           tierCards: api.tierCards ?? fallback?.tierCards,
         });
@@ -1370,6 +1390,20 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
             })}
           </div>
         </section>
+      )}
+
+      {/* ── 3-col Party Packages (kids-parties uses this) ── */}
+      {venue.partyPackages && venue.partyPackages.items.length > 0 && (
+        <KidsPartyPackages
+          heading={venue.partyPackages.heading}
+          subheading={venue.partyPackages.subheading}
+          items={venue.partyPackages.items}
+        />
+      )}
+
+      {/* ── Marquee Gallery ── */}
+      {venue.gallery && venue.gallery.rows.length > 0 && (
+        <MarqueeGallery heading={venue.gallery.heading} rows={venue.gallery.rows} />
       )}
 
       {/* ── FAQ ── */}

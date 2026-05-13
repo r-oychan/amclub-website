@@ -112,6 +112,32 @@ export interface SubpageData {
   }[];
   faq?: { question: string; answer: string }[];
   /**
+   * Marquee gallery rendered between the main content and the FAQ. Each row
+   * scrolls horizontally; row 0 scrolls right-to-left, row 1 left-to-right by
+   * default. Pass any number of images per row — they're duplicated for a
+   * seamless loop. Pass an empty array to disable.
+   */
+  gallery?: {
+    heading?: string;
+    rows: { images: string[]; direction?: 'ltr' | 'rtl'; durationSec?: number }[];
+  };
+  /**
+   * 3-col card grid mirroring the "Parties Made Easy" block on /kids. Each
+   * card shows a thumbnail, italic title, secondary divider, and a CTA
+   * (typically a brochure PDF). Rendered via the shared KidsPartyPackages
+   * component for visual consistency with the parent kids page.
+   */
+  partyPackages?: {
+    heading?: string;
+    subheading?: string;
+    items: {
+      name: string;
+      image: string;
+      imageAlt?: string;
+      cta?: { label: string; href: string; isExternal?: boolean };
+    }[];
+  };
+  /**
    * "Forms You'll Need" download list — rendered as a DetailSection on
    * the right of the venue's main two-column layout. Each entry produces
    * one orange PDF-icon row that opens the file in a new tab.
@@ -1023,7 +1049,71 @@ export const kidsSubpages: SubpageData[] = [
       '/uploads/pages/kids/detail/quadpoolside-hero.jpeg',
     parentSection: 'Kids',
     parentHref: '/kids',
-    faq: [...PLACEHOLDER_FAQ],
+    ctas: [
+      { label: 'The Quad Fees', href: '/documents/kids/the-quad-poolside-fees.pdf', isExternal: true },
+    ],
+    gallery: {
+      rows: [
+        {
+          direction: 'rtl',
+          images: [
+            '/images/kids/the-quad-poolside/gallery/quad-image-a.jpg',
+            '/images/kids/the-quad-poolside/gallery/dscf-0001.jpg',
+            '/images/kids/the-quad-poolside/gallery/dscf-0043.jpg',
+            '/images/kids/the-quad-poolside/gallery/dscf-0079.jpg',
+            '/images/kids/the-quad-poolside/gallery/dscf-0147.jpg',
+            '/images/kids/the-quad-poolside/gallery/dscf-0209.jpg',
+            '/images/kids/the-quad-poolside/gallery/quad-extra.jpg',
+          ],
+        },
+        {
+          direction: 'ltr',
+          images: [
+            '/images/kids/the-quad-poolside/gallery/quad-image-b.jpg',
+            '/images/kids/the-quad-poolside/gallery/dscf-0020.jpg',
+            '/images/kids/the-quad-poolside/gallery/dscf-0046.jpg',
+            '/images/kids/the-quad-poolside/gallery/dscf-0119.jpg',
+            '/images/kids/the-quad-poolside/gallery/dscf-0163.jpg',
+            '/images/kids/the-quad-poolside/gallery/dscf-0247.jpg',
+            '/images/kids/the-quad-poolside/gallery/dscf-9917.jpg',
+            '/images/kids/the-quad-poolside/gallery/dscf-9971.jpg',
+          ],
+        },
+      ],
+    },
+    faq: [
+      {
+        question: 'Why are my Guests charged at The Quad?',
+        answer:
+          'Member usage is prioritized over guests to ensure members can access The Quad whenever desired. Guest fees help minimize overcrowding and discourage misuse. Fees are $2.50 per entry during off-peak hours and $5 during peak hours (Friday evenings, Saturday, Sunday, and public holidays).',
+      },
+      {
+        question: 'Do I really have to sign my child into The Quad Poolside & The Quad?',
+        answer:
+          'Parents of children under 12 must be present to sign them in and remain on premises. Authorized helpers or amahs may bring children only for Club-sponsored classes and supervised programs, not for free play, per Club bylaws.',
+      },
+      {
+        question:
+          "I have two children. One is 7 years old and the other is 5 years old. Why can't both of them be at The Quad unsupervised?",
+        answer:
+          'The Quad is not a child-minding area. Children 6+ can play independently and respond to staff guidance. Children 5 and under require more attention and should use The Quad Poolside instead.',
+      },
+      {
+        question: "Why can't my child who is 4.5 year old play at the Wallholla?",
+        answer:
+          'The Wallholla is a six-level vertical climbing structure requiring independent movement. The Club follows manufacturer recommendations allowing only children 5 years old and above.',
+      },
+      {
+        question: 'Why do I have to pay for child-minding at The Quad Poolside?',
+        answer:
+          'Child-minding charges apply only during peak periods including weekends and public holidays due to limited capacity at The Quad Poolside.',
+      },
+      {
+        question: 'Why are arcade games chargeable?',
+        answer:
+          "Token purchases allow parents to track children's gaming time and spending. Additionally, charging enables the Club to offer newest equipment, including brand-new arcade games imported directly from the United States.",
+      },
+    ],
   },
   {
     slug: 'the-quad',
@@ -1040,8 +1130,71 @@ export const kidsSubpages: SubpageData[] = [
       '/uploads/pages/kids/detail/quad-hero.jpeg',
     parentSection: 'Kids',
     parentHref: '/kids',
-    ctas: [{ label: 'Entry Fees', href: '#' }],
-    faq: [...PLACEHOLDER_FAQ],
+    ctas: [
+      { label: 'The Quad Fees', href: '/documents/kids/the-quad-fees.pdf', isExternal: true },
+    ],
+    gallery: {
+      rows: [
+        {
+          direction: 'rtl',
+          images: [
+            '/images/kids/the-quad/gallery/quad-image-a.jpg',
+            '/images/kids/the-quad/gallery/dscf-0001.jpg',
+            '/images/kids/the-quad/gallery/dscf-0043.jpg',
+            '/images/kids/the-quad/gallery/dscf-0079.jpg',
+            '/images/kids/the-quad/gallery/dscf-0147.jpg',
+            '/images/kids/the-quad/gallery/dscf-0209.jpg',
+            '/images/kids/the-quad/gallery/quad-extra.jpg',
+          ],
+        },
+        {
+          direction: 'ltr',
+          images: [
+            '/images/kids/the-quad/gallery/quad-image-b.jpg',
+            '/images/kids/the-quad/gallery/dscf-0020.jpg',
+            '/images/kids/the-quad/gallery/dscf-0046.jpg',
+            '/images/kids/the-quad/gallery/dscf-0119.jpg',
+            '/images/kids/the-quad/gallery/dscf-0163.jpg',
+            '/images/kids/the-quad/gallery/dscf-0247.jpg',
+            '/images/kids/the-quad/gallery/dscf-9917.jpg',
+            '/images/kids/the-quad/gallery/dscf-9971.jpg',
+          ],
+        },
+      ],
+    },
+    faq: [
+      {
+        question: 'Why are my Guests charged at The Quad?',
+        answer:
+          'Member usage is prioritized over guests to ensure members can access The Quad whenever desired. Guest fees help minimize overcrowding and discourage misuse. Rates are $2.50 per entry during off-peak hours and $5 during peak hours (Friday evenings, Saturday, Sunday, and public holidays).',
+      },
+      {
+        question: 'Do I really have to sign my child into The Quad Poolside & The Quad?',
+        answer:
+          'Parents of children under 12 must be present to sign them in and remain on premises. Authorized helpers may bring children only for club-sponsored classes and supervised programs, not for free play.',
+      },
+      {
+        question:
+          "I have two children. One is 7 years old and the other is 5 years old. Why can't both of them be at The Quad unsupervised?",
+        answer:
+          'The Quad requires independent play and environmental awareness. Children 6+ can interact safely and respond to staff guidance. Children 5 and under need more attention and should use The Quad Poolside instead.',
+      },
+      {
+        question: "Why can't my child who is 4.5 year old play at the Wallholla?",
+        answer:
+          "The Wallholla is a six-level vertical climbing structure requiring independent movement. The Club follows the manufacturer's recommendation restricting access to children 5 years and older.",
+      },
+      {
+        question: 'Why do I have to pay for child-minding at The Quad Poolside?',
+        answer:
+          'Child-minding charges apply during peak periods including weekends and public holidays due to limited capacity in The Quad Poolside.',
+      },
+      {
+        question: 'Why are arcade games chargeable?',
+        answer:
+          'Token purchases allow parents oversight of gaming time and spending. The system enables the club to offer newest, imported equipment unavailable elsewhere in Singapore. No refunds apply to utilized tokens.',
+      },
+    ],
   },
   {
     slug: 'the-quad-studios',
@@ -1059,9 +1212,28 @@ export const kidsSubpages: SubpageData[] = [
     parentSection: 'Kids',
     parentHref: '/kids',
     ctas: [
-      { label: 'Explore Recreational Classes', href: '#' },
-      { label: 'Kids\' Party Packages', href: '#' },
+      { label: 'Explore Recreational Classes', href: '/kids/classes' },
+      { label: "Kids' Party Packages", href: '/documents/kids/the-quad-studios-party-package.pdf', isExternal: true },
     ],
+    gallery: {
+      rows: [
+        {
+          direction: 'rtl',
+          images: [
+            '/images/kids/the-quad-studio/gallery/classes-image-a.jpg',
+            '/images/kids/the-quad-studio/gallery/classes-1.jpg',
+            '/images/kids/the-quad-studio/gallery/classes-3.jpg',
+          ],
+        },
+        {
+          direction: 'ltr',
+          images: [
+            '/images/kids/the-quad-studio/gallery/classes-image-b.jpg',
+            '/images/kids/the-quad-studio/gallery/classes-2.jpg',
+          ],
+        },
+      ],
+    },
     faq: [...PLACEHOLDER_FAQ],
   },
   {
@@ -1117,6 +1289,42 @@ export const kidsSubpages: SubpageData[] = [
       '/uploads/pages/kids/parties.jpg',
     parentSection: 'Kids',
     parentHref: '/kids',
+    partyPackages: {
+      heading: 'Parties Made Easy',
+      subheading: "Fun-filled kids' party packages designed for memorable celebrations.",
+      items: [
+        {
+          name: 'The Quad Studio Party Package',
+          image: '/images/kids/kids-parties/quad-studio.jpeg',
+          imageAlt: 'The Quad Studio Party Package',
+          cta: {
+            label: 'Download Brochure',
+            href: '/documents/kids/the-quad-studios-party-package.pdf',
+            isExternal: true,
+          },
+        },
+        {
+          name: 'The Bowling Alley Party Package',
+          image: '/images/kids/kids-parties/bowling-alley.jpeg',
+          imageAlt: 'The Bowling Alley Party Package',
+          cta: {
+            label: 'Download Brochure',
+            href: '/documents/kids/the-bowling-alley-party-package.pdf',
+            isExternal: true,
+          },
+        },
+        {
+          name: 'Union Bar x The Bowling Alley',
+          image: '/images/kids/kids-parties/union-bar.jpeg',
+          imageAlt: 'Union Bar x The Bowling Alley Menu',
+          cta: {
+            label: 'View Menu',
+            href: '/documents/kids/union-bar-bowling-alley-menu.jpg',
+            isExternal: true,
+          },
+        },
+      ],
+    },
     faq: [...PLACEHOLDER_FAQ],
   },
 ];
