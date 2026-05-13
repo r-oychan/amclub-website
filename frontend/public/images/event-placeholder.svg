@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 504" preserveAspectRatio="xMidYMid slice" role="img" aria-label="The American Club event">
+  <defs>
+    <pattern id="stripe" width="126" height="126" patternUnits="userSpaceOnUse">
+      <path d="M126 0v21.584L21.584 126H0v-17.585L108.415 0H126Zm0 108.414V126h-17.586L126 108.414Zm0-84v39.171L63.585 126H24.414L126 24.414Zm0 42v39.17L105.584 126h-39.17L126 66.414ZM105.586 0 0 105.586V66.415L66.415 0h39.171Zm-42 0L0 63.586V24.415L24.415 0h39.171Zm-42 0L0 21.586V0h21.586Z" fill="rgba(255,255,255,0.04)" fill-rule="evenodd"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="504" fill="#001E62"/>
+  <rect width="800" height="504" fill="url(#stripe)"/>
+  <g transform="translate(400 252)">
+    <circle r="110" fill="none" stroke="#DF4661" stroke-width="1.5" opacity="0.5"/>
+    <circle r="92" fill="none" stroke="#DF4661" stroke-width="1" opacity="0.35"/>
+    <text x="0" y="-8" text-anchor="middle" font-family="Noto Serif, Georgia, serif" font-style="italic" font-size="56" font-weight="300" fill="#FFFFFF" letter-spacing="-1.2">The American Club</text>
+    <text x="0" y="38" text-anchor="middle" font-family="Lato, system-ui, sans-serif" font-size="13" font-weight="700" letter-spacing="6" fill="#DF4661">EVENT</text>
+  </g>
+</svg>

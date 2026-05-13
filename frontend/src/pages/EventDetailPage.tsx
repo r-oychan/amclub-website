@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router';
 import { fetchAPI, STRAPI_URL } from '../lib/api';
+import { EVENT_PLACEHOLDER_IMAGE, normalizeAmPm } from '../lib/events';
 import { PageFade } from '../components/shared/PageFade';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
 import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
@@ -35,9 +36,6 @@ interface StrapiEvent {
   ctas?: StrapiLink[];
 }
 
-const STRIPE_PATTERN_SVG =
-  'url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22126%22 height=%22126%22%3E%3Cpath d=%22M126 0v21.584L21.584 126H0v-17.585L108.415 0H126Zm0 108.414V126h-17.586L126 108.414Zm0-84v39.171L63.585 126H24.414L126 24.414Zm0 42v39.17L105.584 126h-39.17L126 66.414ZM105.586 0 0 105.586V66.415L66.415 0h39.171Zm-42 0L0 63.586V24.415L24.415 0h39.171Zm-42 0L0 21.586V0h21.586Z%22 fill=%22rgb(136,136,136,0.2)%22 fill-rule=%22evenodd%22/%3E%3C/svg%3E")';
-
 const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
   if (!m?.url) return undefined;
   if (/^https?:/i.test(m.url)) return m.url;
@@ -68,7 +66,7 @@ const formatDay = (iso: string): string => {
 };
 
 const paragraphs = (text?: string): string[] =>
-  (text ?? '')
+  normalizeAmPm(text)
     .split(/\n{2,}/)
     .map((p) => p.trim())
     .filter(Boolean);
@@ -116,12 +114,13 @@ export default function EventDetailPage() {
   }
 
   const imageUrl = mediaUrl(event.image);
+  const heroImage = imageUrl ?? EVENT_PLACEHOLDER_IMAGE;
   const ctas = event.ctas ?? [];
   const descriptionParas = paragraphs(event.longDescription ?? event.description);
 
   return (
     <PageFade loaded={!loading}>
-      <DetailHeroBanner imageUrl={imageUrl} />
+      <DetailHeroBanner imageUrl={heroImage} />
 
       <DetailBreadcrumb
         parentLabel="What's On"
@@ -136,25 +135,13 @@ export default function EventDetailPage() {
             <div className="lg:w-[52%] shrink-0">
               <div className="lg:sticky lg:top-[120px]">
                 <div className="relative">
-                  {imageUrl ? (
-                    <div className="overflow-hidden">
-                      <img
-                        src={imageUrl}
-                        alt={event.image?.alternativeText ?? event.title}
-                        className="w-full h-auto object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div
-                      aria-hidden
-                      className="aspect-[4/3] w-full"
-                      style={{
-                        backgroundImage: STRIPE_PATTERN_SVG,
-                        backgroundSize: '64px',
-                        backgroundRepeat: 'repeat',
-                      }}
+                  <div className="overflow-hidden bg-primary">
+                    <img
+                      src={heroImage}
+                      alt={event.image?.alternativeText ?? event.title}
+                      className="w-full h-auto object-cover"
                     />
-                  )}
+                  </div>
                   {formatMonth(event.date) && formatDay(event.date) && (
                     <div className="absolute right-[24px] -bottom-[48px] bg-white px-3 py-3 flex flex-col items-center w-[88px] z-10 shadow-md">
                       <span className="font-body text-[15px] font-normal uppercase text-primary tracking-[0.04em] leading-none">
@@ -279,7 +266,7 @@ export default function EventDetailPage() {
                       className="text-text-dark"
                       style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
                     >
-                      {event.time}
+                      {normalizeAmPm(event.time)}
                     </p>
                   )}
                 </div>
@@ -324,7 +311,7 @@ export default function EventDetailPage() {
                     className="text-text-dark"
                     style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
                   >
-                    {event.reservation}
+                    {normalizeAmPm(event.reservation)}
                   </p>
                 </DetailSection>
               )}

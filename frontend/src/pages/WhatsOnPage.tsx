@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router';
 import { fetchAPI, STRAPI_URL } from '../lib/api';
+import { EVENT_PLACEHOLDER_IMAGE } from '../lib/events';
 import { Hero } from '../components/blocks/Hero';
 import { CtaBanner } from '../components/blocks/CtaBanner';
 import { PageFade } from '../components/shared/PageFade';
@@ -222,13 +223,12 @@ function EventCard({ event }: { event: StrapiEvent }) {
   const inner = (
     <article className="flex flex-col group">
       <div className="relative mb-10">
-        {event.image && (
-          <img
-            src={mediaUrl(event.image)}
-            alt={event.image.alternativeText ?? event.title}
-            className="w-full aspect-[344/217] object-cover block transition-transform duration-500 group-hover:scale-[1.02]"
-          />
-        )}
+        <img
+          src={mediaUrl(event.image) ?? EVENT_PLACEHOLDER_IMAGE}
+          alt={event.image?.alternativeText ?? event.title}
+          className="w-full aspect-[344/217] object-cover block transition-transform duration-500 group-hover:scale-[1.02] bg-primary"
+        />
+
         {month && day && (
           <div className="absolute right-[18px] -bottom-[40px] bg-white p-2 flex flex-col items-center w-[68px] z-10 shadow-sm">
             <span className="font-body text-[13.6px] font-normal uppercase text-primary tracking-[0.04em] leading-none">

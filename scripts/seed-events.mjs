@@ -39,16 +39,29 @@ const decodeEntities = (s) => {
     .replace(/&nbsp;/g, ' ');
 };
 
+// Normalise "8:00 p.m." / "10am" / "9 P.M." → "8:00 PM" / "10 AM" / "9 PM".
+// Mirrors frontend/src/lib/events.ts so canonical CMS data is already clean.
+const normalizeAmPm = (s) => {
+  if (typeof s !== 'string') return s;
+  return s
+    .replace(/(\d)\s*([ap])\s*\.?\s*m\s*\.?/gi, (_m, d, ap) => `${d} ${ap.toUpperCase()}M `)
+    .replace(/  +/g, ' ')
+    .replace(/ ([.,;:!?)])/g, '$1')
+    .trim();
+};
+
+const clean = (s) => normalizeAmPm(decodeEntities(s));
+
 const cleanEvent = (ev) => ({
   ...ev,
-  title: decodeEntities(ev.title),
-  subtitle: decodeEntities(ev.subtitle),
-  description: decodeEntities(ev.description),
-  longDescription: decodeEntities(ev.longDescription),
-  location: decodeEntities(ev.location),
-  time: decodeEntities(ev.time),
-  dressCode: decodeEntities(ev.dressCode),
-  reservation: decodeEntities(ev.reservation),
+  title: clean(ev.title),
+  subtitle: clean(ev.subtitle),
+  description: clean(ev.description),
+  longDescription: clean(ev.longDescription),
+  location: clean(ev.location),
+  time: clean(ev.time),
+  dressCode: clean(ev.dressCode),
+  reservation: clean(ev.reservation),
 });
 
 // Best-effort: fetch the source event page and pull the og:image URL.
