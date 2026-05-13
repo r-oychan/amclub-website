@@ -125,7 +125,10 @@ interface VenueData {
     heading?: string;
     rows: { images: string[]; direction?: 'ltr' | 'rtl'; durationSec?: number }[];
   };
-  quote?: { heading?: string; text: string; attribution?: string; role?: string };
+  quotes?: {
+    heading?: string;
+    items: { text: string; attribution?: string; role?: string }[];
+  };
   partyPackages?: {
     heading?: string;
     subheading?: string;
@@ -192,7 +195,7 @@ function staticFallback(section: string, slug: string): VenueData | null {
     faq: sp.faq,
     gallery: sp.gallery,
     partyPackages: sp.partyPackages,
-    quote: sp.quote,
+    quotes: sp.quotes,
     operatingHoursSections: sp.operatingHoursSections,
     locationContact: sp.locationContact ?? null,
     downloads: sp.downloads,
@@ -321,7 +324,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           faq: api.faq?.length ? api.faq : fallback?.faq,
           gallery: api.gallery ?? fallback?.gallery,
           partyPackages: api.partyPackages ?? fallback?.partyPackages,
-          quote: api.quote ?? fallback?.quote,
+          quotes: api.quotes ?? fallback?.quotes,
           downloads: api.downloads ?? fallback?.downloads,
           tierCards: api.tierCards ?? fallback?.tierCards,
         });
@@ -1481,13 +1484,13 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
         />
       )}
 
-      {/* ── Quote / Testimonial ── */}
-      {venue.quote && venue.quote.text && (
+      {/* ── Quotes / Testimonials ── */}
+      {venue.quotes && venue.quotes.items.length > 0 && (
         <section className="bg-bg" style={{ paddingTop: '40px', paddingBottom: '120px' }}>
-          <div className="max-w-3xl mx-auto px-10 text-center flex flex-col" style={{ gap: '32px' }}>
-            {venue.quote.heading && (
+          <div className="max-w-7xl mx-auto px-10 flex flex-col" style={{ gap: '48px' }}>
+            {venue.quotes.heading && (
               <h2
-                className="font-heading text-primary"
+                className="font-heading text-primary text-center"
                 style={{
                   fontSize: '38.4px',
                   fontWeight: 300,
@@ -1496,35 +1499,47 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                   lineHeight: '42.24px',
                 }}
               >
-                {venue.quote.heading}
+                {venue.quotes.heading}
               </h2>
             )}
-            <p
-              className="text-text-dark"
-              style={{ fontSize: '22px', fontWeight: 400, lineHeight: '32px', fontStyle: 'italic' }}
+            <div
+              className={`grid ${venue.quotes.items.length > 1 ? 'md:grid-cols-2' : 'md:grid-cols-1 max-w-3xl mx-auto'} gap-10 md:gap-12`}
             >
-              &ldquo;{venue.quote.text}&rdquo;
-            </p>
-            {(venue.quote.attribution || venue.quote.role) && (
-              <div className="flex flex-col" style={{ gap: '4px' }}>
-                {venue.quote.attribution && (
+              {venue.quotes.items.map((q, i) => (
+                <div
+                  key={`${q.attribution ?? i}`}
+                  className="text-center flex flex-col"
+                  style={{ gap: '24px' }}
+                >
                   <p
-                    className="text-primary uppercase"
-                    style={{ fontSize: '13.6px', fontWeight: 700, letterSpacing: '0.04em' }}
+                    className="text-text-dark"
+                    style={{ fontSize: '20px', fontWeight: 400, lineHeight: '30px', fontStyle: 'italic' }}
                   >
-                    {venue.quote.attribution}
+                    &ldquo;{q.text}&rdquo;
                   </p>
-                )}
-                {venue.quote.role && (
-                  <p
-                    className="text-text-dark/70"
-                    style={{ fontSize: '15.2px', lineHeight: '22px' }}
-                  >
-                    {venue.quote.role}
-                  </p>
-                )}
-              </div>
-            )}
+                  {(q.attribution || q.role) && (
+                    <div className="flex flex-col" style={{ gap: '4px' }}>
+                      {q.attribution && (
+                        <p
+                          className="text-primary uppercase"
+                          style={{ fontSize: '13.6px', fontWeight: 700, letterSpacing: '0.04em' }}
+                        >
+                          {q.attribution}
+                        </p>
+                      )}
+                      {q.role && (
+                        <p
+                          className="text-text-dark/70"
+                          style={{ fontSize: '15.2px', lineHeight: '22px' }}
+                        >
+                          {q.role}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </section>
       )}

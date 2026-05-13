@@ -147,9 +147,12 @@ export interface SubpageData {
    */
   /**
    * Centered testimonial block rendered between the gallery and the FAQ.
-   * Mirrors the Framer "What parents say…" treatment.
+   * One or more quote cards under a shared heading.
    */
-  quote?: { heading?: string; text: string; attribution?: string; role?: string };
+  quotes?: {
+    heading?: string;
+    items: { text: string; attribution?: string; role?: string }[];
+  };
   partyPackages?: {
     heading?: string;
     subheading?: string;
@@ -1309,23 +1312,25 @@ export const kidsSubpages: SubpageData[] = [
       {
         title: 'Upcoming Camps',
         content:
-          'Camp Eagle Explorers – Winter 2025\nWeek 1: December 15 – 19, 2025\nWeek 2: December 22 – 26, 2025\nNo camp on December 25, 2025\nWeek 3: December 29, 2025 – January 2, 2026\nNo camp on January 1, 2026\nWeek 4: January 5 – 9, 2026\n\nMake this holiday unforgettable with a Winter Camp packed with fun and discovery for kids!',
+          'Camp Eagle Explorers – Summer 2026\nMonday, June 8 – Friday, August 7 (9 weeks)\n\nForge new friendships and make unforgettable spring break memories filled with fun and adventure.',
         groups: [
           {
-            heading: 'For ages 4 – 7',
-            paragraphs: ['Our on-site camp is packed with fun festive themed activities such as:'],
-            bullets: ['Christmas-themed Crafts', 'Snow Play', 'Team-building Activities', 'Jr. Masterchef'],
+            heading: '4 – 7 Years Old',
+            paragraphs: [
+              '9:00 a.m. – 3:00 p.m.',
+              'The Quad Studios & various locations around Singapore',
+            ],
             footer:
-              'and more!\nMembers: $130 per day, $650 per week\nGuests: $150 per day, $750 per week\nView the full camp schedule and sign up using the links below.',
+              'Member: $140 per day | $700 per week\nGuest: $160 per day | $800 per week\nActivity Highlights: DIY Hands-on & Craft Activities, Music Workshops, Sports, Guided Cooking and more.\nView the full camp schedule and sign up using the links below.',
           },
           {
-            heading: 'For ages 8 and up',
+            heading: '8 Years Old & Above',
             paragraphs: [
-              'Explorers can enjoy adventurous and holiday-themed activities outside the Club, including:',
+              '9:00 a.m. – 3:00 p.m.',
+              'The Quad Studios & various locations around Singapore',
             ],
-            bullets: ['Snow City', 'Rock Climbing', 'Mini Golf', 'Ice Cream Museum'],
             footer:
-              'and more!\nMembers: $140 per day, $700 per week\nGuests: $160 per day, $800 per week\nView the full camp schedule and sign up using the links below.',
+              'Member: $140 per day | $700 per week\nGuest: $160 per day | $800 per week\nActivity Highlights: Educational Field Trips, Outdoor Sports, Trip to the Singapore Zoo and more.\nView the full camp schedule and sign up using the links below.',
           },
         ],
       },
@@ -1340,13 +1345,93 @@ export const kidsSubpages: SubpageData[] = [
         ],
       },
     ],
-    quote: {
+    quotes: {
       heading: 'What parents say about our camps',
-      text: 'We decided to send our child to camp to have a fruitful Summer holiday by learning new things and making new friends. He likes the water play best. I appreciate the Youth team celebrating his 5th birthday during the camp.',
-      attribution: 'Fiona Wu',
-      role: 'Member',
+      items: [
+        {
+          text: 'We decided to send our child to camp to have a fruitful Summer holiday by learning new things and making new friends. He likes the water play best. I appreciate the Youth team celebrating his 5th birthday during the camp.',
+          attribution: 'Fiona Wu',
+          role: 'Member',
+        },
+        {
+          text: 'Samantha loved the breakfast, snacks and lunch provided and she said that the outdoor water play was her absolute favorite. She also enjoyed meeting and making a lot of new friends, that she has since run into at the Club. For me, I appreciated that we could sign up for the camps weekly. That flexibility was great. I also think being able to have Guests join is a really good option. The camp is a wonderful way for kids to be occupied, active and have a ton of fun in a safe environment during the holidays.',
+          attribution: 'Jennifer Lim',
+          role: 'Member',
+        },
+      ],
     },
-    faq: [...PLACEHOLDER_FAQ],
+    faq: [
+      {
+        question: 'Where do the seasonal camps take place?',
+        answer:
+          'Our seasonal camps are offered both on-site at The American Club Singapore and off-site at selected locations around Singapore, depending on age group and program design.\n\n• Ages 4–7: On-site at the Club, engaging with club-wide facilities\n• Ages 8 and above: Off-site, visiting a variety of destinations around Singapore\n\nPlease note that camp formats, locations, and experiences may evolve over time as we introduce new programs and enhancements.',
+      },
+      {
+        question: 'Is transportation provided for off-site camps?',
+        answer:
+          'Yes. Two-way transportation is provided from The American Club Singapore to and from the designated daily location for campers aged 8 and above.',
+      },
+      {
+        question: 'What ages are eligible to join the camps?',
+        answer:
+          'Our camps are designed for children aged 4 to 12 years old.\n\nChildren who are within three months of the minimum age requirement may be permitted to join, subject to assessment and availability.',
+      },
+      {
+        question: 'Are half-day options available?',
+        answer:
+          'Half-day options are available only for the on-site camp (ages 4 – 7). Availability may vary by season.',
+      },
+      {
+        question: 'What activities can my child expect during camp?',
+        answer:
+          'Our Eagle Explorers Camps offer a dynamic mix of age-appropriate activities during school holidays.\n\n• Ages 4 – 7: Indoor, on-site activities including culinary, sports, creative play, movement, STEM exploration, and themed programming inspired by seasonal celebrations (e.g. Christmas, Easter, Halloween).\n• Ages 8 and above: Off-site experiences featuring a blend of sports, outdoor exploration, sightseeing, and educational activities across Singapore.\n\nAll activities are curated by our team and may be adjusted to enhance camper experience or respond to operational needs.',
+      },
+      {
+        question: 'Can the camp program or schedule change?',
+        answer:
+          'Yes. The American Club Singapore reserves the right to amend camp programs, activities, schedules, locations, or formats due to weather conditions, safety considerations, operational requirements, or future program development.\n\nAny changes will be made with campers’ best interests in mind.',
+      },
+      {
+        question: 'What happens in the event of bad weather?',
+        answer:
+          'Outdoor activities may be replaced with suitable indoor alternatives. Program schedules are subject to change due to weather conditions.',
+      },
+      {
+        question: 'What are the drop-off times and procedures?',
+        answer:
+          '• On-site camp (Ages 4 – 7): Registration begins at 9:00am at The Quad Studios, Basement 3.\n• Off-site camp (Ages 8 years old and above): Registration begins at 8:15am at The Quad Studios, Basement 3. The bus departs promptly at 9:00am.\n\nParents should email youth@amclub.org.sg if their child is expected to be late.\n\nIf a camper misses the bus, full charges will still apply, unless a valid medical certificate is provided.',
+      },
+      {
+        question: 'What happens if I am late for pick-up?',
+        answer:
+          'Please contact The Quad at 6739 4444 / 4432 and provide your child’s name and our team members will inform the camp team of the changes in your child’s pick-up arrangement.',
+      },
+      {
+        question: 'What is the counselor-to-camper ratio?',
+        answer:
+          '• General camp activities: 1:5 (counselor to camper)\n• Water-play activities and pool days: 1:3 (counselor to camper)',
+      },
+      {
+        question: 'Who is eligible to register for camp?',
+        answer:
+          '• Returning Absentee Members\nReturning Absentee Members with a valid membership card can register their child for camp. Payment can only be made by credit card. Absentee Members will be required to provide their credit card details to the Youth Desk upon registration.\n\n• New Members who have yet to receive a membership card\nNew Members who have been issued a day pass and have made payment to the Membership team are eligible to register their kids for all camps.\n\n• Guest\nThis camp is open to Member’s Guests. Charges for Guests will be charged to the sponsoring Member’s account. The sponsoring Member will need to sign their Guests into the Club.',
+      },
+      {
+        question: 'What is the cancellation and attendance policy?',
+        answer:
+          'Camp fees are charged per registered session or week.\n\n• No refunds or make-up sessions will be provided for missed days\n• Full first day fees apply if a camper is unable to attend part or all of the registered camp\n• Fees may only be waived upon submission of a valid medical certificate by the end of the camp week\n\nThis policy is strictly enforced to ensure fairness and program integrity.',
+      },
+      {
+        question: 'What should I do if my child is sick?',
+        answer:
+          'Please notify The Quad at 6739 4444 / 4432 as soon as possible.\n\nA medical certificate must be submitted by the end of the camp week for any fee consideration.',
+      },
+      {
+        question: 'Do I need to provide an emergency contact?',
+        answer:
+          'Yes. Emergency contact is mandatory for all campers. This ensures that our team can respond promptly in the event of any unexpected situation.',
+      },
+    ],
   },
   {
     slug: 'kids-parties',
