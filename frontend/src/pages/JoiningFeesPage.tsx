@@ -12,7 +12,12 @@ import {
   type JoiningFeesLink,
 } from '../data/joiningFees';
 
-type StrapiLink = { label: string; href?: string; isExternal?: boolean };
+type StrapiLink = {
+  label: string;
+  href?: string;
+  isExternal?: boolean;
+  variant?: 'primary' | 'accent' | 'outline';
+};
 
 interface StrapiJoiningFeesPage {
   title?: string;
@@ -33,9 +38,9 @@ interface StrapiJoiningFeesPage {
   additionalNotes?: { text: string }[];
 }
 
-const PILL_CLASS =
-  'inline-flex items-center gap-2 bg-white rounded-full text-primary uppercase hover:shadow-md transition-shadow border border-primary/10';
-const PILL_STYLE = {
+const PILL_BASE =
+  'inline-flex items-center gap-2 rounded-full uppercase transition-shadow hover:shadow-md';
+const PILL_STYLE_BASE = {
   padding: '12px 16px 12px 24px',
   fontSize: '13.6px',
   fontWeight: 700,
@@ -43,32 +48,92 @@ const PILL_STYLE = {
   boxShadow: 'rgba(32, 99, 171, 0.07) 0px 20px 19px -12px',
 } as const;
 
+const VARIANT_STYLES: Record<
+  NonNullable<JoiningFeesLink['variant']>,
+  { className: string; arrowClass: string; style?: React.CSSProperties }
+> = {
+  primary: {
+    className: 'bg-primary text-white border border-primary',
+    arrowClass: 'text-white',
+  },
+  accent: {
+    className: 'bg-accent text-white border border-accent',
+    arrowClass: 'text-white',
+  },
+  outline: {
+    className: 'bg-white text-primary border border-primary/10',
+    arrowClass: 'text-accent',
+  },
+};
+
 function CtaPill({ link }: { link: JoiningFeesLink }) {
+  const variant = link.variant ?? 'outline';
+  const v = VARIANT_STYLES[variant];
   const inner = (
     <>
       {link.label}
-      <CtaIcon name="arrow" size={20} className="text-accent" />
+      <CtaIcon name="arrow" size={20} className={v.arrowClass} />
     </>
   );
+  const className = `${PILL_BASE} ${v.className}`;
   return link.isExternal ? (
-    <a href={link.href} target="_blank" rel="noopener noreferrer" className={PILL_CLASS} style={PILL_STYLE}>
+    <a
+      href={link.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={className}
+      style={PILL_STYLE_BASE}
+    >
       {inner}
     </a>
   ) : (
-    <Link to={link.href} className={PILL_CLASS} style={PILL_STYLE}>
+    <Link to={link.href} className={className} style={PILL_STYLE_BASE}>
       {inner}
     </Link>
   );
 }
 
-function Badge({ tone, children }: { tone?: 'positive' | 'negative'; children: React.ReactNode }) {
+// Renders a corner ribbon flag in the top-left of a card:
+//   positive → solid pink (Payment Plan Available, 4-Year Plan Available)
+//   negative → solid grey (Currently Closed)
+// The ribbon shares the card's top-left corner radius and is absolutely
+// positioned so it sits flush with the card's edge.
+function CornerRibbon({
+  tone,
+  children,
+}: {
+  tone?: 'positive' | 'negative';
+  children: React.ReactNode;
+}) {
   const isPositive = tone !== 'negative';
+  return (
+    <span
+      className="absolute top-0 left-0 inline-flex items-center uppercase text-white"
+      style={{
+        backgroundColor: isPositive ? '#DF4661' : '#9DA1A8',
+        padding: '6px 14px',
+        borderTopLeftRadius: '4px',
+        borderBottomRightRadius: '4px',
+        fontSize: '11.2px',
+        fontWeight: 700,
+        letterSpacing: '0.06em',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      {children}
+    </span>
+  );
+}
+
+// Pill-style badge used inline above a heading (e.g. corporate cards
+// where the label sits inside the card content rather than on the edge).
+function InlineBadge({ children }: { children: React.ReactNode }) {
   return (
     <span
       className="inline-flex items-center self-start uppercase"
       style={{
-        backgroundColor: isPositive ? 'rgba(0, 30, 98, 0.06)' : 'rgba(223, 70, 97, 0.08)',
-        color: isPositive ? '#001E62' : '#DF4661',
+        backgroundColor: 'rgba(0, 30, 98, 0.06)',
+        color: '#001E62',
         padding: '6px 12px',
         borderRadius: '999px',
         fontSize: '11.2px',
@@ -84,10 +149,10 @@ function Badge({ tone, children }: { tone?: 'positive' | 'negative'; children: R
 function IndividualCardView({ card }: { card: PricedCard }) {
   return (
     <div
-      className="bg-white flex flex-col"
+      className="relative bg-white flex flex-col overflow-hidden"
       style={{ padding: '32px 24px', gap: '20px', borderRadius: '4px' }}
     >
-      {card.badge && <Badge tone={card.badgeTone}>{card.badge}</Badge>}
+      {card.badge && <CornerRibbon tone={card.badgeTone}>{card.badge}</CornerRibbon>}
       <h3
         className="font-heading text-primary"
         style={{
@@ -96,10 +161,15 @@ function IndividualCardView({ card }: { card: PricedCard }) {
           fontStyle: 'italic',
           letterSpacing: '-0.72px',
           lineHeight: '28.8px',
+          marginTop: card.badge ? '24px' : 0,
         }}
       >
         {card.name}
       </h3>
+      <div
+        className="bg-primary/20"
+        style={{ height: '1px', width: '60px', marginTop: '-8px' }}
+      />
       <p className="text-text-dark/80" style={{ fontSize: '15.2px', lineHeight: '22px' }}>
         {card.description}
       </p>
@@ -111,7 +181,7 @@ function IndividualCardView({ card }: { card: PricedCard }) {
           {card.feeLabel}
         </p>
         <p
-          className="font-heading text-primary"
+          className="font-heading text-accent"
           style={{
             fontSize: '28.8px',
             fontWeight: 300,
@@ -146,7 +216,7 @@ function CorporateCardView({ card }: { card: CorporateClassCard }) {
       className="bg-white flex flex-col"
       style={{ padding: '32px 24px', gap: '20px', borderRadius: '4px' }}
     >
-      {card.badge && <Badge tone="positive">{card.badge}</Badge>}
+      {card.badge && <InlineBadge>{card.badge}</InlineBadge>}
       <h3
         className="font-heading text-primary"
         style={{
@@ -173,7 +243,7 @@ function CorporateCardView({ card }: { card: CorporateClassCard }) {
           Joining Fee (w/GST)
         </p>
         <p
-          className="font-heading text-primary"
+          className="font-heading text-accent"
           style={{
             fontSize: '28.8px',
             fontWeight: 300,
@@ -193,7 +263,7 @@ function CorporateCardView({ card }: { card: CorporateClassCard }) {
           Annual Fee (w/GST)
         </p>
         <p
-          className="font-heading text-primary"
+          className="font-heading text-accent"
           style={{
             fontSize: '28.8px',
             fontWeight: 300,
@@ -217,10 +287,14 @@ function pickStr(api: string | undefined, fallback: string): string {
 }
 function normalizeLinks(api: StrapiLink[] | undefined, fallback: JoiningFeesLink[]): JoiningFeesLink[] {
   if (!api || api.length === 0) return fallback;
-  return api.map((l) => ({
+  return api.map((l, i) => ({
     label: l.label,
     href: l.href ?? '#',
     isExternal: l.isExternal,
+    // Fall back to the same variant the static design uses at this slot
+    // so a CMS entry that omits `variant` still renders the intended
+    // primary/accent/outline style.
+    variant: l.variant ?? fallback[i]?.variant,
   }));
 }
 

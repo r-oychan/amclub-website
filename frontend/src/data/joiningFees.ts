@@ -6,6 +6,11 @@ export interface JoiningFeesLink {
   label: string;
   href: string;
   isExternal?: boolean;
+  // Visual variant for the rendered button.
+  //   primary → dark-blue filled pill (call-to-action)
+  //   accent  → pink filled pill (secondary action)
+  //   outline → white pill with subtle border (tertiary / quiet action)
+  variant?: 'primary' | 'accent' | 'outline';
 }
 
 export interface PricedCard {
@@ -44,17 +49,17 @@ export interface JoiningFeesData {
   additionalNotes: string[];
 }
 
-const START_APPLICATION_URL =
-  'https://469380fc.delivery.rocketcdn.me/wp-content/uploads/2022/06/CSV-MO-08_Application_Form_for_Corporate_Membership.pdf';
-const PAYMENT_PLANS_URL =
-  'https://469380fc.delivery.rocketcdn.me/wp-content/uploads/2025/03/CSV-MO-03-Membership-Joining-Fees-Payment-Plans-Mar-2025.pdf';
+const START_APPLICATION_URL = '/membership/start-application';
+const PAYMENT_PLANS_URL = '/documents/membership/membership-joining-fees-payment-plans.pdf';
+const MONTHLY_DUES_URL = '/documents/membership/membership-joining-fees-payment-plans.pdf';
 
 export const JOINING_FEES_FALLBACK: JoiningFeesData = {
   individualHeading: 'Individual Membership Categories',
   individualSubheading: 'Five distinct membership types designed for different eligibility criteria',
   individualCtas: [
-    { label: 'Start an Application', href: START_APPLICATION_URL, isExternal: true },
-    { label: 'View Payment Plans', href: PAYMENT_PLANS_URL, isExternal: true },
+    { label: 'Start an Application', href: START_APPLICATION_URL, variant: 'primary' },
+    { label: 'View Payment Plans', href: PAYMENT_PLANS_URL, isExternal: true, variant: 'accent' },
+    { label: 'Monthly Dues', href: MONTHLY_DUES_URL, isExternal: true, variant: 'outline' },
   ],
   individualCards: [
     {
@@ -110,8 +115,8 @@ export const JOINING_FEES_FALLBACK: JoiningFeesData = {
   corporateIntro2:
     'Corporate Membership is not transferable and all fees paid for such Membership are non-refundable. Corporate Members are liable for the payment of all subscriptions, registration fees, and monies due on the accounts of their Nominees with the Club.',
   corporateCtas: [
-    { label: 'Start an Application', href: START_APPLICATION_URL, isExternal: true },
-    { label: '4-Year Payment Plan', href: PAYMENT_PLANS_URL, isExternal: true },
+    { label: 'Start an Application', href: START_APPLICATION_URL, variant: 'primary' },
+    { label: '4-Year Payment Plan', href: PAYMENT_PLANS_URL, isExternal: true, variant: 'outline' },
   ],
   corporateCards: [
     {

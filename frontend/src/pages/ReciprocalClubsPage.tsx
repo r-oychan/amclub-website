@@ -6,7 +6,7 @@ import { CtaIcon } from '../components/shared/CtaIcon';
 import { ImagePanelSlideshow, type SlideshowSlide } from '../components/blocks/ImagePanelSlideshow';
 
 const RECIPROCAL_LIST_URL = '/documents/membership/reciprocal-club-list.pdf';
-const LETTER_OF_INTRODUCTION_URL = 'https://amclub.jotform.com/250954923764972';
+const LETTER_OF_INTRODUCTION_URL = 'https://amclub.jotform.com/form/tac-reciprocal-club-LOI';
 const TOWER_CLUB_URL = '#';
 
 const HERO_IMAGE = 'https://framerusercontent.com/images/bdz4bVfeQtZyQC6ebpW09r3ujU.jpg';
