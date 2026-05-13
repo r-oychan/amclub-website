@@ -257,7 +257,7 @@ const SQUASH = {
   description:
     'The Club features two state-of-the-art Squash Courts with a covered outdoor gallery area. We run an active calendar of events throughout the year for our Squash enthusiasts including Squash Box Ladder, Handicap and Open Tournament and Inter-Club Leagues.\n\nGroup and private lessons are available.',
   locationContact: { locationLevel: 'Basement 2', phone: '6739 4312', email: 'sportscenter@amclub.org.sg' },
-  imageFile: 'Squash.jpeg',
+  imageFile: 'squash.jpeg',
   ctas: [
     { label: 'View Rates', href: '/documents/fitness/squash-private-lesson-rates.jpg', isExternal: true, variant: 'primary', icon: 'arrow' },
     { label: 'Coach Profiles', href: '/documents/fitness/squash-coach-profiles.pdf', isExternal: true, variant: 'primary', icon: 'arrow' },

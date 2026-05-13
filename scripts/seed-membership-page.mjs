@@ -15,7 +15,7 @@ const ctx = initEnv();
 
 const IMAGES = [
   'hero-membership.jpg',
-  'community-kids-tkd.jpg',
+  'community-kids.jpg',
   'community-fitness.jpg',
   'community-tennis.jpg',
   'community-dining.jpg',
@@ -51,7 +51,7 @@ async function upsertMembershipPage({ media }) {
       ],
     },
     joinCommunityImages: [
-      media['community-kids-tkd.jpg'].id,
+      media['community-kids.jpg'].id,
       media['community-fitness.jpg'].id,
       media['community-tennis.jpg'].id,
       media['community-dining.jpg'].id,

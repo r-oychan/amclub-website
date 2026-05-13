@@ -117,8 +117,16 @@ const IMAGES = [
   'about-2.jpeg',
   'about-3.jpeg',
   'about-4.jpeg',
-  // services / tabs (tabs reuse the service images per D9)
-  'service-3-concierge.jpeg',
+  // services (3 cards)
+  'service-family.jpg',
+  'service-business.jpg',
+  'service-concierge.jpg',
+  // experience tabs
+  'experience-dining.jpg',
+  'experience-fitness.jpg',
+  'experience-aquatics.jpg',
+  'experience-mpc.jpg',
+  'experience-kids.jpg',
   // events
   'event-1-nostalgic-flavors.jpg',
   'event-2-pedal-to-victory.jpg',
@@ -323,17 +331,17 @@ async function upsertHomePage({ media, eventsCat, testimonialIds, faqIds }) {
         {
           heading: 'The Perfect Club Experience for the Whole Family',
           description: "From pool time to playtime, dining to downtime — there's something for everyone in the family to enjoy.",
-          image: media['hero-slide-2-dine-drink.jpeg'].id,
+          image: media['service-family.jpg'].id,
         },
         {
           heading: 'Business Done Right. Leisure Done Better.',
           description: 'Connect, meet, or recharge — the Club makes balancing work and leisure effortless.',
-          image: media['hero-slide-3-stay-active.jpeg'].id,
+          image: media['service-business.jpg'].id,
         },
         {
           heading: 'Everyday Concierge, the Club Way',
           description: 'A welcoming smile, a helping hand. Enjoy seamless support with a personal touch.',
-          image: media['service-3-concierge.jpeg'].id,
+          image: media['service-concierge.jpg'].id,
         },
       ],
     },
@@ -342,9 +350,11 @@ async function upsertHomePage({ media, eventsCat, testimonialIds, faqIds }) {
       heading: 'Dine. Drink. Unwind. All in one unforgettable club.',
       dark: false,
       tabs: [
-        { label: 'Dining & Retail',     href: '/dining',  isExternal: false, image: media['hero-slide-2-dine-drink.jpeg'].id },
-        { label: 'Fitness & Wellness',  href: '/fitness', isExternal: false, image: media['hero-slide-3-stay-active.jpeg'].id },
-        { label: 'Kids',                href: '/kids',    isExternal: false, image: media['service-3-concierge.jpeg'].id },
+        { label: 'Dining & Retail',     href: '/dining',  isExternal: false, image: media['experience-dining.jpg'].id },
+        { label: 'Fitness & Wellness',  href: '/fitness', isExternal: false, image: media['experience-fitness.jpg'].id },
+        { label: 'Aquatics',            href: '/fitness/aquatics', isExternal: false, image: media['experience-aquatics.jpg'].id },
+        { label: 'Multi-Purpose Court', href: '/fitness/multi-purpose-court', isExternal: false, image: media['experience-mpc.jpg'].id },
+        { label: 'Kids',                href: '/kids',    isExternal: false, image: media['experience-kids.jpg'].id },
       ],
     },
     moments: {

@@ -90,7 +90,7 @@ function applyProgramCardOverride(heading: string, href: string) {
 // Fallback assets served from /public/membership/ — used until the CMS schema
 // migration adds first-class media fields for these slots.
 const FALLBACK_COMMUNITY_IMAGES = [
-  '/membership/community-kids-tkd.jpg',
+  '/membership/community-kids.jpg',
   '/membership/community-fitness.jpg',
   '/membership/community-tennis.jpg',
   '/membership/community-dining.jpg',

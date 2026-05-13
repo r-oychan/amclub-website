@@ -23,7 +23,7 @@ const IMAGES = [
   'pilates.jpeg',
   'golf-activities.jpg',
   'multi-purpose-court.jpeg',
-  'Squash.jpeg',
+  'squash.jpeg',
   'bowling.jpeg',
 ];
 
@@ -119,7 +119,7 @@ async function upsertFitnessPage({ media }) {
         { heading: 'Pilates',             description: 'Build strength, mobility, and balance with our PAI-certified Pilates coaches.', image: media['pilates.jpeg'].id,             imageAlt: 'Pilates',             cta: { label: 'Explore', href: '/fitness/pilates',             variant: 'primary' }, accentColor: '#DF4661' },
         { heading: 'Golf Activities',     description: 'Tee Off & Connect.',                  image: media['golf-activities.jpg'].id,        imageAlt: 'Golf Activities',     cta: { label: 'Explore', href: '/fitness/golf-activities',     variant: 'primary' }, accentColor: '#DF4661' },
         { heading: 'Multi-Purpose Court', description: 'Pickleball & More.',                  image: media['multi-purpose-court.jpeg'].id,   imageAlt: 'Multi-Purpose Court', cta: { label: 'Explore', href: '/fitness/multi-purpose-court', variant: 'primary' }, accentColor: '#E8721E' },
-        { heading: 'Squash',              description: 'Your Squash Experience Starts Here.', image: media['Squash.jpeg'].id,                imageAlt: 'Squash',              cta: { label: 'Explore', href: '/fitness/squash',              variant: 'primary' }, accentColor: '#DF4661' },
+        { heading: 'Squash',              description: 'Your Squash Experience Starts Here.', image: media['squash.jpeg'].id,                imageAlt: 'Squash',              cta: { label: 'Explore', href: '/fitness/squash',              variant: 'primary' }, accentColor: '#DF4661' },
       ],
     },
     bowling: {
