@@ -570,7 +570,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                           {row.dayRange}
                         </p>
                         <p
-                          className="text-text-dark"
+                          className="text-text-dark whitespace-pre-line"
                           style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
                         >
                           {row.time}

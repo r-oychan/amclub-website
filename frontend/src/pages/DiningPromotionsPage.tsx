@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { fetchAPI, STRAPI_URL } from '../lib/api';
 import { Hero } from '../components/blocks/Hero';
 import { CtaBanner } from '../components/blocks/CtaBanner';
@@ -149,11 +149,54 @@ function PromotionSlider({ images, alt }: { images: string[]; alt: string }) {
   );
 }
 
+// Lucide "book-open" glyph for the sidebar "Menus" heading.
+function BookIcon({ size = 28, className = '' }: { size?: number; className?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+    </svg>
+  );
+}
+
+// Diagonal arrow indicator next to inactive sidebar items.
+function ArrowUpRight({ size = 16, className = '' }: { size?: number; className?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+      <line x1="7" y1="17" x2="17" y2="7" />
+      <polyline points="7 7 17 7 17 17" />
+    </svg>
+  );
+}
+
+// Right-pointing arrow inside the active pill.
+function ArrowRight({ size = 18, className = '' }: { size?: number; className?: string }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+      <line x1="5" y1="12" x2="19" y2="12" />
+      <polyline points="12 5 19 12 12 19" />
+    </svg>
+  );
+}
+
+// Group promotions by restaurantTag while preserving the page-defined order.
+function groupByTag(promotions: StrapiPromotion[]): Map<RestaurantTag, StrapiPromotion[]> {
+  const groups = new Map<RestaurantTag, StrapiPromotion[]>();
+  for (const tag of TAG_ORDER) groups.set(tag, []);
+  for (const p of promotions) groups.get(p.restaurantTag)?.push(p);
+  for (const tag of TAG_ORDER) if (groups.get(tag)?.length === 0) groups.delete(tag);
+  return groups;
+}
+
 export default function DiningPromotionsPage() {
   const [data, setData] = useState<StrapiDiningPromotionsPage | null>(null);
   const [promotions, setPromotions] = useState<StrapiPromotion[]>([]);
   const [loaded, setLoaded] = useState(false);
-  const [activeTag, setActiveTag] = useState<RestaurantTag | 'all'>('all');
+  const [activeTag, setActiveTag] = useState<RestaurantTag | null>(null);
+  const sectionRefs = useRef<Map<RestaurantTag, HTMLElement>>(new Map());
 
   useEffect(() => {
     let cancelled = false;
@@ -173,16 +216,42 @@ export default function DiningPromotionsPage() {
     return () => { cancelled = true; };
   }, []);
 
-  const availableTags = useMemo<RestaurantTag[]>(() => {
-    const present = new Set<RestaurantTag>();
-    promotions.forEach((p) => present.add(p.restaurantTag));
-    return TAG_ORDER.filter((t) => present.has(t));
-  }, [promotions]);
+  const groups = useMemo(() => groupByTag(promotions), [promotions]);
+  const availableTags = useMemo(() => Array.from(groups.keys()), [groups]);
 
-  const filtered = useMemo(
-    () => (activeTag === 'all' ? promotions : promotions.filter((p) => p.restaurantTag === activeTag)),
-    [promotions, activeTag],
-  );
+  // First available tag becomes the default active so the pill highlight isn't empty.
+  useEffect(() => {
+    if (!activeTag && availableTags.length > 0) setActiveTag(availableTags[0]);
+  }, [availableTags, activeTag]);
+
+  // Scroll-spy: update the sidebar's active tag as the user scrolls between sections.
+  useEffect(() => {
+    if (availableTags.length === 0) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // Pick the entry whose top edge is closest to the top of the viewport.
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible[0]) {
+          const tag = visible[0].target.getAttribute('data-tag') as RestaurantTag | null;
+          if (tag) setActiveTag(tag);
+        }
+      },
+      { rootMargin: '-30% 0px -55% 0px', threshold: 0 },
+    );
+    sectionRefs.current.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, [availableTags]);
+
+  const scrollToTag = (tag: RestaurantTag) => {
+    const el = sectionRefs.current.get(tag);
+    if (!el) return;
+    const headerOffset = 96; // sticky header height-ish
+    const top = el.getBoundingClientRect().top + window.scrollY - headerOffset;
+    window.scrollTo({ top, behavior: 'smooth' });
+    setActiveTag(tag);
+  };
 
   if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
   if (!data) {
@@ -218,59 +287,87 @@ export default function DiningPromotionsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-x-12 gap-y-8">
             {/* Sidebar */}
             <aside className="lg:sticky lg:top-28 lg:self-start">
-              <h2 className="font-heading text-[28px] md:text-[32px] font-normal text-primary mb-4">
-                Menus
-              </h2>
-              <p className="text-[17px] md:text-[19.2px] text-primary/70 mb-5">Available Promotions</p>
-              <ul className="space-y-3">
-                <li>
-                  <button
-                    type="button"
-                    onClick={() => setActiveTag('all')}
-                    className={`text-left text-[14.4px] font-bold tracking-[0.02em] transition-colors ${
-                      activeTag === 'all' ? 'text-accent' : 'text-primary hover:text-accent'
-                    }`}
-                  >
-                    All Promotions
-                  </button>
-                </li>
-                {availableTags.map((tag) => (
-                  <li key={tag}>
-                    <button
-                      type="button"
-                      onClick={() => setActiveTag(tag)}
-                      className={`text-left text-[14.4px] font-bold tracking-[0.02em] transition-colors ${
-                        activeTag === tag ? 'text-accent' : 'text-primary hover:text-accent'
-                      }`}
-                    >
-                      {TAG_LABELS[tag]}
-                    </button>
-                  </li>
-                ))}
-              </ul>
+              <div className="flex items-center gap-3 mb-3 text-primary">
+                <BookIcon size={28} />
+                <h2 className="font-heading text-[32px] md:text-[38.4px] font-light italic leading-none">
+                  Menus
+                </h2>
+              </div>
+              <p className="text-[15px] md:text-[17px] text-primary/70 mb-4">Available Promotions</p>
+              <div className="border-t border-[#6BBBAE]/60 mb-5" />
+              {availableTags.length === 0 ? (
+                <p className="text-primary/60 italic">No promotions right now.</p>
+              ) : (
+                <ul className="flex flex-col gap-y-2">
+                  {availableTags.map((tag) => {
+                    const isActive = activeTag === tag;
+                    return (
+                      <li key={tag}>
+                        {isActive ? (
+                          <button
+                            type="button"
+                            onClick={() => scrollToTag(tag)}
+                            className="inline-flex items-center justify-between gap-3 rounded-full bg-accent text-white uppercase font-bold tracking-[0.04em] text-[14.4px] py-3 pl-4 pr-3 hover:brightness-95 transition"
+                          >
+                            <span>{TAG_LABELS[tag]}</span>
+                            <ArrowRight size={18} />
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => scrollToTag(tag)}
+                            className="inline-flex items-center gap-2 px-1 py-2 text-primary uppercase font-bold tracking-[0.04em] text-[14.4px] hover:text-accent transition-colors"
+                          >
+                            <span>{TAG_LABELS[tag]}</span>
+                            <ArrowUpRight size={14} className="text-accent" />
+                          </button>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
             </aside>
 
-            {/* Main column: vertically stacked promotions, each a slider */}
+            {/* Main column: vertically stacked promotions, grouped by restaurant. */}
             <div>
-              {filtered.length === 0 ? (
-                <p className="text-primary/60 italic py-10">No promotions available for this venue right now.</p>
+              {availableTags.length === 0 ? (
+                <p className="text-primary/60 italic py-10">No promotions available right now.</p>
               ) : (
-                <div className="flex flex-col gap-y-16">
-                  {filtered.map((p) => {
-                    const imgs = imagesOf(p);
+                <div className="flex flex-col gap-y-20">
+                  {availableTags.map((tag) => {
+                    const items = groups.get(tag) ?? [];
                     return (
-                      <article key={p.documentId} className="max-w-[680px] mx-auto w-full">
-                        <PromotionSlider images={imgs} alt={p.title} />
-                        <p className="mt-5 text-[13.6px] font-bold uppercase tracking-[0.08em] text-accent">
-                          {TAG_LABELS[p.restaurantTag] ?? p.restaurantTag}
-                        </p>
-                        <h3 className="font-heading text-2xl md:text-[28px] font-normal italic text-primary leading-[1.1] mt-2 mb-2">
-                          {p.title}
-                        </h3>
-                        {p.summary && (
-                          <p className="text-[15px] text-primary/80 leading-[1.5]">{p.summary}</p>
-                        )}
-                      </article>
+                      <section
+                        key={tag}
+                        id={`promo-${tag}`}
+                        data-tag={tag}
+                        ref={(el) => {
+                          if (el) sectionRefs.current.set(tag, el);
+                          else sectionRefs.current.delete(tag);
+                        }}
+                        className="scroll-mt-28"
+                      >
+                        <div className="flex flex-col gap-y-16">
+                          {items.map((p) => {
+                            const imgs = imagesOf(p);
+                            return (
+                              <article key={p.documentId} className="max-w-[680px] mx-auto w-full">
+                                <PromotionSlider images={imgs} alt={p.title} />
+                                <p className="mt-5 text-[13.6px] font-bold uppercase tracking-[0.08em] text-accent">
+                                  {TAG_LABELS[p.restaurantTag] ?? p.restaurantTag}
+                                </p>
+                                <h3 className="font-heading text-2xl md:text-[28px] font-normal italic text-primary leading-[1.1] mt-2 mb-2">
+                                  {p.title}
+                                </h3>
+                                {p.summary && (
+                                  <p className="text-[15px] text-primary/80 leading-[1.5]">{p.summary}</p>
+                                )}
+                              </article>
+                            );
+                          })}
+                        </div>
+                      </section>
                     );
                   })}
                 </div>

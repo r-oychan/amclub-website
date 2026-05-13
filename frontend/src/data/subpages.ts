@@ -205,6 +205,12 @@ export const diningSubpages: SubpageData[] = [
     description:
       'Have a cup of joe, bagels, pastries and salads at this contemporary café with counter service and self check-out kiosk. Customized cake orders must be placed at least three working days in advance.\n\nNo wet attire allowed in the cafe.',
     hours: 'Daily\n7:00 AM – 7:00 PM',
+    operatingHoursSections: [
+      {
+        title: 'Opening Hours',
+        rows: [{ dayRange: 'Daily', time: '7:00 AM - 7:00 PM' }],
+      },
+    ],
     level: 'Level 1',
     phone: '6739 4359',
     email: 'central@amclub.org.sg',
@@ -225,6 +231,18 @@ export const diningSubpages: SubpageData[] = [
       'Amidst the plethora of fusion restaurants in Singapore, none is as exquisite as the award-winning, The 2nd Floor. The logo suggests its East and West origin. The two bold strokes represent the Chinese character for 2 – "er". The Eastern menu is in perfect harmony with authentic Asian flavors and unique contemporary presentations.\n\nThe Western menu is an interpretation of the Modern American Steakhouse and combines bistro ambiance with fine dining fare. The restaurant attained the Excellent Dining Venue award at the Global Gourmet 2020 Chef par Excellence Culinary Competition.',
     hours:
       'Tuesday to Sunday\nLunch: 11:30 AM – 2:30 PM\nDinner: 5:30 PM – 10:00 PM\nThe 2nd Floor is closed on Mondays',
+    operatingHoursSections: [
+      {
+        title: 'Operating Hours',
+        rows: [
+          {
+            dayRange: 'Tuesday to Sunday',
+            time: 'Lunch: 11:30 AM – 2:30 PM\nDinner: 5:30 PM – 10:00 PM',
+            note: 'The 2nd Floor is closed on Mondays',
+          },
+        ],
+      },
+    ],
     level: 'Level 2',
     phone: '6739 4329',
     email: '2ndfloor@amclub.org.sg',
@@ -265,6 +283,15 @@ export const diningSubpages: SubpageData[] = [
       'Tradewinds takes your tastebuds around the world with its international menu offering. The menu selection features nuances of flavors from America to Singapore.\n\nThis restaurant takes its name from the prevailing surface winds – also known as trade winds – that blow predominantly from the northeast in the Northern Hemisphere and from the southeast in the Southern Hemisphere.\n\nFor centuries, trade winds have facilitated ships to cross the world\'s oceans, establishing trade routes across the Atlantic and Pacific oceans.\n\nTradewinds brings the world\'s flavors to The American Club table.',
     hours:
       'Sunday to Thursday\n8:00 AM – 9:00 PM (Last order at 8:30 PM)\nFriday & Saturday\n8:00 AM – 10:00 PM (Last order at 9:30 PM)',
+    operatingHoursSections: [
+      {
+        title: 'Opening Hours',
+        rows: [
+          { dayRange: 'Sunday to Thursday', time: '8:00 AM - 9:00 PM',  lastOrder: 'Last order at 8:30 PM' },
+          { dayRange: 'Friday & Saturday',  time: '8:00 AM - 10:00 PM', lastOrder: 'Last order at 9:30 PM' },
+        ],
+      },
+    ],
     level: 'Level 1',
     phone: '6739 4361',
     email: 'tradewinds@amclub.org.sg',
@@ -328,6 +355,15 @@ export const diningSubpages: SubpageData[] = [
       'Nothing feels like a Friday night than bar bites and a cold beer. Grab a bite and a drink after work, and watch the latest football or basketball game on TV, only at the Union Bar.\n\nHappy Hours are even happier now that you can enjoy 20% off house pour and beer starting an hour earlier, from 4:00 PM, until 8:00 PM, daily!\n\nPlease be informed that Union Bar does not take any reservations. Strictly walk-ins only.',
     hours:
       'Sunday to Thursday\n12:00 PM – 11:00 PM\nFriday and Saturday & Eve of PH\n12:00 PM – 12:00 AM',
+    operatingHoursSections: [
+      {
+        title: 'Opening Hours',
+        rows: [
+          { dayRange: 'Sunday to Thursday',              time: '12:00 PM - 11:00 PM' },
+          { dayRange: 'Friday and Saturday & Eve of PH', time: '12:00 PM - 12:00 AM' },
+        ],
+      },
+    ],
     level: 'Basement 2',
     phone: '6739 4340',
     email: 'unionbar@amclub.org.sg',
@@ -362,6 +398,15 @@ export const diningSubpages: SubpageData[] = [
       'The Gourmet Pantry brings together an excellent selection of wines, featuring more than 100 American wine labels alongside over 300 international labels, thoughtfully curated for every occasion – from easy-drinking table wines to premium selections and celebratory bubblies.\n\nComplementing the wine collection is a distinctive range of homeware and table settings, making it a convenient, one-stop destination for both everyday needs and special moments.',
     hours:
       'Monday to Thursday\n11:00 AM – 8:00 PM\nFriday to Sunday\n10:00 AM – 8:00 PM',
+    operatingHoursSections: [
+      {
+        title: 'Opening Hours',
+        rows: [
+          { dayRange: 'Monday to Thursday', time: '11:00 AM - 8:00 PM' },
+          { dayRange: 'Friday to Sunday',   time: '10:00 AM - 8:00 PM' },
+        ],
+      },
+    ],
     level: 'Level 1',
     phone: '6739 4340',
     email: 'gourmetpantry@amclub.org.sg',

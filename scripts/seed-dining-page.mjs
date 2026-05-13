@@ -36,12 +36,11 @@ const RESTAURANTS = [
     ],
     ctas: [{ label: 'Promotions', href: '/dining/dining-promotion', icon: 'arrow' }],
     operatingHoursSections: [
-      { title: 'Operating Hours', rows: [
-        { dayRange: 'Monday to Friday', time: '7:00 AM - 6:00 PM' },
-        { dayRange: 'Saturday & Sunday', time: '8:00 AM - 4:00 PM' },
+      { title: 'Opening Hours', rows: [
+        { dayRange: 'Daily', time: '7:00 AM - 7:00 PM' },
       ] },
     ],
-    locationContact: { locationLevel: 'Level 1', phone: '6739 4358', email: 'central@amclub.org.sg' },
+    locationContact: { locationLevel: 'Level 1', phone: '6739 4359', email: 'central@amclub.org.sg' },
     order: 1,
   },
   {
@@ -75,7 +74,11 @@ const RESTAURANTS = [
     ctas: [{ label: 'Promotions', href: '/dining/dining-promotion', icon: 'arrow' }],
     operatingHoursSections: [
       { title: 'Operating Hours', rows: [
-        { dayRange: 'Tuesday to Sunday', time: '6:00 PM - 10:00 PM', lastOrder: 'Last order at 9:30 PM' },
+        {
+          dayRange: 'Tuesday to Sunday',
+          time: 'Lunch: 11:30 AM – 2:30 PM\nDinner: 5:30 PM – 10:00 PM',
+          note: 'The 2nd Floor is closed on Mondays',
+        },
       ] },
     ],
     locationContact: { locationLevel: 'Level 2', phone: '6739 4360', email: '2ndfloor@amclub.org.sg' },
@@ -90,8 +93,9 @@ const RESTAURANTS = [
     ],
     ctas: [],
     operatingHoursSections: [
-      { title: 'Operating Hours', rows: [
-        { dayRange: 'Daily', time: '10:00 AM - 9:00 PM' },
+      { title: 'Opening Hours', rows: [
+        { dayRange: 'Monday to Thursday', time: '11:00 AM - 8:00 PM' },
+        { dayRange: 'Friday to Sunday',   time: '10:00 AM - 8:00 PM' },
       ] },
     ],
     locationContact: { locationLevel: 'Level 1', phone: '6739 4361', email: 'pantry@amclub.org.sg' },
@@ -106,8 +110,9 @@ const RESTAURANTS = [
     ],
     ctas: [{ label: 'Promotions', href: '/dining/dining-promotion', icon: 'arrow' }],
     operatingHoursSections: [
-      { title: 'Operating Hours', rows: [
-        { dayRange: 'Daily', time: '6:30 AM - 10:30 PM', lastOrder: 'Last order at 10:00 PM' },
+      { title: 'Opening Hours', rows: [
+        { dayRange: 'Sunday to Thursday', time: '8:00 AM - 9:00 PM',  lastOrder: 'Last order at 8:30 PM' },
+        { dayRange: 'Friday & Saturday',  time: '8:00 AM - 10:00 PM', lastOrder: 'Last order at 9:30 PM' },
       ] },
     ],
     locationContact: { locationLevel: 'Level 3', phone: '6739 4362', email: 'tradewinds@amclub.org.sg' },
@@ -122,11 +127,12 @@ const RESTAURANTS = [
     ],
     ctas: [],
     operatingHoursSections: [
-      { title: 'Operating Hours', rows: [
-        { dayRange: 'Monday to Sunday', time: '4:00 PM - 12:00 AM', lastOrder: 'Last order at 11:30 PM' },
+      { title: 'Opening Hours', rows: [
+        { dayRange: 'Sunday to Thursday',              time: '12:00 PM - 11:00 PM' },
+        { dayRange: 'Friday and Saturday & Eve of PH', time: '12:00 PM - 12:00 AM' },
       ] },
     ],
-    locationContact: { locationLevel: 'Level 4', phone: '6739 4363', email: 'unionbar@amclub.org.sg' },
+    locationContact: { locationLevel: 'Basement 2', phone: '6739 4340', email: 'unionbar@amclub.org.sg' },
     order: 6,
   },
 ];
