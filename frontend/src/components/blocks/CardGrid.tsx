@@ -85,8 +85,10 @@ function EventMarquee({ items }: { items: CardItem[] }) {
 
 function EventCard({ item }: { item: CardItem }) {
   const [month, day] = (item.date ?? '').split(' ');
+  // The marquee container is the `group` — hovering ANY card lights up
+  // every title at once, matching the Framer prototype.
   const inner = (
-    <div className="flex-shrink-0 w-[344px] group">
+    <div className="flex-shrink-0 w-[344px]">
       {item.image && (
         <div className="relative mb-10">
           <img
