@@ -218,11 +218,10 @@ export default function DiningPromotionsPage() {
 
   const groups = useMemo(() => groupByTag(promotions), [promotions]);
   const availableTags = useMemo(() => Array.from(groups.keys()), [groups]);
-
-  // First available tag becomes the default active so the pill highlight isn't empty.
-  useEffect(() => {
-    if (!activeTag && availableTags.length > 0) setActiveTag(availableTags[0]);
-  }, [availableTags, activeTag]);
+  // The pill highlight defaults to the first available tag until the user
+  // clicks or the scroll-spy picks one up. Derived during render so we don't
+  // setState inside an effect.
+  const displayedActiveTag: RestaurantTag | null = activeTag ?? availableTags[0] ?? null;
 
   // Scroll-spy: update the sidebar's active tag as the user scrolls between sections.
   useEffect(() => {
@@ -300,7 +299,7 @@ export default function DiningPromotionsPage() {
               ) : (
                 <ul className="flex flex-col gap-y-2">
                   {availableTags.map((tag) => {
-                    const isActive = activeTag === tag;
+                    const isActive = displayedActiveTag === tag;
                     return (
                       <li key={tag}>
                         {isActive ? (
