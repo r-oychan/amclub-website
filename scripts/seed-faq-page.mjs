@@ -90,6 +90,115 @@ const FAQ_CATEGORIES = [
   { name: 'General', description: 'Everything else — guests, parking, contact info.', displayOrder: 5 },
 ];
 
+// Each entry: [question, categorySlug, order, plainTextAnswer]
+// Answer is wrapped into Strapi v5 `blocks` format (one paragraph per non-empty line).
+const FAQ_ITEMS = [
+  // ── Membership ───────────────────────────────────────────────
+  [
+    'What types of membership do you offer?',
+    'membership', 1,
+    'The American Club offers several membership categories including Ordinary, Term, Corporate, and Niche Group memberships, each designed for different lifestyles and family needs. Visit our Membership page for a detailed comparison of benefits, eligibility, and fees.',
+  ],
+  [
+    'How do I apply for membership?',
+    'membership', 2,
+    'You can begin your application online via the Membership section of our website, or contact our Membership Services team to arrange a personal Club tour. Applications are reviewed by the Membership Committee and you will be notified once a decision has been made.',
+  ],
+  [
+    'What are the joining fees and monthly subscriptions?',
+    'membership', 3,
+    'Joining fees and monthly subscriptions vary by membership category. The latest fee schedule is published on our Joining Fees page. Please contact Membership Services for the most up-to-date pricing and any current promotions.',
+  ],
+  [
+    'Is membership transferable?',
+    'membership', 4,
+    'Certain categories of membership allow for transfer, subject to Club rules and approval by the Membership Committee. Transfers typically involve a transfer fee. Please contact Membership Services for the current transfer policy.',
+  ],
+  [
+    'Can I upgrade or change my membership type?',
+    'membership', 5,
+    'Yes — members may request a change of membership category at any time, subject to eligibility and Committee approval. Differences in joining fees may apply when upgrading.',
+  ],
+  [
+    'Do you offer reciprocal access to other clubs?',
+    'membership', 6,
+    'Yes, members enjoy reciprocal privileges at a network of partner clubs around the world. See our Reciprocal Clubs page for the current list and access guidelines.',
+  ],
+
+  // ── Facilities ───────────────────────────────────────────────
+  [
+    'What facilities and services are included?',
+    'facilities', 1,
+    'Membership grants access to our full slate of facilities including the fitness centre, swimming pools, tennis and squash courts, spa and wellness centre, kids zones, business centre, and multiple dining venues.',
+  ],
+  [
+    'What are the Club operating hours?',
+    'facilities', 2,
+    'The Club is open daily, with individual facility hours varying by venue. Up-to-date opening times for the gym, pools, dining outlets, and other facilities are listed on each facility page.',
+  ],
+  [
+    'Can I bring guests to the Club?',
+    'facilities', 3,
+    'Members may bring guests in line with Club guest policies. Guest fees and per-day limits may apply depending on the facility. Please check at the front desk or with Member Services before your visit.',
+  ],
+  [
+    'Is there parking available?',
+    'facilities', 4,
+    'Complimentary member parking is available on-site, subject to capacity. Valet service is also available during peak periods.',
+  ],
+
+  // ── Dining ───────────────────────────────────────────────────
+  [
+    'Do I need to make a reservation for dining?',
+    'dining', 1,
+    'Reservations are recommended for all our restaurants, especially during peak hours and weekends. You can book via our website, the AMClub app, or by contacting the venue directly.',
+  ],
+  [
+    'Are there dining promotions for members?',
+    'dining', 2,
+    'Yes — we run rotating monthly promotions across our F&B venues, including themed nights, family deals, and seasonal menus. Check our Dining Promotions page for current offers.',
+  ],
+  [
+    'Can members host private dining or events?',
+    'dining', 3,
+    'Absolutely. Several of our venues offer private dining rooms and event spaces for member-hosted gatherings. Contact our Events team to discuss menus, capacity, and availability.',
+  ],
+
+  // ── Events ───────────────────────────────────────────────────
+  [
+    'How do I book a private event space?',
+    'events', 1,
+    'Private event spaces — including ballrooms, function rooms, and outdoor venues — can be booked through our Events team. Submit an enquiry via the Event Spaces page and we will follow up with availability and pricing.',
+  ],
+  [
+    'What kinds of Club events are open to members?',
+    'events', 2,
+    'We host a year-round calendar of social, cultural, family, and sporting events including signature American holidays, kids programmes, wine dinners, and fitness challenges. Visit What\'s On for the current calendar.',
+  ],
+  [
+    'Can non-members attend Club events?',
+    'events', 3,
+    'Most events are member-only, but selected events allow guests when accompanied by a member. Some signature events are open to the wider community — see the individual event page for details.',
+  ],
+
+  // ── General ──────────────────────────────────────────────────
+  [
+    'Where is The American Club located?',
+    'general', 1,
+    'The American Club is located in the heart of Orchard at 10 Claymore Hill, Singapore 229573. We are easily accessible by car, taxi, and a short walk from Orchard MRT.',
+  ],
+  [
+    'How do I contact Member Services?',
+    'general', 2,
+    'You can reach Member Services via the Contact Us page on our website, by phone during operating hours, or in person at the front desk. We typically respond to email enquiries within one business day.',
+  ],
+  [
+    'Is there a dress code at the Club?',
+    'general', 3,
+    'Smart casual attire is expected throughout the Club. Some venues, including fine-dining restaurants and certain event spaces, observe a stricter dress code. Sports facilities require appropriate athletic wear.',
+  ],
+];
+
 async function ensureFaqCategory({ name, description, displayOrder }) {
   const slug = slugify(name);
   if (DRY) { console.log(`  [dry] upsert faq-category: ${name}`); return { documentId: `dry-${slug}`, slug }; }
@@ -100,6 +209,38 @@ async function ensureFaqCategory({ name, description, displayOrder }) {
     return r.data;
   } else {
     const r = await api('/faq-categories', { method: 'POST', body: { data: payload } });
+    return r.data;
+  }
+}
+
+function textToBlocks(text) {
+  const paragraphs = String(text ?? '')
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean);
+  return paragraphs.map((p) => ({
+    type: 'paragraph',
+    children: [{ type: 'text', text: p }],
+  }));
+}
+
+async function ensureFaqItem({ question, categorySlug, order, answerText, faqCategoryDocumentId }) {
+  const slug = slugify(question);
+  const payload = {
+    question,
+    slug,
+    order,
+    category: categorySlug, // keep legacy enum in sync
+    faqCategory: faqCategoryDocumentId,
+    answer: textToBlocks(answerText),
+  };
+  if (DRY) { console.log(`  [dry] upsert faq-item: ${question}`); return { documentId: `dry-${slug}`, slug }; }
+  const existing = await findOneBySlug('faq-items', slug);
+  if (existing) {
+    const r = await api(`/faq-items/${existing.documentId}`, { method: 'PUT', body: { data: payload } });
+    return r.data;
+  } else {
+    const r = await api('/faq-items', { method: 'POST', body: { data: payload } });
     return r.data;
   }
 }
@@ -119,13 +260,28 @@ async function upsertFaqPage() {
 async function main() {
   console.log(`Seeding FAQ Page → ${BASE}${DRY ? ' (dry-run)' : ''}\n`);
 
-  console.log('[1/2] FAQ categories…');
+  console.log('[1/3] FAQ categories…');
+  const catBySlug = {};
   for (const cat of FAQ_CATEGORIES) {
     const c = await ensureFaqCategory(cat);
+    catBySlug[c?.slug ?? slugify(cat.name)] = c;
     console.log(`  ✓ ${cat.name} (${c?.slug ?? slugify(cat.name)})`);
   }
 
-  console.log('\n[2/2] FAQ Page single type…');
+  console.log('\n[2/3] FAQ items…');
+  for (const [question, categorySlug, order, answerText] of FAQ_ITEMS) {
+    const faqCat = catBySlug[categorySlug];
+    await ensureFaqItem({
+      question,
+      categorySlug,
+      order,
+      answerText,
+      faqCategoryDocumentId: faqCat?.documentId ?? null,
+    });
+    console.log(`  ✓ [${categorySlug}] ${question}`);
+  }
+
+  console.log('\n[3/3] FAQ Page single type…');
   await upsertFaqPage();
   console.log('  ✓ faq-page upserted');
 

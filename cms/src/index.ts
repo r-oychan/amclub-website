@@ -18,6 +18,8 @@ const PUBLIC_FIND_TYPES = [
   'api::event-category.event-category',
   'api::testimonial.testimonial',
   'api::faq-item.faq-item',
+  'api::faq-category.faq-category',
+  'api::faq-page.faq-page',
   'api::venue.venue',
   'api::restaurant.restaurant',
   'api::facility.facility',
