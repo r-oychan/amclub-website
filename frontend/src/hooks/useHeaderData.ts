@@ -197,7 +197,7 @@ const DEFAULT_HEADER: HeaderData = {
           links: [
             { label: 'Parties & Celebrations', href: '/kids/kids-parties' },
             { label: 'Seasonal Camps', href: '/kids/camps' },
-            { label: 'Recreational Classes', href: '/kids/classes' },
+            { label: 'Recreational Classes', href: '/kids/recreational-classes' },
           ],
         },
         {

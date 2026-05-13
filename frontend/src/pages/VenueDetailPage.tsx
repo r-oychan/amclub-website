@@ -46,6 +46,7 @@ interface VenueData {
   email?: string;
   hours?: string;
   image?: { url: string; alternativeText?: string };
+  video?: { url: string; title?: string };
   cuisineType?: string;
   cuisineIconSlug?: string;
   /** Facility-side equivalents of cuisineType / cuisineIconSlug */
@@ -118,6 +119,7 @@ interface VenueData {
     heading?: string;
     rows: { images: string[]; direction?: 'ltr' | 'rtl'; durationSec?: number }[];
   };
+  quote?: { heading?: string; text: string; attribution?: string; role?: string };
   partyPackages?: {
     heading?: string;
     subheading?: string;
@@ -171,6 +173,7 @@ function staticFallback(section: string, slug: string): VenueData | null {
     dressCode: sp.dressCode,
     capacity: sp.capacity,
     image: sp.image ? { url: sp.image } : undefined,
+    video: sp.video,
     ctas: sp.ctas,
     extraSections: sp.extraSections,
     promoCards: sp.promoCards,
@@ -183,6 +186,7 @@ function staticFallback(section: string, slug: string): VenueData | null {
     faq: sp.faq,
     gallery: sp.gallery,
     partyPackages: sp.partyPackages,
+    quote: sp.quote,
     operatingHoursSections: sp.operatingHoursSections,
     locationContact: sp.locationContact ?? null,
     downloads: sp.downloads,
@@ -203,6 +207,20 @@ function resolveIcon(
   if (lower.includes('dress') || lower.includes('attire')) return 'dresscode';
   if (lower.includes('capac') || lower.includes('seat')) return 'capacity';
   return 'reservation';
+}
+
+/** Extract a YouTube video ID from a watch URL, youtu.be URL, embed URL, or raw ID. */
+function youtubeEmbedUrl(input: string): string | null {
+  if (!input) return null;
+  let id: string | null = null;
+  const m =
+    input.match(/youtu\.be\/([\w-]{6,})/i) ||
+    input.match(/[?&]v=([\w-]{6,})/i) ||
+    input.match(/youtube\.com\/embed\/([\w-]{6,})/i);
+  if (m) id = m[1];
+  else if (/^[\w-]{6,}$/.test(input)) id = input;
+  if (!id) return null;
+  return `https://www.youtube.com/embed/${id}?rel=0&modestbranding=1&playsinline=1`;
 }
 
 const STRIPE_PATTERN_SVG =
@@ -285,6 +303,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           ...fallback,
           ...api,
           image: api.image ?? fallback?.image,
+          video: api.video ?? fallback?.video,
           ctas: api.ctas?.length ? api.ctas : fallback?.ctas,
           extraSections: api.extraSections?.length ? api.extraSections : fallback?.extraSections,
           promoCards: api.promoCards ?? fallback?.promoCards,
@@ -296,6 +315,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           faq: api.faq?.length ? api.faq : fallback?.faq,
           gallery: api.gallery ?? fallback?.gallery,
           partyPackages: api.partyPackages ?? fallback?.partyPackages,
+          quote: api.quote ?? fallback?.quote,
           downloads: api.downloads ?? fallback?.downloads,
           tierCards: api.tierCards ?? fallback?.tierCards,
         });
@@ -335,6 +355,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
   const imageUrl = venue.image?.url
     ? venue.image.url.startsWith('http') ? venue.image.url : `${venue.image.url}`
     : undefined;
+  const videoEmbed = venue.video?.url ? youtubeEmbedUrl(venue.video.url) : null;
 
   // Resolve the optional Location & Contact module — prefer the CMS component,
   // fall back to legacy top-level fields if any are populated.
@@ -389,10 +410,20 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
       <section className="bg-bg">
         <div className="max-w-7xl mx-auto px-10 pb-[120px]">
           <div className="flex flex-col lg:flex-row" style={{ gap: '60px' }}>
-            {/* Left — Venue image (sticky) */}
+            {/* Left — Venue media (sticky). Video takes priority over image. */}
             <div className="lg:w-[52%] shrink-0">
               <div className="lg:sticky lg:top-[120px]">
-                {imageUrl ? (
+                {videoEmbed ? (
+                  <div className="relative w-full overflow-hidden" style={{ aspectRatio: '16 / 9' }}>
+                    <iframe
+                      src={videoEmbed}
+                      title={venue.video?.title ?? venue.name}
+                      className="absolute inset-0 w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                    />
+                  </div>
+                ) : imageUrl ? (
                   <div className="overflow-hidden">
                     <img
                       src={imageUrl}
@@ -1399,6 +1430,54 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           subheading={venue.partyPackages.subheading}
           items={venue.partyPackages.items}
         />
+      )}
+
+      {/* ── Quote / Testimonial ── */}
+      {venue.quote && venue.quote.text && (
+        <section className="bg-bg" style={{ paddingTop: '40px', paddingBottom: '120px' }}>
+          <div className="max-w-3xl mx-auto px-10 text-center flex flex-col" style={{ gap: '32px' }}>
+            {venue.quote.heading && (
+              <h2
+                className="font-heading text-primary"
+                style={{
+                  fontSize: '38.4px',
+                  fontWeight: 300,
+                  fontStyle: 'italic',
+                  letterSpacing: '-1.152px',
+                  lineHeight: '42.24px',
+                }}
+              >
+                {venue.quote.heading}
+              </h2>
+            )}
+            <p
+              className="text-text-dark"
+              style={{ fontSize: '22px', fontWeight: 400, lineHeight: '32px', fontStyle: 'italic' }}
+            >
+              &ldquo;{venue.quote.text}&rdquo;
+            </p>
+            {(venue.quote.attribution || venue.quote.role) && (
+              <div className="flex flex-col" style={{ gap: '4px' }}>
+                {venue.quote.attribution && (
+                  <p
+                    className="text-primary uppercase"
+                    style={{ fontSize: '13.6px', fontWeight: 700, letterSpacing: '0.04em' }}
+                  >
+                    {venue.quote.attribution}
+                  </p>
+                )}
+                {venue.quote.role && (
+                  <p
+                    className="text-text-dark/70"
+                    style={{ fontSize: '15.2px', lineHeight: '22px' }}
+                  >
+                    {venue.quote.role}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
+        </section>
       )}
 
       {/* ── Marquee Gallery ── */}

@@ -10,6 +10,13 @@ export interface SubpageData {
   capacity?: string;
   dressCode?: string;
   image?: string;
+  /**
+   * When set, renders an embedded YouTube player in the sticky left column
+   * instead of the static image. Accepts a YouTube URL (https://youtu.be/ID,
+   * https://www.youtube.com/watch?v=ID, or already-embed-form URL) or a raw
+   * video ID. Falls back to `image` when not set.
+   */
+  video?: { url: string; title?: string };
   parentSection: string;
   parentHref: string;
   /**
@@ -127,6 +134,11 @@ export interface SubpageData {
    * (typically a brochure PDF). Rendered via the shared KidsPartyPackages
    * component for visual consistency with the parent kids page.
    */
+  /**
+   * Centered testimonial block rendered between the gallery and the FAQ.
+   * Mirrors the Framer "What parents say…" treatment.
+   */
+  quote?: { heading?: string; text: string; attribution?: string; role?: string };
   partyPackages?: {
     heading?: string;
     subheading?: string;
@@ -1212,7 +1224,7 @@ export const kidsSubpages: SubpageData[] = [
     parentSection: 'Kids',
     parentHref: '/kids',
     ctas: [
-      { label: 'Explore Recreational Classes', href: '/kids/classes' },
+      { label: 'Explore Recreational Classes', href: '/kids/recreational-classes' },
       { label: "Kids' Party Packages", href: '/documents/kids/the-quad-studios-party-package.pdf', isExternal: true },
     ],
     gallery: {
@@ -1252,8 +1264,8 @@ export const kidsSubpages: SubpageData[] = [
     faq: [...PLACEHOLDER_FAQ],
   },
   {
-    slug: 'classes',
-    name: 'Classes',
+    slug: 'recreational-classes',
+    name: 'Recreational Classes',
     type: 'Recreational Programs',
     description:
       'Our Recreational Classes support your child\'s holistic development through enriching experiences that spark curiosity and build confidence. With thoughtfully curated programs led by trusted instructors and partners, kids can enjoy a wide range of on-site and off-site classes – from arts and movement to sports and STEM.',
@@ -1268,13 +1280,26 @@ export const kidsSubpages: SubpageData[] = [
     slug: 'camps',
     name: 'Seasonal Kids\' Camps',
     type: 'Programs',
-    description:
-      'Our Seasonal Kids Camps bring school holidays to life with full days of discovery, creativity, and non-stop fun. Offered four times a year – Spring, Summer, Fall, and Winter – these camps keep kids engaged when school is out, with a vibrant mix of sports, culinary adventures, STEM projects, and arts & crafts.',
-    image:
-      '/uploads/pages/kids/camps.jpg',
+    description: 'Check out the various camps available in the video.',
+    video: { url: 'https://youtu.be/d7oyA6sLGVw', title: 'Seasonal Kids\' Camps at The American Club' },
     parentSection: 'Kids',
     parentHref: '/kids',
-    ctas: [{ label: 'View Camp Schedule', href: '#' }],
+    ctas: [
+      { label: 'Summer Camp 2026', href: '/documents/kids/summer-camp-2026.pdf', isExternal: true },
+      { label: 'Cancellation Policy', href: '/documents/kids/camp-cancellation-policy.pdf', isExternal: true },
+    ],
+    bottomCtas: [
+      { label: '4 – 7 Years Schedule', href: '/documents/kids/4-7-camp-schedule.pdf', isExternal: true },
+      { label: '4 – 7 Years Registration', href: 'https://forms.office.com/pages/responsepage.aspx?id=tNI3gQWbQ0ue5Ad0V1MxKig5SVI1jCxHmIfXpkheevZUQVhSUTFDVlY2QzEyREJDTVpVVTg3OE44TSQlQCN0PWcu&route=shorturl', isExternal: true },
+      { label: '8 Years & Above Schedule', href: '/documents/kids/8-12-camp-schedule.pdf', isExternal: true },
+      { label: '8 Years & Above Registration', href: 'https://forms.office.com/pages/responsepage.aspx?id=tNI3gQWbQ0ue5Ad0V1MxKig5SVI1jCxHmIfXpkheevZUQVBNREpQRUc1TUdIR1RYUk1IRUFPRDMyUyQlQCN0PWcu&route=shorturl', isExternal: true },
+    ],
+    quote: {
+      heading: 'What parents say about our camps',
+      text: 'We decided to send our child to camp to have a fruitful Summer holiday by learning new things and making new friends. He likes the water play best. I appreciate the Youth team celebrating his 5th birthday during the camp.',
+      attribution: 'Fiona Wu',
+      role: 'Member',
+    },
     faq: [...PLACEHOLDER_FAQ],
   },
   {
