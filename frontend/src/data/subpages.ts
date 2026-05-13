@@ -1299,7 +1299,7 @@ export const kidsSubpages: SubpageData[] = [
     parentSection: 'Kids',
     parentHref: '/kids',
     ctas: [
-      { label: 'Summer Camp 2026', href: 'https://469380fc.delivery.rocketcdn.me/wp-content/uploads/2026/05/Final_Summer-Camp-Comprehensive-Pack-2026_compressed.pdf', isExternal: true },
+      { label: 'Summer Camp 2026', href: '/documents/kids/summer-camp-2026.pdf', isExternal: true },
       { label: 'Cancellation Policy', href: '/documents/kids/camp-cancellation-policy.pdf', isExternal: true },
     ],
     bottomCtas: [
