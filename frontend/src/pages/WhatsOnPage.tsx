@@ -66,11 +66,17 @@ const sortCategories = (cats: StrapiCategory[]): StrapiCategory[] => {
   });
 };
 
+const readHashSlug = (): string | null => {
+  if (typeof window === 'undefined') return null;
+  const raw = window.location.hash.replace(/^#/, '').trim().toLowerCase();
+  return raw || null;
+};
+
 export default function WhatsOnPage() {
   const [data, setData] = useState<StrapiWhatsOnPage | null>(null);
   const [events, setEvents] = useState<StrapiEvent[]>([]);
   const [categories, setCategories] = useState<StrapiCategory[]>([]);
-  const [activeSlug, setActiveSlug] = useState<string | null>(null);
+  const [activeSlug, setActiveSlug] = useState<string | null>(readHashSlug);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
@@ -98,10 +104,34 @@ export default function WhatsOnPage() {
     return () => { cancelled = true; };
   }, []);
 
+  // Keep the filter in sync with browser back/forward navigation and external
+  // links that change `#…` while the page is already mounted.
+  useEffect(() => {
+    const onHashChange = () => setActiveSlug(readHashSlug());
+    window.addEventListener('hashchange', onHashChange);
+    return () => window.removeEventListener('hashchange', onHashChange);
+  }, []);
+
+  // Treat the URL hash as a hint: only honour it if it names a real category.
+  const effectiveSlug = useMemo(() => {
+    if (!activeSlug) return null;
+    return categories.some((c) => c.slug === activeSlug) ? activeSlug : null;
+  }, [activeSlug, categories]);
+
+  const toggleSlug = (slug: string) => {
+    setActiveSlug((cur) => {
+      const next = cur === slug ? null : slug;
+      const hash = next ? `#${next}` : ' ';
+      const url = `${window.location.pathname}${window.location.search}${hash}`;
+      window.history.replaceState(null, '', url);
+      return next;
+    });
+  };
+
   const filtered = useMemo(() => {
-    if (!activeSlug) return events;
-    return events.filter((e) => e.category?.slug === activeSlug);
-  }, [events, activeSlug]);
+    if (!effectiveSlug) return events;
+    return events.filter((e) => e.category?.slug === effectiveSlug);
+  }, [events, effectiveSlug]);
 
   if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
   if (!data) return <div className="min-h-screen flex items-center justify-center text-text-dark/70">What's On page content unavailable.</div>;
@@ -123,8 +153,8 @@ export default function WhatsOnPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <CategoryFilters
             categories={categories}
-            activeSlug={activeSlug}
-            onToggle={(slug) => setActiveSlug((cur) => (cur === slug ? null : slug))}
+            activeSlug={effectiveSlug}
+            onToggle={toggleSlug}
           />
 
           <div className="mt-16 lg:mt-24 flex flex-wrap items-center justify-between gap-4 mb-10">
