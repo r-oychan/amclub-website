@@ -25,7 +25,7 @@
     },
     "category": {
       "type": "enumeration",
-      "enum": ["membership", "facilities", "dining", "events", "general"],
+      "enum": ["membership", "facilities", "dining", "events", "kids", "general"],
       "default": "general"
     },
     "faqCategory": {

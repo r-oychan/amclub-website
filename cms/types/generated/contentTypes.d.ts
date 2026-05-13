@@ -1004,7 +1004,7 @@ export interface ApiFaqItemFaqItem extends Struct.CollectionTypeSchema {
   attributes: {
     answer: Schema.Attribute.Blocks;
     category: Schema.Attribute.Enumeration<
-      ['membership', 'facilities', 'dining', 'events', 'general']
+      ['membership', 'facilities', 'dining', 'events', 'kids', 'general']
     > &
       Schema.Attribute.DefaultTo<'general'>;
     createdAt: Schema.Attribute.DateTime;
@@ -1438,6 +1438,7 @@ export interface ApiNewsArticleNewsArticle extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     date: Schema.Attribute.String;
     excerpt: Schema.Attribute.Text;
+    htmlBody: Schema.Attribute.Component<'shared.html-block', false>;
     image: Schema.Attribute.Media<'images'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<

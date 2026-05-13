@@ -603,6 +603,18 @@ export interface SharedHeroSlide extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedHtmlBlock extends Struct.ComponentSchema {
+  collectionName: 'components_shared_html_blocks';
+  info: {
+    description: 'Raw HTML content \u2014 for articles with text, links, images, and tables';
+    displayName: 'HTML Block';
+    icon: 'code';
+  };
+  attributes: {
+    html: Schema.Attribute.Text;
+  };
+}
+
 export interface SharedLink extends Struct.ComponentSchema {
   collectionName: 'components_shared_links';
   info: {
@@ -630,7 +642,7 @@ export interface SharedLink extends Struct.ComponentSchema {
     isExternal: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     label: Schema.Attribute.String & Schema.Attribute.Required;
     variant: Schema.Attribute.Enumeration<
-      ['primary', 'secondary', 'outline', 'text']
+      ['primary', 'secondary', 'accent', 'outline', 'text']
     > &
       Schema.Attribute.DefaultTo<'primary'>;
   };
@@ -771,13 +783,14 @@ export interface SharedReferralRow extends Struct.ComponentSchema {
 export interface SharedScheduleRow extends Struct.ComponentSchema {
   collectionName: 'components_shared_schedule_rows';
   info: {
-    description: 'A single row inside an operating-hours section (day range + time + optional last-order note)';
+    description: 'A single row inside an operating-hours section (day range + start\u2013end time + optional last-order + optional note)';
     displayName: 'Schedule Row';
     icon: 'calendar';
   };
   attributes: {
     dayRange: Schema.Attribute.String & Schema.Attribute.Required;
     lastOrder: Schema.Attribute.String;
+    note: Schema.Attribute.String;
     time: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
@@ -973,6 +986,7 @@ declare module '@strapi/strapi' {
       'shared.feature-item': SharedFeatureItem;
       'shared.footer-column': SharedFooterColumn;
       'shared.hero-slide': SharedHeroSlide;
+      'shared.html-block': SharedHtmlBlock;
       'shared.link': SharedLink;
       'shared.nav-column': SharedNavColumn;
       'shared.nav-dropdown': SharedNavDropdown;

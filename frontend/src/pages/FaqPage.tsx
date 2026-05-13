@@ -47,7 +47,17 @@ const enumNameMap: Record<string, string> = {
   facilities: 'Facilities',
   dining: 'Dining',
   events: 'Events',
+  kids: 'Kids',
   general: 'General',
+};
+
+const enumDisplayOrder: Record<string, number> = {
+  membership: 1,
+  facilities: 2,
+  dining: 3,
+  events: 4,
+  kids: 5,
+  general: 6,
 };
 
 export default function FaqPage() {
@@ -109,7 +119,13 @@ export default function FaqPage() {
     groupMap.get(key)!.items.push(it);
   });
 
-  const groups = Array.from(groupMap.values()).filter((g) => g.items.length > 0);
+  const groups = Array.from(groupMap.values())
+    .filter((g) => g.items.length > 0)
+    .sort((a, b) => {
+      const ai = enumDisplayOrder[a.key] ?? 999;
+      const bi = enumDisplayOrder[b.key] ?? 999;
+      return ai - bi;
+    });
 
   return (
     <PageFade loaded={loaded}>

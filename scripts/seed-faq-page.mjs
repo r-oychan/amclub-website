@@ -87,7 +87,8 @@ const FAQ_CATEGORIES = [
   { name: 'Facilities', description: 'Gym, pools, courts, spa, and operating hours.', displayOrder: 2 },
   { name: 'Dining', description: 'Restaurants, reservations, and dining promotions.', displayOrder: 3 },
   { name: 'Events', description: 'Private events, room bookings, and club programmes.', displayOrder: 4 },
-  { name: 'General', description: 'Everything else — guests, parking, contact info.', displayOrder: 5 },
+  { name: 'Kids', description: 'The Quad, kids parties, camps, and youth programmes.', displayOrder: 5 },
+  { name: 'General', description: 'Everything else — guests, parking, contact info.', displayOrder: 6 },
 ];
 
 // Each entry: [question, categorySlug, order, plainTextAnswer]
@@ -181,6 +182,107 @@ const FAQ_ITEMS = [
     'Most events are member-only, but selected events allow guests when accompanied by a member. Some signature events are open to the wider community — see the individual event page for details.',
   ],
 
+  // ── Facilities → Aquatics programmes ─────────────────────────
+  [
+    "How do I determine my child's swim level?",
+    'facilities', 10,
+    'Book a free assessment for children over three years old by emailing aquatics@amclub.org.sg or submitting the assessment form at the Aquatics Counter. Babies and toddlers do not require assessment as levels are age-based.',
+  ],
+  [
+    'Can I enrol after the term has started?',
+    'facilities', 11,
+    'Yes — enrolment is possible at any point subject to class availability. Submit an enrolment form to the Aquatics Counter and the team will respond within five working days.',
+  ],
+  [
+    'When will my child move to the next swim level?',
+    'facilities', 12,
+    'There is no fixed duration. Once an instructor confirms the swimmer confidently completes all required skills, the Aquatics Coordinator runs a level assessment. The Spring and Fall programmes also include dedicated assessment weeks.',
+  ],
+  [
+    "Will swimming lessons be held if it's raining?",
+    'facilities', 13,
+    'Lessons continue during light rain but are cancelled for thunder, lightning, or extremely heavy rain. Call the Aquatics Counter at 6739-4470 (or the office at 6739-4450) thirty minutes before class to confirm.',
+  ],
+  [
+    'I missed my swim class. Can I attend a make-up class?',
+    'facilities', 14,
+    'With nearly 900 weekly swimmers and limited resources, the Club is unable to offer make-up classes.',
+  ],
+  [
+    'What if my child is sick and misses swim lessons?',
+    'facilities', 15,
+    'Present a Medical Certificate covering the missed lesson dates at the Aquatics Counter within one week, or before the end of the month. Receipts are not accepted in place of an MC.',
+  ],
+
+  // ── Kids — The Quad / The Quad Poolside ─────────────────────
+  [
+    'Why are my guests charged at The Quad?',
+    'kids', 1,
+    'Member usage is prioritised over guests to ensure members can access The Quad whenever desired. Guest fees help minimise overcrowding and discourage misuse. Fees are $2.50 per entry during off-peak hours and $5 during peak hours (Friday evenings, Saturday, Sunday, and public holidays).',
+  ],
+  [
+    'Do I really have to sign my child into The Quad Poolside and The Quad?',
+    'kids', 2,
+    'Parents of children under 12 must be present to sign them in and remain on premises. Authorised helpers or amahs may bring children only for Club-sponsored classes and supervised programmes, not for free play.',
+  ],
+  [
+    'Why can\'t my 5-year-old and 7-year-old be at The Quad unsupervised together?',
+    'kids', 3,
+    'The Quad is not a child-minding area. Children 6+ can play independently and respond to staff guidance, while children 5 and under need more attention and should use The Quad Poolside instead.',
+  ],
+  [
+    "Why can't my 4.5-year-old play at the Wallholla?",
+    'kids', 4,
+    'The Wallholla is a six-level vertical climbing structure requiring independent movement. The Club follows the manufacturer\'s recommendation allowing only children 5 years old and above.',
+  ],
+  [
+    'Why do I have to pay for child-minding at The Quad Poolside?',
+    'kids', 5,
+    'Child-minding charges apply only during peak periods including weekends and public holidays due to limited capacity at The Quad Poolside.',
+  ],
+  [
+    'Why are arcade games at The Quad chargeable?',
+    'kids', 6,
+    "Token purchases allow parents to track children's gaming time and spending. Charging also enables the Club to offer the newest equipment, including brand-new arcade games imported directly from the United States.",
+  ],
+
+  // ── Kids — Eagle Explorers Camps ─────────────────────────────
+  [
+    'Where do the seasonal camps take place?',
+    'kids', 20,
+    'Camps are offered both on-site at The American Club Singapore (ages 4–7, engaging club-wide facilities) and off-site at selected locations around Singapore (ages 8 and above). Camp formats and locations may evolve as we introduce new programmes.',
+  ],
+  [
+    'Is transportation provided for off-site camps?',
+    'kids', 21,
+    'Yes. Two-way transportation is provided from The American Club Singapore to and from the designated daily location for campers aged 8 and above.',
+  ],
+  [
+    'What ages are eligible to join the camps?',
+    'kids', 22,
+    'Our camps are designed for children aged 4 to 12 years old. Children within three months of the minimum age requirement may be permitted to join, subject to assessment and availability.',
+  ],
+  [
+    'Are half-day camp options available?',
+    'kids', 23,
+    'Half-day options are available only for the on-site camp (ages 4–7). Availability may vary by season.',
+  ],
+  [
+    'What activities can my child expect during camp?',
+    'kids', 24,
+    'Ages 4–7 enjoy indoor on-site activities including culinary, sports, creative play, movement, STEM, and themed programming. Ages 8+ enjoy off-site experiences blending sports, outdoor exploration, sightseeing, and educational activities across Singapore.',
+  ],
+  [
+    'What is the camp counsellor-to-camper ratio?',
+    'kids', 25,
+    'General activities follow a 1:5 ratio. Water-play and pool days follow a 1:3 ratio for added supervision.',
+  ],
+  [
+    'What is the camp cancellation policy?',
+    'kids', 26,
+    'Camp fees are charged per registered session or week. No refunds or make-up sessions are provided for missed days. Full first-day fees apply if a camper is unable to attend. Fees may only be waived upon submission of a valid medical certificate by the end of the camp week.',
+  ],
+
   // ── General ──────────────────────────────────────────────────
   [
     'Where is The American Club located?',
@@ -224,13 +326,21 @@ function textToBlocks(text) {
   }));
 }
 
+// Legacy enum on faq-item only covers the original 5 values until the CMS
+// schema deploy lands the new ones. Map any category not yet in the enum to
+// "general" so the POST/PUT succeeds; grouping on the page comes from the
+// faqCategory relation (now publicly readable), so users still see the right
+// section heading.
+const LEGACY_ENUM_VALUES = new Set(['membership', 'facilities', 'dining', 'events', 'general']);
+
 async function ensureFaqItem({ question, categorySlug, order, answerText, faqCategoryDocumentId }) {
   const slug = slugify(question);
+  const legacyEnum = LEGACY_ENUM_VALUES.has(categorySlug) ? categorySlug : 'general';
   const payload = {
     question,
     slug,
     order,
-    category: categorySlug, // keep legacy enum in sync
+    category: legacyEnum,
     faqCategory: faqCategoryDocumentId,
     answer: textToBlocks(answerText),
   };
