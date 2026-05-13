@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { ChatbotWidget } from './components/shared/ChatbotWidget';
+import { ScrollToTop } from './components/shared/ScrollToTop';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import DiningPage from './pages/DiningPage';
@@ -25,6 +26,7 @@ import PrivacyStatementPage from './pages/PrivacyStatementPage';
 export default function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <div className="min-h-screen flex flex-col">
         <Header />
         <main className="flex-1">
