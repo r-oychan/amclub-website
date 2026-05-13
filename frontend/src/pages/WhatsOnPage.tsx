@@ -189,7 +189,7 @@ export default function WhatsOnPage() {
         <CtaBanner
           heading={data.finalCta.heading}
           body={data.finalCta.body ?? ''}
-          variant={data.finalCta.variant === 'default' ? undefined : data.finalCta.variant}
+          variant="white"
           ctas={(data.finalCta.ctas ?? []).map((c) => ({ label: c.label, href: c.href ?? '#', isExternal: c.isExternal }))}
         />
       )}

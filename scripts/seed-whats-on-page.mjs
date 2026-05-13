@@ -25,7 +25,7 @@ async function upsertWhatsOnPage() {
       variant: 'default',
       ctas: [
         { label: 'Explore Membership', href: '/membership', variant: 'primary' },
-        { label: 'Book a Tour',         href: '#',           variant: 'outline' },
+        { label: 'Book a Tour',         href: '/home-sub/contact-us', variant: 'outline' },
       ],
     },
   };

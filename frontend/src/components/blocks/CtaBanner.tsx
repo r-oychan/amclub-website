@@ -12,11 +12,12 @@ export function CtaBanner({
   subheading?: string;
   body?: string;
   ctas?: CtaButton[];
-  variant?: 'dark' | 'light' | 'accent';
+  variant?: 'dark' | 'light' | 'white' | 'accent';
 }) {
   const bgClass = {
     dark: 'bg-primary text-white',
     light: 'bg-bg text-primary',
+    white: 'bg-white text-primary',
     accent: 'bg-accent text-white',
   }[variant];
 
