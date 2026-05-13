@@ -273,14 +273,6 @@ async function upsertHomePage({ media, eventsCat, testimonialIds, faqIds }) {
       cta: { label: 'Request for a Club Tour', href: '#', variant: 'primary' },
       slides: [
         {
-          backgroundImage: media['hero-slide-1-home-away.jpg'].id,
-          title: 'A Home Away From Home',
-          subtitle: 'Thrive in a vibrant community with a unique American and Canadian culture.',
-          titlePosition: 'bottom-left',
-          subtitlePosition: 'bottom-right',
-          cta: { label: 'Request for a Club Tour', href: '#', variant: 'primary' },
-        },
-        {
           backgroundImage: media['hero-slide-2-dine-drink.jpeg'].id,
           title: 'Dine. Drink. Unwind.',
           subtitle: 'From casual bites to fine dining, discover our world-class restaurants and bars.',
