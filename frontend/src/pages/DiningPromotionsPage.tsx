@@ -62,6 +62,18 @@ const TAG_ORDER: RestaurantTag[] = [
   'tradewinds', 'union-bar', 'the-gourmet-pantry',
 ];
 
+// Each restaurant has a single consolidated menu PDF served statically from
+// frontend/public/menus/. Promotions for that tag link to the same PDF so the
+// dining-promotion page mirrors the CTA set on /dining.
+const MENU_URLS: Partial<Record<RestaurantTag, string>> = {
+  central:              '/menus/central-menu.pdf',
+  grillhouse:           '/menus/grillhouse-menu.pdf',
+  'the-2nd-floor':      '/menus/the-2nd-floor-menu.pdf',
+  tradewinds:           '/menus/tradewinds-menu.pdf',
+  'union-bar':          '/menus/union-bar-menu.pdf',
+  'the-gourmet-pantry': '/menus/the-gourmet-pantry-menu.pdf',
+};
+
 const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
   if (!m?.url) return undefined;
   if (/^https?:/i.test(m.url)) return m.url;
@@ -350,6 +362,7 @@ export default function DiningPromotionsPage() {
                         <div className="flex flex-col gap-y-16">
                           {items.map((p) => {
                             const imgs = imagesOf(p);
+                            const menuHref = MENU_URLS[p.restaurantTag];
                             return (
                               <article key={p.documentId} className="max-w-[680px] mx-auto w-full">
                                 <PromotionSlider images={imgs} alt={p.title} />
@@ -361,6 +374,19 @@ export default function DiningPromotionsPage() {
                                 </h3>
                                 {p.summary && (
                                   <p className="text-[15px] text-primary/80 leading-[1.5]">{p.summary}</p>
+                                )}
+                                {menuHref && (
+                                  <div className="mt-4 flex flex-wrap items-center gap-x-7 gap-y-3">
+                                    <a
+                                      href={menuHref}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-2 text-primary uppercase font-bold tracking-[0.04em] text-[13.6px] hover:text-accent transition-colors"
+                                    >
+                                      View Menu
+                                      <ArrowUpRight size={14} className="text-accent" />
+                                    </a>
+                                  </div>
                                 )}
                               </article>
                             );

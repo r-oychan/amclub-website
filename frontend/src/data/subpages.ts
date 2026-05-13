@@ -542,6 +542,15 @@ export const fitnessSubpages: SubpageData[] = [
       'sên means life force, echoing the concept of Chi (Chinese), Ki (Japanese), or Prana (Sanskrit), and embodies the pursuit of balance and wellness.\n\nImmerse yourself in a curated selection of indulgent treatments, including massages, facials, hair care, mani-pedis, scrubs, wraps, and more specialized services – all crafted with premium products and delivered by our team of skilled professionals.\n\nAt sên Spa, every experience is tailored to your individual needs, making it the perfect urban retreat for relaxation, rejuvenation, and holistic well-being.',
     hours:
       'Monday to Saturday: 9:00 AM – 8:00 PM\nSunday & Public Holiday: 9:00 AM – 6:00 PM',
+    operatingHoursSections: [
+      {
+        title: 'Opening Hours',
+        rows: [
+          { dayRange: 'Monday to Saturday',       time: '9:00 AM - 8:00 PM' },
+          { dayRange: 'Sunday & Public Holiday',  time: '9:00 AM - 6:00 PM' },
+        ],
+      },
+    ],
     level: 'Basement 3',
     phone: '6739 4449',
     email: 'spa@amclub.org.sg',
