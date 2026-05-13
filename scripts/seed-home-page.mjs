@@ -358,7 +358,7 @@ async function upsertHomePage({ media, eventsCat, testimonialIds, faqIds }) {
       label: 'FAQ',
       heading: 'Your Questions, Answered',
       ctas: [
-        { label: 'View All FAQ', href: '#', variant: 'primary' },
+        { label: 'View All FAQ', href: '/faq', variant: 'primary' },
         { label: 'Enquiries',    href: '/home-sub/contact-us', variant: 'outline' },
       ],
       items: faqIds,
