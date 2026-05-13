@@ -20,12 +20,14 @@ type StrapiLink = {
 interface StrapiEvent {
   documentId: string;
   title: string;
+  subtitle?: string;
   slug: string;
   description?: string;
   longDescription?: string;
   date: string;
   time?: string;
   location?: string;
+  locationHref?: string;
   dressCode?: string;
   reservation?: string;
   image?: StrapiMedia;
@@ -51,6 +53,18 @@ const formatEventDate = (iso: string): string => {
     day: 'numeric',
     year: 'numeric',
   });
+};
+
+const formatMonth = (iso: string): string => {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+};
+
+const formatDay = (iso: string): string => {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return String(d.getDate());
 };
 
 const paragraphs = (text?: string): string[] =>
@@ -118,28 +132,41 @@ export default function EventDetailPage() {
       <section className="bg-bg">
         <div className="max-w-7xl mx-auto px-10 pb-[120px]">
           <div className="flex flex-col lg:flex-row" style={{ gap: '60px' }}>
-            {/* Left — Event image (sticky) */}
+            {/* Left — Event image (sticky) with date-box overlay */}
             <div className="lg:w-[52%] shrink-0">
               <div className="lg:sticky lg:top-[120px]">
-                {imageUrl ? (
-                  <div className="overflow-hidden">
-                    <img
-                      src={imageUrl}
-                      alt={event.image?.alternativeText ?? event.title}
-                      className="w-full h-auto object-cover"
+                <div className="relative">
+                  {imageUrl ? (
+                    <div className="overflow-hidden">
+                      <img
+                        src={imageUrl}
+                        alt={event.image?.alternativeText ?? event.title}
+                        className="w-full h-auto object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      aria-hidden
+                      className="aspect-[4/3] w-full"
+                      style={{
+                        backgroundImage: STRIPE_PATTERN_SVG,
+                        backgroundSize: '64px',
+                        backgroundRepeat: 'repeat',
+                      }}
                     />
-                  </div>
-                ) : (
-                  <div
-                    aria-hidden
-                    className="aspect-[4/3] w-full"
-                    style={{
-                      backgroundImage: STRIPE_PATTERN_SVG,
-                      backgroundSize: '64px',
-                      backgroundRepeat: 'repeat',
-                    }}
-                  />
-                )}
+                  )}
+                  {formatMonth(event.date) && formatDay(event.date) && (
+                    <div className="absolute right-[24px] -bottom-[48px] bg-white px-3 py-3 flex flex-col items-center w-[88px] z-10 shadow-md">
+                      <span className="font-body text-[15px] font-normal uppercase text-primary tracking-[0.04em] leading-none">
+                        {formatMonth(event.date)}
+                      </span>
+                      <span className="block h-px w-[42px] bg-accent my-2" />
+                      <span className="font-heading italic text-[36px] font-light text-primary leading-none">
+                        {formatDay(event.date)}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -157,6 +184,20 @@ export default function EventDetailPage() {
               >
                 {event.title}
               </h1>
+
+              {event.subtitle && (
+                <p
+                  className="text-text-dark/80"
+                  style={{
+                    fontSize: '20.8px',
+                    fontWeight: 400,
+                    lineHeight: '29.12px',
+                    marginTop: '-12px',
+                  }}
+                >
+                  {event.subtitle}
+                </p>
+              )}
 
               {event.category?.name && (
                 <span
@@ -246,12 +287,34 @@ export default function EventDetailPage() {
 
               {event.location && (
                 <DetailSection icon="location" title="Location">
-                  <p
-                    className="text-text-dark"
-                    style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
-                  >
-                    {event.location}
-                  </p>
+                  {event.locationHref ? (
+                    /^https?:/i.test(event.locationHref) ? (
+                      <a
+                        href={event.locationHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary underline decoration-accent hover:text-accent transition-colors"
+                        style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
+                      >
+                        {event.location}
+                      </a>
+                    ) : (
+                      <Link
+                        to={event.locationHref}
+                        className="text-primary underline decoration-accent hover:text-accent transition-colors"
+                        style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
+                      >
+                        {event.location}
+                      </Link>
+                    )
+                  ) : (
+                    <p
+                      className="text-text-dark"
+                      style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
+                    >
+                      {event.location}
+                    </p>
+                  )}
                 </DetailSection>
               )}
 

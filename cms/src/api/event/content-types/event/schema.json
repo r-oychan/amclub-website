@@ -15,6 +15,9 @@
       "type": "string",
       "required": true
     },
+    "subtitle": {
+      "type": "string"
+    },
     "slug": {
       "type": "uid",
       "targetField": "title",
@@ -23,9 +26,27 @@
     "description": {
       "type": "text"
     },
+    "longDescription": {
+      "type": "richtext"
+    },
     "date": {
       "type": "date",
       "required": true
+    },
+    "time": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "locationHref": {
+      "type": "string"
+    },
+    "dressCode": {
+      "type": "string"
+    },
+    "reservation": {
+      "type": "string"
     },
     "image": {
       "type": "media",
@@ -41,6 +62,11 @@
     "featured": {
       "type": "boolean",
       "default": false
+    },
+    "ctas": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link"
     },
     "seo": {
       "type": "component",

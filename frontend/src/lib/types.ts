@@ -48,6 +48,7 @@ export interface CardItem {
   tagline?: string;
   capacity?: string;
   image?: string;
+  href?: string;
   cta?: string;
   ctas?: (string | { label: string; href?: string })[];
   serviceFeatures?: string[];

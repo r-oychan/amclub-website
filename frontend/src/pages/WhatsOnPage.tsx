@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import { Link } from 'react-router';
 import { fetchAPI, STRAPI_URL } from '../lib/api';
 import { Hero } from '../components/blocks/Hero';
 import { CtaBanner } from '../components/blocks/CtaBanner';
@@ -141,7 +142,7 @@ export default function WhatsOnPage() {
             </a>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-20">
             {filtered.map((event) => (
               <EventCard key={event.documentId} event={event} />
             ))}
@@ -191,7 +192,7 @@ function CategoryFilters({
             }`}
           >
             <span
-              className={`flex items-center justify-center w-[100px] h-[100px] rounded-full transition-all ${
+              className={`flex items-center justify-center w-[124px] h-[124px] rounded-full transition-all ${
                 isActive ? 'bg-accent ring-4 ring-accent/20' : 'bg-primary group-hover:bg-primary-dark'
               }`}
             >
@@ -199,7 +200,7 @@ function CategoryFilters({
                 src={`/icons/whatson/${cat.slug}.png`}
                 alt=""
                 aria-hidden
-                className="w-12 h-12 object-contain"
+                className="w-14 h-14 object-contain"
                 onError={(e) => {
                   (e.currentTarget as HTMLImageElement).style.display = 'none';
                 }}
@@ -218,25 +219,23 @@ function CategoryFilters({
 function EventCard({ event }: { event: StrapiEvent }) {
   const month = formatMonth(event.date);
   const day = formatDay(event.date);
-  return (
-    <article className="flex flex-col gap-4 group">
-      <div className="relative aspect-[4/3] w-full overflow-hidden">
+  const inner = (
+    <article className="flex flex-col group">
+      <div className="relative mb-10">
         {event.image && (
           <img
             src={mediaUrl(event.image)}
             alt={event.image.alternativeText ?? event.title}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+            className="w-full aspect-[344/217] object-cover block transition-transform duration-500 group-hover:scale-[1.02]"
           />
         )}
         {month && day && (
-          <div className="absolute right-0 bottom-0 bg-white px-3 py-2 flex flex-col items-center justify-center min-w-[71px]">
-            <span className="text-primary font-body font-bold uppercase tracking-[0.04em] text-sm leading-none">
+          <div className="absolute right-[18px] -bottom-[40px] bg-white p-2 flex flex-col items-center w-[68px] z-10 shadow-sm">
+            <span className="font-body text-[13.6px] font-normal uppercase text-primary tracking-[0.04em] leading-none">
               {month}
             </span>
-            <span
-              className="text-primary font-heading italic font-light leading-none mt-1"
-              style={{ fontSize: '26.56px' }}
-            >
+            <span className="block h-px w-[33px] bg-accent my-1.5" />
+            <span className="font-heading italic text-[28.8px] font-light text-primary leading-none">
               {day}
             </span>
           </div>
@@ -244,15 +243,21 @@ function EventCard({ event }: { event: StrapiEvent }) {
       </div>
       <div className="flex flex-col gap-3">
         {event.category?.name && (
-          <span className="self-start bg-primary text-white text-[11px] font-body uppercase tracking-[0.04em] px-3.5 py-1.5 rounded-full">
+          <span className="self-start bg-primary text-white text-[11.2px] font-body uppercase tracking-[0.04em] px-3.5 py-0.5 rounded-full">
             {event.category.name}
           </span>
         )}
-        <h3 className="font-body font-light text-primary text-[17.6px] leading-[1.4]">
+        <h3 className="font-body text-[17.6px] font-normal text-primary leading-[1.4] group-hover:text-accent transition-colors">
           {event.title}
         </h3>
       </div>
     </article>
+  );
+  if (!event.slug) return inner;
+  return (
+    <Link to={`/whats-on/${event.slug}`} className="block">
+      {inner}
+    </Link>
   );
 }
 

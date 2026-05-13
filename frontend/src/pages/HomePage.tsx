@@ -105,6 +105,7 @@ interface StrapiHomePage {
 interface StrapiEvent {
   documentId: string;
   title: string;
+  slug?: string;
   date: string;
   image?: StrapiMedia;
   category?: { name: string } | null;
@@ -270,6 +271,7 @@ export default function HomePage() {
     title: e.title,
     date: formatEventDate(e.date),
     image: mediaUrl(e.image),
+    href: e.slug ? `/whats-on/${e.slug}` : undefined,
   }));
 
   const services = data?.services;

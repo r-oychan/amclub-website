@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 import type { CardItem, CtaButton } from '../../lib/types';
 import { SectionHeader } from '../shared/SectionHeader';
 import { Button } from '../shared/Button';
@@ -84,8 +85,8 @@ function EventMarquee({ items }: { items: CardItem[] }) {
 
 function EventCard({ item }: { item: CardItem }) {
   const [month, day] = (item.date ?? '').split(' ');
-  return (
-    <div className="flex-shrink-0 w-[344px]">
+  const inner = (
+    <div className="flex-shrink-0 w-[344px] group">
       {item.image && (
         <div className="relative mb-10">
           <img
@@ -111,8 +112,16 @@ function EventCard({ item }: { item: CardItem }) {
           {item.category}
         </span>
       )}
-      <h3 className="font-body text-[17.6px] font-normal text-primary leading-[1.4]">{item.title}</h3>
+      <h3 className="font-body text-[17.6px] font-normal text-primary leading-[1.4] group-hover:text-accent transition-colors">
+        {item.title}
+      </h3>
     </div>
+  );
+  if (!item.href) return inner;
+  return (
+    <Link to={item.href} className="block">
+      {inner}
+    </Link>
   );
 }
 

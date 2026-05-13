@@ -17,6 +17,7 @@
 | `/event-spaces` | `EventSpacesPage.tsx` | singleType | `event-spaces-page` | ❌ |
 | `/membership` | `MembershipPage.tsx` | singleType | `membership-page` | ❌ |
 | `/whats-on` | `WhatsOnPage.tsx` | singleType + collection | `whats-on-page` + `event` (filtered by `event-category`) | 🟡 |
+| `/whats-on/:slug` | `EventDetailPage.tsx` | collection | `event` (by slug) | 🟡 |
 | `/home-sub/news` | `NewsPage.tsx` | — | static list (Club News) | ❌ |
 | `/home-sub/gallery` | `GalleryPage.tsx` | singleType + collection | `gallery-page` + `gallery-album` | ✅ |
 | `/home-sub/contact-us` | `ContactUsPage.tsx` | — | static (`data/contactUs.ts`) — Map + Getting Here + Outlet Operating Hours tabs | ❌ |
@@ -116,7 +117,7 @@ All page-typed entries use a `content` **dynamiczone** (block-based), populated 
 | restaurant | `restaurant` | name, slug, description, image, gallery, contact, category, ctas |
 | venue | `venue` | name, slug, description, image, gallery, capacity, contact, ctas |
 | facility | `facility` | name, slug, description, image, gallery, section (fitness/kids/event), ctas |
-| event | `event` | title, slug, date, description, image, category (→ event-category), featured |
+| event | `event` | title, slug, date, time, location, dressCode, reservation, description, longDescription, image, category (→ event-category), featured, ctas (shared.link[]) |
 | event-category | `event-category` | name, slug, displayOrder |
 | testimonial | `testimonial` | quote, author, role, image |
 | committee-member | `committee-member` | name, role, image, bio, order |
