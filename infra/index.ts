@@ -332,8 +332,11 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
   },
 });
 
+
 // ── Outputs ──────────────────────────────────────────────────
 export const resourceGroupName = rg.name;
 export const appUrl = pulumi.interpolate`https://${app.latestRevisionFqdn}`;
+export const containerAppFqdn = app.configuration.apply((c) => c?.ingress?.fqdn ?? '');
+export const customDomainVerificationId = app.customDomainVerificationId;
 export const postgresHost = dbServer.fullyQualifiedDomainName;
 export const containerRegistryLoginServer = registry.loginServer;
