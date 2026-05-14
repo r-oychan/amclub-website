@@ -18,7 +18,7 @@ export function PrivateEventPackages({
 }: {
   heading?: string;
   subheading?: string;
-  enquireCta?: { label: string; href?: string };
+  enquireCta?: { label: string; href?: string; isExternal?: boolean };
   items: PackageItem[];
 }) {
   const { ref, isVisible } = useScrollFadeIn({ threshold: 0.05, replay: false });
@@ -41,7 +41,11 @@ export function PrivateEventPackages({
           )}
           {enquireCta && (
             <div className="mt-5">
-              <ArrowLink label={enquireCta.label} href={enquireCta.href ?? '#'} />
+              <ArrowLink
+                label={enquireCta.label}
+                href={enquireCta.href ?? '#'}
+                isExternal={enquireCta.isExternal ?? /^(mailto:|tel:|https?:)/i.test(enquireCta.href ?? '')}
+              />
             </div>
           )}
         </div>

@@ -54,7 +54,7 @@ const overrideHref = (label: string, href?: string) => {
 const linkOf = (l?: StrapiLink) => {
   if (!l) return undefined;
   const o = overrideHref(l.label, l.href);
-  return { label: l.label, href: o.href };
+  return { label: l.label, href: o.href, isExternal: o.isExternal ?? l.isExternal };
 };
 const linksOf = (ls?: StrapiLink[]) =>
   (ls ?? []).map((l) => {

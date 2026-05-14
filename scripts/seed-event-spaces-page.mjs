@@ -32,7 +32,7 @@ async function upsertEventSpacesPage({ media }) {
     privatePackages: {
       heading: 'Private Event Packages',
       subheading: 'Carefully curated venues with customizable packages for every occasion.',
-      enquireCta: { label: 'Make an Enquiry', href: '#enquire', variant: 'primary' },
+      enquireCta: { label: 'Make an Enquiry', href: 'mailto:catering@amclub.org.sg', variant: 'primary', isExternal: true },
       items: [
         {
           name: 'Wedding Celebrations', tagline: 'Your Day. Your Way. Perfectly Executed',
