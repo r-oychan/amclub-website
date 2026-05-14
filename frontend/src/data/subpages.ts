@@ -495,7 +495,7 @@ export const diningSubpages: SubpageData[] = [
     type: 'Retail',
     description:
       'Introducing UNCORKED by The American Club, a collective of wine aficionados in our community. Connect with fellow vinophiles and elevate your experience with the Club\'s extensive wine labels, programs and events. UNCORKED Members are entitled to exclusive deals, invites to special events, priority booking and other special privileges.',
-    image: '/uploads/dining/uncorked.jpg',
+    image: '/images/uncorked.jpg',
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
     ctas: [{ label: 'Join Now', href: 'https://amclub.jotform.com/252308693060051', isExternal: true }],
