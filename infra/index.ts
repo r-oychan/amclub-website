@@ -330,6 +330,8 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
       },
     ],
   },
+}, {
+  ignoreChanges: ['configuration.ingress.customDomains'],
 });
 
 
