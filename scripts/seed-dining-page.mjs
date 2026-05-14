@@ -34,7 +34,7 @@ const RESTAURANTS = [
     menuLinks: [
       { label: 'View Menu', href: '/menus/central-menu.pdf' },
     ],
-    ctas: [],
+    ctas: [{ label: 'Promotions', href: '/dining/dining-promotion#promo-central', icon: 'arrow' }],
     operatingHoursSections: [
       { title: 'Opening Hours', rows: [
         { dayRange: 'Daily', time: '7:00 AM - 7:00 PM' },
@@ -108,7 +108,7 @@ const RESTAURANTS = [
     menuLinks: [
       { label: 'View Menu', href: '/menus/tradewinds-menu.pdf' },
     ],
-    ctas: [],
+    ctas: [{ label: 'Promotions', href: '/dining/dining-promotion#promo-tradewinds', icon: 'arrow' }],
     operatingHoursSections: [
       { title: 'Opening Hours', rows: [
         { dayRange: 'Sunday to Thursday', time: '8:00 AM - 9:00 PM',  lastOrder: 'Last order at 8:30 PM' },
@@ -125,7 +125,7 @@ const RESTAURANTS = [
     menuLinks: [
       { label: 'View Menu', href: '/menus/union-bar-menu.pdf' },
     ],
-    ctas: [],
+    ctas: [{ label: 'Promotions', href: '/dining/dining-promotion#promo-union-bar', icon: 'arrow' }],
     operatingHoursSections: [
       { title: 'Opening Hours', rows: [
         { dayRange: 'Sunday to Thursday',              time: '12:00 PM - 11:00 PM' },

@@ -264,6 +264,7 @@ export const diningSubpages: SubpageData[] = [
     parentHref: '/dining',
     ctas: [
       { label: 'View Menu', href: '/menus/central-menu.pdf', isExternal: true },
+      { label: 'Promotions', href: '/dining/dining-promotion#promo-central' },
     ],
   },
   {
@@ -344,6 +345,7 @@ export const diningSubpages: SubpageData[] = [
     parentHref: '/dining',
     ctas: [
       { label: 'View Menu', href: '/menus/tradewinds-menu.pdf', isExternal: true },
+      { label: 'Promotions', href: '/dining/dining-promotion#promo-tradewinds' },
     ],
     extraSections: [
       {
@@ -416,6 +418,7 @@ export const diningSubpages: SubpageData[] = [
     ctas: [
       { label: 'View Menu', href: '/menus/union-bar-menu.pdf', isExternal: true },
       { label: 'Sports Screening Schedule', href: '/menus/union-bar-menu.pdf', isExternal: true },
+      { label: 'Promotions', href: '/dining/dining-promotion#promo-union-bar' },
     ],
     extraSections: [
       {
