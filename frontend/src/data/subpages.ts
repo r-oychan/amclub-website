@@ -1182,7 +1182,13 @@ export const fitnessSubpages: SubpageData[] = [
     email: 'sportscounter@amclub.org.sg',
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
-    ctas: [{ label: 'Stay Updated', href: '#' }],
+    ctas: [
+      {
+        label: 'Stay Updated',
+        href: 'https://whatsapp.com/channel/0029VbB50Ow6LwHrEWWDAh3a',
+        isExternal: true,
+      },
+    ],
   },
 ];
 
