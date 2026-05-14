@@ -1636,7 +1636,8 @@ export const eventSpacesSubpages: SubpageData[] = [
           capacity: 'Up to 40 pax',
           description:
             'A grand, pillar-less ballroom created for unforgettable "I do" moments. With elegant layouts, seamless audiovisual support, and dedicated event coordination, the space transforms effortlessly from a heartfelt ceremony to an evening of dining and dancing – an enchanting setting for celebrating your love story in style.',
-          image: '/uploads/venue_galbraith_bf8613655b.jpeg',
+          image:
+            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_galbraith_wedding_db3a81af1f.jpg',
           imageAlt: 'The Galbraith Ballroom',
         },
         {
@@ -1644,7 +1645,8 @@ export const eventSpacesSubpages: SubpageData[] = [
           capacity: 'Up to 40 pax',
           description:
             'An intimate and refined setting for smaller weddings and cocktail receptions, The 2nd Floor offers couples a beautifully curated space for a celebration that feels personal, elegant, and effortlessly memorable.',
-          image: '/uploads/the_2nd_floor_7b3419fa1b.jpeg',
+          image:
+            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_2nd_floor_wedding_75f86eb499.jpg',
           imageAlt: 'The 2nd Floor',
         },
       ],
@@ -1723,7 +1725,8 @@ export const eventSpacesSubpages: SubpageData[] = [
           capacity: 'Up to 40 pax',
           description:
             "An elegant, pillar-less ballroom ideal for conferences, large-scale meetings, awards nights, and corporate celebrations. Flexible layouts, professional audiovisual support, and a refined setting make it the Club's premier venue for high-profile events.",
-          image: '/uploads/venue_galbraith_bf8613655b.jpeg',
+          image:
+            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_galbraith_wedding_db3a81af1f.jpg',
           imageAlt: 'The Galbraith Ballroom',
         },
         {
@@ -1731,7 +1734,8 @@ export const eventSpacesSubpages: SubpageData[] = [
           capacity: 'Up to 40 pax',
           description:
             'Purpose-built for focus and collaboration, our Thinkspace Meeting Rooms offer contemporary spaces for board meetings, workshops, training sessions, and breakouts – featuring presentation technology and flexible seating in a professional, comfortable setting.',
-          image: '/uploads/venue_thinkspace_4f7a2f0111.jpg',
+          image:
+            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_thinkspace_adult_library_e682b190f4.jpg',
           imageAlt: 'Thinkspace Meeting Rooms',
         },
         {
@@ -1739,7 +1743,8 @@ export const eventSpacesSubpages: SubpageData[] = [
           capacity: 'Up to 28 pax',
           description:
             'A refreshing option for team-building, client entertainment, and informal corporate socials, The Bowling Alley offers a lively setting that blends friendly competition with curated food and beverage experiences.',
-          image: '/uploads/venue_bowling_ebb18420b5.jpeg',
+          image:
+            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_bowling_4120_1c684f909e.jpg',
           imageAlt: 'The Bowling Alley',
         },
       ],

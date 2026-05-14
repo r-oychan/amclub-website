@@ -13,6 +13,8 @@ const IMAGES = [
   'hero.jpg',
   'package-wedding.jpg', 'package-corporate.jpg', 'package-parties.jpg',
   'venue-galbraith.jpeg', 'venue-thinkspace.jpg', 'venue-bowling.jpeg', 'venue-quad.jpeg',
+  'venue-galbraith-wedding.jpg', 'venue-2nd-floor-wedding.jpg',
+  'venue-thinkspace-adult-library.jpg', 'venue-bowling-4120.jpg',
   'catering-styles.jpg', 'catering-culinary.jpg', 'catering-dietary.jpg', 'catering-2go.png',
 ];
 
