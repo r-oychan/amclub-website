@@ -1756,14 +1756,18 @@ export const eventSpacesSubpages: SubpageData[] = [
     name: 'Parties',
     type: 'Social Events',
     description:
-      'From milestone birthdays to lively socials, the Club offers versatile venues for every age and celebration style.',
+      'Bring your celebrations to life in The Galbraith Ballroom – an inviting space perfect for birthdays, anniversaries, festive gatherings, or any reason to come together. With flexible layouts, delicious culinary options, and a team dedicated to making every detail shine, your party becomes an experience that your guests will remember long after the last toast.',
     image:
       'https://framerusercontent.com/images/ccM8q1j1oULvaFRDjnPhBdnPRho.jpg',
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
-      { label: 'View Capacity Chart', href: '#' },
-      { label: 'Enquire Now', href: '#' },
+      {
+        label: 'View Capacity Chart',
+        href: 'https://amclubdata28a57492.blob.core.windows.net/media/uploads/capacity_chart_72e78149a2.pdf',
+        isExternal: true,
+      },
+      { label: 'Enquire Now', href: 'mailto:catering@amclub.org.sg', isExternal: true },
     ],
   },
   {
