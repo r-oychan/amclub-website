@@ -1774,7 +1774,11 @@ export const eventSpacesSubpages: SubpageData[] = [
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
-      { label: 'Services & Rates', href: '#' },
+      {
+        label: 'Services & Rates',
+        href: 'https://amclubdata28a57492.blob.core.windows.net/media/uploads/thinkspace_services_flyer_9a83799195.jpg',
+        isExternal: true,
+      },
     ],
   },
   {
