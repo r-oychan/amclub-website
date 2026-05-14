@@ -1856,12 +1856,15 @@ export const eventSpacesSubpages: SubpageData[] = [
     hours: 'Daily 9:00 AM – 7:00 PM',
     level: 'Level 3',
     image:
-      'https://framerusercontent.com/images/zd8RpGTpCNZnJ1FkyAtkThpEy9s.png',
+      'https://amclubdata28a57492.blob.core.windows.net/media/uploads/boardroom_7f09a0e833.jpg',
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
-      { label: 'Service & Rates', href: '#' },
-      { label: 'Boardroom Bundle Package', href: '/documents/event-spaces/boardroom-bundle-package.jpg', isExternal: true },
+      {
+        label: 'Service & Rates',
+        href: 'https://amclubdata28a57492.blob.core.windows.net/media/uploads/thinkspace_services_flyer_9a83799195.jpg',
+        isExternal: true,
+      },
     ],
   },
 ];

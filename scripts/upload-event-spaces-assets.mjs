@@ -18,6 +18,8 @@ const TARGETS = [
     'bowling-alley-rates.jpg',
     'bowling-alley-party-package.pdf',
     'capacity-chart.pdf',
+    'boardroom.jpg',
+    'thinkspace-services-flyer.jpg',
   ]},
   { dir: 'media/event-spaces/wedding', files: [
     'wedding-package-classic.jpg',
