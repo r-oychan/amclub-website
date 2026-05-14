@@ -1171,11 +1171,6 @@ export const fitnessSubpages: SubpageData[] = [
     type: 'Golf',
     description:
       'For our Golf Enthusiasts, we offer off-site golf programs in collaboration with partner golf courses, designed for Members who enjoy hitting the greens. These programs include casual rounds, practice sessions, and friendly competitions, providing a great way to play, improve your game, and connect with fellow members.',
-    hours:
-      'Monday to Friday\n7:00 AM – 6:30 PM\nSaturday\n7:00 AM – 4:30 PM\nSunday & Public Holiday\nBy appointment',
-    level: 'Level 2',
-    phone: '6739-4312',
-    email: 'sportscounter@amclub.org.sg',
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [
