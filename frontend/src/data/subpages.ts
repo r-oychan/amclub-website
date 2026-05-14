@@ -676,7 +676,7 @@ export const fitnessSubpages: SubpageData[] = [
     },
     teamHeading: 'Meet Our Team',
     teamMembers: [
-      { name: 'Greg',      role: 'Aquatics Manager & Head Swim Coach',         image: '/images/fitness/team-aquatics/greg.jpg',      imageOffsetX: 48, imageOffsetY: 22, imageZoom: 1.8, coachLink: '/coaches/aquatics/greg' },
+      { name: 'Greg',      role: 'Aquatics Manager & Head Swim Coach',         image: '/images/fitness/team-aquatics/greg.jpg',      imageOffsetX: 48, imageOffsetY: 25, imageZoom: 1.7, coachLink: '/coaches/aquatics/greg' },
       { name: 'Zack',      role: 'Aquatics Coordinator',                        image: '/images/fitness/team-aquatics/zack.jpg',      imageOffsetX: 48, imageOffsetY: 25, imageZoom: 1.8, coachLink: '/coaches/aquatics/zack' },
       { name: 'Hariz',     role: 'Assistant Swim Coach & Coordinator',          image: '/images/fitness/team-aquatics/hariz.jpg',     imageOffsetX: 48, imageOffsetY: 28, imageZoom: 1.8, coachLink: '/coaches/aquatics/hariz' },
       { name: 'Abdul',     role: 'Chief Lifeguard Trainer',                     image: '/images/fitness/team-aquatics/abdul.jpg',     imageOffsetX: 48, imageOffsetY: 25, imageZoom: 1.8, coachLink: '/coaches/aquatics/abdul' },
@@ -684,7 +684,7 @@ export const fitnessSubpages: SubpageData[] = [
       { name: 'Rodel',     role: 'Swim Coach / Lifeguard Trainer',              image: '/images/fitness/team-aquatics/rodel.jpg',     imageOffsetX: 48, imageOffsetY: 22, imageZoom: 1.8, coachLink: '/coaches/aquatics/rodel' },
       { name: 'Ben',       role: 'Swim Coach / Lifeguard Trainer',              image: '/images/fitness/team-aquatics/ben.jpeg',      imageOffsetX: 48, imageOffsetY: 28, imageZoom: 2.0 },
       { name: 'Francesca', role: 'Swim Coach',                                  image: '/images/fitness/team-aquatics/francesca.jpg', imageOffsetX: 48, imageOffsetY: 32, imageZoom: 1.7 },
-      { name: 'Caroline',  role: 'Part-time Swim Coach',                        image: '/images/fitness/team-aquatics/caroline.jpg',  imageOffsetX: 42, imageOffsetY: 32, imageZoom: 1.25 },
+      { name: 'Caroline',  role: 'Part-time Swim Coach',                        image: '/images/fitness/team-aquatics/caroline.jpg',  imageOffsetX: 50, imageOffsetY: 28, imageZoom: 1.55 },
       { name: 'Daniel',    role: 'Part-time Swim Coach',                        image: '/images/fitness/team-aquatics/daniel.jpg',    imageOffsetX: 48, imageOffsetY: 25, imageZoom: 1.8 },
       { name: 'Yat',       role: 'Part-time Swim Coach / Lifeguard Trainer',    image: '/images/fitness/team-aquatics/yat.jpg',       imageOffsetX: 48, imageOffsetY: 22, imageZoom: 1.6 },
       { name: 'Sia',       role: 'Part-time Lifeguard Trainer',                 image: '/images/fitness/team-aquatics/sia.jpg',       imageOffsetX: 50, imageOffsetY: 30, imageZoom: 1.5 },
