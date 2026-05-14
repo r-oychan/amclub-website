@@ -1150,38 +1150,9 @@ export const fitnessSubpages: SubpageData[] = [
     ],
     faq: [...PLACEHOLDER_FAQ],
   },
-  {
-    slug: 'multi-purpose-court',
-    name: 'Multi-Purpose Court',
-    type: 'Sports',
-    description:
-      "Elevate your game at the Club's Multi-purpose Court (MPC), conveniently located beside the Scotts Road entrance. Whether you enjoy basketball, badminton, or pickleball, the MPC offers a versatile space for fitness, fun, and friendly competition.",
-    hours: 'Daily\n7:00 AM – 9:00 PM',
-    level: 'Basement 3',
-    phone: '6739 4312',
-    email: 'sportscounter@amclub.org.sg',
-    image:
-      'https://framerusercontent.com/images/5T2KeKnSFBofCLoyWZDRv2OQf8.jpeg',
-    parentSection: 'Fitness & Wellness',
-    parentHref: '/fitness',
-  },
-  {
-    slug: 'golf',
-    name: 'Golf',
-    type: 'Golf',
-    description:
-      'For our Golf Enthusiasts, we offer off-site golf programs in collaboration with partner golf courses, designed for Members who enjoy hitting the greens. These programs include casual rounds, practice sessions, and friendly competitions, providing a great way to play, improve your game, and connect with fellow members.',
-    image: '/images/fitness/golf.jpg',
-    parentSection: 'Fitness & Wellness',
-    parentHref: '/fitness',
-    ctas: [
-      {
-        label: 'Stay Updated',
-        href: 'https://whatsapp.com/channel/0029VbB50Ow6LwHrEWWDAh3a',
-        isExternal: true,
-      },
-    ],
-  },
+  // Golf and Multi-Purpose Court are now CMS-driven via scripts/seed-facilities.mjs
+  // (facilities collection). Their entries previously lived here as static fallbacks
+  // and were removed once the deployed Strapi entries were verified.
 ];
 
 export const kidsSubpages: SubpageData[] = [

@@ -249,6 +249,38 @@ const TENNIS = {
   teamHeading: 'Meet Our Team',
 };
 
+// Off-site golf programs — no fixed venue or hours at the Club, just the
+// description + Stay Updated WhatsApp channel CTA.
+const GOLF = {
+  name: 'Golf',
+  slug: 'golf',
+  category: 'fitness',
+  categoryLabel: 'Golf',
+  description:
+    'For our Golf Enthusiasts, we offer off-site golf programs in collaboration with partner golf courses, designed for Members who enjoy hitting the greens. These programs include casual rounds, practice sessions, and friendly competitions, providing a great way to play, improve your game, and connect with fellow members.',
+  imageFile: 'golf.jpg',
+  ctas: [
+    { label: 'Stay Updated', href: 'https://whatsapp.com/channel/0029VbB50Ow6LwHrEWWDAh3a', isExternal: true, variant: 'primary', icon: 'arrow' },
+  ],
+};
+
+const MPC = {
+  name: 'Multi-Purpose Court',
+  slug: 'multi-purpose-court',
+  category: 'fitness',
+  categoryLabel: 'Sports',
+  description:
+    "Elevate your game at the Club's Multi-purpose Court (MPC), conveniently located beside the Scotts Road entrance. Whether you enjoy basketball, badminton, or pickleball, the MPC offers a versatile space for fitness, fun, and friendly competition.",
+  locationContact: { locationLevel: 'Basement 3', phone: '6739 4312', email: 'sportscounter@amclub.org.sg' },
+  imageFile: 'multi-purpose-court.jpeg',
+  operatingHoursSections: [
+    {
+      title: 'Operating Hours',
+      rows: [{ dayRange: 'Daily', time: '7:00 AM – 9:00 PM' }],
+    },
+  ],
+};
+
 const SQUASH = {
   name: 'Squash',
   slug: 'squash',
@@ -333,6 +365,63 @@ async function upsertTennisFacility({ teamMedia, heroImageId }) {
   }
   const resp = await api(ctx, '/facilities', { method: 'POST', body: { data: payload } });
   console.log(`  ✓ created facility tennis (documentId=${resp.data?.documentId})`);
+  return resp.data;
+}
+
+async function upsertGolfFacility({ heroImageId }) {
+  const payload = {
+    name: GOLF.name,
+    slug: GOLF.slug,
+    category: GOLF.category,
+    categoryLabel: GOLF.categoryLabel,
+    description: GOLF.description,
+    image: heroImageId,
+    ctas: GOLF.ctas,
+    publishedAt: new Date().toISOString(),
+  };
+
+  if (DRY) {
+    console.log(`  [dry] upsert facility golf (ctas=${GOLF.ctas.length})`);
+    return { documentId: 'dry-golf' };
+  }
+
+  const existing = await findOneBySlug(ctx, 'facilities', GOLF.slug);
+  if (existing) {
+    const resp = await api(ctx, `/facilities/${existing.documentId}`, { method: 'PUT', body: { data: payload } });
+    console.log(`  ✓ updated facility golf (documentId=${existing.documentId})`);
+    return resp.data;
+  }
+  const resp = await api(ctx, '/facilities', { method: 'POST', body: { data: payload } });
+  console.log(`  ✓ created facility golf (documentId=${resp.data?.documentId})`);
+  return resp.data;
+}
+
+async function upsertMpcFacility({ heroImageId }) {
+  const payload = {
+    name: MPC.name,
+    slug: MPC.slug,
+    category: MPC.category,
+    categoryLabel: MPC.categoryLabel,
+    description: MPC.description,
+    locationContact: MPC.locationContact,
+    image: heroImageId,
+    operatingHoursSections: MPC.operatingHoursSections,
+    publishedAt: new Date().toISOString(),
+  };
+
+  if (DRY) {
+    console.log(`  [dry] upsert facility multi-purpose-court`);
+    return { documentId: 'dry-mpc' };
+  }
+
+  const existing = await findOneBySlug(ctx, 'facilities', MPC.slug);
+  if (existing) {
+    const resp = await api(ctx, `/facilities/${existing.documentId}`, { method: 'PUT', body: { data: payload } });
+    console.log(`  ✓ updated facility multi-purpose-court (documentId=${existing.documentId})`);
+    return resp.data;
+  }
+  const resp = await api(ctx, '/facilities', { method: 'POST', body: { data: payload } });
+  console.log(`  ✓ created facility multi-purpose-court (documentId=${resp.data?.documentId})`);
   return resp.data;
 }
 
@@ -463,7 +552,7 @@ async function main() {
     }
   }
 
-  console.log('\n[8/8] Upserting aquatics coach detail entries…');
+  console.log('\n[8/10] Upserting aquatics coach detail entries…');
   for (const c of AQUATICS_COACHES) {
     const photoId = aquaticsTeamMedia[c.photoFile]?.id;
     try {
@@ -473,10 +562,30 @@ async function main() {
     }
   }
 
+  console.log('\n[9/10] Uploading golf hero image + upserting facility…');
+  const golfHeroMedia = await uploadAll(ctx, FITNESS_DIR, [GOLF.imageFile], { dry: DRY });
+  const golfHeroId = golfHeroMedia[GOLF.imageFile]?.id;
+  try {
+    await upsertGolfFacility({ heroImageId: golfHeroId });
+  } catch (e) {
+    console.error(`  ✗ golf upsert failed: ${e.message}`);
+  }
+
+  console.log('\n[10/10] Uploading MPC hero image + upserting facility…');
+  const mpcHeroMedia = await uploadAll(ctx, FITNESS_DIR, [MPC.imageFile], { dry: DRY });
+  const mpcHeroId = mpcHeroMedia[MPC.imageFile]?.id;
+  try {
+    await upsertMpcFacility({ heroImageId: mpcHeroId });
+  } catch (e) {
+    console.error(`  ✗ multi-purpose-court upsert failed: ${e.message}`);
+  }
+
   console.log('\nDone. Verify with:');
   console.log(`  curl "${ctx.BASE}/api/facilities?filters[slug][$eq]=tennis&populate[teamMembers][populate]=*"`);
   console.log(`  curl "${ctx.BASE}/api/facilities?filters[slug][$eq]=aquatics&populate[teamMembers][populate]=*"`);
   console.log(`  curl "${ctx.BASE}/api/coaches?filters[section][$eq]=aquatics&populate[photo]=true"`);
   console.log(`  curl "${ctx.BASE}/api/facilities?filters[slug][$eq]=squash&populate[ctas]=true"`);
+  console.log(`  curl "${ctx.BASE}/api/facilities?filters[slug][$eq]=golf&populate[ctas]=true&populate[image]=true"`);
+  console.log(`  curl "${ctx.BASE}/api/facilities?filters[slug][$eq]=multi-purpose-court&populate[locationContact]=true&populate[image]=true&populate[operatingHoursSections][populate]=*"`);
 }
 main().catch((e) => { console.error('\nERROR:', e.message); process.exit(1); });
