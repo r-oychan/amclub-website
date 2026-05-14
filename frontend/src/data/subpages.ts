@@ -1155,18 +1155,15 @@ export const fitnessSubpages: SubpageData[] = [
     name: 'Multi-Purpose Court',
     type: 'Sports',
     description:
-      'The Bowling Alley offers best-in-class awesome, anytime fun. From casual family outings, couples\' night, birthday parties, Junior Members\' nights and corporate events, The Bowling Alley offers entertainment that\'s right up your alley.\n\nOur Brunswick bowling lanes are oiled and maintained regularly to provide the best experience. For those who want a colorful twist to their usual games, the Cosmic Bowling feature provides multi-colored disco lights and catchy beats. The state-of-the-art LED lights and pin deck glow lighting feature are sure to impress your friends and family.',
-    hours:
-      'Monday to Friday\n7:00 AM – 6:30 PM\nSaturday\n7:00 AM – 4:30 PM\nSunday & Public Holiday\nBy appointment',
-    level: 'Level 2',
-    phone: '6739-4312',
+      "Elevate your game at the Club's Multi-purpose Court (MPC), conveniently located beside the Scotts Road entrance. Whether you enjoy basketball, badminton, or pickleball, the MPC offers a versatile space for fitness, fun, and friendly competition.",
+    hours: 'Daily\n7:00 AM – 9:00 PM',
+    level: 'Basement 3',
+    phone: '6739 4312',
     email: 'sportscounter@amclub.org.sg',
     image:
       'https://framerusercontent.com/images/5T2KeKnSFBofCLoyWZDRv2OQf8.jpeg',
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
-    ctas: [{ label: 'View Rates', href: '#' }],
-    faq: [...PLACEHOLDER_FAQ],
   },
   {
     slug: 'golf',
