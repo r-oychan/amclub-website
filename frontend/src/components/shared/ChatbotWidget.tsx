@@ -3,6 +3,7 @@ import {
   ConversationProvider,
   useConversation,
 } from '@elevenlabs/react';
+import { useSiteSettings } from '../../hooks/useSiteSettings';
 
 const AGENT_ID = import.meta.env.VITE_ELEVENLABS_AGENT_ID as string | undefined;
 
@@ -328,6 +329,7 @@ function FloatingButton({ onOpen }: { onOpen: () => void }) {
 
 export function ChatbotWidget() {
   const [open, setOpen] = useState(false);
+  const settings = useSiteSettings();
 
   if (!AGENT_ID) {
     if (import.meta.env.DEV) {
@@ -335,6 +337,9 @@ export function ChatbotWidget() {
     }
     return null;
   }
+
+  // Wait for settings before deciding — avoids a flash of the button on hard-off configs.
+  if (!settings || !settings.chatbotEnabled) return null;
 
   return (
     <ConversationProvider>

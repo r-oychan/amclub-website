@@ -1,0 +1,20 @@
+{
+  "kind": "singleType",
+  "collectionName": "site_settings",
+  "info": {
+    "singularName": "site-settings",
+    "pluralName": "site-settings-plural",
+    "displayName": "Site Settings",
+    "description": "Global site-wide feature flags and toggles"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "chatbotEnabled": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    }
+  }
+}

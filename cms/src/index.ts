@@ -32,6 +32,7 @@ const PUBLIC_FIND_TYPES = [
   'api::contact-us-page.contact-us-page',
   'api::dining-promotion.dining-promotion',
   'api::dining-promotions-page.dining-promotions-page',
+  'api::site-settings.site-settings',
 ];
 
 async function grantPublicReadAccess(strapi: any) {
