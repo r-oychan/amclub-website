@@ -43,7 +43,7 @@ const IMAGES = [
   // advocacy
   'advocacy-aside.png',
   // management 6
-  'mgmt-christine.jpeg', 'mgmt-shah.jpg', 'mgmt-audrey.jpeg',
+  'mgmt-christine.jpeg', 'mgmt-audrey.jpeg',
   'mgmt-vincent.jpg', 'mgmt-chang.jpg', 'mgmt-julie.jpg',
   // partners 7 + 2 strategic
   'partner-aas.jpg', 'partner-awa.png', 'partner-amcham.jpg', 'partner-cas.png',
@@ -87,11 +87,10 @@ const COMMITTEE = [
   // Management
   ['Christine Kaelbel-Sheares', 'General Manager',                          'mgmt-christine.jpeg', 'management', 1,
     "Christine is a seasoned executive with a diverse global leadership experience. She has held key roles in prestigious hotels in Singapore and the United States. She has led teams in The Venetian and The Palazzo in Las Vegas, The Four Seasons in Chicago, Auberge du Soleil Resort and Domaine Chandon, both in Napa Valley, California. She also served as the Director of Guest Product Development and Asia Operations for Princess Cruises, overseeing a fleet of ships in Asia, Australia, and New Zealand.\n\nIn her most recent role, Christine was the Vice President of Food & Beverage at the Marina Bay Sands Singapore. She was part of the pioneer team and was instrumental in designing service protocols and setting new standards for service excellence. Christine holds a Bachelor's Degree in Law and Politics from the University of London and pursued postgraduate studies in Hospitality Management at the Cesar Ritz Colleges in Switzerland.\n\nFluent in English, French, Mandarin and Cantonese, she brings a unique skill set to support the Club's membership. With her love of the Singaporean and American communities and cultures, her extensive global experience in executive management, and her passion for service, Christine is committed to elevating the Club's overall Member experience."],
-  ['Shah Bahari',  'Director of Food & Beverage',           'mgmt-shah.jpg',     'management', 2],
-  ['Audrey Lim',   'Director of Finance',                   'mgmt-audrey.jpeg',  'management', 3],
-  ['Vincent Lim',  'Director of Human Resources',           'mgmt-vincent.jpg',  'management', 4],
-  ['Chang Lim',    'Director of Information Technology',    'mgmt-chang.jpg',    'management', 5],
-  ['Julie Zul',    'Director of Member Engagement',         'mgmt-julie.jpg',    'management', 6],
+  ['Audrey Lim',   'Director of Finance',                   'mgmt-audrey.jpeg',  'management', 2],
+  ['Vincent Lim',  'Director of Human Resources',           'mgmt-vincent.jpg',  'management', 3],
+  ['Chang Lim',    'Director of Information Technology',    'mgmt-chang.jpg',    'management', 4],
+  ['Julie Zul',    'Director of Member Engagement',         'mgmt-julie.jpg',    'management', 5],
 ];
 
 const HERITAGE_SLIDES = [
@@ -193,7 +192,7 @@ async function upsertAboutPage({ media, homeMedia }) {
       sidebarBody: 'If Members wish to volunteer on any of our Committees, please fill in the online Volunteer Interest Form.',
       links: [
         { label: 'Volunteer Interest Form', href: 'https://amclub.jotform.com/form/tac-volunteer-interest-form', variant: 'primary', isExternal: true },
-        { label: 'Committee List', href: '/documents/committee-list.pdf', variant: 'primary', caption: '(Updated as at December 3, 2025)', isExternal: true },
+        { label: 'Committee List', href: '/documents/committee-list.pdf', variant: 'primary', caption: '(Updated as at May 14, 2026)', isExternal: true },
         { label: 'Volunteer Code of Conduct', href: '/documents/volunteer-code-of-conduct.pdf', variant: 'primary', isExternal: true },
       ],
     },
@@ -298,23 +297,19 @@ async function main() {
     console.log(`  ✓ ${name}`);
   }
 
-  // Prune stale general-committee members that no longer appear in the source list.
-  const keepGCSlugs = new Set(
-    COMMITTEE
-      .filter(([, , , type]) => type === 'general-committee')
-      .map(([name]) => slugify(name)),
-  );
+  // Prune stale committee-members (both GC and management) that no longer appear in the source list.
+  const keepSlugs = new Set(COMMITTEE.map(([name]) => slugify(name)));
   if (DRY) {
-    console.log('  [dry] prune stale general-committee entries (skipped)');
+    console.log('  [dry] prune stale committee-members (skipped)');
   } else {
     const list = await api(
       ctx,
-      '/committee-members?filters[memberType][$eq]=general-committee&pagination[limit]=100&fields[0]=name&fields[1]=slug',
+      '/committee-members?pagination[limit]=100&fields[0]=name&fields[1]=slug&fields[2]=memberType',
     );
     for (const entry of list.data ?? []) {
-      if (!keepGCSlugs.has(entry.slug)) {
+      if (!keepSlugs.has(entry.slug)) {
         await api(ctx, `/committee-members/${entry.documentId}`, { method: 'DELETE' });
-        console.log(`  ✗ pruned stale GC member: ${entry.name}`);
+        console.log(`  ✗ pruned stale committee-member: ${entry.name} (${entry.memberType})`);
       }
     }
   }
