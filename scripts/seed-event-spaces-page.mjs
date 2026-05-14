@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { initEnv, api, uploadAll, isDryRun } from './seed-helpers.mjs';
+import { initEnv, api, uploadAll, uploadFile, isDryRun } from './seed-helpers.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
@@ -65,7 +65,7 @@ async function upsertEventSpacesPage({ media }) {
         {
           name: 'The Galbraith Ballroom', capacity: ['3400 sqm'],
           description: 'The Galbraith Ballroom is a versatile, beautifully designed venue that adapts effortlessly to any occasion. With flexible setups and tailored packages, it transforms every gathering into a memorable experience.',
-          image: media['venue-galbraith.jpeg'].id,
+          image: media['venue-galbraith-wedding.jpg'].id,
           cta: { label: 'Learn More', href: '/event-spaces/the-gallbrainth-ballroom', variant: 'primary' },
         },
         {
@@ -83,8 +83,8 @@ async function upsertEventSpacesPage({ media }) {
         {
           name: 'The Quad Studios', capacity: ['Up to 50 pax'],
           description: "A vibrant, youth-focused venue for kids' parties and celebrations. With three flexible spaces – Quad Studio 1, 2 & 3 – it transforms effortlessly into fun, customizable settings for birthdays and special milestones.",
-          image: media['venue-quad.jpeg'].id,
-          cta: { label: "Kids' Party Packages", href: '/kids', variant: 'primary' },
+          image: media['quad-studios-1457.jpg'].id,
+          cta: { label: "Kids' Party Packages", href: '/kids/kids-parties', variant: 'primary' },
         },
       ],
     },
@@ -139,6 +139,17 @@ async function main() {
   console.log(`Mode:        ${DRY ? 'DRY-RUN' : 'LIVE'}`);
   console.log('\n[1/2] Uploading media…');
   const media = await uploadAll(ctx, MEDIA_DIR, IMAGES, { dry: DRY });
+  // The Quad Studios card on /event-spaces uses the kids party photo,
+  // which lives under media/kids/kids-party. Upload it alongside the
+  // event-spaces assets so the seed can reference its media id.
+  if (DRY) {
+    media['quad-studios-1457.jpg'] = { id: 0, name: 'quad-studios-1457.jpg' };
+    console.log('  [dry] upload quad-studios-1457.jpg (from media/kids/kids-party)');
+  } else {
+    const quad = await uploadFile(ctx, join(ROOT, 'media', 'kids', 'kids-party', 'quad-studios-1457.jpg'));
+    media['quad-studios-1457.jpg'] = quad;
+    console.log(`  ✓ ${'quad-studios-1457.jpg'.padEnd(40)} → id=${quad.id}`);
+  }
   console.log('\n[2/2] Event Spaces Page single type…');
   await upsertEventSpacesPage({ media });
   console.log('  ✓ event-spaces-page upserted');

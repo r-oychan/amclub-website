@@ -1653,6 +1653,8 @@ export const eventSpacesSubpages: SubpageData[] = [
         {
           heading: 'The Classic Collection',
           tagline: 'Ideal for intimate weddings and couples seeking a refined yet simple celebration',
+          image:
+            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/wedding_package_classic_3f7ac22fc3.jpg',
           benefits: [
             'Exclusive use of The Galbraith Ballroom for up to 4 hours',
             'Elegant round table setup with your choice of linen',
@@ -1667,6 +1669,8 @@ export const eventSpacesSubpages: SubpageData[] = [
         {
           heading: 'The Signature Collection',
           tagline: 'For mid-sized weddings with personalized touches and elevated flair',
+          image:
+            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/wedding_package_signature_6d772ce68d.jpg',
           benefits: [
             'Exclusive use of The Galbraith Ballroom for up to 4 hours',
             'Elegant round table setup with your choice of linen',
@@ -1681,6 +1685,8 @@ export const eventSpacesSubpages: SubpageData[] = [
         {
           heading: 'The Prestige Collection',
           tagline: 'Our most comprehensive package, designed for a truly premium wedding experience',
+          image:
+            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/wedding_package_prestige_e7474f1a37.jpg',
           benefits: [
             'Exclusive use of The Galbraith Ballroom for up to 4 hours',
             'Elegant round table setup with your choice of linen',
@@ -1793,7 +1799,6 @@ export const eventSpacesSubpages: SubpageData[] = [
     parentHref: '/event-spaces',
     ctas: [
       { label: 'Services & Rates', href: '#' },
-      { label: 'Boardroom Bundle Package', href: '#' },
     ],
   },
   {
@@ -1811,9 +1816,17 @@ export const eventSpacesSubpages: SubpageData[] = [
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
-      { label: 'Services & Rates', href: '#' },
-      { label: 'Party Packages', href: '#' },
-      { label: 'Book A Lane', href: '#' },
+      {
+        label: 'Rates',
+        href: 'https://amclubdata28a57492.blob.core.windows.net/media/uploads/bowling_alley_rates_95e27a91a0.jpg',
+        isExternal: true,
+      },
+      {
+        label: 'Party Packages',
+        href: 'https://amclubdata28a57492.blob.core.windows.net/media/uploads/bowling_alley_party_package_13a9e56910.pdf',
+        isExternal: true,
+      },
+      { label: 'Book A Lane', href: 'mailto:youth@amclub.org.sg', isExternal: true },
     ],
   },
   {
