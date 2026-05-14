@@ -1412,11 +1412,12 @@ export const kidsSubpages: SubpageData[] = [
     type: 'Recreational Programs',
     description:
       'Our Recreational Classes support your child\'s holistic development through enriching experiences that spark curiosity and build confidence. With thoughtfully curated programs led by trusted instructors and partners, kids can enjoy a wide range of on-site and off-site classes – from arts and movement to sports and STEM.',
-    image:
-      '/uploads/pages/kids/classes.jpg',
+    image: '/images/kids/learning/recreational-classes.jpg',
     parentSection: 'Kids',
     parentHref: '/kids',
-    ctas: [{ label: 'View Classes', href: '#' }],
+    ctas: [
+      { label: 'View Classes', href: '/documents/kids/recreational-classes.pdf', isExternal: true },
+    ],
     faq: [...PLACEHOLDER_FAQ],
   },
   {

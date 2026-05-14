@@ -172,13 +172,33 @@ export default function KidsPage() {
         }
       : fallbackPartyPackages;
 
-  const learningItems = (data.learning?.items ?? []).map((i) => ({
-    heading: i.heading,
-    description: i.description ?? '',
-    image: mediaUrl(i.image) ?? '',
-    imageAlt: i.imageAlt ?? '',
-    cta: { label: i.cta?.label ?? 'Explore', href: i.cta?.href ?? '#' },
-  }));
+  // Heading-keyed overrides keep the Learning cards correct even when the
+  // deployed Strapi entry still carries stale hrefs/images (e.g. /kids/classes
+  // pre-rename) — frontend-only patch until the CMS is reseeded.
+  const LEARNING_OVERRIDES: Record<string, { href?: string; image?: string }> = {
+    'Seasonal Camps': {
+      href: '/kids/camps',
+      image: '/images/kids/learning/seasonal-camps.jpg',
+    },
+    'Recreational Classes': {
+      href: '/kids/recreational-classes',
+      image: '/images/kids/learning/recreational-classes.jpg',
+    },
+  };
+
+  const learningItems = (data.learning?.items ?? []).map((i) => {
+    const override = LEARNING_OVERRIDES[i.heading];
+    return {
+      heading: i.heading,
+      description: i.description ?? '',
+      image: override?.image ?? mediaUrl(i.image) ?? '',
+      imageAlt: i.imageAlt ?? '',
+      cta: {
+        label: i.cta?.label ?? 'Explore',
+        href: override?.href ?? i.cta?.href ?? '#',
+      },
+    };
+  });
 
   return (
     <PageFade loaded={loaded}>
