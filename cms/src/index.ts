@@ -96,6 +96,19 @@ function mimeFromFilename(filename: string): string | null {
   return MIME_BY_EXT[ext] ?? null;
 }
 
+// Strapi v5 singleTypes 404 on `find` until a row exists. site-settings is
+// a global feature-flag store that the frontend hits on every page load, so
+// create a sensible default row on first boot if one isn't already there.
+async function ensureSiteSettings(strapi: any) {
+  const existing = await strapi.documents('api::site-settings.site-settings').findFirst();
+  if (existing) return;
+  await strapi.documents('api::site-settings.site-settings').create({
+    data: { chatbotEnabled: true },
+    status: 'published',
+  });
+  strapi.log.info('[bootstrap] created default site-settings entry');
+}
+
 async function backfillUploadMimes(strapi: any) {
   const stale = await strapi.db.query('plugin::upload.file').findMany({
     where: { mime: 'application/octet-stream' },
@@ -123,6 +136,11 @@ export default {
       await grantPublicReadAccess(strapi);
     } catch (e) {
       strapi.log.error('[bootstrap] failed to grant public read access', e);
+    }
+    try {
+      await ensureSiteSettings(strapi);
+    } catch (e) {
+      strapi.log.error('[bootstrap] failed to ensure site-settings entry', e);
     }
     try {
       await backfillUploadMimes(strapi);
