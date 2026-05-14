@@ -11,26 +11,33 @@ const DRY = isDryRun();
 const ctx = initEnv();
 
 // Each album is either:
-//   { ..., cover: 'single-file.jpg' }                     — legacy single-cover album
-//   { ..., folder: 'album-slug' }                         — folder under media/gallery/<folder>
-//                                                            All images uploaded; first (alphabetically) is cover.
+//   { ..., cover: 'single-file.jpg' }   — single-image album using a flat file in media/gallery/
+//   { ..., folder: 'Folder Name' }      — every image inside media/gallery/<folder> is uploaded;
+//                                         first (alphabetically, after filter) is the cover.
 const ALBUMS = [
-  { title: 'Club-wide Chinese New Year Celebration 2026',      slug: 'club-wide-cny-2026',                 date: 'FEB 2026', folder: 'club-wide-cny-2026',                 order: 1 },
-  { title: 'Super Sunday Funday: Texas Takeover',              slug: 'super-sunday-funday-texas-takeover', date: 'APR 2026', folder: 'super-sunday-funday-texas-takeover', order: 2 },
-  { title: 'Tree Lighting Evening 2025',                       slug: 'tree-lighting-evening-2025',         date: 'DEC 2025', cover: 'album-tree-lighting.jpg',     photoCount: 42, order: 3 },
-  { title: 'Annual VIP Party 2025',                            slug: 'annual-vip-party-2025',              date: 'NOV 2025', cover: 'album-vip-party.jpg',         photoCount: 58, order: 4 },
-  { title: 'Wonder of Women 2025',                             slug: 'wonder-of-women-2025',               date: 'MAR 2025', cover: 'album-wonder-of-women.jpg',   photoCount: 36, order: 5 },
-  { title: 'Elite Party 2025',                                 slug: 'elite-party-2025',                   date: 'FEB 2025', cover: 'album-elite-party.jpg',       photoCount: 47, order: 6 },
-  { title: 'Super Bowl LIX Finals Live Screening',             slug: 'super-bowl-lix-finals',              date: 'FEB 2025', cover: 'album-super-bowl.jpg',        photoCount: 29, order: 7 },
-  { title: 'Club-wide Chinese New Year Celebration 2025',      slug: 'club-wide-cny-2025',                 date: 'JAN 2025', cover: 'album-cny-club.jpg',          photoCount: 64, order: 8 },
-  { title: 'Team Members’ Chinese New Year Celebration 2025',  slug: 'team-members-cny-2025',              date: 'JAN 2025', cover: 'album-cny-team.jpg',          photoCount: 22, order: 9 },
-  { title: 'Shop Treasures & One-of-a-Kind Finds @ The American Club', slug: 'shop-treasures',             date: 'DEC 2024', cover: 'album-shop-treasures.jpg',    photoCount: 18, order: 10 },
+  { title: 'Super Sunday Funday: Texas Takeover',                slug: 'super-sunday-funday-texas-takeover', date: 'APR 2026', folder: 'Super Sunday Funday - Texas Takeover',          order: 1 },
+  { title: 'Elite Party 2026',                                   slug: 'elite-party-2026',                   date: 'APR 2026', folder: 'Elite Party 2026',                              order: 2 },
+  { title: "International Women's Day — Give to Gain 2026",      slug: 'international-womens-day-2026',      date: 'MAR 2026', folder: 'Inernational Womens Day - Give to Gain 2026',    order: 3 },
+  { title: 'Club-wide Chinese New Year Celebration 2026',        slug: 'club-wide-cny-2026',                 date: 'FEB 2026', folder: 'Club Wide Chinese New Year Celebration 2026',    order: 4 },
+  { title: 'Stars, Stripes & Big Breakfast Bites 2026',          slug: 'stars-stripes-big-breakfast-bites-2026', date: 'FEB 2026', folder: 'Stars, Stripes & Big Breakfast Bites 2026',  order: 5 },
+  { title: 'The American Club 77th Birthday Bash',               slug: 'tac-77th-birthday-bash',             date: '2025',     folder: 'The American Club 77th Birthday Bash',          order: 6 },
+  { title: 'Tree Lighting Evening 2025',                         slug: 'tree-lighting-evening-2025',         date: 'DEC 2025', folder: 'Tree Lighting Evening 2025',                    order: 7 },
+  { title: '4th of July Celebration 2025',                       slug: 'fourth-of-july-celebration-2025',    date: 'JUL 2025', folder: '4th of July Celebration 2025',                  order: 9 },
+  { title: 'Wonder of Women 2025',                               slug: 'wonder-of-women-2025',               date: 'MAR 2025', cover: 'album-wonder-of-women.jpg',   photoCount: 36, order: 10 },
+  { title: 'Elite Party 2025',                                   slug: 'elite-party-2025',                   date: 'FEB 2025', cover: 'album-elite-party.jpg',       photoCount: 47, order: 11 },
+  { title: 'Super Bowl LIX Finals Live Screening',               slug: 'super-bowl-lix-finals',              date: 'FEB 2025', cover: 'album-super-bowl.jpg',        photoCount: 29, order: 12 },
+  { title: 'Club-wide Chinese New Year Celebration 2025',        slug: 'club-wide-cny-2025',                 date: 'JAN 2025', cover: 'album-cny-club.jpg',          photoCount: 64, order: 13 },
+  { title: 'Team Members’ Chinese New Year Celebration 2025',    slug: 'team-members-cny-2025',              date: 'JAN 2025', cover: 'album-cny-team.jpg',          photoCount: 22, order: 14 },
 ];
 
 const IMG_RE = /\.(jpe?g|png|webp)$/i;
+const THUMB_RE = /-150x150\./i; // WordPress-style 150x150 thumbnails — skip
 
 function listAlbumFolder(folder) {
-  return readdirSync(join(MEDIA_DIR, folder)).filter((n) => IMG_RE.test(n)).sort();
+  return readdirSync(join(MEDIA_DIR, folder))
+    .filter((n) => IMG_RE.test(n))
+    .filter((n) => !THUMB_RE.test(n))
+    .sort();
 }
 
 async function ensureAlbum({ title, slug, date, photoCount, order }, coverId, imageIds) {
@@ -83,6 +90,7 @@ async function main() {
       folderMedia[album.slug] = {};
       continue;
     }
+    console.log(`  → ${album.folder} (${files.length} files)`);
     folderMedia[album.slug] = await uploadAll(ctx, join(MEDIA_DIR, album.folder), files, { dry: DRY });
   }
 
@@ -102,6 +110,20 @@ async function main() {
     }
     await ensureAlbum(album, coverId, imageIds);
     console.log(`  ✓ ${album.title} (${imageIds.length} photos)`);
+  }
+
+  // Prune stale albums no longer in the source list.
+  const keepSlugs = new Set(ALBUMS.map((a) => a.slug));
+  if (DRY) {
+    console.log('  [dry] prune stale gallery-albums (skipped)');
+  } else {
+    const list = await api(ctx, '/gallery-albums?pagination[limit]=100&fields[0]=title&fields[1]=slug');
+    for (const entry of list.data ?? []) {
+      if (!keepSlugs.has(entry.slug)) {
+        await api(ctx, `/gallery-albums/${entry.documentId}`, { method: 'DELETE' });
+        console.log(`  ✗ pruned stale album: ${entry.title}`);
+      }
+    }
   }
 
   console.log('\n[3/3] Gallery Page single type…');
