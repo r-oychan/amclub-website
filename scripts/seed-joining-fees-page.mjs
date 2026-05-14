@@ -14,7 +14,11 @@ const ctx = initEnv();
 
 const START_APPLICATION_URL = '/membership/start-application';
 const PAYMENT_PLANS_URL = '/documents/membership/membership-joining-fees-payment-plans.pdf';
-const MONTHLY_DUES_URL = '/documents/membership/membership-joining-fees-payment-plans.pdf';
+const MONTHLY_DUES_URL = '/documents/membership/monthly-dues.pdf';
+const CORPORATE_APPLICATION_URL =
+  '/documents/membership/csv-mo-08-application-form-corporate-membership.pdf';
+const CORPORATE_4_YEAR_PLAN_URL =
+  '/documents/membership/corporate-membership-4-year-payment-plan.jpg';
 
 const breakdown = (lines) => lines.join('\n');
 
@@ -82,8 +86,8 @@ const data = {
   corporateIntro2:
     'Corporate Membership is not transferable and all fees paid for such Membership are non-refundable. Corporate Members are liable for the payment of all subscriptions, registration fees, and monies due on the accounts of their Nominees with the Club.',
   corporateCtas: [
-    { label: 'Start an Application', href: START_APPLICATION_URL, isExternal: false, variant: 'primary' },
-    { label: '4-Year Payment Plan', href: PAYMENT_PLANS_URL, isExternal: true, variant: 'outline' },
+    { label: 'Start an Application', href: CORPORATE_APPLICATION_URL, isExternal: true, variant: 'primary' },
+    { label: '4-Year Payment Plan', href: CORPORATE_4_YEAR_PLAN_URL, isExternal: true, variant: 'outline' },
   ],
   corporateCards: [
     { className: 'Class A', nominees: '3 Nominees', joiningFee: '$109,000', annualFee: '$37,726.50', badge: '4-Year Plan Available' },
