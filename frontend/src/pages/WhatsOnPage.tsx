@@ -136,8 +136,6 @@ export default function WhatsOnPage() {
   if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
   if (!data) return <div className="min-h-screen flex items-center justify-center text-text-dark/70">What's On page content unavailable.</div>;
 
-  const browseAllHref = data.eventsSection?.cta?.href ?? '/whats-on';
-
   return (
     <PageFade loaded={loaded}>
       {data.hero && (
@@ -157,20 +155,13 @@ export default function WhatsOnPage() {
             onToggle={toggleSlug}
           />
 
-          <div className="mt-16 lg:mt-24 flex flex-wrap items-center justify-between gap-4 mb-10">
+          <div className="mt-16 lg:mt-24 mb-10">
             <h2
               className="font-heading italic text-primary"
               style={{ fontSize: 'clamp(1.75rem, 2.4vw, 2rem)', lineHeight: 1, letterSpacing: '-0.01em' }}
             >
               {data.eventsSection?.heading ?? 'Featured Club Events'}
             </h2>
-            <a
-              href={browseAllHref}
-              className="group inline-flex items-center gap-3 bg-white text-primary font-body text-xs tracking-[0.18em] uppercase font-bold px-6 py-3 rounded-full shadow-sm hover:shadow-md transition-shadow"
-            >
-              <span>{data.eventsSection?.cta?.label ?? 'Browse All Events'}</span>
-              <ArrowUpRight />
-            </a>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-20">
@@ -291,24 +282,3 @@ function EventCard({ event }: { event: StrapiEvent }) {
   );
 }
 
-function ArrowUpRight() {
-  return (
-    <svg
-      width="14"
-      height="14"
-      viewBox="0 0 14 14"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="text-accent"
-      aria-hidden
-    >
-      <path
-        d="M3 11L11 3M11 3H4.5M11 3V9.5"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
