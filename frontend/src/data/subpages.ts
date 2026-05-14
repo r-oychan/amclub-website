@@ -572,8 +572,7 @@ export const fitnessSubpages: SubpageData[] = [
     level: 'Basement 3',
     phone: '6739 4449',
     email: 'spa@amclub.org.sg',
-    image:
-      'https://framerusercontent.com/images/ZDsKqh2V3daX7WB4CyiPy87Zls.jpeg',
+    image: '/images/fitness/senspa.jpeg',
     ctas: [
       { label: 'View Menu & Promotions', href: '/documents/fitness/sen-spa-menu.pdf', isExternal: true },
       { label: 'Book an Appointment', href: 'mailto:spa@amclub.org.sg', isExternal: true },
