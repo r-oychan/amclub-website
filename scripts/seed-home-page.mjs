@@ -112,6 +112,7 @@ const IMAGES = [
   'hero-slide-1-home-away.jpg',
   'hero-slide-2-dine-drink.jpeg',
   'hero-slide-3-stay-active.jpeg',
+  'hero-slide-2-tennis.jpeg',
   // about
   'about-1.jpeg',
   'about-2.jpeg',
@@ -281,7 +282,7 @@ async function upsertHomePage({ media, eventsCat, testimonialIds, faqIds }) {
           cta: { label: 'Explore Dining', href: '/dining', variant: 'primary' },
         },
         {
-          backgroundImage: media['hero-slide-3-stay-active.jpeg'].id,
+          backgroundImage: media['hero-slide-2-tennis.jpeg'].id,
           title: 'Stay Active, Stay Healthy',
           subtitle: 'State-of-the-art fitness facilities, pools, and wellness programs for the whole family.',
           titlePosition: 'bottom-left',
