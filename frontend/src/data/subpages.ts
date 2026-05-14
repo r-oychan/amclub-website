@@ -1842,6 +1842,8 @@ export const eventSpacesSubpages: SubpageData[] = [
     level: 'Level 3',
     phone: '6739-4380',
     email: 'library@amclub.org.sg',
+    image:
+      'https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_thinkspace_adult_library_e682b190f4.jpg',
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
   },

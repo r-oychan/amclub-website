@@ -109,7 +109,11 @@ export default function EventSpacesPage() {
     heading: sb.heading,
     body: sb.body ?? '',
     image: mediaUrl(sb.image) ?? '',
-    cta: { label: sb.cta?.label ?? 'Order Now', href: sb.cta?.href ?? '#' },
+    cta: {
+      label: sb.cta?.label ?? 'Order Now',
+      href: sb.cta?.href ?? '#',
+      isExternal: sb.cta?.isExternal,
+    },
   } : undefined;
 
   return (

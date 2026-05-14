@@ -12,7 +12,7 @@ export interface CateringSubBanner {
   heading: string;
   body: string;
   image: string;
-  cta: { label: string; href?: string };
+  cta: { label: string; href?: string; isExternal?: boolean };
 }
 
 export function OffsiteCateringServices({
@@ -24,7 +24,7 @@ export function OffsiteCateringServices({
 }: {
   heading?: string;
   body?: string;
-  ctas?: { label: string; href?: string }[];
+  ctas?: { label: string; href?: string; isExternal?: boolean }[];
   pillars: CateringPillar[];
   subBanner?: CateringSubBanner;
 }) {
@@ -58,7 +58,7 @@ function SectionHeader({
 }: {
   heading: string;
   body?: string;
-  ctas?: { label: string; href?: string }[];
+  ctas?: { label: string; href?: string; isExternal?: boolean }[];
 }) {
   const { ref, isVisible } = useScrollFadeIn({ threshold: 0.1, replay: false });
   const fade = isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6';
@@ -78,7 +78,12 @@ function SectionHeader({
       {ctas && ctas.length > 0 && (
         <div className="mt-6 flex flex-wrap justify-center gap-x-10 gap-y-4">
           {ctas.map((c) => (
-            <ArrowLink key={c.label} label={c.label} href={c.href ?? '#'} />
+            <ArrowLink
+              key={c.label}
+              label={c.label}
+              href={c.href ?? '#'}
+              isExternal={c.isExternal ?? /^(mailto:|tel:|https?:)/i.test(c.href ?? '')}
+            />
           ))}
         </div>
       )}
@@ -159,6 +164,9 @@ function Catering2GoBanner({ banner }: { banner: CateringSubBanner }) {
             </p>
             <a
               href={banner.cta.href ?? '#'}
+              {...(banner.cta.isExternal ?? /^(mailto:|tel:|https?:)/i.test(banner.cta.href ?? '')
+                ? { target: '_blank', rel: 'noopener noreferrer' }
+                : {})}
               className="inline-flex items-center gap-2 bg-white text-primary font-body text-[14.4px] font-bold uppercase tracking-[0.04em] px-6 py-3 rounded-full hover:bg-bg transition-colors duration-200"
             >
               {banner.cta.label}

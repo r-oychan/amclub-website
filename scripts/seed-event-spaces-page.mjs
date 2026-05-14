@@ -92,8 +92,7 @@ async function upsertEventSpacesPage({ media }) {
       heading: 'Off-site Catering Services',
       body: "Bring The American Club's signature dishes and service to your chosen venue. Our Events & Catering team manages every detail, from menu preparation to on-site service.",
       ctas: [
-        { label: 'View Menu',   href: '#menu',    variant: 'primary' },
-        { label: 'Enquire Now', href: '#enquire', variant: 'outline' },
+        { label: 'Enquire Now', href: 'mailto:catering@amclub.org.sg', variant: 'primary', isExternal: true },
       ],
       pillars: [
         {
@@ -116,7 +115,7 @@ async function upsertEventSpacesPage({ media }) {
         heading: 'Catering2Go!',
         body: 'Off-site catering made effortless. Enjoy your Club favorites wherever the occasion takes you.',
         image: media['catering-2go.png'].id,
-        cta: { label: 'Order Now', href: '#order', variant: 'primary' },
+        cta: { label: 'Order Now', href: 'https://amclub.jotform.com/', variant: 'primary', isExternal: true },
       },
     },
     finalCta: {
