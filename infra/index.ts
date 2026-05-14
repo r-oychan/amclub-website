@@ -232,6 +232,17 @@ const appImage = new dockerBuild.Image(`${projectName}-app-image`, {
 // ── Container App (Nginx + Strapi) ───────────────────────────
 const appKeys = pulumi.interpolate`${appKey1.result},${appKey2.result}`;
 
+// Look up the manually-managed TLS cert for amclub.org.sg by name.
+// Cert lifecycle (issuance, validation, renewal) stays manual; this
+// just teaches Pulumi the cert's resource ID so the customDomain
+// binding below survives every container-app update.
+const customDomainCertName = 'amclub.org.sg-amclub-e-260514154558';
+const customDomainCert = azure.app.getManagedCertificateOutput({
+  resourceGroupName: rg.name,
+  environmentName: containerEnv.name,
+  managedCertificateName: customDomainCertName,
+});
+
 const app = new azure.app.ContainerApp(`${projectName}-app`, {
   resourceGroupName: rg.name,
   location: rg.location,
@@ -241,6 +252,13 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
       external: true,
       targetPort: 80,
       transport: azure.app.IngressTransportMethod.Auto,
+      customDomains: [
+        {
+          name: 'amclub.org.sg',
+          certificateId: customDomainCert.id,
+          bindingType: azure.app.BindingType.SniEnabled,
+        },
+      ],
     },
     registries: [
       {
@@ -330,8 +348,6 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
       },
     ],
   },
-}, {
-  ignoreChanges: ['configuration.ingress.customDomains'],
 });
 
 
