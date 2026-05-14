@@ -108,7 +108,7 @@ const RESTAURANTS = [
     menuLinks: [
       { label: 'View Menu', href: '/menus/tradewinds-menu.pdf' },
     ],
-    ctas: [{ label: 'Promotions', href: '/dining/dining-promotion#promo-tradewinds', icon: 'arrow' }],
+    ctas: [],
     operatingHoursSections: [
       { title: 'Opening Hours', rows: [
         { dayRange: 'Sunday to Thursday', time: '8:00 AM - 9:00 PM',  lastOrder: 'Last order at 8:30 PM' },

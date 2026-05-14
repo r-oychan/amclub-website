@@ -344,7 +344,6 @@ export const diningSubpages: SubpageData[] = [
     parentHref: '/dining',
     ctas: [
       { label: 'View Menu', href: '/menus/tradewinds-menu.pdf', isExternal: true },
-      { label: 'Promotions', href: '/dining/dining-promotion#promo-tradewinds' },
     ],
     extraSections: [
       {

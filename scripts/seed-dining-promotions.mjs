@@ -35,24 +35,6 @@ const PROMOTIONS = [
     ctas: [],
     order: 2,
   },
-  {
-    title: 'A Toast to Mom',
-    slug: 'the-2nd-floor-a-toast-to-mom',
-    summary: 'Pair your Mother\'s Day feast with curated pours from the The 2nd Floor list.',
-    restaurantTag: 'the-2nd-floor',
-    imageFiles: ['the-2nd-floor-a-toast-to-mom.jpg'],
-    ctas: [],
-    order: 3,
-  },
-  {
-    title: 'A Toast to Mom',
-    slug: 'tradewinds-a-toast-to-mom',
-    summary: 'Round off your Mother\'s Day lunch with curated pairings at Tradewinds.',
-    restaurantTag: 'tradewinds',
-    imageFiles: ['tradewinds-a-toast-to-mom.jpg'],
-    ctas: [],
-    order: 4,
-  },
 ];
 
 function imageFilesOf(p) {
@@ -150,17 +132,50 @@ async function main() {
     });
   }
 
-  console.log('\n[1/3] Uploading promotion flyers…');
+  console.log('\n[1/4] Uploading promotion flyers…');
   const allFiles = Array.from(new Set(PROMOTIONS.flatMap((p) => imageFilesOf(p))));
   const media = await uploadAll(ctx, PROMO_DIR, allFiles, { dry: DRY });
 
-  console.log('\n[2/3] Upserting promotion entries…');
+  console.log('\n[2/4] Upserting promotion entries…');
   for (const p of PROMOTIONS) {
     await ensurePromotion(p, media);
     console.log(`  ✓ ${p.title}`);
   }
 
-  console.log('\n[3/3] Upserting dining-promotions-page single type…');
+  console.log('\n[3/4] Deleting stale promotion entries…');
+  // The promotion list shrinks/changes month to month, so anything still in
+  // Strapi whose slug isn't in the seed's allowlist should be removed (both
+  // published and draft). We fetch published and draft separately because
+  // Strapi v5's default `find` only returns published entries.
+  const keepSlugs = new Set(PROMOTIONS.map((p) => p.slug));
+  const statuses = ['published', 'draft'];
+  const stale = new Map(); // documentId → { slug, status }
+  for (const status of statuses) {
+    const resp = await api(ctx, `/dining-promotions?status=${status}&pagination[limit]=200&fields[0]=slug`);
+    for (const entry of resp?.data ?? []) {
+      if (!keepSlugs.has(entry.slug)) {
+        stale.set(entry.documentId, { slug: entry.slug, status });
+      }
+    }
+  }
+  if (stale.size === 0) {
+    console.log('  (no stale entries)');
+  } else if (DRY) {
+    for (const [documentId, info] of stale) {
+      console.log(`  [dry] DELETE /dining-promotions/${documentId}  (slug=${info.slug}, status=${info.status})`);
+    }
+  } else {
+    for (const [documentId, info] of stale) {
+      try {
+        await api(ctx, `/dining-promotions/${documentId}`, { method: 'DELETE' });
+        console.log(`  ✗ deleted stale promo ${info.slug} (${documentId})`);
+      } catch (e) {
+        console.error(`  ! failed to delete ${info.slug}: ${e.message}`);
+      }
+    }
+  }
+
+  console.log('\n[4/4] Upserting dining-promotions-page single type…');
   await upsertDiningPromotionsPage();
   console.log('  ✓ dining-promotions-page upserted');
 
