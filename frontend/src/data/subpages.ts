@@ -1171,6 +1171,7 @@ export const fitnessSubpages: SubpageData[] = [
     type: 'Golf',
     description:
       'For our Golf Enthusiasts, we offer off-site golf programs in collaboration with partner golf courses, designed for Members who enjoy hitting the greens. These programs include casual rounds, practice sessions, and friendly competitions, providing a great way to play, improve your game, and connect with fellow members.',
+    image: '/images/fitness/golf.jpg',
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [
