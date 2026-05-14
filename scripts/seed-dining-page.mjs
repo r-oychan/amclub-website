@@ -34,7 +34,7 @@ const RESTAURANTS = [
     menuLinks: [
       { label: 'View Menu', href: '/menus/central-menu.pdf' },
     ],
-    ctas: [{ label: 'Promotions', href: '/dining/dining-promotion#promo-central', icon: 'arrow' }],
+    ctas: [],
     operatingHoursSections: [
       { title: 'Opening Hours', rows: [
         { dayRange: 'Daily', time: '7:00 AM - 7:00 PM' },
@@ -125,7 +125,7 @@ const RESTAURANTS = [
     menuLinks: [
       { label: 'View Menu', href: '/menus/union-bar-menu.pdf' },
     ],
-    ctas: [{ label: 'Promotions', href: '/dining/dining-promotion#promo-union-bar', icon: 'arrow' }],
+    ctas: [],
     operatingHoursSections: [
       { title: 'Opening Hours', rows: [
         { dayRange: 'Sunday to Thursday',              time: '12:00 PM - 11:00 PM' },
