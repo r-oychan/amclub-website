@@ -19,7 +19,7 @@ const SERV_DIR = join(ROOT, 'media', 'services');
 // `Content-Disposition: inline`, so PDFs served from there download instead.
 
 const HERO_IMAGES   = ['hero-bg.jpg'];
-const REST_IMAGES   = ['central.jpeg', 'grillhouse.jpeg', 'the-2nd-floor.jpeg', 'the-gourmet-pantry.jpeg', 'tradewinds.jpeg', 'union-bar.jpeg'];
+const REST_IMAGES   = ['central.jpeg', 'grillhouse.jpeg', 'the-2nd-floor.jpeg', 'the-gourmet-pantry.jpeg', 'tradewinds.jpeg', 'uncorked.jpg', 'union-bar.jpeg'];
 const LOGO_IMAGES   = ['central.png',  'grillhouse.png',  'the-2nd-floor.png',  'the-gourmet-pantry.png',  'tradewinds.png',  'the-union-bar.png'];
 const SERV_IMAGES   = ['tac2go.jpeg', 'bottles2go.jpg', 'essentials.jpeg'];
 
@@ -134,6 +134,22 @@ const RESTAURANTS = [
     ],
     locationContact: { locationLevel: 'Basement 2', phone: '6739 4340', email: 'unionbar@amclub.org.sg' },
     order: 6,
+  },
+  {
+    // UNCORKED is a wine-club program, not a venue. Excluded from the
+    // /dining grid by slug in DiningPage.tsx but still reachable at
+    // /dining/uncorked. Membership bullets live in subpages.ts because
+    // the `facility/restaurant` schema doesn't model `extraSections`.
+    name: 'UNCORKED', slug: 'uncorked', cuisineType: 'Wine Club', cuisineIconSlug: 'gourmet',
+    description: 'Introducing UNCORKED by The American Club, a collective of wine aficionados in our community. Connect with fellow vinophiles and elevate your experience with the Club\'s extensive wine labels, programs and events. UNCORKED Members are entitled to exclusive deals, invites to special events, priority booking and other special privileges.',
+    imageFile: 'uncorked.jpg', logoFile: null, dressCode: null,
+    menuLinks: [],
+    ctas: [
+      { label: 'Join Now', href: 'https://amclub.jotform.com/252308693060051', isExternal: true, icon: 'arrow' },
+    ],
+    operatingHoursSections: [],
+    locationContact: null,
+    order: 99,
   },
 ];
 

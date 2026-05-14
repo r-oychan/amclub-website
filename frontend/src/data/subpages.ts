@@ -490,15 +490,15 @@ export const diningSubpages: SubpageData[] = [
     },
   },
   {
+    // UNCORKED — name/description/image/CTAs come from the seeded restaurant
+    // entry (scripts/seed-dining-page.mjs). Only the membership bullet list
+    // lives here because the restaurant schema has no `extraSections` field.
     slug: 'uncorked',
     name: 'UNCORKED',
-    type: 'Retail',
-    description:
-      'Introducing UNCORKED by The American Club, a collective of wine aficionados in our community. Connect with fellow vinophiles and elevate your experience with the Club\'s extensive wine labels, programs and events. UNCORKED Members are entitled to exclusive deals, invites to special events, priority booking and other special privileges.',
-    image: '/images/uncorked.jpg',
+    type: 'Wine Club',
+    description: '',
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
-    ctas: [{ label: 'Join Now', href: 'https://amclub.jotform.com/252308693060051', isExternal: true }],
     extraSections: [
       {
         title: 'Membership',
