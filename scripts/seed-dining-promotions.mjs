@@ -90,8 +90,8 @@ async function upsertDiningPromotionsPage() {
       body: 'Become a Member to explore our restaurants, where a variety of cuisines and thoughtfully crafted dining experiences await to delight every palate.',
       variant: 'light',
       ctas: [
-        { label: 'Explore Membership', href: '/membership', variant: 'primary', icon: 'arrow' },
-        { label: 'Book a Club Tour',   href: '#',           variant: 'outline', icon: 'arrow' },
+        { label: 'Explore Membership', href: '/membership',                                                                                                                  variant: 'primary', icon: 'arrow' },
+        { label: 'Book a Club Tour',   href: 'https://amclub.jotform.com/260813837273966?parentURL=https%3A%2F%2Famclub.org.sg%2Fmembership-enquiry-form%2F&jsForm=true', isExternal: true, variant: 'outline', icon: 'arrow' },
       ],
     },
   };
