@@ -1154,7 +1154,7 @@ export const kidsSubpages: SubpageData[] = [
     parentSection: 'Kids',
     parentHref: '/kids',
     ctas: [
-      { label: 'The Quad Fees', href: '/documents/kids/the-quad-poolside-fees.pdf', isExternal: true },
+      { label: 'The Quad Poolside Fees', href: '/documents/kids/the-quad-poolside-fees.pdf', isExternal: true },
     ],
     gallery: {
       rows: [
@@ -1353,7 +1353,6 @@ export const kidsSubpages: SubpageData[] = [
       '/uploads/pages/kids/hangout.jpeg',
     parentSection: 'Kids',
     parentHref: '/kids',
-    faq: [...PLACEHOLDER_FAQ],
   },
   {
     slug: 'recreational-classes',
@@ -1367,7 +1366,6 @@ export const kidsSubpages: SubpageData[] = [
     ctas: [
       { label: 'View Classes', href: '/documents/kids/recreational-classes.pdf', isExternal: true },
     ],
-    faq: [...PLACEHOLDER_FAQ],
   },
   {
     slug: 'camps',
@@ -1560,7 +1558,6 @@ export const kidsSubpages: SubpageData[] = [
         },
       ],
     },
-    faq: [...PLACEHOLDER_FAQ],
   },
 ];
 
