@@ -7,7 +7,7 @@ import { ImagePanelSlideshow, type SlideshowSlide } from '../components/blocks/I
 
 const RECIPROCAL_LIST_URL = '/documents/membership/reciprocal-club-list.pdf';
 const LETTER_OF_INTRODUCTION_URL = 'https://amclub.jotform.com/form/tac-reciprocal-club-LOI';
-const TOWER_CLUB_URL = '#';
+const TOWER_CLUB_URL = 'https://www.tower-club.com.sg/';
 
 const HERO_IMAGE = 'https://framerusercontent.com/images/bdz4bVfeQtZyQC6ebpW09r3ujU.jpg';
 
@@ -185,7 +185,7 @@ export default function ReciprocalClubsPage() {
                 Local Reciprocity
               </h2>
               <div className="flex flex-wrap gap-3">
-                <Pill href={TOWER_CLUB_URL} label="Learn More About Tower Club" />
+                <Pill href={TOWER_CLUB_URL} label="Learn More About Tower Club" external />
               </div>
               <p
                 className="text-text-dark"
