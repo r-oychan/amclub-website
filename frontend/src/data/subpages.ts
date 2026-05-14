@@ -317,7 +317,6 @@ export const diningSubpages: SubpageData[] = [
           'Cancellation of reservations within 24 hours will incur a $25 per person fee*. Exceptions for compassionate or medical reasons apply. No discounts or vouchers can be applied to the cancellation fee.\n\n*Excluding ticketed and private events where a separate cancellation policy applies.',
       },
     ],
-    faq: [...PLACEHOLDER_FAQ],
   },
   {
     slug: 'tradewinds',
@@ -432,7 +431,6 @@ export const diningSubpages: SubpageData[] = [
           'Members and Guests above 18 years of age are welcome.\n\nMembers and Guests ordering alcoholic beverages are required to present a valid photo ID. The following IDs are recognized: Club membership card, passport, Singapore NRIC, driver\'s license and government issued IDs only.',
       },
     ],
-    faq: [...PLACEHOLDER_FAQ],
   },
   {
     slug: 'the-gourmet-pantry',
@@ -493,13 +491,14 @@ export const diningSubpages: SubpageData[] = [
   },
   {
     slug: 'uncorked',
-    name: 'Uncorked',
+    name: 'UNCORKED',
     type: 'Retail',
     description:
       'Introducing UNCORKED by The American Club, a collective of wine aficionados in our community. Connect with fellow vinophiles and elevate your experience with the Club\'s extensive wine labels, programs and events. UNCORKED Members are entitled to exclusive deals, invites to special events, priority booking and other special privileges.',
+    image: '/uploads/dining/uncorked.jpg',
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
-    ctas: [{ label: 'Join Now', href: '#' }],
+    ctas: [{ label: 'Join Now', href: 'https://amclub.jotform.com/252308693060051', isExternal: true }],
     extraSections: [
       {
         title: 'Membership',
@@ -517,7 +516,6 @@ export const diningSubpages: SubpageData[] = [
         ],
       },
     ],
-    faq: [...PLACEHOLDER_FAQ],
   },
   {
     slug: 'essentials',
