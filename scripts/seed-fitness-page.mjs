@@ -139,7 +139,7 @@ async function upsertFitnessPage({ media }) {
       variant: 'light',
       ctas: [
         { label: 'Explore Membership', href: '/membership', variant: 'primary' },
-        { label: 'Book a Club Tour',   href: '#',           variant: 'outline' },
+        { label: 'Book a Club Tour',   href: 'https://amclub.jotform.com/260813837273966?parentURL=https%3A%2F%2Famclub.org.sg%2Fmembership-enquiry-form%2F&jsForm=true', isExternal: true, variant: 'outline' },
       ],
     },
   };
