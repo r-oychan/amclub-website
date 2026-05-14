@@ -197,7 +197,7 @@ const AQUATICS = {
   description:
     "Dive into world-class swimming at The American Club's aquatics facilities — from learn-to-swim and competitive training to lap swimming and aqua fitness. Our aquatics team holds international certifications and welcomes swimmers of every age and ability.",
   locationContact: { locationLevel: 'Level 1', phone: '6739 4490', email: 'aquatics@amclub.org.sg' },
-  imageFile: 'aquatics.jpg',
+  imageFile: 'aquatics-v2.jpg',
   ctas: [
     { label: 'Request Swim Assessment', href: 'https://amclub.jotform.com/252501876973062', isExternal: true, variant: 'primary', icon: 'arrow' },
     { label: 'Programs Price List',     href: '/documents/fitness/aquatics-program-price-list.pdf', isExternal: true, variant: 'primary', icon: 'arrow' },
@@ -241,7 +241,7 @@ const TENNIS = {
   description:
     "For Tennis enthusiasts, the Club offers four state-of-the-art artificial grass courts with sand infill which is an ideal surface for both coaching and recreational play.",
   locationContact: { locationLevel: 'Basement 2', phone: '6739 4312', email: 'sportscounter@amclub.org.sg' },
-  imageFile: 'tennis.jpeg',
+  imageFile: 'tennis-v2.jpeg',
   ctas: [
     { label: 'Book a Court', href: 'mailto:sportscounter@amclub.org.sg', isExternal: true, variant: 'primary', icon: 'mail' },
     { label: 'TAC Book App Tutorial', href: '/documents/fitness/tac-book-app-download-tutorial.pdf', isExternal: true, variant: 'primary', icon: 'arrow' },

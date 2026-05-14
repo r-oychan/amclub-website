@@ -633,8 +633,7 @@ export const fitnessSubpages: SubpageData[] = [
     level: 'Level 1',
     phone: '6739 4450',
     email: 'aquatics@amclub.org.sg',
-    image:
-      'https://framerusercontent.com/images/M6a3ARpplqi7QMWuEZYJeWEggs.jpg',
+    image: '/images/fitness/aquatics.jpeg',
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [
@@ -764,7 +763,7 @@ export const fitnessSubpages: SubpageData[] = [
     level: 'Level 1',
     phone: '6739 4450',
     email: 'aquatics@amclub.org.sg',
-    image: '/images/fitness/programs/aquatic-program-swim-team.jpg',
+    image: '/images/fitness/aquatics.jpeg',
     parentSection: 'Aquatics',
     parentHref: '/fitness/aquatics',
     ctas: [
@@ -837,8 +836,7 @@ export const fitnessSubpages: SubpageData[] = [
     level: 'Basement 2',
     phone: '6739 4312',
     email: 'sportscenter@amclub.org.sg',
-    image:
-      'https://framerusercontent.com/images/K6DoyAS2cr4sNav3IA32UZgU.jpeg',
+    image: '/images/fitness/gym.jpeg',
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [
@@ -855,17 +853,6 @@ export const fitnessSubpages: SubpageData[] = [
         title: 'TGPC (Teenage Gym Proficiency Course)',
         content:
           'Junior Members aged 12 to 15 are welcome to use the Gym after completing the Teenage Gym Proficiency Course. Simply present your Junior Membership card and register for this complimentary orientation with our Personal Trainer. Sign up at the Sports Counter or email sportscounter@amclub.org.sg.',
-      },
-      {
-        title: 'Pilates Program',
-        content:
-          'Pilates helps develop better postural alignment, build flexibility, and improve muscle strength and endurance — ideal for general health and sport-specific training. Classes follow the Pilates Academy International (PAI) method with small class sizes for personalised guidance.',
-        bullets: [
-          'Equipment includes Reformer, Cadillac, and Chair',
-          'Beginner, Intermediate, Advanced, and Multi-level course tiers available',
-          'Both group and private sessions offered',
-          'See the dedicated Pilates page for the full schedule and instructor roster',
-        ],
       },
     ],
     cardSections: [
@@ -921,10 +908,6 @@ export const fitnessSubpages: SubpageData[] = [
       { name: 'Zack',     role: 'Personal Trainer',                                                bioImage: '/images/fitness/team-pt/zack-bio.png' },
       { name: 'Desmond',  role: 'Personal Trainer',                                                bioImage: '/images/fitness/team-pt/desmond-bio.png' },
     ],
-    bottomCtas: [
-      { label: 'View Pilates Class Schedule', href: '/documents/fitness/pilates-group-class-schedule.jpeg', isExternal: true },
-      { label: 'View Pilates Price List', href: '/documents/fitness/pilates-price-list.docx', isExternal: true },
-    ],
   },
   {
     slug: 'tennis',
@@ -937,8 +920,7 @@ export const fitnessSubpages: SubpageData[] = [
     level: 'Basement 2',
     phone: '6739-4312',
     email: 'sportscounter@amclub.org.sg',
-    image:
-      'https://framerusercontent.com/images/FfQ1mhhWwbjsMQKiahq8SzaqLs.jpeg',
+    image: '/images/fitness/tennis.jpeg',
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [
