@@ -113,6 +113,8 @@ const IMAGES = [
   'hero-slide-2-dine-drink.jpeg',
   'hero-slide-3-stay-active.jpeg',
   'hero-slide-2-tennis.jpeg',
+  'hero-slide-1-lobby.jpg',
+  'hero-slide-2-tennis-lifestyle.jpg',
   // about
   'about-1.jpeg',
   'about-2.jpeg',
@@ -274,7 +276,7 @@ async function upsertHomePage({ media, eventsCat, testimonialIds, faqIds }) {
       cta: { label: 'Request for a Club Tour', href: 'https://amclub.jotform.com/260813837273966?parentURL=https%3A%2F%2Famclub.org.sg%2Fmembership-enquiry-form%2F&jsForm=true', isExternal: true, variant: 'primary' },
       slides: [
         {
-          backgroundImage: media['hero-slide-2-dine-drink.jpeg'].id,
+          backgroundImage: media['hero-slide-1-lobby.jpg'].id,
           title: 'Dine. Drink. Unwind.',
           subtitle: 'From casual bites to fine dining, discover our world-class restaurants and bars.',
           titlePosition: 'bottom-left',
@@ -282,7 +284,7 @@ async function upsertHomePage({ media, eventsCat, testimonialIds, faqIds }) {
           cta: { label: 'Explore Dining', href: '/dining', variant: 'primary' },
         },
         {
-          backgroundImage: media['hero-slide-2-tennis.jpeg'].id,
+          backgroundImage: media['hero-slide-2-tennis-lifestyle.jpg'].id,
           title: 'Stay Active, Stay Healthy',
           subtitle: 'State-of-the-art fitness facilities, pools, and wellness programs for the whole family.',
           titlePosition: 'bottom-left',
