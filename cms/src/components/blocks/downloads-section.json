@@ -1,0 +1,19 @@
+{
+  "collectionName": "components_blocks_downloads_sections",
+  "info": {
+    "displayName": "Downloads Section",
+    "icon": "file-arrow-down",
+    "description": "Heading + repeatable list of downloadable resources / linked forms"
+  },
+  "attributes": {
+    "heading": {
+      "type": "string",
+      "default": "Forms You'll Need"
+    },
+    "items": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link"
+    }
+  }
+}

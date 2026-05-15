@@ -905,7 +905,9 @@ export interface ApiFacilityFacility extends Struct.CollectionTypeSchema {
   };
   attributes: {
     capacity: Schema.Attribute.String;
-    category: Schema.Attribute.Enumeration<['fitness', 'kids', 'event-space']> &
+    category: Schema.Attribute.Enumeration<
+      ['fitness', 'kids', 'event-space', 'membership']
+    > &
       Schema.Attribute.Required;
     categoryIconSlug: Schema.Attribute.String;
     categoryLabel: Schema.Attribute.String;
@@ -921,6 +923,7 @@ export interface ApiFacilityFacility extends Struct.CollectionTypeSchema {
       >;
     description: Schema.Attribute.Text & Schema.Attribute.Required;
     detailedDescription: Schema.Attribute.Blocks;
+    downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
     dressCode: Schema.Attribute.String;
     email: Schema.Attribute.Email;
     gallery: Schema.Attribute.Media<'images', true>;

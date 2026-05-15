@@ -98,6 +98,20 @@ export interface BlocksDistinctiveEventSpaces extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksDownloadsSection extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_downloads_sections';
+  info: {
+    description: 'Heading + repeatable list of downloadable resources / linked forms';
+    displayName: 'Downloads Section';
+    icon: 'file-arrow-down';
+  };
+  attributes: {
+    heading: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<"Forms You'll Need">;
+    items: Schema.Attribute.Component<'shared.link', true>;
+  };
+}
+
 export interface BlocksEventListing extends Struct.ComponentSchema {
   collectionName: 'components_blocks_event_listings';
   info: {
@@ -957,6 +971,7 @@ declare module '@strapi/strapi' {
       'blocks.collage-gallery': BlocksCollageGallery;
       'blocks.cta-banner': BlocksCtaBanner;
       'blocks.distinctive-event-spaces': BlocksDistinctiveEventSpaces;
+      'blocks.downloads-section': BlocksDownloadsSection;
       'blocks.event-listing': BlocksEventListing;
       'blocks.faq-section': BlocksFaqSection;
       'blocks.feature-grid': BlocksFeatureGrid;

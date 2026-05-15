@@ -31,7 +31,7 @@
     },
     "category": {
       "type": "enumeration",
-      "enum": ["fitness", "kids", "event-space"],
+      "enum": ["fitness", "kids", "event-space", "membership"],
       "required": true
     },
     "categoryLabel": {
@@ -93,6 +93,11 @@
       "type": "component",
       "repeatable": true,
       "component": "shared.team-member"
+    },
+    "downloads": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.downloads-section"
     },
     "seo": {
       "type": "component",

@@ -322,6 +322,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
         'populate[locationContact]': 'true',
         'populate[operatingHoursSections][populate]': '*',
         'populate[teamMembers][populate]': '*',
+        'populate[downloads][populate]': '*',
       };
       const items = await fetchAPI<VenueData[]>(config.apiPath, params);
       const fallback = staticFallback(section, lookupSlug);
