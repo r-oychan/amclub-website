@@ -53,11 +53,14 @@ const jwtSecret = new random.RandomPassword(`${projectName}-jwt`, {
 
 // ── Resource Group ───────────────────────────────────────────
 const rg = new azure.resources.ResourceGroup(`${projectName}-${stack}-rg`, {
+  resourceGroupName: `${projectName}-${stack}-rg`,
   location,
 });
 
 // ── Container Registry ───────────────────────────────────────
+// ACR names must be globally unique alphanumeric, no hyphens, 5-50 chars.
 const registry = new azure.containerregistry.Registry(`${projectName}acr`, {
+  registryName: `${projectName}${stack}acr`,
   resourceGroupName: rg.name,
   location: rg.location,
   sku: { name: 'Basic' },
@@ -79,7 +82,9 @@ const registryPassword = registryCreds.apply(
 );
 
 // ── PostgreSQL Flexible Server (cheapest tier) ───────────────
+// Server FQDN must be globally unique: <name>.postgres.database.azure.com
 const dbServer = new azure.dbforpostgresql.Server(`${projectName}-pg`, {
+  serverName: `${projectName}-${stack}-pg`,
   resourceGroupName: rg.name,
   location: rg.location,
   version: '16',
@@ -104,6 +109,7 @@ const dbServer = new azure.dbforpostgresql.Server(`${projectName}-pg`, {
 
 // Allow Azure services to access PostgreSQL
 new azure.dbforpostgresql.FirewallRule(`${projectName}-pg-allow-azure`, {
+  firewallRuleName: 'allow-azure',
   resourceGroupName: rg.name,
   serverName: dbServer.name,
   startIpAddress: '0.0.0.0',
@@ -111,6 +117,7 @@ new azure.dbforpostgresql.FirewallRule(`${projectName}-pg-allow-azure`, {
 });
 
 const database = new azure.dbforpostgresql.Database(`${projectName}-db`, {
+  databaseName: projectName,
   resourceGroupName: rg.name,
   serverName: dbServer.name,
   charset: 'UTF8',
@@ -118,7 +125,10 @@ const database = new azure.dbforpostgresql.Database(`${projectName}-db`, {
 });
 
 // ── Storage Account (Azure Files for uploads + Blob for media) ──
+// Storage account names must be globally unique lowercase alphanumeric,
+// 3-24 chars, no hyphens. `amclubuatdata`/`amclubproddata` patterns.
 const storage = new azure.storage.StorageAccount(`${projectName}data`, {
+  accountName: `${projectName}${stack}data`,
   resourceGroupName: rg.name,
   location: rg.location,
   sku: { name: azure.storage.SkuName.Standard_LRS },
@@ -129,6 +139,7 @@ const storage = new azure.storage.StorageAccount(`${projectName}data`, {
 });
 
 const dataShare = new azure.storage.FileShare(`${projectName}-data`, {
+  shareName: 'data',
   resourceGroupName: rg.name,
   accountName: storage.name,
   shareQuota: 5,
@@ -160,6 +171,7 @@ const storageBlobUrl = pulumi.interpolate`https://${storage.name}.blob.core.wind
 const logAnalytics = new azure.operationalinsights.Workspace(
   `${projectName}-logs`,
   {
+    workspaceName: `${projectName}-${stack}-logs`,
     resourceGroupName: rg.name,
     location: rg.location,
     sku: {
@@ -181,6 +193,7 @@ const logKey = pulumi
 
 // ── Container Apps Environment ───────────────────────────────
 const containerEnv = new azure.app.ManagedEnvironment(`${projectName}-env`, {
+  environmentName: `${projectName}-${stack}-env`,
   resourceGroupName: rg.name,
   location: rg.location,
   appLogsConfiguration: {
@@ -272,6 +285,7 @@ const customDomains = domainEntries.length > 0
   : undefined;
 
 const app = new azure.app.ContainerApp(`${projectName}-app`, {
+  containerAppName: `${projectName}-${stack}-app`,
   resourceGroupName: rg.name,
   location: rg.location,
   managedEnvironmentId: containerEnv.id,
