@@ -61,8 +61,8 @@ export const outletGroups: OutletGroup[] = [
         blocks: [
           {
             rows: [
-              { dayRange: 'Sunday to Thursday', time: '11:00 AM – 9:00 PM', lastOrder: '(last order at 8:30 PM)' },
-              { dayRange: 'Friday to Sunday', time: '11:00 AM – 9:30 PM', lastOrder: '(last order at 9:00 PM)' },
+              { dayRange: 'Sunday to Thursday',              time: '12:00 PM – 11:00 PM' },
+              { dayRange: 'Friday and Saturday & Eve of PH', time: '12:00 PM – 12:00 AM' },
             ],
           },
         ],
@@ -105,6 +105,18 @@ export const outletGroups: OutletGroup[] = [
       },
       {
         name: 'Grillhouse',
+        blocks: [
+          {
+            rows: [
+              { dayRange: 'Sunday to Thursday', time: '11:00 AM – 9:00 PM', lastOrder: '(last order at 8:30 PM)' },
+              { dayRange: 'Friday', time: '11:00 AM – 9:30 PM', lastOrder: '(last order at 9:00 PM)' },
+              { dayRange: 'Saturday', time: '8:30 AM – 9:30 PM', lastOrder: '(last order at 9:00 PM)' },
+            ],
+          },
+        ],
+      },
+      {
+        name: 'Tiki Bar',
         blocks: [
           {
             rows: [
