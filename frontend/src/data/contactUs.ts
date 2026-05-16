@@ -238,18 +238,6 @@ export const outletGroups: OutletGroup[] = [
     label: 'Membership',
     cards: [
       {
-        name: 'Member Services',
-        blocks: [
-          {
-            rows: [
-              { dayRange: 'Monday to Friday', time: '9:00 AM – 7:00 PM' },
-              { dayRange: 'Saturday', time: '9:00 AM – 5:00 PM' },
-              { dayRange: 'Closed Sundays & PH', time: '' },
-            ],
-          },
-        ],
-      },
-      {
         name: 'Membership Office',
         blocks: [
           {
