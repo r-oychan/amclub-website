@@ -11,8 +11,8 @@ const OUTLET_GROUPS = [
       { dayRange: 'Friday & Saturday',  time: '8:00 AM – 10:00 PM', lastOrder: '(last order at 9:30 PM)' },
     ] }] },
     { name: 'Union Bar', blocks: [{ rows: [
-      { dayRange: 'Sunday to Thursday', time: '11:00 AM – 9:00 PM', lastOrder: '(last order at 8:30 PM)' },
-      { dayRange: 'Friday to Sunday',   time: '11:00 AM – 9:30 PM', lastOrder: '(last order at 9:00 PM)' },
+      { dayRange: 'Sunday to Thursday',              time: '12:00 PM – 11:00 PM' },
+      { dayRange: 'Friday and Saturday & Eve of PH', time: '12:00 PM – 12:00 AM' },
     ] }] },
     { name: 'The 2nd Floor', blocks: [
       { subtitle: 'Lunch',  rows: [{ dayRange: 'Tuesday to Sunday', time: '11:30 AM – 2:30 PM', lastOrder: '(last order at 2:00 PM)' }] },
@@ -25,6 +25,11 @@ const OUTLET_GROUPS = [
       { dayRange: 'Friday to Sunday',   time: '10:00 AM – 8:00 PM' },
     ] }] },
     { name: 'Grillhouse', blocks: [{ rows: [
+      { dayRange: 'Sunday to Thursday', time: '11:00 AM – 9:00 PM', lastOrder: '(last order at 8:30 PM)' },
+      { dayRange: 'Friday',             time: '11:00 AM – 9:30 PM', lastOrder: '(last order at 9:00 PM)' },
+      { dayRange: 'Saturday',           time: '8:30 AM – 9:30 PM',  lastOrder: '(last order at 9:00 PM)' },
+    ] }] },
+    { name: 'Tiki Bar', blocks: [{ rows: [
       { dayRange: 'Sunday to Thursday', time: '11:00 AM – 9:00 PM', lastOrder: '(last order at 8:30 PM)' },
       { dayRange: 'Friday',             time: '11:00 AM – 9:30 PM', lastOrder: '(last order at 9:00 PM)' },
       { dayRange: 'Saturday',           time: '8:30 AM – 9:30 PM',  lastOrder: '(last order at 9:00 PM)' },
