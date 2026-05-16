@@ -30,9 +30,8 @@ const OUTLET_GROUPS = [
       { dayRange: 'Saturday',           time: '8:30 AM – 9:30 PM',  lastOrder: '(last order at 9:00 PM)' },
     ] }] },
     { name: 'Tiki Bar', blocks: [{ rows: [
-      { dayRange: 'Sunday to Thursday', time: '11:00 AM – 9:00 PM', lastOrder: '(last order at 8:30 PM)' },
-      { dayRange: 'Friday',             time: '11:00 AM – 9:30 PM', lastOrder: '(last order at 9:00 PM)' },
-      { dayRange: 'Saturday',           time: '8:30 AM – 9:30 PM',  lastOrder: '(last order at 9:00 PM)' },
+      { dayRange: 'Friday & Saturday', time: '11:30 AM – 12:00 AM', lastOrder: '(last order at 11:30 PM)' },
+      { dayRange: 'Sunday',            time: '11:30 AM – 11:00 PM', lastOrder: '(last order at 10:30 PM)' },
     ] }] },
   ] },
   { id: 'fitness', label: 'Fitness & Wellness', cards: [

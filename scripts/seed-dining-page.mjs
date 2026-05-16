@@ -58,9 +58,8 @@ const RESTAURANTS = [
         { dayRange: 'Saturday',           time: '8:30 AM - 9:30 PM',  lastOrder: 'Last order at 9:00 PM' },
       ] },
       { title: 'Tiki Bar Operating Hours', rows: [
-        { dayRange: 'Sunday to Thursday', time: '11:00 AM - 9:00 PM', lastOrder: 'Last order at 8:30 PM' },
-        { dayRange: 'Friday',             time: '11:00 AM - 9:30 PM', lastOrder: 'Last order at 9:00 PM' },
-        { dayRange: 'Saturday',           time: '8:30 AM - 9:30 PM',  lastOrder: 'Last order at 9:00 PM' },
+        { dayRange: 'Friday & Saturday', time: '11:30 AM - 12:00 AM', lastOrder: 'Last order at 11:30 PM' },
+        { dayRange: 'Sunday',            time: '11:30 AM - 11:00 PM', lastOrder: 'Last order at 10:30 PM' },
       ] },
     ],
     locationContact: { locationLevel: 'Level 1', phone: '6739 4357', email: 'grillhouse@amclub.org.sg' },
