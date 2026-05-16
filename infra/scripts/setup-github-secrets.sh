@@ -64,8 +64,10 @@ SUB_NAME=$(az account show --query name -o tsv)
 ok "Subscription: $SUB_NAME ($SUB_ID)"
 
 # ── Service Principal ─────────────────────────────────────────
+# Per-environment SP name so rotations don't cross-affect other envs.
+# Running this script for uat doesn't touch the dev / prod SP password.
 header "Service Principal"
-SP_NAME="amclub-github-actions"
+SP_NAME="amclub-github-actions-${ENVIRONMENT}"
 info "Creating/updating service principal: $SP_NAME"
 
 SP_RAW=$(az ad sp create-for-rbac \
