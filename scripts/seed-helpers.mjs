@@ -1,5 +1,15 @@
-// Shared helpers for Strapi seed scripts. Each script reads cms/.env.seed
-// for STRAPI_BASE_URL + STRAPI_API_TOKEN, then imports these helpers.
+// Shared helpers for Strapi seed scripts. Each script reads an env file
+// from cms/.env.seed[.<env>] for STRAPI_BASE_URL + STRAPI_API_TOKEN.
+//
+// Pick the env by either:
+//   --env=prod                       (CLI flag)
+//   SEED_ENV=prod node seed-X.mjs    (environment variable)
+//
+// File resolution:
+//   --env=prod  → cms/.env.seed.prod
+//   --env=uat   → cms/.env.seed.uat
+//   --env=dev   → cms/.env.seed.dev
+//   (no flag)   → cms/.env.seed             (legacy single-env workflow)
 //
 // Usage from a sibling script:
 //   import { initEnv, api, uploadFile, slugify, isDryRun } from './seed-helpers.mjs';
@@ -12,9 +22,21 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
-const ENV_PATH = join(ROOT, 'cms', '.env.seed');
 
 export const isDryRun = () => process.argv.includes('--dry-run');
+
+function pickEnvName() {
+  const flag = process.argv.find((a) => a.startsWith('--env='));
+  if (flag) return flag.slice('--env='.length);
+  if (process.env.SEED_ENV) return process.env.SEED_ENV;
+  return null;
+}
+
+function envPath() {
+  const name = pickEnvName();
+  const file = name ? `.env.seed.${name}` : '.env.seed';
+  return join(ROOT, 'cms', file);
+}
 
 export const slugify = (s) =>
   String(s)
@@ -27,7 +49,11 @@ function loadEnv(path) {
   let text;
   try { text = readFileSync(path, 'utf8'); }
   catch {
+    const envName = pickEnvName();
     console.error(`Missing env file: ${path}`);
+    if (envName) {
+      console.error(`(--env=${envName} resolves to cms/.env.seed.${envName})`);
+    }
     console.error(`Create it with:`);
     console.error(`  STRAPI_BASE_URL=https://your-deployed-url`);
     console.error(`  STRAPI_API_TOKEN=...`);
@@ -42,13 +68,16 @@ function loadEnv(path) {
 }
 
 export function initEnv() {
-  const env = loadEnv(ENV_PATH);
+  const path = envPath();
+  const envName = pickEnvName() ?? '(default)';
+  const env = loadEnv(path);
   const BASE = (env.STRAPI_BASE_URL || '').replace(/\/$/, '');
   const TOKEN = env.STRAPI_API_TOKEN;
   if (!BASE || !TOKEN) {
-    console.error('STRAPI_BASE_URL and STRAPI_API_TOKEN must be set in cms/.env.seed');
+    console.error(`STRAPI_BASE_URL and STRAPI_API_TOKEN must be set in ${path}`);
     process.exit(1);
   }
+  console.log(`▸ Seed target [${envName}]: ${BASE}`);
   return { BASE, TOKEN, auth: { Authorization: `Bearer ${TOKEN}` }, ROOT };
 }
 

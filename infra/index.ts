@@ -5,6 +5,7 @@ import * as random from '@pulumi/random';
 
 const location = azure.config.location ?? 'southeastasia';
 const projectName = 'amclub';
+const stack = pulumi.getStack();
 
 // ── ElevenLabs config (env-var driven, set via GitHub Actions secrets) ─
 // Matches the style used by AZURE_* / PULUMI_* — keeps Pulumi.<stack>.yaml
@@ -51,7 +52,7 @@ const jwtSecret = new random.RandomPassword(`${projectName}-jwt`, {
 });
 
 // ── Resource Group ───────────────────────────────────────────
-const rg = new azure.resources.ResourceGroup(`${projectName}-rg`, {
+const rg = new azure.resources.ResourceGroup(`${projectName}-${stack}-rg`, {
   location,
 });
 
@@ -232,16 +233,43 @@ const appImage = new dockerBuild.Image(`${projectName}-app-image`, {
 // ── Container App (Nginx + Strapi) ───────────────────────────
 const appKeys = pulumi.interpolate`${appKey1.result},${appKey2.result}`;
 
-// Look up the manually-managed TLS cert for amclub.org.sg by name.
-// Cert lifecycle (issuance, validation, renewal) stays manual; this
-// just teaches Pulumi the cert's resource ID so the customDomain
-// binding below survives every container-app update.
-const customDomainCertName = 'amclub.org.sg-amclub-e-260514154558';
-const customDomainCert = azure.app.getManagedCertificateOutput({
-  resourceGroupName: rg.name,
-  environmentName: containerEnv.name,
-  managedCertificateName: customDomainCertName,
-});
+// Stack-aware custom domain binding. Config-driven so dev can run
+// without a custom domain and prod can wire up its cert post-deploy.
+//
+// Prefer the plural `customDomains` config (array of { name, certName })
+// so prod can serve both apex (amclub.org.sg) and www subdomain from the
+// same Container App:
+//
+//   amclub-website:customDomains:
+//     - name: amclub.org.sg
+//       certName: amclub.org.sg-amclub-prod-<timestamp>
+//     - name: www.amclub.org.sg
+//       certName: www.amclub.org.sg-amclub-prod-<timestamp>
+//
+// The legacy singular `customDomain` + `customDomainCertName` keys are
+// still honored for back-compat. Both forms require the managed cert
+// to already exist in the Container Apps Environment (provisioned
+// manually in the Azure portal). Pulumi only references certs by name.
+const stackConfig = new pulumi.Config();
+type CustomDomainEntry = { name: string; certName: string };
+const customDomainEntries = stackConfig.getObject<CustomDomainEntry[]>('customDomains');
+const legacyDomain = stackConfig.get('customDomain');
+const legacyCertName = stackConfig.get('customDomainCertName');
+
+const domainEntries: CustomDomainEntry[] = customDomainEntries
+  ?? (legacyDomain && legacyCertName ? [{ name: legacyDomain, certName: legacyCertName }] : []);
+
+const customDomains = domainEntries.length > 0
+  ? domainEntries.map((entry) => ({
+      name: entry.name,
+      certificateId: azure.app.getManagedCertificateOutput({
+        resourceGroupName: rg.name,
+        environmentName: containerEnv.name,
+        managedCertificateName: entry.certName,
+      }).id,
+      bindingType: azure.app.BindingType.SniEnabled,
+    }))
+  : undefined;
 
 const app = new azure.app.ContainerApp(`${projectName}-app`, {
   resourceGroupName: rg.name,
@@ -252,13 +280,7 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
       external: true,
       targetPort: 80,
       transport: azure.app.IngressTransportMethod.Auto,
-      customDomains: [
-        {
-          name: 'amclub.org.sg',
-          certificateId: customDomainCert.id,
-          bindingType: azure.app.BindingType.SniEnabled,
-        },
-      ],
+      ...(customDomains ? { customDomains } : {}),
     },
     registries: [
       {
@@ -356,5 +378,10 @@ export const resourceGroupName = rg.name;
 export const appUrl = pulumi.interpolate`https://${app.latestRevisionFqdn}`;
 export const containerAppFqdn = app.configuration.apply((c) => c?.ingress?.fqdn ?? '');
 export const customDomainVerificationId = app.customDomainVerificationId;
+// Static public IP of the Container Apps Environment — stable for the
+// lifetime of the env. Use this for Cloudflare A records at the apex
+// or subdomains (A record sidesteps CNAME flattening issues with
+// Cloudflare's proxy).
+export const containerEnvStaticIp = containerEnv.staticIp;
 export const postgresHost = dbServer.fullyQualifiedDomainName;
 export const containerRegistryLoginServer = registry.loginServer;

@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main, uat, dev]
 
 concurrency:
   group: deploy-${{ github.ref }}
@@ -13,15 +13,15 @@ jobs:
     uses: ./.github/workflows/ci.yml
 
   deploy:
-    name: Deploy to ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+    name: Deploy to ${{ github.ref_name == 'main' && 'prod' || github.ref_name == 'uat' && 'uat' || 'dev' }}
     needs: ci
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+    environment: ${{ github.ref_name == 'main' && 'prod' || github.ref_name == 'uat' && 'uat' || 'dev' }}
     env:
       AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
       AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
-      STACK: ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
+      STACK: ${{ github.ref_name == 'main' && 'prod' || github.ref_name == 'uat' && 'uat' || 'dev' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -66,8 +66,8 @@ jobs:
           ARM_TENANT_ID: ${{ steps.azure.outputs.tenant-id }}
           ARM_SUBSCRIPTION_ID: ${{ steps.azure.outputs.subscription-id }}
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
-          ELEVENLABS_AGENT_ID: agent_9501k4971nfqf1xvgd0604g5kq8y
-          PUBLIC_SITE_URL: ${{ github.ref_name == 'main' && 'https://amclub.example' || 'https://amclub-app1ff10ffc.purplehill-517bf99b.southeastasia.azurecontainerapps.io' }}
+          ELEVENLABS_AGENT_ID: ${{ vars.ELEVENLABS_AGENT_ID }}
+          PUBLIC_SITE_URL: ${{ github.ref_name == 'main' && 'https://amclub.org.sg' || github.ref_name == 'uat' && 'https://uat.amclub.org.sg' || 'https://dev.amclub.org.sg' }}
 
       - name: Show deployment URL
         if: success()
