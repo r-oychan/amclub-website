@@ -11,3 +11,4 @@ config:
   #     certName: amclub.org.sg-amclub-prod-<timestamp>
   #   - name: www.amclub.org.sg
   #     certName: www.amclub.org.sg-amclub-prod-<timestamp>
+encryptionsalt: v1:rsnTxNeI/Ts=:v1:Mc/rkckmlR6G9hbz:NDm1YmrmI+JpAW1gjJMu1ErjpRWVAw==

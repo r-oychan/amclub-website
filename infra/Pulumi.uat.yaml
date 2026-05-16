@@ -1,0 +1,9 @@
+config:
+  azure-native:location: southeastasia
+  # UAT uses Azure-generated FQDN; no custom domain bound.
+  # If you later want uat.amclub.org.sg or similar, follow the
+  # same custom-domain wiring procedure as prod (see plan file
+  # at .claude/plans/rosy-squishing-quasar.md, Step 5) and set:
+  # amclub-website:customDomain: uat.amclub.org.sg
+  # amclub-website:customDomainCertName: <cert-name-from-portal>
+encryptionsalt: v1:XQ/7kOTEzyc=:v1:p1xinF2QbJcj6esG:sJHmBS9BE3D8QL9Fas4W5zELvYSEVw==

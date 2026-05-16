@@ -23,6 +23,23 @@
 - Named exports only (no default exports except React pages)
 - 2-space indentation, semicolons, single quotes
 - Conventional commits: `feat:`, `fix:`, `chore:`, `docs:`
+- **File / asset naming:** lowercase with hyphens only (`heritage-1966.jpg`, `joining-fees.tsx`). No spaces, underscores, camelCase, or capitalised words in filenames. If you see legacy files like `Award_Top 5 Social Club in Singapore_2025.jpg`, rename them when you touch them and update every reference.
+
+## Git Workflow & Environments
+- **Three long-lived branches mapped to environments:**
+  - `dev` → development environment (always commit here first)
+  - `uat` → UAT environment
+  - `main` → production
+- **Always check in to `dev` only.** Promotion happens via PRs `dev → uat → main`. Never push directly to `uat` or `main`.
+- **The site must be environment-aware.** API base URLs, Strapi origins, feature flags, and analytics IDs are read from env vars per environment — never hardcode a single environment's URL. Build-time env: `VITE_*` for frontend; runtime env: Strapi/Container App settings.
+- Force-pushing or rewriting history on `uat` or `main` is forbidden. On `dev`, ask first.
+
+## Content & Media Management
+- **Pre-release content lives in seed scripts** (`scripts/seed-*.mjs`), not in `/admin` one-offs and not hardcoded in React. Every piece of initial copy, image, link, or PDF must be reproducible by re-running a seed script against a fresh Strapi instance. If you enter something in `/admin` ad-hoc, port it back into the matching seed script in the same commit.
+- **All user-facing content is configurable in the CMS.** That includes text, image URLs, file/PDF links, CTA hrefs, and ordering — never bake these into `.tsx` files. See "Workflow: CMS Wiring" for the Definition of Done.
+- **Media directory is the single home for assets.** Everything served via Strapi or referenced by seed scripts lives under `media/`. **Mirror the site structure** inside `media/` so assets are easy to locate (e.g. `media/about/`, `media/dining/grillhouse/`, `media/event-spaces/the-gallbraith-ballroom/`).
+- **Remove unused media.** When you delete or replace an asset reference, delete the file from `media/` in the same commit. Don't leave orphaned binaries behind.
+- **Standard asset filenames** follow the lowercase-with-hyphens rule above. Rename legacy uppercase / spaced filenames when you touch them, and update every seed script + CMS reference.
 
 ## Verification Commands
 - Frontend: `cd frontend && npm run typecheck && npm run lint && npm run build`
@@ -51,6 +68,8 @@
 - Never modify `site-analysis.json` or `content-inventory.json` manually — these are generated
 - Always run verification commands before committing
 - Always ask before destructive operations (drop database, delete content types)
+- Always commit to `dev`. Never push directly to `uat` or `main` — those move via PR promotion.
+- Never hardcode environment-specific URLs (Strapi origin, API base, portal links) in source — read them from env vars per environment.
 
 ## Design Reference
 
@@ -166,6 +185,8 @@ The list of pages still using hardcoded content (must be migrated to CMS-driven)
 Track progress in `SPECS.md` — mark each page as `cms-wired: true` once it meets the Definition of Done above.
 
 ## Flexibility & Componentization
+- **Reuse before you create.** Before adding a new component, grep `frontend/src/components/` and check `SPECS.md` for anything visually or structurally similar. If a near-match exists, extend it with a prop/variant instead of duplicating. Only create a net-new component when the existing ones can't be sensibly generalised.
+- **Pick the right CMS shape:** use a **Strapi component** for a reusable content block embedded inside multiple content types (e.g. CTA group, image-with-caption), and a **collection type** for repeated standalone entities (events, venues, FAQ items). Singletons (`home-page`, `about-page`) stay singleType. Match the CMS shape to the React component's reuse pattern.
 - **Componentize everything:** Every distinct visual section on a page should be its own React component.
 - **Make everything configurable:** Props should drive content, layout variants, colors, and visibility. Avoid hardcoding text, images, or layout decisions inside components.
 - **CMS-driven:** All content should come from Strapi. Components receive data via props, not static imports.
