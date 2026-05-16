@@ -1,0 +1,13 @@
+config:
+  azure-native:location: southeastasia
+  # Bind one or more custom domains to the Container App. Each entry
+  # references a managed cert that must already exist on the prod
+  # Container Apps Environment — provision them in the Azure portal
+  # first, then paste the cert names here. Apex + www are served from
+  # the same app so both URLs land on the SPA.
+  #
+  # amclub-website:customDomains:
+  #   - name: amclub.org.sg
+  #     certName: amclub.org.sg-amclub-prod-<timestamp>
+  #   - name: www.amclub.org.sg
+  #     certName: www.amclub.org.sg-amclub-prod-<timestamp>
