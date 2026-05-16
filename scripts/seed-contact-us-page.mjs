@@ -71,8 +71,8 @@ const OUTLET_GROUPS = [
       { dayRange: 'Closed Sundays & PH',  time: '' },
     ] }] },
     { name: 'Membership Office', blocks: [{ rows: [
-      { dayRange: 'Monday to Friday',  time: '12:00 PM – 7:00 PM' },
-      { dayRange: 'Saturday',          time: '1:00 PM – 8:00 PM' },
+      { dayRange: 'Monday to Friday',  time: '9:00 AM – 7:00 PM' },
+      { dayRange: 'Saturday',          time: '10:00 AM – 6:00 PM' },
       { dayRange: 'Closed Sundays',    time: '' },
     ] }] },
   ] },
