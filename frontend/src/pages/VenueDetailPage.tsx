@@ -312,19 +312,14 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
     if (!config || !lookupSlug || !section) return;
     const load = async () => {
       setLoading(true);
-      // Strapi v5's `populate=*` only goes one level deep, which leaves
-      // operatingHoursSections.rows empty. List each relation explicitly and
-      // deep-populate the nested rows.
-      const params: Record<string, string> = {
+      // Each collection's custom controller (cms/src/api/{restaurant,venue,
+      // facility}/controllers/) supplies its own POPULATE map server-side.
+      // Strapi 5.46's stricter populate-validator rejects `=*` on leaf fields
+      // and unknown keys (e.g. `teamMembers` doesn't exist on restaurant),
+      // so we keep populate out of the request entirely.
+      const items = await fetchAPI<VenueData[]>(config.apiPath, {
         'filters[slug][$eq]': lookupSlug,
-        'populate[image]': 'true',
-        'populate[ctas]': 'true',
-        'populate[locationContact]': 'true',
-        'populate[operatingHoursSections][populate]': '*',
-        'populate[teamMembers][populate]': '*',
-        'populate[downloads][populate]': '*',
-      };
-      const items = await fetchAPI<VenueData[]>(config.apiPath, params);
+      });
       const fallback = staticFallback(section, lookupSlug);
       if (items && items.length > 0) {
         const api = items[0];
