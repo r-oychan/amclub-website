@@ -52,6 +52,19 @@ export default {
     } catch (e) {
       out.morphColumnsError = e instanceof Error ? e.message : String(e);
     }
+    // Inspect the membership_pages table to confirm the singletype identity
+    try {
+      const cols = await knex.raw(`
+        SELECT column_name, data_type FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'membership_pages'
+        ORDER BY ordinal_position
+      `);
+      out.membershipPagesColumns = cols.rows ?? cols;
+      const rows = await knex('membership_pages').select('*').limit(10);
+      out.membershipPagesRows = rows;
+    } catch (e) {
+      out.membershipPagesError = e instanceof Error ? e.message : String(e);
+    }
     try {
       const allRows = await knex('files_related_mph').select('*').orderBy('id', 'desc').limit(40);
       out.morphRecent = allRows;
