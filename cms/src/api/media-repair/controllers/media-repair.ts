@@ -22,6 +22,25 @@ export default {
     ctx.body = { ok: true, ts: new Date().toISOString() };
   },
 
+  // Raw read of files_related_morphs. If a row for the given (ref, field)
+  // exists after an attach attempt, the relation is persisted but possibly
+  // not surfaced; if no row exists, the write was silently dropped.
+  async diag(ctx: Ctx) {
+    const strapi = (globalThis as any).strapi;
+    const knex = strapi.db.connection;
+    try {
+      const rows = await knex('files_related_morphs')
+        .select('*')
+        .where('related_type', 'api::membership-page.membership-page')
+        .orderBy('id', 'desc')
+        .limit(20);
+      const fields = await knex('files_related_morphs').distinct('field').pluck('field');
+      ctx.body = { rows, distinctFields: fields };
+    } catch (e) {
+      ctx.body = { error: e instanceof Error ? e.message : String(e) };
+    }
+  },
+
   async attach(ctx: Ctx) {
     const { uid, field, fileIds, status } = ctx.request.body ?? {};
     if (!uid || typeof uid !== 'string') return ctx.badRequest('uid (string) required');

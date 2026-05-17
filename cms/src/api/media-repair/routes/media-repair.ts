@@ -20,5 +20,11 @@ export default {
       handler: 'media-repair.health',
       config: { auth: false },
     },
+    {
+      method: 'GET',
+      path: '/media-repair/diag',
+      handler: 'media-repair.diag',
+      config: { auth: false },
+    },
   ],
 };
