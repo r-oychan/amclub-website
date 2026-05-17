@@ -119,6 +119,20 @@ export default {
     } catch (e) {
       out.docFindFirstError = e instanceof Error ? e.message : String(e);
     }
+    // What does Strapi's runtime schema registry say about membership-page?
+    try {
+      const ct = (strapi as any).getModel
+        ? (strapi as any).getModel('api::membership-page.membership-page')
+        : (strapi as any).contentTypes?.['api::membership-page.membership-page'];
+      out.contentTypeAttributes = Object.keys(ct?.attributes ?? {});
+      out.problemFieldsInSchema = {
+        joinCommunityImages: ct?.attributes?.joinCommunityImages ?? null,
+        benefitIcons: ct?.attributes?.benefitIcons ?? null,
+        findMembershipImage: ct?.attributes?.findMembershipImage ?? null,
+      };
+    } catch (e) {
+      out.contentTypeRegistryError = e instanceof Error ? e.message : String(e);
+    }
     ctx.body = out;
   },
 
