@@ -18,6 +18,7 @@ import {
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 const MEDIA_DIR = join(ROOT, 'media', 'about');
+const COLLAGE_DIR = join(ROOT, 'media', 'about', 'collage');
 const DRY = isDryRun();
 const ctx = initEnv();
 ctx.ROOT = ROOT;
@@ -55,6 +56,11 @@ const IMAGES = [
   'award-7-water.jpg', 'award-8-bizsafe.jpg', 'award-9-expat.jpg',
   'Award_Top 5 Social Club in Singapore_2025.jpg',
   'Award_Top 5 Social Club in Singapore_2026.jpg',
+];
+
+const COLLAGE_IMAGES = [
+  'collage-1.jpeg', 'collage-2.jpeg', 'collage-3.jpeg',
+  'collage-4.jpeg', 'collage-5.jpeg',
 ];
 
 // HomePage-uploaded reuse: vision/mission image already on Strapi
@@ -245,6 +251,9 @@ async function upsertAboutPage({ media, homeMedia }) {
       heading: 'Awards & Accolades',
       items: AWARDS.map(([title, issuer, img]) => ({ title, issuer, image: media[img].id })),
     },
+    collage: {
+      images: COLLAGE_IMAGES.map((n) => collageMedia[n].id),
+    },
     ctaBanner: {
       heading: 'Become Part of Our Story',
       body: 'Join a community that celebrates heritage, connection, and belonging.',
@@ -276,6 +285,7 @@ async function main() {
 
   console.log('\n[1/3] Uploading media…');
   const media = await uploadAll(ctx, MEDIA_DIR, IMAGES, { dry: DRY });
+  const collageMedia = await uploadAll(ctx, COLLAGE_DIR, COLLAGE_IMAGES, { dry: DRY });
 
   // Reuse vision/mission image already uploaded by HomePage seed
   console.log('\n  Reusing HomePage-uploaded image for vision/mission…');

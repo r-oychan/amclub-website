@@ -90,12 +90,10 @@ async function upsertContactUsPage() {
     mapEmbedSrc: 'https://maps.google.com/maps?q=American%20Club%20Singapore&z=15&output=embed',
     outletGroups: OUTLET_GROUPS,
     talkToUsCta: {
-      heading: 'Talk to Us',
-      body: "Whether you're considering Membership, planning an event, or just have a question — we'd love to hear from you.",
+      heading: 'Talk2Us! About Your Club Experience',
       variant: 'default',
       ctas: [
-        { label: 'Make an Enquiry',     href: 'mailto:info@amclub.org.sg', variant: 'primary' },
-        { label: 'Membership Enquiry',  href: '/membership',               variant: 'outline' },
+        { label: 'Tell Us What You Think', href: 'https://amclub.jotform.com/252152095231953', isExternal: true, variant: 'primary' },
       ],
     },
   };

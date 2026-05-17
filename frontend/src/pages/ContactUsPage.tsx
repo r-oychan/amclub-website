@@ -65,7 +65,14 @@ export default function ContactUsPage() {
       {outletGroups.length > 0 && (
         <OutletOperatingHours groups={outletGroups} defaultGroupId={outletGroups[0].id} />
       )}
-      <TalkToUsBanner />
+      {data.talkToUsCta && data.talkToUsCta.heading && data.talkToUsCta.ctas?.[0] && (
+        <TalkToUsBanner
+          heading={data.talkToUsCta.heading}
+          ctaLabel={data.talkToUsCta.ctas[0].label}
+          ctaHref={data.talkToUsCta.ctas[0].href ?? '#'}
+          ctaIsExternal={data.talkToUsCta.ctas[0].isExternal ?? true}
+        />
+      )}
     </PageFade>
   );
 }

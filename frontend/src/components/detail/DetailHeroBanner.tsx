@@ -1,5 +1,4 @@
-const HERO_BG =
-  'https://framerusercontent.com/images/uA8oZioX84LwYdHwDPogQJhk13I.jpg';
+const HERO_BG = '/branding/detail-hero-fallback.jpg';
 
 export function DetailHeroBanner({
   imageUrl = HERO_BG,

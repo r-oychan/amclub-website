@@ -64,33 +64,13 @@ const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
   return `${STRAPI_URL}${m.url}`;
 };
 
-// Patch CTAs the CMS still seeds with placeholder hrefs. Once the deployed
-// Strapi entry carries the real URL these overrides become no-ops.
-const CTA_OVERRIDES: Record<string, { href: string; isExternal: boolean }> = {
-  'Book a Club Tour': {
-    href: 'https://amclub.jotform.com/260813837273966?parentURL=https%3A%2F%2Famclub.org.sg%2Fmembership-enquiry-form%2F&jsForm=true',
-    isExternal: true,
-  },
-};
-
 const linksOf = (ls?: StrapiLink[]) =>
-  (ls ?? []).map((l) => {
-    const override = CTA_OVERRIDES[l.label];
-    if (override && (!l.href || l.href === '#')) {
-      return {
-        label: l.label,
-        href: override.href,
-        isExternal: override.isExternal,
-        icon: l.icon ?? 'arrow',
-      };
-    }
-    return {
-      label: l.label,
-      href: l.href ?? '#',
-      isExternal: l.isExternal,
-      icon: l.icon ?? 'arrow',
-    };
-  });
+  (ls ?? []).map((l) => ({
+    label: l.label,
+    href: l.href ?? '#',
+    isExternal: l.isExternal,
+    icon: l.icon ?? 'arrow',
+  }));
 
 export default function DiningPage() {
   const [data, setData] = useState<StrapiDiningPage | null>(null);
