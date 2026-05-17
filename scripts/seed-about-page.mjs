@@ -168,7 +168,7 @@ async function upsertCommitteeMember(name, role, photoId, memberType, order, bio
   return r.data;
 }
 
-async function upsertAboutPage({ media, homeMedia }) {
+async function upsertAboutPage({ media, collageMedia, homeMedia }) {
   const data = {
     title: 'About',
     hero: {
@@ -333,7 +333,7 @@ async function main() {
   }
 
   console.log('\n[3/3] About Page single type…');
-  await upsertAboutPage({ media, homeMedia });
+  await upsertAboutPage({ media, collageMedia, homeMedia });
   console.log('  ✓ about-page upserted');
 
   console.log('\nDone.');
