@@ -58,10 +58,19 @@ async function fetchText(url) {
 }
 
 async function fetchArticleHtmlViaRest(slug) {
+  // The legacy WP install at amclub.org.sg has been replaced by this new
+  // SPA, so /wp-json now returns the SPA's index.html (HTTP 200,
+  // content-type: text/html). Treat any non-JSON or non-array response as
+  // "not available" and let fetchSourceHtml fall through to the body-text
+  // fallback.
   const url = `https://amclub.org.sg/wp-json/wp/v2/posts?slug=${encodeURIComponent(slug)}`;
-  const res = await fetch(url);
+  let res;
+  try { res = await fetch(url); } catch { return null; }
   if (!res.ok) return null;
-  const arr = await res.json();
+  const ct = res.headers.get('content-type') || '';
+  if (!ct.includes('json')) return null;
+  let arr;
+  try { arr = await res.json(); } catch { return null; }
   if (!Array.isArray(arr) || !arr.length) return null;
   return arr[0]?.content?.rendered ?? null;
 }

@@ -9,21 +9,89 @@
 
 | Route | Page Component | Strapi Type | Content Type Name | CMS Wired |
 |---|---|---|---|---|
-| `/home` | `HomePage.tsx` | singleType | `home-page` | ❌ |
-| `/about` | `AboutPage.tsx` | singleType | `about-page` | ❌ |
-| `/dining` | `DiningPage.tsx` | singleType | `dining-page` | ❌ |
-| `/fitness` | `FitnessPage.tsx` | singleType | `fitness-page` | ❌ |
-| `/kids` | `KidsPage.tsx` | singleType | `kids-page` | ❌ |
-| `/event-spaces` | `EventSpacesPage.tsx` | singleType | `event-spaces-page` | ❌ |
-| `/membership` | `MembershipPage.tsx` | singleType | `membership-page` | ❌ |
+| `/home` | `HomePage.tsx` | singleType | `home-page` | 🟡 |
+| `/about` | `AboutPage.tsx` | singleType | `about-page` | 🟡 |
+| `/dining` | `DiningPage.tsx` | singleType | `dining-page` | 🟡 |
+| `/fitness` | `FitnessPage.tsx` | singleType | `fitness-page` | 🟡 |
+| `/kids` | `KidsPage.tsx` | singleType | `kids-page` | 🟡 |
+| `/event-spaces` | `EventSpacesPage.tsx` | singleType | `event-spaces-page` | 🟡 |
+| `/membership` | `MembershipPage.tsx` | singleType | `membership-page` | 🟡 |
 | `/whats-on` | `WhatsOnPage.tsx` | singleType + collection | `whats-on-page` + `event` (filtered by `event-category`) | 🟡 |
 | `/whats-on/:slug` | `EventDetailPage.tsx` | collection | `event` (by slug) | 🟡 |
-| `/home-sub/news` | `NewsPage.tsx` | — | static list (Club News) | ❌ |
+| `/home-sub/news` | `NewsPage.tsx` | singleType + collection | `news-page` + `news-article` | 🟡 |
 | `/home-sub/gallery` | `GalleryPage.tsx` | singleType + collection | `gallery-page` + `gallery-album` | ✅ |
 | `/home-sub/contact-us` | `ContactUsPage.tsx` | — | static (`data/contactUs.ts`) — Map + Getting Here + Outlet Operating Hours tabs | ❌ |
 | `/:section/:slug` | `VenueDetailPage.tsx` | collection | `restaurant` / `venue` / `facility` | ✅ |
 
-> **CMS Wired** = page meets all four conditions in CLAUDE.md → "Workflow: CMS Wiring → Definition of Done". Flip ❌ → ✅ only after the deployed URL renders the deployed Strapi entry. Header nav (`useHeaderData`) is also wired, though it is not a page.
+> **CMS Wired** = page meets all four conditions in CLAUDE.md → "Workflow: CMS Wiring → Definition of Done". Flip ❌ → ✅ only after the deployed URL renders the deployed Strapi entry. 🟡 = page fetches from Strapi single-type but still carries local fallback constants / inline-hardcoded section components / Framer CDN URLs. Header nav (`useHeaderData`) is wired, though it is not a page.
+
+### Outstanding migration gaps (PR-2 scope)
+
+For every 🟡 page above, the page component still contains content that bypasses the CMS. The list below is the strict-CMS punch list — when all entries are addressed, every page flips to ✅.
+
+| Page | Gap | Where |
+|---|---|---|
+| HomePage | `MOMENTS_FALLBACK` (4 hardcoded social cards w/ `/images/social/*` refs) | `frontend/src/pages/HomePage.tsx:197-235` |
+| HomePage | `DUMMY_FAQ_ANSWERS` regex-keyed fallback answers | `frontend/src/pages/HomePage.tsx:162-193` |
+| HomePage | `AMCLUB_INSTAGRAM` constant | `frontend/src/pages/HomePage.tsx:195` |
+| HomePage | `CTA_OVERRIDES` patch map | `frontend/src/pages/HomePage.tsx:123-133` |
+| AboutPage | `COLLAGE_FALLBACK` (5 framerusercontent.com URLs) | `frontend/src/pages/AboutPage.tsx:136-142` |
+| AboutPage | `CTA_OVERRIDES` patch map | `frontend/src/pages/AboutPage.tsx:73-78` |
+| DiningPage | `CTA_OVERRIDES` patch map | `frontend/src/pages/DiningPage.tsx:69-74` |
+| DiningPage | `HIDDEN_FROM_GRID` constant | `frontend/src/pages/DiningPage.tsx:127` |
+| FitnessPage | `CTA_OVERRIDES` patch map | `frontend/src/pages/FitnessPage.tsx:55-60` |
+| KidsPage | `CTA_OVERRIDES` patch map | `frontend/src/pages/KidsPage.tsx:59-64` |
+| KidsPage | `LEARNING_OVERRIDES` (2 cards) | `frontend/src/pages/KidsPage.tsx:178-187` |
+| KidsPage | `fallbackPartyPackages` (3 items w/ Azure blob URLs) | `frontend/src/pages/KidsPage.tsx:127-164` |
+| KidsPage | `<QuadSection>` inline-hardcodes 3 Quad venues | `frontend/src/components/kids/QuadSection.tsx` |
+| KidsPage | `<ChildSafetySection>` inline-hardcodes heading + 3 features | `frontend/src/components/kids/ChildSafetySection.tsx` |
+| MembershipPage | `CTA_OVERRIDES` + `PROGRAM_CARD_OVERRIDES` | `frontend/src/pages/MembershipPage.tsx:50-81` |
+| MembershipPage | `FALLBACK_COMMUNITY_IMAGES` (4), `FALLBACK_BENEFIT_ICONS` (6 SVGs), `FALLBACK_FIND_MEMBERSHIP_IMAGE` | `frontend/src/pages/MembershipPage.tsx:92-106` |
+| EventSpacesPage | `overrideHref()` + `TOUR_FORM_URL` | `frontend/src/pages/EventSpacesPage.tsx:45-52` |
+| WhatsOnPage | Fallback heading "Featured Club Events" + empty-state copy | `frontend/src/pages/WhatsOnPage.tsx:163,174` |
+| GalleryPage | Hardcoded UI chrome ("Gallery", "Load More", "View Album") | `frontend/src/pages/GalleryPage.tsx:86,118,191` |
+| NewsPage | Hardcoded UI chrome ("Club News" fallback, "Load More", "Read More", breadcrumb parent) | `frontend/src/pages/NewsPage.tsx:67,76,103,120` |
+| ContactUsPage | `TalkToUsBanner` component carries hardcoded defaults (heading, label, JotForm URL) | `frontend/src/components/contact/TalkToUsBanner.tsx:11-14` |
+| ContactUsPage | `data/contactUs.ts` static outlet/hours/address data | `frontend/src/data/contactUs.ts` |
+
+### Outstanding media gaps (PR-2 scope)
+
+Frontend code references **22 unique `framerusercontent.com` URLs** + several `/images/social/*` local-public files that should be Strapi-uploaded so admins can swap them. Specifically:
+
+| Reference | Source | Target (planned) |
+|---|---|---|
+| Header/Footer logo `jYpgpsEhknSxMZJWxquvCab3o.webp` | `Header.tsx`, `Footer.tsx`, `useHeaderData.ts` | `header.logo` (already a media field, just needs upload) |
+| Header burger background `6mcf62RlDfRfU61Yg5vb2pefpi4.png` | `Header.tsx:171` | New `header.menuIcon` media field |
+| Header nav dropdown images (3) | `useHeaderData.ts:151,178,204` | `nav-column.image` (already a field) |
+| DetailHeroBanner fallback `uA8oZioX84LwYdHwDPogQJhk13I.jpg` | `DetailHeroBanner.tsx:2` | New `site-settings.detailHeroFallback` media field |
+| About `COLLAGE_FALLBACK` (5) | `AboutPage.tsx:136-142` | `about-page.collage.images` (already a field; just seed the upload) |
+| Reciprocal Clubs hero + 5 logos | `ReciprocalClubsPage.tsx:12-...` | Already-defined fields on the (yet-unsewn) `reciprocal-clubs-page` single type |
+| `data/subpages.ts` (14 framer URLs) | static data file | Migrated when each subpage moves into its own CMS single-type or component |
+| `frontend/public/images/social/*.{jpg,mp4}` (4 pairs) | `HomePage.tsx` `MOMENTS_FALLBACK` | Removed when `MOMENTS_FALLBACK` is removed; canonical lives in `media/social/` and is already seeded to `testimonial` entries |
+
+### Local `media/` directory inventory
+
+After PR-1 cleanup:
+
+| Folder | Seeded by | Notes |
+|---|---|---|
+| `media/about/` | `seed-about-page.mjs` | 61 files: GC portraits, mgmt, awards, heritage |
+| `media/dining/` | `seed-dining-page.mjs`, `seed-dining-promotions.mjs` | restaurants, promotions |
+| `media/event-spaces/` | `seed-event-spaces-page.mjs` | 28 files |
+| `media/fitness/` | `seed-fitness-page.mjs`, `seed-facilities.mjs` | 47 files |
+| `media/gallery/` | `seed-gallery.mjs` | 23 albums (subfolders with spaces — defer rename) |
+| `media/hero/`, `media/home/` | `seed-home-page.mjs` | home page hero/services/experience/about/events |
+| `media/icons/` | **(not yet seeded — PR-2)** | cuisine SVGs, dresscode, promo-accent — currently served from `frontend/public/icons/` |
+| `media/kids/`, `media/pages/kids/` | `seed-kids-page.mjs`, `seed-facilities.mjs` | hangout/parties/packages |
+| `media/logos/` | `seed-dining-page.mjs` | restaurant logos |
+| `media/membership/` | `seed-membership-page.mjs`, `seed-membership-forms.mjs` | hero, community, programs, forms (PDFs) |
+| `media/news/` | **(partial — 6 cover images via `_manifest.txt` not yet wired to `news-article.image` — PR-2)** | local copies of legacy Framer cover images |
+| `media/pages/` | varies | subfolder structure for new page-specific media |
+| `media/promotions/`, `media/restaurants/`, `media/services/` | `seed-dining-page.mjs` | dining-page sub-blocks |
+| `media/social/` | `seed-home-page.mjs` (SOCIAL_DIR) | 4 social posts (jpg + mp4); already seeded |
+| `media/TAC-favicon/` | **(not Strapi-managed)** | favicons consumed by `frontend/public/` build copy |
+
+Deleted in PR-1: `media/marketing/` (orphan, duplicate of `frontend/public/marketing/`), `media/membership-add/` (empty).
 
 All page-typed entries use a `content` **dynamiczone** (block-based), populated by Strapi block components listed below.
 
