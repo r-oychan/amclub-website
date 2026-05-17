@@ -93,6 +93,32 @@ export default {
     } catch (e) {
       out.morphReadError = e instanceof Error ? e.message : String(e);
     }
+    // Read via strapi.documents() (internal API). Compare to REST GET.
+    try {
+      const strapiAny: any = strapi;
+      const docs = strapiAny.documents('api::membership-page.membership-page');
+      const r1 = await docs.findFirst({ populate: ['joinCommunityImages', 'benefitIcons', 'findMembershipImage'] });
+      out.docFindFirst = {
+        id: r1?.id,
+        documentId: r1?.documentId,
+        joinCommunityImagesCount: r1?.joinCommunityImages?.length ?? null,
+        benefitIconsCount: r1?.benefitIcons?.length ?? null,
+        findMembershipImage: r1?.findMembershipImage?.name ?? null,
+      };
+      // Also try via entityService (legacy)
+      const r2 = await strapiAny.entityService.findMany('api::membership-page.membership-page', {
+        populate: { joinCommunityImages: true, benefitIcons: true, findMembershipImage: true },
+      });
+      const entity = Array.isArray(r2) ? r2[0] : r2;
+      out.entityServiceFindMany = {
+        id: entity?.id,
+        joinCommunityImagesCount: entity?.joinCommunityImages?.length ?? null,
+        benefitIconsCount: entity?.benefitIcons?.length ?? null,
+        findMembershipImage: entity?.findMembershipImage?.name ?? null,
+      };
+    } catch (e) {
+      out.docFindFirstError = e instanceof Error ? e.message : String(e);
+    }
     ctx.body = out;
   },
 
