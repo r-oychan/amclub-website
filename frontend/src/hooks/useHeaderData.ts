@@ -77,7 +77,7 @@ function resolveMediaUrl(media?: StrapiMedia): string | undefined {
 
 function transformHeader(data: StrapiHeader): HeaderData {
   const logoUrl = resolveMediaUrl(data.logo)
-    ?? 'https://framerusercontent.com/images/jYpgpsEhknSxMZJWxquvCab3o.webp';
+    ?? '/branding/logo.webp';
 
   const navItems: NavItemConfig[] = (data.navItems ?? []).map((item) => ({
     label: item.label,
@@ -103,7 +103,7 @@ function transformHeader(data: StrapiHeader): HeaderData {
 }
 
 const DEFAULT_HEADER: HeaderData = {
-  logoUrl: 'https://framerusercontent.com/images/jYpgpsEhknSxMZJWxquvCab3o.webp',
+  logoUrl: '/branding/logo.webp',
   ctaButton: { label: 'Member Login', href: 'https://amclub-portal.iontone.com/#/login', isExternal: true },
   navItems: [
     {
@@ -148,7 +148,7 @@ const DEFAULT_HEADER: HeaderData = {
           ],
         },
         {
-          image: 'https://framerusercontent.com/images/ALiDWPH3U3VnmiEzcoEet6lPIk.jpeg',
+          image: '/branding/nav-dining.jpeg',
           imageLink: '/dining',
         },
       ],
@@ -175,7 +175,7 @@ const DEFAULT_HEADER: HeaderData = {
           ],
         },
         {
-          image: 'https://framerusercontent.com/images/FfQ1mhhWwbjsMQKiahq8SzaqLs.jpeg',
+          image: '/branding/nav-fitness.jpeg',
           imageLink: '/fitness',
         },
       ],
@@ -201,7 +201,7 @@ const DEFAULT_HEADER: HeaderData = {
           ],
         },
         {
-          image: 'https://framerusercontent.com/images/DytJIjZnqDf7hE6r7WyfxUrNjU.jpeg',
+          image: '/branding/nav-kids.jpeg',
           imageLink: '/kids',
         },
       ],

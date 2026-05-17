@@ -54,23 +54,8 @@ const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
   return `${STRAPI_URL}${m.url}`;
 };
 
-// Patch CTAs the CMS still seeds with placeholder hrefs. Once the deployed
-// Strapi entry carries the real URL these overrides become no-ops.
-const CTA_OVERRIDES: Record<string, { href: string; isExternal: boolean }> = {
-  'Book a Club Tour': {
-    href: 'https://amclub.jotform.com/260813837273966?parentURL=https%3A%2F%2Famclub.org.sg%2Fmembership-enquiry-form%2F&jsForm=true',
-    isExternal: true,
-  },
-};
-
 const linksOf = (ls?: StrapiLink[]) =>
-  (ls ?? []).map((l) => {
-    const override = CTA_OVERRIDES[l.label];
-    if (override && (!l.href || l.href === '#')) {
-      return { label: l.label, href: override.href, isExternal: override.isExternal };
-    }
-    return { label: l.label, href: l.href ?? '#', isExternal: l.isExternal };
-  });
+  (ls ?? []).map((l) => ({ label: l.label, href: l.href ?? '#', isExternal: l.isExternal }));
 
 const overlayProps = (s?: StrapiOverlaySection) => {
   if (!s || !s.image) return null;
@@ -109,7 +94,7 @@ export default function KidsPage() {
   const hangoutP = overlayProps(data.hangout);
   const partiesP = overlayProps(data.parties);
 
-  const cmsPartyPackageItems = (data.partyPackages?.items ?? [])
+  const partyPackageItems = (data.partyPackages?.items ?? [])
     .filter((i) => i.image)
     .map((i) => ({
       name: i.name,
@@ -120,85 +105,16 @@ export default function KidsPage() {
         : undefined,
     }));
 
-  // Fallback content while the deployed Strapi catches up with the new
-  // `partyPackages` component (see project memory: new media fields don't
-  // persist on this project until migrations land). Once Strapi returns
-  // partyPackages, the CMS data takes over automatically.
-  const fallbackPartyPackages = {
-    heading: 'Parties Made Easy',
-    subheading: "Fun-filled kids' party packages designed for memorable celebrations.",
-    items: [
-      {
-        name: 'The Quad Studio Party Package',
-        image:
-          'https://amclubdata28a57492.blob.core.windows.net/media/uploads/quadstudio_a820344edb.jpeg',
-        imageAlt: 'The Quad Studio Party Package',
-        cta: {
-          label: 'Download Brochure',
-          href: '/documents/kids/the-quad-studios-party-package.pdf',
-          isExternal: true,
-        },
-      },
-      {
-        name: 'The Bowling Alley Party Package',
-        image:
-          'https://amclubdata28a57492.blob.core.windows.net/media/uploads/bowling_alley_256914ebd6.jpeg',
-        imageAlt: 'The Bowling Alley Party Package',
-        cta: {
-          label: 'Download Brochure',
-          href: '/documents/kids/the-bowling-alley-party-package.pdf',
-          isExternal: true,
-        },
-      },
-      {
-        name: 'Union Bar x The Bowling Alley',
-        image: `${STRAPI_URL}/uploads/union_bar_4a8862c1e3.jpeg`,
-        imageAlt: 'Union Bar x The Bowling Alley',
-        cta: {
-          label: 'View Menu',
-          href: '/documents/kids/union-bar-bowling-alley-menu.jpg',
-          isExternal: true,
-        },
-      },
-    ],
-  };
-
-  const partyPackages =
-    cmsPartyPackageItems.length > 0
-      ? {
-          heading: data.partyPackages?.heading,
-          subheading: data.partyPackages?.subheading,
-          items: cmsPartyPackageItems,
-        }
-      : fallbackPartyPackages;
-
-  // Heading-keyed overrides keep the Learning cards correct even when the
-  // deployed Strapi entry still carries stale hrefs/images (e.g. /kids/classes
-  // pre-rename) — frontend-only patch until the CMS is reseeded.
-  const LEARNING_OVERRIDES: Record<string, { href?: string; image?: string }> = {
-    'Seasonal Camps': {
-      href: '/kids/camps',
-      image: '/images/kids/learning/seasonal-camps.jpg',
+  const learningItems = (data.learning?.items ?? []).map((i) => ({
+    heading: i.heading,
+    description: i.description ?? '',
+    image: mediaUrl(i.image) ?? '',
+    imageAlt: i.imageAlt ?? '',
+    cta: {
+      label: i.cta?.label ?? 'Explore',
+      href: i.cta?.href ?? '#',
     },
-    'Recreational Classes': {
-      href: '/kids/recreational-classes',
-      image: '/images/kids/learning/recreational-classes.jpg',
-    },
-  };
-
-  const learningItems = (data.learning?.items ?? []).map((i) => {
-    const override = LEARNING_OVERRIDES[i.heading];
-    return {
-      heading: i.heading,
-      description: i.description ?? '',
-      image: override?.image ?? mediaUrl(i.image) ?? '',
-      imageAlt: i.imageAlt ?? '',
-      cta: {
-        label: i.cta?.label ?? 'Explore',
-        href: override?.href ?? i.cta?.href ?? '#',
-      },
-    };
-  });
+  }));
 
   return (
     <PageFade loaded={loaded}>
@@ -217,11 +133,13 @@ export default function KidsPage() {
       {hangoutP && <OverlaySection {...hangoutP} />}
       {partiesP && <OverlaySection {...partiesP} />}
 
-      <KidsPartyPackages
-        heading={partyPackages.heading}
-        subheading={partyPackages.subheading}
-        items={partyPackages.items}
-      />
+      {data.partyPackages && partyPackageItems.length > 0 && (
+        <KidsPartyPackages
+          heading={data.partyPackages.heading}
+          subheading={data.partyPackages.subheading}
+          items={partyPackageItems}
+        />
+      )}
 
 
       {data.learning && learningItems.length > 0 && (

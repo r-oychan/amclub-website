@@ -179,12 +179,37 @@ const TESTIMONIALS = [
 ];
 
 const FAQ_ITEMS = [
-  // question, category, order  (answer empty per D8)
-  ['What types of membership do you offer?',          'membership', 1],
-  ['What facilities and services are included?',      'facilities', 2],
-  ['Is membership transferable?',                     'membership', 3],
-  ['Can I upgrade or change my membership type?',     'membership', 4],
+  // question, category, order, answer (plain text — converted to blocks on upsert)
+  [
+    'What types of membership do you offer?',
+    'membership',
+    1,
+    'The Club offers several membership categories including Ordinary, Term, Junior, and Corporate. Each comes with its own privileges, eligibility, and joining-fee structure. Visit the Membership Types & Joining Fees page or contact our Membership team for guidance on the option that best suits you and your family.',
+  ],
+  [
+    'What facilities and services are included?',
+    'facilities',
+    2,
+    'Members enjoy access to our gym, aquatics centre, sên Spa, tennis courts, multi-purpose court, bowling alley, and a full suite of fitness studios — plus eight restaurants and bars, kids programmes, and a private events team. Operating hours and class schedules are published weekly in the Member portal.',
+  ],
+  [
+    'Is membership transferable?',
+    'membership',
+    3,
+    'Membership is generally non-transferable, but certain categories allow nomination or transfer to immediate family members under defined conditions. Please reach out to our Membership team for the latest rules and any documentation required.',
+  ],
+  [
+    'Can I upgrade or change my membership type?',
+    'membership',
+    4,
+    'Yes — Members may upgrade or change their membership category subject to eligibility, availability, and any applicable difference in entrance fees. Speak with our Membership team and they will walk you through the process.',
+  ],
 ];
+
+const toBlocks = (text) => [{
+  type: 'paragraph',
+  children: [{ type: 'text', text }],
+}];
 
 const slugify = (s) => s.toLowerCase()
   .replace(/['']/g, '')
@@ -248,12 +273,17 @@ async function ensureTestimonial(slug, quote, imageId, videoId, postUrl, order) 
   }
 }
 
-async function ensureFaqItem(question, category, order) {
+async function ensureFaqItem(question, category, order, answerText) {
   const slug = slugify(question);
   if (DRY) { console.log(`  [dry] upsert faq-item: ${question}`); return { documentId: `dry-${slug}`, slug }; }
   const existing = await findOneBySlug('faq-items', slug);
-  const payload = { question, slug, category, order, answer: null };
-  if (DRY) { console.log(`  [dry] upsert faq-item: ${question}`); return { documentId: `dry-${slug}`, slug }; }
+  const payload = {
+    question,
+    slug,
+    category,
+    order,
+    answer: answerText ? toBlocks(answerText) : null,
+  };
   if (existing) {
     const r = await api(`/faq-items/${existing.documentId}`, { method: 'PUT', body: { data: payload } });
     return r.data;
@@ -434,8 +464,8 @@ async function main() {
 
   console.log('\n[5/6] FAQ items…');
   const faqIds = [];
-  for (const [q, cat, order] of FAQ_ITEMS) {
-    const f = await ensureFaqItem(q, cat, order);
+  for (const [q, cat, order, answerText] of FAQ_ITEMS) {
+    const f = await ensureFaqItem(q, cat, order, answerText);
     faqIds.push(f.documentId);
     console.log(`  ✓ ${q}`);
   }
