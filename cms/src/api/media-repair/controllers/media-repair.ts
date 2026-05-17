@@ -28,17 +28,35 @@ export default {
   async diag(ctx: Ctx) {
     const strapi = (globalThis as any).strapi;
     const knex = strapi.db.connection;
+    const out: Record<string, unknown> = {};
     try {
-      const rows = await knex('files_related_morphs')
-        .select('*')
-        .where('related_type', 'api::membership-page.membership-page')
-        .orderBy('id', 'desc')
-        .limit(20);
-      const fields = await knex('files_related_morphs').distinct('field').pluck('field');
-      ctx.body = { rows, distinctFields: fields };
+      // List all tables that look relevant to file relations.
+      const tables = await knex.raw(`
+        SELECT table_name FROM information_schema.tables
+        WHERE table_schema = 'public'
+          AND (table_name ILIKE '%file%' OR table_name ILIKE '%morph%' OR table_name ILIKE '%link%')
+        ORDER BY table_name
+      `);
+      out.tables = tables.rows ?? tables;
     } catch (e) {
-      ctx.body = { error: e instanceof Error ? e.message : String(e) };
+      out.tablesError = e instanceof Error ? e.message : String(e);
     }
+    // Try common morph names in Strapi v5
+    for (const tname of [
+      'files_related_morphs',
+      'files_folder_links',
+      'files_folder_lnk',
+      'upload_files',
+      'upload_files_related_morphs',
+    ]) {
+      try {
+        const rows = await knex(tname).select('*').limit(3);
+        out[tname] = { count: rows.length, sample: rows };
+      } catch (e) {
+        out[tname] = { error: e instanceof Error ? e.message.split(' - ')[0] : String(e) };
+      }
+    }
+    ctx.body = out;
   },
 
   async attach(ctx: Ctx) {
