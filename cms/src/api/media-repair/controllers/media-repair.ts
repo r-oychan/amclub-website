@@ -41,20 +41,31 @@ export default {
     } catch (e) {
       out.tablesError = e instanceof Error ? e.message : String(e);
     }
-    // Try common morph names in Strapi v5
-    for (const tname of [
-      'files_related_morphs',
-      'files_folder_links',
-      'files_folder_lnk',
-      'upload_files',
-      'upload_files_related_morphs',
-    ]) {
-      try {
-        const rows = await knex(tname).select('*').limit(3);
-        out[tname] = { count: rows.length, sample: rows };
-      } catch (e) {
-        out[tname] = { error: e instanceof Error ? e.message.split(' - ')[0] : String(e) };
-      }
+    // Inspect the real morph table (Strapi v5: files_related_mph)
+    try {
+      const colsResult = await knex.raw(`
+        SELECT column_name, data_type FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'files_related_mph'
+        ORDER BY ordinal_position
+      `);
+      out.morphColumns = colsResult.rows ?? colsResult;
+    } catch (e) {
+      out.morphColumnsError = e instanceof Error ? e.message : String(e);
+    }
+    try {
+      const allRows = await knex('files_related_mph').select('*').orderBy('id', 'desc').limit(40);
+      out.morphRecent = allRows;
+      const distinctFields = await knex('files_related_mph').distinct('field').pluck('field');
+      out.distinctFields = distinctFields;
+      const distinctRefs = await knex('files_related_mph').distinct('related_type').pluck('related_type');
+      out.distinctRefs = distinctRefs;
+      const membershipRows = await knex('files_related_mph')
+        .where('related_type', 'api::membership-page.membership-page')
+        .orderBy('id', 'desc')
+        .limit(50);
+      out.membershipMorphRows = membershipRows;
+    } catch (e) {
+      out.morphReadError = e instanceof Error ? e.message : String(e);
     }
     ctx.body = out;
   },
