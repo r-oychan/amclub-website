@@ -65,6 +65,19 @@ export default {
     } catch (e) {
       out.membershipPagesError = e instanceof Error ? e.message : String(e);
     }
+    // Manual JOIN: files via morph table, exactly what Strapi's populate SHOULD do.
+    try {
+      const joined = await knex('files')
+        .join('files_related_mph', 'files_related_mph.file_id', 'files.id')
+        .where('files_related_mph.related_id', 4)
+        .where('files_related_mph.related_type', 'api::membership-page.membership-page')
+        .orderBy('files_related_mph.field')
+        .orderBy('files_related_mph.order')
+        .select('files.id as file_id', 'files.name', 'files_related_mph.field', 'files_related_mph.order', 'files_related_mph.related_id');
+      out.manualJoin = joined;
+    } catch (e) {
+      out.manualJoinError = e instanceof Error ? e.message : String(e);
+    }
     try {
       const allRows = await knex('files_related_mph').select('*').orderBy('id', 'desc').limit(40);
       out.morphRecent = allRows;
