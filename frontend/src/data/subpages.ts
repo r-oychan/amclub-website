@@ -417,7 +417,7 @@ export const diningSubpages: SubpageData[] = [
     parentHref: '/dining',
     ctas: [
       { label: 'View Menu', href: '/menus/union-bar-menu.pdf', isExternal: true },
-      { label: 'Sports Screening Schedule', href: '/menus/union-bar-menu.pdf', isExternal: true },
+      { label: 'Sports Screening Schedule', href: 'https://docs.google.com/presentation/d/1Ruk_oS8bijGO1Osuuuc4cL3aGc7DknzVmMRqsyN7gZ8/edit?slide=id.g36c0dd5bddb_0_2#slide=id.g36c0dd5bddb_0_2', isExternal: true },
       { label: 'Promotions', href: '/dining/dining-promotion#promo-union-bar' },
     ],
     extraSections: [
