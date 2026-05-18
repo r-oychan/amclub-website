@@ -13,6 +13,12 @@ jobs:
     uses: ./.github/workflows/ci.yml
 
   deploy:
+    # FROZEN: dev's Pulumi state diverged after the 7fe1b0e cascade
+    # replacement run (see commit db61d46). Until the state is healed
+    # offline, only `main` is allowed to run `pulumi up`. Pushes to dev
+    # still go through CI for lint/typecheck/build feedback but skip
+    # the deploy job entirely so nothing mutates the live Azure infra.
+    if: github.ref == 'refs/heads/main'
     name: Deploy to ${{ github.ref_name == 'main' && 'prod' || 'dev' }}
     needs: ci
     runs-on: ubuntu-latest
