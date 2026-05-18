@@ -114,28 +114,72 @@ export async function findUploadedByName(ctx, name) {
   return Array.isArray(arr) && arr.length ? arr[0] : null;
 }
 
-export async function uploadFile(ctx, localPath) {
+// Filename extension → mime, used so the FormData blob carries the right
+// Content-Type. Without this, Strapi's Azure upload provider stores the blob
+// as `application/octet-stream` and browsers won't render the file as an
+// image (the SVG icons + JPGs go missing in the live UI even though the
+// upload "succeeds").
+const MIME_BY_EXT = {
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  gif: 'image/gif',
+  webp: 'image/webp',
+  svg: 'image/svg+xml',
+  avif: 'image/avif',
+  mp4: 'video/mp4',
+  webm: 'video/webm',
+  mov: 'video/quicktime',
+  pdf: 'application/pdf',
+  doc: 'application/msword',
+  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+};
+
+function mimeForFile(name) {
+  const dot = name.lastIndexOf('.');
+  if (dot < 0) return 'application/octet-stream';
+  return MIME_BY_EXT[name.slice(dot + 1).toLowerCase()] ?? 'application/octet-stream';
+}
+
+/**
+ * Upload a file to Strapi. By default, if a file with the same name already
+ * exists in the media library, returns it (dedup). Pass `{ replace: true }`
+ * to PUT-replace the existing file with the local one — useful for fixing
+ * incorrectly-uploaded files (e.g. wrong Content-Type on the underlying blob).
+ */
+export async function uploadFile(ctx, localPath, { replace = isReplace() } = {}) {
   const name = basename(localPath);
   const existing = await findUploadedByName(ctx, name);
-  if (existing) return existing;
+  if (existing && !replace) return existing;
   const buf = readFileSync(localPath);
+  const mime = mimeForFile(name);
   const fd = new FormData();
-  const blob = new Blob([buf]);
+  const blob = new Blob([buf], { type: mime });
   fd.append('files', blob, name);
-  const res = await fetch(`${ctx.BASE}/api/upload`, { method: 'POST', headers: ctx.auth, body: fd });
+  let url;
+  let method;
+  if (existing && replace) {
+    fd.append('fileInfo', JSON.stringify({ name, alternativeText: existing.alternativeText ?? '', caption: existing.caption ?? '' }));
+    url = `${ctx.BASE}/api/upload?id=${existing.id}`;
+    method = 'POST';
+  } else {
+    url = `${ctx.BASE}/api/upload`;
+    method = 'POST';
+  }
+  const res = await fetch(url, { method, headers: ctx.auth, body: fd });
   if (!res.ok) {
     const err = await res.text();
     throw new Error(`upload ${name} → ${res.status}: ${err}`);
   }
   const arr = await res.json();
-  return arr[0];
+  return Array.isArray(arr) ? arr[0] : arr;
 }
 
 /**
  * Upload every file in `names` from `dir`. Returns a map of name → media object.
  * Logs progress; honors dry-run.
  */
-export async function uploadAll(ctx, dir, names, { dry = false } = {}) {
+export async function uploadAll(ctx, dir, names, { dry = false, replace = isReplace() } = {}) {
   const map = {};
   for (const name of names) {
     const path = join(dir, name);
@@ -145,9 +189,11 @@ export async function uploadAll(ctx, dir, names, { dry = false } = {}) {
       console.log(`  [dry] upload ${name}`);
       continue;
     }
-    const m = await uploadFile(ctx, path);
+    const m = await uploadFile(ctx, path, { replace });
     map[name] = m;
     console.log(`  ✓ ${name.padEnd(40)} → id=${m.id}`);
   }
   return map;
 }
+
+export const isReplace = () => process.argv.includes('--replace');
