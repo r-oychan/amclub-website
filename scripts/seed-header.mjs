@@ -203,7 +203,15 @@ async function upsertHeader({ media }) {
     console.log('  [dry] PUT /header payload size:', JSON.stringify(data).length, 'chars');
     return { documentId: 'dry-header' };
   }
+  // Strapi v5 single types: a full-payload PUT updates the draft. To make
+  // the entry public we need a second PUT that *only* sets publishedAt —
+  // Strapi treats a publishedAt-only payload as a "publish current draft"
+  // operation rather than a draft update.
   const r = await api(ctx, '/header', { method: 'PUT', body: { data } });
+  await api(ctx, '/header', {
+    method: 'PUT',
+    body: { data: { publishedAt: new Date().toISOString() } },
+  });
   return r.data;
 }
 
