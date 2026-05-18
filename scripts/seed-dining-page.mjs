@@ -126,7 +126,10 @@ const RESTAURANTS = [
     menuLinks: [
       { label: 'View Menu', href: '/menus/union-bar-menu.pdf' },
     ],
-    ctas: [{ label: 'Promotions', href: '/dining/dining-promotion#promo-union-bar', icon: 'arrow' }],
+    ctas: [
+      { label: 'Sports Screening Schedule', href: 'https://docs.google.com/presentation/d/1Ruk_oS8bijGO1Osuuuc4cL3aGc7DknzVmMRqsyN7gZ8/edit?slide=id.g36c0dd5bddb_0_2#slide=id.g36c0dd5bddb_0_2', isExternal: true, icon: 'arrow' },
+      { label: 'Promotions',                href: '/dining/dining-promotion#promo-union-bar',                                                                                                       icon: 'arrow' },
+    ],
     operatingHoursSections: [
       { title: 'Opening Hours', rows: [
         { dayRange: 'Sunday to Thursday',              time: '12:00 PM - 11:00 PM' },
