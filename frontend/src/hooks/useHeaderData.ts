@@ -116,9 +116,9 @@ export function useHeaderData(): HeaderData {
     let cancelled = false;
 
     fetchAPI<StrapiHeader>('/header', {
-      'populate[logo]': '*',
+      'populate[logo]': 'true',
       'populate[navItems][populate][columns][populate]': '*',
-      'populate[ctaButton]': '*',
+      'populate[ctaButton]': 'true',
     }).then((result) => {
       if (cancelled || !result || !result.navItems?.length) return;
       setData(transformHeader(result));
