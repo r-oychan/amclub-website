@@ -5,7 +5,6 @@ import * as random from '@pulumi/random';
 
 const location = azure.config.location ?? 'southeastasia';
 const projectName = 'amclub';
-const stack = pulumi.getStack();
 
 // ── ElevenLabs config (env-var driven, set via GitHub Actions secrets) ─
 // Matches the style used by AZURE_* / PULUMI_* — keeps Pulumi.<stack>.yaml
@@ -52,7 +51,7 @@ const jwtSecret = new random.RandomPassword(`${projectName}-jwt`, {
 });
 
 // ── Resource Group ───────────────────────────────────────────
-const rg = new azure.resources.ResourceGroup(`${projectName}-${stack}-rg`, {
+const rg = new azure.resources.ResourceGroup(`${projectName}-rg`, {
   location,
 });
 
@@ -378,10 +377,5 @@ export const resourceGroupName = rg.name;
 export const appUrl = pulumi.interpolate`https://${app.latestRevisionFqdn}`;
 export const containerAppFqdn = app.configuration.apply((c) => c?.ingress?.fqdn ?? '');
 export const customDomainVerificationId = app.customDomainVerificationId;
-// Static public IP of the Container Apps Environment — stable for the
-// lifetime of the env. Use this for Cloudflare A records at the apex
-// or subdomains (A record sidesteps CNAME flattening issues with
-// Cloudflare's proxy).
-export const containerEnvStaticIp = containerEnv.staticIp;
 export const postgresHost = dbServer.fullyQualifiedDomainName;
 export const containerRegistryLoginServer = registry.loginServer;
