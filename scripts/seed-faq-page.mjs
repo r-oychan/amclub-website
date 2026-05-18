@@ -14,42 +14,11 @@
  * the single faq-page entry.
  */
 
-import { readFileSync } from 'node:fs';
-import { resolve, dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
-const ROOT = resolve(__dirname, '..');
-const ENV_PATH = join(ROOT, 'cms', '.env.seed');
+import { initEnv } from './seed-helpers.mjs';
 
 const DRY = process.argv.includes('--dry-run');
 
-function loadEnv(path) {
-  let text;
-  try { text = readFileSync(path, 'utf8'); }
-  catch {
-    console.error(`Missing env file: ${path}`);
-    console.error(`Create it with:`);
-    console.error(`  STRAPI_BASE_URL=https://your-deployed-url`);
-    console.error(`  STRAPI_API_TOKEN=...`);
-    process.exit(1);
-  }
-  const env = {};
-  for (const line of text.split('\n')) {
-    const m = line.match(/^\s*([A-Z_][A-Z0-9_]*)\s*=\s*(.*)\s*$/);
-    if (m) env[m[1]] = m[2].replace(/^['"]|['"]$/g, '');
-  }
-  return env;
-}
-
-const env = loadEnv(ENV_PATH);
-const BASE = (env.STRAPI_BASE_URL || '').replace(/\/$/, '');
-const TOKEN = env.STRAPI_API_TOKEN;
-if (!BASE || !TOKEN) {
-  console.error('STRAPI_BASE_URL and STRAPI_API_TOKEN must be set in cms/.env.seed');
-  process.exit(1);
-}
-const auth = { Authorization: `Bearer ${TOKEN}` };
+const { BASE, auth } = initEnv();
 
 async function api(path, opts = {}) {
   const url = `${BASE}/api${path}`;
