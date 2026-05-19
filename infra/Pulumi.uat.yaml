@@ -1,9 +1,19 @@
 config:
   azure-native:location: southeastasia
-  # UAT uses Azure-generated FQDN; no custom domain bound.
-  # If you later want uat.amclub.org.sg or similar, follow the
-  # same custom-domain wiring procedure as prod (see plan file
-  # at .claude/plans/rosy-squishing-quasar.md, Step 5) and set:
-  # amclub-website:customDomain: uat.amclub.org.sg
-  # amclub-website:customDomainCertName: <cert-name-from-portal>
+  # Custom domain bound to the UAT Container App. See Pulumi.dev.yaml for
+  # the full explanation of why this must be declared in stack config
+  # (TL;DR: Azure Container Apps PUT semantics strip customDomains if
+  # they're not in the desired-state body).
+  #
+  # Look up the certName via:
+  #   az containerapp env certificate list -g amclub-uat-rg -n amclub-uat-env
+  # (or via Azure Portal → Container Apps Environment → Certificates).
+  # The cert name follows the pattern `<domain>-amclub-<env>-<timestamp>`.
+  #
+  # TODO: fill in the real certName after the managed cert is provisioned.
+  # Until then this block is commented out — `pulumi up` will run without
+  # binding the custom domain.
+  # amclub-website:customDomains:
+  #   - name: uat.amclub.org.sg
+  #     certName: uat.amclub.org.sg-amclub-u-<timestamp>
 encryptionsalt: v1:XQ/7kOTEzyc=:v1:p1xinF2QbJcj6esG:sJHmBS9BE3D8QL9Fas4W5zELvYSEVw==

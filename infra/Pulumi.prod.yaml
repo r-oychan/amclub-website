@@ -1,14 +1,19 @@
 config:
   azure-native:location: southeastasia
-  # Bind one or more custom domains to the Container App. Each entry
-  # references a managed cert that must already exist on the prod
-  # Container Apps Environment — provision them in the Azure portal
-  # first, then paste the cert names here. Apex + www are served from
-  # the same app so both URLs land on the SPA.
+  # Custom domains bound to the prod Container App. MUST be declared here
+  # (not just configured in the portal) — Azure Container Apps uses PUT
+  # semantics, so every `pulumi up` strips any customDomains that aren't
+  # in the desired-state body. See Pulumi.dev.yaml for the full background.
   #
+  # certName lookup:
+  #   az containerapp env certificate list -g amclub-prod-rg -n amclub-prod-env
+  # or Azure Portal → Container Apps Environment → Certificates.
+  #
+  # TODO: fill in the real cert names from the prod environment. The
+  # apex and www subdomain each have their own managed cert.
   # amclub-website:customDomains:
   #   - name: amclub.org.sg
-  #     certName: amclub.org.sg-amclub-prod-<timestamp>
+  #     certName: amclub.org.sg-amclub-p-<timestamp>
   #   - name: www.amclub.org.sg
-  #     certName: www.amclub.org.sg-amclub-prod-<timestamp>
+  #     certName: www.amclub.org.sg-amclub-p-<timestamp>
 encryptionsalt: v1:rsnTxNeI/Ts=:v1:Mc/rkckmlR6G9hbz:NDm1YmrmI+JpAW1gjJMu1ErjpRWVAw==
