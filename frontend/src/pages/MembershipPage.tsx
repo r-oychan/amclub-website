@@ -54,18 +54,9 @@ export default function MembershipPage() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const page = await fetchAPI<StrapiMembershipPage>('/membership-page', {
-        'populate[hero][populate]': '*',
-        'populate[joinCta][populate]': '*',
-        'populate[joinCommunityImages]': '*',
-        'populate[intro]': '*',
-        'populate[benefits][populate][features][populate]': '*',
-        'populate[benefitIcons]': '*',
-        'populate[findRightCta][populate]': '*',
-        'populate[findMembershipImage]': '*',
-        'populate[programs][populate][cards][populate]': '*',
-        'populate[beginJourneyCta][populate]': '*',
-      });
+      // Server-side POPULATE in cms/src/api/membership-page/controllers handles
+      // every relation; Strapi 5.46 rejects `populate[x]=*` on leaf media fields.
+      const page = await fetchAPI<StrapiMembershipPage>('/membership-page');
       if (cancelled) return;
       setData(page);
       setLoaded(true);

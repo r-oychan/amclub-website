@@ -115,11 +115,11 @@ export function useHeaderData(): HeaderData {
   useEffect(() => {
     let cancelled = false;
 
-    fetchAPI<StrapiHeader>('/header', {
-      'populate[logo]': 'true',
-      'populate[navItems][populate][columns][populate]': '*',
-      'populate[ctaButton]': 'true',
-    }).then((result) => {
+    // Server-side POPULATE map in cms/src/api/header/controllers/header.ts
+    // handles all relations — Strapi 5.46's stricter populate-validator now
+    // rejects `populate[logo]=*` on leaf media fields, so we let the controller
+    // do it instead of specifying params here.
+    fetchAPI<StrapiHeader>('/header').then((result) => {
       if (cancelled || !result || !result.navItems?.length) return;
       setData(transformHeader(result));
     });

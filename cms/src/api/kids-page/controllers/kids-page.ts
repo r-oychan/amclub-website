@@ -13,6 +13,9 @@ const POPULATE = {
   learning: {
     populate: { items: { populate: { image: true, cta: true } } },
   },
+  partyPackages: {
+    populate: { items: { populate: { image: true, cta: true } } },
+  },
   safety: {
     populate: { features: { populate: { image: true, cta: true } }, cta: true },
   },

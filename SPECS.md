@@ -67,6 +67,67 @@ All page-typed entries use a `content` **dynamiczone** (block-based), populated 
 
 ---
 
+## Page Reference (page → React components + CMS sources)
+
+Each row lists, for one route: the React page file, the React components it composes, and the Strapi single-types / collections it consumes. Components are grouped by `frontend/src/components/<group>/` folder. "🟢 single-type" = `findFirst` against an `api::<name>.<name>` singleType; "🟢 collection" = `findMany` against a collection type.
+
+| Route | Page file | React components | Strapi sources |
+|---|---|---|---|
+| `/home` (also `/`) | `HomePage.tsx` | `blocks/Hero` `blocks/AboutSection` `blocks/CardGrid` `blocks/FeatureGrid` `blocks/TabsSection` `blocks/TestimonialSlider` `blocks/FaqAccordion` `shared/PageFade` | 🟢 single-type `home-page` (with nested `hero` `aboutSection` `events` `services` `experience` `moments` `faq` blocks); 🟢 collection `event` (filtered by upcoming date, with `category`) |
+| `/about` | `AboutPage.tsx` | `blocks/Hero` `blocks/TextBlock` `blocks/StatsCounter` `blocks/TeamGrid` `blocks/CtaBanner` `blocks/PartnerOrganizations` `blocks/AwardsGrid` `blocks/HeritageTimeline` `blocks/GovernanceBlock` `blocks/ManagementSlider` `blocks/CollageGallery` `shared/PageFade` | 🟢 single-type `about-page`; 🟢 collection `committee-member` (filtered twice: `memberType=general-committee` and `memberType=management`) |
+| `/dining` | `DiningPage.tsx` | `blocks/Hero` `blocks/CtaBanner` `blocks/OverlaySection` `dining/RestaurantCard` `dining/PromoCell` `shared/PageFade` `shared/CtaIcon` | 🟢 single-type `dining-page`; 🟢 collection `restaurant` |
+| `/dining/dining-promotion` | `DiningPromotionsPage.tsx` | `blocks/Hero` `blocks/CtaBanner` `shared/PageFade` `shared/CtaIcon` | 🟢 single-type `dining-promotions-page`; 🟢 collection `dining-promotion` |
+| `/dining/:slug` | `VenueDetailPage.tsx` (section=dining) | `shared/Button` `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `detail/DetailSection` `detail/ContactRow` `detail/MarqueeGallery` `blocks/FaqAccordion` `blocks/Testimonials` `kids/KidsPartyPackages` `shared/CtaIcon` | 🟢 collection `restaurant` (by slug) — fallback to `frontend/src/data/subpages.ts` if not present in CMS |
+| `/fitness` | `FitnessPage.tsx` | `blocks/Hero` `blocks/CtaBanner` `blocks/OverlaySection` `blocks/ThreeColGrid` `shared/PageFade` | 🟢 single-type `fitness-page` (with nested `senSpa` `aquatics` `gym` `tennis` `moreActivities` `bowling`) |
+| `/fitness/:slug` and `/fitness/:slug/:subSlug` | `VenueDetailPage.tsx` (section=fitness) | same as dining detail | 🟢 collection `facility` (by slug, filtered to section=fitness via the slug); subSlug pages register under `<slug>-<subSlug>` |
+| `/coaches/:section/:slug` | `CoachDetailPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `shared/Button` | 🟢 collection `coach` (by slug + section) |
+| `/kids` | `KidsPage.tsx` | `blocks/Hero` `blocks/CtaBanner` `blocks/OverlaySection` `blocks/ThreeColGrid` `kids/QuadSection` `kids/ChildSafetySection` `kids/KidsPartyPackages` `shared/PageFade` | 🟢 single-type `kids-page` (with nested `hangout` `parties` `partyPackages` `learning` `safety`) |
+| `/kids/:slug` | `VenueDetailPage.tsx` (section=kids) | same as dining detail | 🟢 collection `facility` (section=kids) |
+| `/event-spaces` | `EventSpacesPage.tsx` | `blocks/Hero` `blocks/CtaBanner` `event-spaces/PrivateEventPackages` `event-spaces/DistinctiveEventSpaces` `event-spaces/OffsiteCateringServices` `shared/PageFade` | 🟢 single-type `event-spaces-page` (with nested `privatePackages` `distinctiveSpaces` `offsiteCatering`) |
+| `/event-spaces/:slug` | `VenueDetailPage.tsx` (section=event-spaces) | same as dining detail | 🟢 collection `facility` (section=event-space) |
+| `/membership` | `MembershipPage.tsx` | `blocks/Hero` `blocks/CtaBanner` `blocks/FeatureGrid` `blocks/OverlaySection` `blocks/MembershipCommunityCollage` `blocks/MembershipPrograms` `shared/PageFade` | 🟢 single-type `membership-page` (with nested `hero` `joinCta` `joinCommunityImages` `intro` `benefits` `benefitIcons` `findRightCta` `findMembershipImage` `programs` `faq` `beginJourneyCta`) |
+| `/membership/joining-fees` | `JoiningFeesPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `shared/CtaIcon` | 🟢 single-type `joining-fees-page` |
+| `/membership/referal` | `ReferralPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `shared/CtaIcon` | 🟢 single-type `referral-page` |
+| `/membership/reciprocal-clubs` | `ReciprocalClubsPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `detail/DetailSection` `blocks/ImagePanelSlideshow` `shared/CtaIcon` | ❌ static — uses inline content + `frontend/src/data/subpages.ts` (PR-2 follow-up to migrate to its own `reciprocal-clubs-page` single-type) |
+| `/membership/:slug` | `VenueDetailPage.tsx` (section=membership) | same as dining detail | 🟢 collection `facility` (section=membership) — subpages like `start-application` and the legacy detail pages |
+| `/whats-on` | `WhatsOnPage.tsx` | `blocks/Hero` `blocks/CtaBanner` `shared/PageFade` | 🟢 single-type `whats-on-page`; 🟢 collection `event` (with `category` → `event-category`); 🟢 collection `event-category` (for category filter bar) |
+| `/whats-on/:slug` | `EventDetailPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `detail/DetailSection` `shared/CtaIcon` `shared/Button` `shared/PageFade` | 🟢 collection `event` (by slug; populates `category` + `image` + `ctas`) |
+| `/home-sub/news` | `NewsPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `shared/PageFade` | 🟢 single-type `news-page`; 🟢 collection `news-article` (paginated, sorted by `order`) |
+| `/home-sub/club-news/:slug` | `NewsArticlePage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `shared/PageFade` | 🟢 collection `news-article` (by slug; populates `htmlBody`, `image`, `body`) |
+| `/home-sub/gallery` | `GalleryPage.tsx` | `detail/DetailHeroBanner` `shared/PageFade` `shared/Lightbox` | 🟢 single-type `gallery-page`; 🟢 collection `gallery-album` (with `images` media + `coverImage`) |
+| `/home-sub/contact-us` | `ContactUsPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `contact/MapGettingHere` `contact/OutletOperatingHours` `contact/TalkToUsBanner` `shared/PageFade` | 🟢 single-type `contact-us-page` (with `outletGroups[].cards[].blocks[].rows` + `talkToUsCta`) |
+| `/home-sub/:slug` | `VenueDetailPage.tsx` (section=home-sub) | same as dining detail | 🟢 collection `facility` (section=home-sub) — only `advertise-with-us` currently routes here (the news/gallery/contact-us slugs hit their dedicated pages above) |
+| `/faq` | `FaqPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `blocks/FaqAccordion` `blocks/FaqAnswerBlocks` `shared/PageFade` | 🟢 single-type `faq-page`; 🟢 collection `faq-category` (sorted by `displayOrder`); 🟢 collection `faq-item` (grouped by category, sorted by `order`) |
+| `/privacy-statement` | `PrivacyStatementPage.tsx` | `shared/PageFade` | ❌ static — inline copy in component (PR-2 follow-up to migrate to a `privacy-statement-page` single-type) |
+
+### Layout chrome (every route)
+
+| Component | React | CMS source |
+|---|---|---|
+| Top nav (floating bar / mega menu / hamburger) | `components/layout/Header.tsx` via `hooks/useHeaderData.ts` | 🟢 single-type `header` (`logo`, `ctaButton`, 7 `navItems` → `shared.nav-dropdown` → `shared.nav-column` → `shared.nav-item`) |
+| Footer | `components/layout/Footer.tsx` | 🟢 single-type `footer` (`contact`, `columns` → `shared.footer-column`, `logo`) |
+| Chatbot | `components/chatbot/ChatbotWidget.tsx` | 🟢 single-type `site-settings` (boolean `chatbotEnabled`) + ElevenLabs runtime |
+
+### Collections used across multiple pages
+
+| Collection | Used by | Key fields |
+|---|---|---|
+| `event` | HomePage (upcoming events block), WhatsOnPage (full listing), EventDetailPage | title, slug, date, time, location, image, category, ctas, longDescription |
+| `event-category` | WhatsOnPage (filter bar) | name, slug, displayOrder |
+| `committee-member` | AboutPage | name, role, image, bio, memberType (general-committee / management), order |
+| `coach` | CoachDetailPage, optionally referenced from facility detail `teamMembers` | name, slug, section, bio, image |
+| `testimonial` | HomePage (moments slider via `home-page.moments.testimonials`) | memberName, quote, photo, video, ctaLabel, ctaUrl |
+| `faq-item` | FaqPage, HomePage faq accordion | question, slug, answer (blocks), category (legacy enum) + faqCategory (→ faq-category), order |
+| `faq-category` | FaqPage | name, slug, displayOrder |
+| `restaurant` | DiningPage (grid), VenueDetailPage (dining detail) | name, slug, cuisineType, description, image, logo, dressCode, smartCasual, ctas, order |
+| `facility` | FitnessPage / KidsPage / EventSpacesPage / MembershipPage (subpages), VenueDetailPage for those sections | name, slug, description, image, category (fitness / kids / event-space / membership), ctas, teamMembers, downloads, operatingHoursSections, locationContact, gallery |
+| `venue` | (defined but not currently routed) | name, slug, description, image, gallery, capacity, contact, ctas |
+| `gallery-album` | GalleryPage | title, slug, coverImage, images[], date, photoCount, description, order |
+| `news-article` | NewsPage (list), NewsArticlePage (detail) | title, slug, date, excerpt, image, category, htmlBody (shared.html-block), body (blocks), order |
+| `dining-promotion` | DiningPromotionsPage | (per promo: title, image, description, ctas, dates) |
+
+---
+
 ## Block Components
 
 | React Component | Strapi Block Component | Notes |
