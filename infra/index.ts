@@ -17,6 +17,20 @@ if (!elevenlabsApiKeyRaw) throw new Error('Missing env var ELEVENLABS_API_KEY (a
 if (!elevenlabsAgentId) throw new Error('Missing env var ELEVENLABS_AGENT_ID (set in deploy.yml)');
 const elevenlabsApiKey = pulumi.secret(elevenlabsApiKeyRaw);
 
+// ── Microsoft Entra ID SSO config (env-var driven) ────────────────
+// Consumed by strapi-plugin-sso at the CMS layer. All four values are
+// OPTIONAL — if AZUREAD_OAUTH_CLIENT_ID is empty, the plugin won't be able
+// to start its OAuth flow and the admin falls back to local password login
+// (intended graceful degradation while the GitHub secrets are being staged).
+// Set the secrets per environment under GitHub Settings → Environments →
+// {dev, uat, prod} → Secrets.
+const azureadTenantId = process.env.AZUREAD_TENANT_ID ?? '';
+const azureadClientId = process.env.AZUREAD_OAUTH_CLIENT_ID ?? '';
+const azureadClientSecretRaw = process.env.AZUREAD_OAUTH_CLIENT_SECRET ?? '';
+const azureadScope = process.env.AZUREAD_SCOPE || 'user.read';
+const azureadClientSecret = pulumi.secret(azureadClientSecretRaw);
+const ssoEnabled = Boolean(azureadTenantId && azureadClientId && azureadClientSecretRaw);
+
 // ── Auto-generated secrets ───────────────────────────────────
 const dbPassword = new random.RandomPassword(`${projectName}-db-pw`, {
   length: 24,
@@ -314,6 +328,11 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
       { name: 'jwt-secret', value: jwtSecret.result },
       { name: 'storage-account-key', value: storageKey },
       { name: 'elevenlabs-api-key', value: elevenlabsApiKey },
+      // SSO client secret — only added when the GitHub secret is set for this
+      // environment; the env block below references it conditionally to avoid
+      // a Container App "missing secretRef" error on stacks where SSO isn't
+      // configured yet.
+      ...(ssoEnabled ? [{ name: 'azuread-client-secret', value: azureadClientSecret }] : []),
     ],
   },
   template: {
@@ -347,6 +366,20 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
           { name: 'ELEVENLABS_API_KEY', secretRef: 'elevenlabs-api-key' },
           { name: 'ELEVENLABS_AGENT_ID', value: elevenlabsAgentId },
           { name: 'PUBLIC_SITE_URL', value: publicSiteUrl },
+          // Microsoft Entra ID SSO — consumed by strapi-plugin-sso. If
+          // ssoEnabled is false (any of the 3 GitHub secrets unset on this
+          // env), we still inject empty values so the plugin gracefully
+          // disables itself rather than crashing on missing env vars.
+          { name: 'AZUREAD_TENANT_ID', value: azureadTenantId },
+          { name: 'AZUREAD_OAUTH_CLIENT_ID', value: azureadClientId },
+          ...(ssoEnabled
+            ? [{ name: 'AZUREAD_OAUTH_CLIENT_SECRET', secretRef: 'azuread-client-secret' }]
+            : [{ name: 'AZUREAD_OAUTH_CLIENT_SECRET', value: '' }]),
+          { name: 'AZUREAD_SCOPE', value: azureadScope },
+          // Redirect URI is derived from the public site URL so we don't
+          // need a separate GitHub secret per env. The Entra app registration
+          // must include this URL in its "Redirect URIs" allow-list.
+          { name: 'AZUREAD_OAUTH_REDIRECT_URI', value: `${publicSiteUrl}/strapi-plugin-sso/azuread/callback` },
         ],
         volumeMounts: [
           {
