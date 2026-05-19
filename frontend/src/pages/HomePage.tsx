@@ -118,28 +118,8 @@ const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
   return `${STRAPI_URL}${m.url}`;
 };
 
-// Patch CTAs the CMS still seeds with placeholder hrefs. Once the deployed
-// Strapi entry carries the real URL these overrides become no-ops.
-const CTA_OVERRIDES: Record<string, { href: string; isExternal: boolean }> = {
-  'Request for a Club Tour': {
-    href: 'https://amclub.jotform.com/260813837273966?parentURL=https%3A%2F%2Famclub.org.sg%2Fmembership-enquiry-form%2F&jsForm=true',
-    isExternal: true,
-  },
-  'Book a Club Tour': {
-    href: 'https://amclub.jotform.com/260813837273966?parentURL=https%3A%2F%2Famclub.org.sg%2Fmembership-enquiry-form%2F&jsForm=true',
-    isExternal: true,
-  },
-  'Explore Membership': { href: '/membership', isExternal: false },
-};
-
-const link = (l?: StrapiLink) => {
-  if (!l) return undefined;
-  const override = CTA_OVERRIDES[l.label];
-  if (override && (!l.href || l.href === '#')) {
-    return { label: l.label, href: override.href, isExternal: override.isExternal };
-  }
-  return { label: l.label, href: l.href ?? '#', isExternal: l.isExternal };
-};
+const link = (l?: StrapiLink) =>
+  l ? { label: l.label, href: l.href ?? '#', isExternal: l.isExternal } : undefined;
 
 const formatEventDate = (iso: string): string => {
   const d = new Date(iso);
@@ -157,89 +137,6 @@ const faqAnswerText = (answer: StrapiFaqItem['answer']): string => {
     .filter(Boolean)
     .join('\n\n')
     .trim();
-};
-
-const DUMMY_FAQ_ANSWERS: { match: RegExp; answer: string }[] = [
-  {
-    match: /membership|join|apply/i,
-    answer:
-      'Membership applications are reviewed by the Membership Committee on a rolling basis. Reach out to our Membership team to learn about current categories, eligibility, and entrance fees — they will guide you through every step of the application process.',
-  },
-  {
-    match: /facility|gym|pool|spa|tennis/i,
-    answer:
-      'Members enjoy access to our gym, aquatics centre, sên Spa, tennis courts, and a full suite of fitness studios. Operating hours and class schedules are published weekly in the Member portal.',
-  },
-  {
-    match: /dining|restaurant|food/i,
-    answer:
-      'Eight restaurants and bars cater to every occasion — from casual all-day dining at Central to refined steakhouse fare at Grillhouse. Reservations can be made via the Member portal or by calling Reservations directly.',
-  },
-  {
-    match: /event|book|venue|wedding|party/i,
-    answer:
-      'Our private event team can host gatherings from intimate dinners to grand celebrations across our event spaces. Submit an enquiry via the Private Events page and a coordinator will follow up within two business days.',
-  },
-  {
-    match: /kid|child|family/i,
-    answer:
-      'The Kids Club offers age-appropriate programmes, supervised play, and seasonal camps. Drop-in childcare is available for active members during posted hours.',
-  },
-  {
-    match: /guest|visitor|access|reciprocal/i,
-    answer:
-      'Members may sponsor guests in line with the House Rules. Reciprocal Club privileges are available worldwide — visit the Reciprocal Clubs section for the current list and booking instructions.',
-  },
-];
-
-const AMCLUB_INSTAGRAM = 'https://www.instagram.com/americanclubsingapore/';
-
-const MOMENTS_FALLBACK: Array<{
-  name: string;
-  quote: string;
-  cta?: string;
-  image?: string;
-  video?: string;
-  href?: string;
-}> = [
-  {
-    name: 'American Club',
-    quote: 'Stars, Stripes & Big Breakfast Bites',
-    cta: 'Watch More',
-    image: '/images/social/stars-stripes-breakfast.jpg',
-    video: '/images/social/stars-stripes-breakfast.mp4',
-    href: 'https://www.instagram.com/reels/DUiQHUrgeK-/',
-  },
-  {
-    name: 'American Club',
-    quote: 'Mahjong Social',
-    cta: 'Watch More',
-    image: '/images/social/mahjong-social.jpg',
-    video: '/images/social/mahjong-social.mp4',
-    href: 'https://www.instagram.com/p/DUz9gdFgYXs/',
-  },
-  {
-    name: 'American Club',
-    quote: 'Shaken not Sorry',
-    cta: 'Watch More',
-    image: '/images/social/shaken-not-sorry.jpg',
-    href: 'https://www.instagram.com/p/DW6DPmhgYl_/',
-  },
-  {
-    name: 'American Club',
-    quote: 'Daddy Daughter Dance',
-    cta: 'Watch More',
-    image: '/images/social/daddy-daughter-dance.jpg',
-    href: 'https://www.instagram.com/p/DXoQXI7AfHN/',
-  },
-];
-
-const dummyAnswer = (question: string): string => {
-  const m = DUMMY_FAQ_ANSWERS.find((d) => d.match.test(question));
-  return (
-    m?.answer ??
-    'Our Member Services team is happy to help — please reach out via the Contact Us page or call the Club directly for the latest details.'
-  );
 };
 
 export default function HomePage() {
@@ -314,27 +211,21 @@ export default function HomePage() {
     .filter((c) => c.src);
 
   const moments = data?.moments;
-  // CMS testimonials are kept for migration but, until the deployed Strapi is
-  // re-seeded with the new social-style posts (memberName = "American Club"),
-  // render the local fallback so every card is branded consistently. Each
-  // card links out to its own social post URL (t.ctaUrl), not a shared profile link.
-  const cmsMomentItems = (moments?.testimonials ?? [])
+  const momentItems = (moments?.testimonials ?? [])
     .filter((t) => t.memberName === 'American Club')
     .map((t) => ({
-      name: 'American Club',
+      name: t.memberName,
       quote: t.quote,
       cta: t.ctaLabel,
       image: mediaUrl(t.photo),
       video: mediaUrl(t.video),
-      href: t.ctaUrl || AMCLUB_INSTAGRAM,
+      href: t.ctaUrl,
     }));
-  const momentItems = cmsMomentItems.length > 0 ? cmsMomentItems : MOMENTS_FALLBACK;
 
   const faq = data?.faq;
-  const faqItems = (faq?.items ?? []).map((i) => ({
-    question: i.question,
-    answer: faqAnswerText(i.answer) || dummyAnswer(i.question),
-  }));
+  const faqItems = (faq?.items ?? [])
+    .map((i) => ({ question: i.question, answer: faqAnswerText(i.answer) }))
+    .filter((i) => i.answer);
   const faqCtas = (faq?.ctas ?? []).map((c) => ({ label: c.label, href: c.href ?? '#' }));
 
   return (
@@ -393,17 +284,11 @@ export default function HomePage() {
         />
       )}
 
-      {momentItems.length > 0 && (
+      {moments?.heading && momentItems.length > 0 && (
         <TestimonialSlider
-          label={moments?.label ?? 'Moments'}
-          heading={moments?.heading ?? 'Moments that matter, captured and shared by you'}
-          cta={
-            link(moments?.cta) ?? {
-              label: 'Follow Our Socials',
-              href: AMCLUB_INSTAGRAM,
-              isExternal: true,
-            }
-          }
+          label={moments.label}
+          heading={moments.heading}
+          cta={link(moments.cta)}
           items={momentItems}
         />
       )}

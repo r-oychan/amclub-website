@@ -224,11 +224,7 @@ export default function ReferralPage() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const api = await fetchAPI<StrapiReferralPage>('/referral-page', {
-        'populate[cta]': '*',
-        'populate[columnHeadings]': '*',
-        'populate[rows]': '*',
-      });
+      const api = await fetchAPI<StrapiReferralPage>('/referral-page');
       if (cancelled || !api) return;
       const fb = REFERRAL_FALLBACK;
       setData({

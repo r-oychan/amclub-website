@@ -1,16 +1,16 @@
 import { Link } from 'react-router';
 
 interface Props {
-  heading?: string;
-  ctaLabel?: string;
-  ctaHref?: string;
+  heading: string;
+  ctaLabel: string;
+  ctaHref: string;
   ctaIsExternal?: boolean;
 }
 
 export function TalkToUsBanner({
-  heading = 'Talk2Us! About Your Club Experience',
-  ctaLabel = 'Tell Us What You Think',
-  ctaHref = 'https://amclub.jotform.com/252152095231953',
+  heading,
+  ctaLabel,
+  ctaHref,
   ctaIsExternal = true,
 }: Props) {
   return (

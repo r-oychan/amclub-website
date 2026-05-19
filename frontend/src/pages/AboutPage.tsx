@@ -68,15 +68,6 @@ const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
 const linksOf = (ls?: StrapiLink[]) =>
   (ls ?? []).map((l) => ({ label: l.label, href: l.href ?? '#', isExternal: l.isExternal, caption: l.caption }));
 
-// Patch CTAs the CMS still seeds with placeholder hrefs. Once the deployed
-// Strapi entry carries the real URL these overrides become no-ops.
-const CTA_OVERRIDES: Record<string, { href: string; isExternal: boolean }> = {
-  'Book a Club Tour': {
-    href: 'https://amclub.jotform.com/260813837273966?parentURL=https%3A%2F%2Famclub.org.sg%2Fmembership-enquiry-form%2F&jsForm=true',
-    isExternal: true,
-  },
-};
-
 export default function AboutPage() {
   const [data, setData] = useState<StrapiAboutPage | null>(null);
   const [gc, setGc] = useState<StrapiCommitteeMember[]>([]);
@@ -133,17 +124,9 @@ export default function AboutPage() {
     image: mediaUrl(m.photo),
   }));
 
-  const COLLAGE_FALLBACK = [
-    'https://framerusercontent.com/images/glifXVW1Fpm8FU4aR3Bg9B6pMo.jpeg?width=2048&height=1363',
-    'https://framerusercontent.com/images/67l0mNcpyr612koYZMjpg2bmLY.jpeg?width=1600&height=1065',
-    'https://framerusercontent.com/images/K6DoyAS2cr4sNav3IA32UZgU.jpeg?width=1600&height=1065',
-    'https://framerusercontent.com/images/Er6mlC0xHU5nNPKnOyddqkHFFc.jpeg?width=1600&height=1065',
-    'https://framerusercontent.com/images/1PjikpjyQQKqhiR3r8F2UtyRTI.jpeg?width=2048&height=1363',
-  ];
-  const collageImages = (data.collage?.images && data.collage.images.length > 0
-    ? data.collage.images.map((m) => ({ src: mediaUrl(m) ?? '', alt: m.alternativeText ?? '' }))
-    : COLLAGE_FALLBACK.map((src) => ({ src, alt: '' }))
-  ).filter((i) => i.src);
+  const collageImages = (data.collage?.images ?? [])
+    .map((m) => ({ src: mediaUrl(m) ?? '', alt: m.alternativeText ?? '' }))
+    .filter((i) => i.src);
 
   return (
     <PageFade loaded={loaded}>
@@ -172,11 +155,13 @@ export default function AboutPage() {
         />
       )}
 
-      <CollageGallery
-        label={data.collage?.label}
-        heading={data.collage?.heading}
-        images={collageImages}
-      />
+      {collageImages.length > 0 && (
+        <CollageGallery
+          label={data.collage?.label}
+          heading={data.collage?.heading}
+          images={collageImages}
+        />
+      )}
 
       {data.visionMission && (data.visionMission.vision || data.visionMission.mission) && (
         <TextBlock
@@ -244,13 +229,11 @@ export default function AboutPage() {
         <CtaBanner
           heading={data.ctaBanner.heading}
           body={data.ctaBanner.body ?? ''}
-          ctas={(data.ctaBanner.ctas ?? []).map((c) => {
-            const override = CTA_OVERRIDES[c.label];
-            if (override && (!c.href || c.href === '#')) {
-              return { label: c.label, href: override.href, isExternal: override.isExternal };
-            }
-            return { label: c.label, href: c.href ?? '#' };
-          })}
+          ctas={(data.ctaBanner.ctas ?? []).map((c) => ({
+            label: c.label,
+            href: c.href ?? '#',
+            isExternal: c.isExternal,
+          }))}
           variant={(data.ctaBanner.variant as 'dark' | 'light' | 'accent' | undefined) ?? 'light'}
         />
       )}

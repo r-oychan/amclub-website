@@ -490,13 +490,7 @@ export default function JoiningFeesPage() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const api = await fetchAPI<StrapiJoiningFeesPage>('/joining-fees-page', {
-        'populate[individualCtas]': '*',
-        'populate[individualCards]': '*',
-        'populate[corporateCtas]': '*',
-        'populate[corporateCards]': '*',
-        'populate[additionalNotes]': '*',
-      });
+      const api = await fetchAPI<StrapiJoiningFeesPage>('/joining-fees-page');
       if (cancelled || !api) return;
       const fb = JOINING_FEES_FALLBACK;
       setData({

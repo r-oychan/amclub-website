@@ -36,7 +36,7 @@ const SOCIALS = [
   { label: 'WhatsApp', href: 'https://www.whatsapp.com/channel/0029Vb6eMBREawdpTErdKE47', icon: WhatsAppIcon },
 ];
 
-const LOGO_URL = 'https://framerusercontent.com/images/jYpgpsEhknSxMZJWxquvCab3o.webp';
+const LOGO_URL = '/branding/logo.webp';
 
 // Shared text styles — Framer uses one Lato uppercase scale for almost all footer text
 const LINK_CLASSES =

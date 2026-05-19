@@ -168,7 +168,7 @@ export function Header() {
                 right: 0,
                 bottom: 0,
                 left: 0,
-                backgroundImage: 'url(https://framerusercontent.com/images/6mcf62RlDfRfU61Yg5vb2pefpi4.png?width=256&height=256)',
+                backgroundImage: 'url(/branding/menu-icon.png)',
                 backgroundRepeat: 'repeat',
                 backgroundPosition: 'left top',
                 backgroundSize: '155px auto',
