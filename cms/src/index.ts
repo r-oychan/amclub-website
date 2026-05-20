@@ -33,6 +33,14 @@ const PUBLIC_FIND_TYPES = [
   'api::dining-promotion.dining-promotion',
   'api::dining-promotions-page.dining-promotions-page',
   'api::site-settings.site-settings',
+  // Phase A — section-specific detail-page types + membership singletons.
+  'api::fitness-facility.fitness-facility',
+  'api::kids-experience.kids-experience',
+  'api::event-space.event-space',
+  'api::reciprocal-clubs-page.reciprocal-clubs-page',
+  'api::start-application-page.start-application-page',
+  'api::niche-group-membership-page.niche-group-membership-page',
+  'api::advertise-with-us-page.advertise-with-us-page',
 ];
 
 async function grantPublicReadAccess(strapi: any) {
