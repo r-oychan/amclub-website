@@ -1,3 +1,18 @@
+/**
+ * LEGACY FALLBACK — transitioning out.
+ *
+ * Every entry here is being migrated to its section-specific Strapi
+ * collection (see Phase A schemas: fitness-facility, kids-experience,
+ * event-space) or to a per-page singleton (reciprocal-clubs-page,
+ * start-application-page, niche-group-membership-page,
+ * advertise-with-us-page). Until each section is fully seeded in CMS,
+ * `VenueDetailPage.staticFallback` reads from this file when the API
+ * returns no entry — that's why this module still exists.
+ *
+ * Once a section is seeded end-to-end (skeleton fields + body
+ * dynamiczone), delete its array from this file in the same commit.
+ * Final removal will land in Phase D once all sections are migrated.
+ */
 export interface SubpageData {
   slug: string;
   name: string;
