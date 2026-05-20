@@ -1,0 +1,78 @@
+{
+  "kind": "collectionType",
+  "collectionName": "kids_experiences",
+  "info": {
+    "singularName": "kids-experience",
+    "pluralName": "kids-experiences",
+    "displayName": "Kids Experience",
+    "description": "Kids section detail pages: the-quad, the-hangout, recreational-classes, camps, kids-parties, bowling-alley, etc."
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "name": { "type": "string", "required": true },
+    "slug": { "type": "uid", "targetField": "name", "required": true },
+    "shortDescription": { "type": "text" },
+    "heroImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "heroVideo": { "type": "string" },
+    "parentLabel": { "type": "string" },
+    "parentHref": { "type": "string" },
+    "ageRange": { "type": "string" },
+    "programType": { "type": "string" },
+    "locationLevel": { "type": "string" },
+    "phone": { "type": "string" },
+    "email": { "type": "email" },
+    "operatingHoursSections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.operating-hours-section"
+    },
+    "locationContact": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.location-contact"
+    },
+    "ctas": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link",
+      "max": 4
+    },
+    "bottomCtas": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link",
+      "max": 4
+    },
+    "body": {
+      "type": "dynamiczone",
+      "components": [
+        "blocks.text-block",
+        "blocks.card-grid",
+        "blocks.feature-grid",
+        "blocks.three-col-grid",
+        "blocks.cta-banner",
+        "blocks.faq-section",
+        "blocks.downloads-section",
+        "blocks.tabs-section",
+        "blocks.party-packages",
+        "blocks.team-grid",
+        "blocks.image-panel-slideshow",
+        "blocks.priced-card-grid",
+        "blocks.quotes-block",
+        "blocks.collage-gallery"
+      ]
+    },
+    "order": { "type": "integer", "default": 0 },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
+  }
+}

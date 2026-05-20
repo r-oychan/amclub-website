@@ -1,0 +1,22 @@
+import { factories } from '@strapi/strapi';
+import { BODY_POPULATE } from '../../../lib/detail-page-populate';
+
+const POPULATE = {
+  heroImage: true,
+  ctas: true,
+  bottomCtas: true,
+  seo: { populate: { image: true } },
+  body: BODY_POPULATE,
+};
+
+export default factories.createCoreController(
+  'api::start-application-page.start-application-page',
+  ({ strapi }) => ({
+    async find(ctx) {
+      const entry = await strapi
+        .documents('api::start-application-page.start-application-page')
+        .findFirst({ populate: POPULATE });
+      return { data: entry, meta: {} };
+    },
+  })
+);

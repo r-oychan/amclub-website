@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_blocks_image_panel_slideshows",
+  "info": {
+    "displayName": "Image Panel Slideshow",
+    "icon": "images",
+    "description": "Slideshow of full-bleed image panels with caption + subCaption per slide (e.g. Tower Club Atlantic Dining Room)."
+  },
+  "attributes": {
+    "heading": {
+      "type": "string"
+    },
+    "subheading": {
+      "type": "text"
+    },
+    "slides": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.image-panel-slide"
+    }
+  }
+}

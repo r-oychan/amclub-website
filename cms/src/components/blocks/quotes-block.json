@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_blocks_quotes_blocks",
+  "info": {
+    "displayName": "Quotes Block",
+    "icon": "quote",
+    "description": "Heading + collection of testimonial-style quotes (each with author/role). Used on venues that surface coach or member quotes inline."
+  },
+  "attributes": {
+    "heading": {
+      "type": "string"
+    },
+    "items": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.quote-item"
+    }
+  }
+}

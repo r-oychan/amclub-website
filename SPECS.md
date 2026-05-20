@@ -119,9 +119,27 @@ Each row lists, for one route: the React page file, the React components it comp
 | `testimonial` | HomePage (moments slider via `home-page.moments.testimonials`) | memberName, quote, photo, video, ctaLabel, ctaUrl |
 | `faq-item` | FaqPage, HomePage faq accordion | question, slug, answer (blocks), category (legacy enum) + faqCategory (→ faq-category), order |
 | `faq-category` | FaqPage | name, slug, displayOrder |
-| `restaurant` | DiningPage (grid), VenueDetailPage (dining detail) | name, slug, cuisineType, description, image, logo, dressCode, smartCasual, ctas, order |
-| `facility` | FitnessPage / KidsPage / EventSpacesPage / MembershipPage (subpages), VenueDetailPage for those sections | name, slug, description, image, category (fitness / kids / event-space / membership), ctas, teamMembers, downloads, operatingHoursSections, locationContact, gallery |
-| `venue` | (defined but not currently routed) | name, slug, description, image, gallery, capacity, contact, ctas |
+| `restaurant` | DiningPage (grid), VenueDetailPage (dining detail) | name, slug, cuisineType, description, image, logo, dressCode, smartCasual, ctas, **bottomCtas, body (dynamiczone)**, order |
+| `fitness-facility` _(new in Phase A — replaces `facility` for `/fitness/*`)_ | FitnessPage, VenueDetailPage (fitness detail) | name, slug, shortDescription, heroImage, heroVideo, parentLabel/Href, locationLevel, phone, email, dressCode, teamHeading/Members, downloads, operatingHoursSections, locationContact, ctas, bottomCtas, **body (dynamiczone)**, order, **parent (self-relation for nested programs)**, children, coaches (m2m), seo |
+| `kids-experience` _(new in Phase A — replaces `facility` for `/kids/*`)_ | KidsPage, VenueDetailPage (kids detail) | name, slug, shortDescription, heroImage, heroVideo, parentLabel/Href, ageRange, programType, locationLevel, phone, email, operatingHoursSections, locationContact, ctas, bottomCtas, **body (dynamiczone)**, order, seo |
+| `event-space` _(new in Phase A — replaces `venue` for `/event-spaces/*`)_ | EventSpacesPage, VenueDetailPage (event-spaces detail) | name, slug, shortDescription, heroImage, heroVideo, parentLabel/Href, capacity, floorPlanPdf, setupOptions, locationLevel, phone, email, operatingHoursSections, locationContact, ctas, bottomCtas, **body (dynamiczone)**, order, seo |
+| `facility` _(legacy — to be removed in Phase D)_ | Previously used for fitness/kids/event-space/membership detail; superseded by the four section-specific types above | name, slug, description, image, category enum, ctas, teamMembers, downloads, operatingHoursSections, locationContact, gallery |
+| `venue` _(legacy — to be removed in Phase D)_ | (defined but not currently routed; superseded by `event-space`) | name, slug, description, image, gallery, capacity, contact, ctas |
+
+### Singletons added in Phase A (membership)
+
+| Single type | Used by | Key fields |
+|---|---|---|
+| `reciprocal-clubs-page` | `/membership/reciprocal-clubs` | title, hero, heading/intro, ctas, bottomCtas, **body (dynamiczone)**, seo |
+| `start-application-page` | `/membership/start-application` _(new route)_ | same skeleton |
+| `niche-group-membership-page` | `/membership/niche-group-membership` | same skeleton |
+| `advertise-with-us-page` | `/membership/advertise-with-us` _(currently routed under `/home-sub`; consolidated to `/membership`)_ | same skeleton |
+
+### Detail-page `body` dynamiczone — allowed blocks
+
+All four detail-page collection types + the membership singletons share one dynamiczone of blocks. POPULATE map centralised in `cms/src/lib/detail-page-populate.ts`.
+
+`blocks.text-block` · `blocks.card-grid` · `blocks.feature-grid` · `blocks.three-col-grid` · `blocks.cta-banner` · `blocks.faq-section` · `blocks.downloads-section` · `blocks.tabs-section` · `blocks.party-packages` · `blocks.team-grid` · **`blocks.image-panel-slideshow`** _(new)_ · **`blocks.priced-card-grid`** _(new)_ · **`blocks.quotes-block`** _(new)_ · `blocks.collage-gallery` · `blocks.operating-hours-section` _(reciprocal only)_ · `blocks.location-contact` _(reciprocal only)_
 | `gallery-album` | GalleryPage | title, slug, coverImage, images[], date, photoCount, description, order |
 | `news-article` | NewsPage (list), NewsArticlePage (detail) | title, slug, date, excerpt, image, category, htmlBody (shared.html-block), body (blocks), order |
 | `dining-promotion` | DiningPromotionsPage | (per promo: title, image, description, ctas, dates) |

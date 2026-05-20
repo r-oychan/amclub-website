@@ -1,0 +1,32 @@
+{
+  "collectionName": "components_blocks_priced_card_grids",
+  "info": {
+    "displayName": "Priced Card Grid",
+    "icon": "grid",
+    "description": "Grid of priced cards — unifies tierCards/packageCards/venueCards. Use variant to control visual treatment (tier vs package vs venue)."
+  },
+  "attributes": {
+    "heading": {
+      "type": "string"
+    },
+    "subheading": {
+      "type": "text"
+    },
+    "variant": {
+      "type": "enumeration",
+      "enum": ["tier", "package", "venue"],
+      "default": "package"
+    },
+    "columns": {
+      "type": "integer",
+      "default": 3,
+      "min": 1,
+      "max": 4
+    },
+    "items": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.priced-card"
+    }
+  }
+}

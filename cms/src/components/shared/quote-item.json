@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_shared_quote_items",
+  "info": {
+    "displayName": "Quote Item",
+    "icon": "quote",
+    "description": "Single quote with optional author + role."
+  },
+  "attributes": {
+    "quote": {
+      "type": "text",
+      "required": true
+    },
+    "author": {
+      "type": "string"
+    },
+    "role": {
+      "type": "string"
+    },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    }
+  }
+}

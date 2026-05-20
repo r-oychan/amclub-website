@@ -229,6 +229,20 @@ export interface BlocksHero extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksImagePanelSlideshow extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_image_panel_slideshows';
+  info: {
+    description: 'Slideshow of full-bleed image panels with caption + subCaption per slide (e.g. Tower Club Atlantic Dining Room).';
+    displayName: 'Image Panel Slideshow';
+    icon: 'images';
+  };
+  attributes: {
+    heading: Schema.Attribute.String;
+    slides: Schema.Attribute.Component<'shared.image-panel-slide', true>;
+    subheading: Schema.Attribute.Text;
+  };
+}
+
 export interface BlocksLocationContact extends Struct.ComponentSchema {
   collectionName: 'components_blocks_location_contacts';
   info: {
@@ -344,6 +358,31 @@ export interface BlocksPartyPackages extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksPricedCardGrid extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_priced_card_grids';
+  info: {
+    description: 'Grid of priced cards \u2014 unifies tierCards/packageCards/venueCards. Use variant to control visual treatment (tier vs package vs venue).';
+    displayName: 'Priced Card Grid';
+    icon: 'grid';
+  };
+  attributes: {
+    columns: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<3>;
+    heading: Schema.Attribute.String;
+    items: Schema.Attribute.Component<'shared.priced-card', true>;
+    subheading: Schema.Attribute.Text;
+    variant: Schema.Attribute.Enumeration<['tier', 'package', 'venue']> &
+      Schema.Attribute.DefaultTo<'package'>;
+  };
+}
+
 export interface BlocksPrivateEventPackages extends Struct.ComponentSchema {
   collectionName: 'components_blocks_private_event_packages';
   info: {
@@ -356,6 +395,19 @@ export interface BlocksPrivateEventPackages extends Struct.ComponentSchema {
     heading: Schema.Attribute.String;
     items: Schema.Attribute.Component<'shared.event-package-item', true>;
     subheading: Schema.Attribute.Text;
+  };
+}
+
+export interface BlocksQuotesBlock extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_quotes_blocks';
+  info: {
+    description: 'Heading + collection of testimonial-style quotes (each with author/role). Used on venues that surface coach or member quotes inline.';
+    displayName: 'Quotes Block';
+    icon: 'quote';
+  };
+  attributes: {
+    heading: Schema.Attribute.String;
+    items: Schema.Attribute.Component<'shared.quote-item', true>;
   };
 }
 
@@ -629,6 +681,20 @@ export interface SharedHtmlBlock extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedImagePanelSlide extends Struct.ComponentSchema {
+  collectionName: 'components_shared_image_panel_slides';
+  info: {
+    description: 'A single slide in an Image Panel Slideshow: image + optional caption + subCaption.';
+    displayName: 'Image Panel Slide';
+    icon: 'picture';
+  };
+  attributes: {
+    caption: Schema.Attribute.String;
+    image: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    subCaption: Schema.Attribute.String;
+  };
+}
+
 export interface SharedLink extends Struct.ComponentSchema {
   collectionName: 'components_shared_links';
   info: {
@@ -750,7 +816,7 @@ export interface SharedPartyPackageItem extends Struct.ComponentSchema {
 export interface SharedPricedCard extends Struct.ComponentSchema {
   collectionName: 'components_shared_priced_cards';
   info: {
-    description: 'Individual membership pricing card (joining-fees page)';
+    description: 'Versatile card used inside Priced Card Grid blocks. Fields are optional so the same component can render tier cards (membership), package cards (events), and venue cards (event spaces). React side picks visual variant from the parent grid block.';
     displayName: 'Priced Card';
     icon: 'tag';
   };
@@ -759,10 +825,30 @@ export interface SharedPricedCard extends Struct.ComponentSchema {
     badgeTone: Schema.Attribute.Enumeration<['positive', 'negative']> &
       Schema.Attribute.DefaultTo<'positive'>;
     breakdown: Schema.Attribute.Text;
+    bullets: Schema.Attribute.Component<'shared.text-line', true>;
+    cta: Schema.Attribute.Component<'shared.link', false>;
     description: Schema.Attribute.Text;
     feeAmount: Schema.Attribute.String;
     feeLabel: Schema.Attribute.String;
+    image: Schema.Attribute.Media<'images'>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
+    secondaryCta: Schema.Attribute.Component<'shared.link', false>;
+    subheading: Schema.Attribute.String;
+  };
+}
+
+export interface SharedQuoteItem extends Struct.ComponentSchema {
+  collectionName: 'components_shared_quote_items';
+  info: {
+    description: 'Single quote with optional author + role.';
+    displayName: 'Quote Item';
+    icon: 'quote';
+  };
+  attributes: {
+    author: Schema.Attribute.String;
+    image: Schema.Attribute.Media<'images'>;
+    quote: Schema.Attribute.Text & Schema.Attribute.Required;
+    role: Schema.Attribute.String;
   };
 }
 
@@ -978,6 +1064,7 @@ declare module '@strapi/strapi' {
       'blocks.governance': BlocksGovernance;
       'blocks.heritage-timeline': BlocksHeritageTimeline;
       'blocks.hero': BlocksHero;
+      'blocks.image-panel-slideshow': BlocksImagePanelSlideshow;
       'blocks.location-contact': BlocksLocationContact;
       'blocks.management-slider': BlocksManagementSlider;
       'blocks.offsite-catering-services': BlocksOffsiteCateringServices;
@@ -985,7 +1072,9 @@ declare module '@strapi/strapi' {
       'blocks.overlay-section': BlocksOverlaySection;
       'blocks.partner-organizations': BlocksPartnerOrganizations;
       'blocks.party-packages': BlocksPartyPackages;
+      'blocks.priced-card-grid': BlocksPricedCardGrid;
       'blocks.private-event-packages': BlocksPrivateEventPackages;
+      'blocks.quotes-block': BlocksQuotesBlock;
       'blocks.stats-counter': BlocksStatsCounter;
       'blocks.tabs-section': BlocksTabsSection;
       'blocks.team-grid': BlocksTeamGrid;
@@ -1002,6 +1091,7 @@ declare module '@strapi/strapi' {
       'shared.footer-column': SharedFooterColumn;
       'shared.hero-slide': SharedHeroSlide;
       'shared.html-block': SharedHtmlBlock;
+      'shared.image-panel-slide': SharedImagePanelSlide;
       'shared.link': SharedLink;
       'shared.nav-column': SharedNavColumn;
       'shared.nav-dropdown': SharedNavDropdown;
@@ -1010,6 +1100,7 @@ declare module '@strapi/strapi' {
       'shared.partner-logo': SharedPartnerLogo;
       'shared.party-package-item': SharedPartyPackageItem;
       'shared.priced-card': SharedPricedCard;
+      'shared.quote-item': SharedQuoteItem;
       'shared.referral-column-headings': SharedReferralColumnHeadings;
       'shared.referral-row': SharedReferralRow;
       'shared.schedule-row': SharedScheduleRow;

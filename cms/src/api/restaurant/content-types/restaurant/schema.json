@@ -90,6 +90,30 @@
       "multiple": true,
       "allowedTypes": ["images"]
     },
+    "bottomCtas": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link",
+      "max": 4
+    },
+    "body": {
+      "type": "dynamiczone",
+      "components": [
+        "blocks.text-block",
+        "blocks.card-grid",
+        "blocks.feature-grid",
+        "blocks.three-col-grid",
+        "blocks.cta-banner",
+        "blocks.faq-section",
+        "blocks.downloads-section",
+        "blocks.tabs-section",
+        "blocks.team-grid",
+        "blocks.image-panel-slideshow",
+        "blocks.priced-card-grid",
+        "blocks.quotes-block",
+        "blocks.collage-gallery"
+      ]
+    },
     "seo": {
       "type": "component",
       "repeatable": false,
