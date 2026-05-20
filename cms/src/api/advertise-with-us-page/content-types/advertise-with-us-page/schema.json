@@ -8,7 +8,7 @@
     "description": "Content for /membership/advertise-with-us"
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "attributes": {
     "title": { "type": "string" },

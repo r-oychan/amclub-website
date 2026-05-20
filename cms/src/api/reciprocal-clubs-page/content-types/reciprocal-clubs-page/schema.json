@@ -8,7 +8,7 @@
     "description": "Content for /membership/reciprocal-clubs"
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "attributes": {
     "title": { "type": "string" },

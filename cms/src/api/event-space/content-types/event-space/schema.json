@@ -8,7 +8,7 @@
     "description": "Event-spaces detail pages: ballroom, thinkspace, bowling-alley, library, meeting-rooms, weddings, corporate-functions, parties, etc."
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "attributes": {
     "name": { "type": "string", "required": true },

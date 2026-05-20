@@ -8,7 +8,7 @@
     "description": "Fitness section detail pages: gym, aquatics, tennis, squash, pilates, etc. Self-relation `parent` lets nested programs (e.g. aquatics → swimamerica) live as child entries."
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "attributes": {
     "name": { "type": "string", "required": true },

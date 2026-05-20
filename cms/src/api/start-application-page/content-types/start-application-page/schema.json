@@ -8,7 +8,7 @@
     "description": "Content for /membership/start-application"
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "attributes": {
     "title": { "type": "string" },

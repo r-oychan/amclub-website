@@ -8,7 +8,7 @@
     "description": "Content for /membership/niche-group-membership"
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "attributes": {
     "title": { "type": "string" },
