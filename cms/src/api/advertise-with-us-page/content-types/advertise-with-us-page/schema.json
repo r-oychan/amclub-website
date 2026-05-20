@@ -5,7 +5,7 @@
     "singularName": "advertise-with-us-page",
     "pluralName": "advertise-with-us-pages",
     "displayName": "Advertise With Us Page",
-    "description": "Content for /membership/advertise-with-us"
+    "description": "Content for /home-sub/advertise-with-us — rendered through VenueDetailPage layout"
   },
   "options": {
     "draftAndPublish": false
@@ -19,8 +19,28 @@
       "multiple": false,
       "allowedTypes": ["images"]
     },
+    "label": { "type": "string" },
     "heading": { "type": "string" },
+    "description": { "type": "text" },
     "intro": { "type": "text" },
+    "locationLevel": { "type": "string" },
+    "phone": { "type": "string" },
+    "email": { "type": "email" },
+    "operatingHoursSections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.operating-hours-section"
+    },
+    "locationContact": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.location-contact"
+    },
+    "downloads": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.downloads-section"
+    },
     "ctas": {
       "type": "component",
       "repeatable": true,

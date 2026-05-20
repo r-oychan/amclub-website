@@ -197,65 +197,79 @@ async function seedEventSpaces() {
 async function seedMembershipSingletons() {
   console.log('\n─── Membership Singletons ───');
 
-  await upsertSingleton('reciprocal-clubs-page', {
-    title: 'Reciprocal Clubs',
+  await upsertSingleton('start-application-page', {
+    title: 'Start an Application',
+    label: 'APPLICATION',
+    heading: 'Start an Application',
     parentLabel: 'Membership',
     parentHref: '/membership',
-    heading: 'A Global Network of Reciprocal Clubs',
-    intro:
-      'As a Member of The American Club, you and your family enjoy reciprocal access to over 200 private clubs around the world. Use your Letter of Introduction to access dining, fitness, and social spaces at our partner clubs.',
-    ctas: [
-      { label: 'Download Reciprocal Club List', href: '/documents/membership/reciprocal-club-list.pdf', isExternal: false },
-      { label: 'Request Letter of Introduction', href: 'https://amclub.jotform.com/form/tac-reciprocal-club-LOI', isExternal: true },
-    ],
-    body: [
+    description:
+      "Your journey to becoming a Member at The American Club starts here.\n\nGet to know the requirements to start your application.\n\nAll the items outlined in the Application Checklist must be submitted. Incomplete applications will not be accepted.",
+    locationLevel: 'Level 1 Lobby (Opposite Tradewinds)',
+    phone: '6737 3411',
+    email: 'membership@amclub.org.sg',
+    operatingHoursSections: [
       {
-        __component: 'blocks.text-block',
-        heading: 'How It Works',
-        body:
-          'Before visiting a reciprocal club, contact our Member Services team to request a Letter of Introduction. The Letter identifies you as a Member in good standing of The American Club and grants access according to the host club\'s reciprocal policy.',
-      },
-      {
-        __component: 'blocks.cta-banner',
-        heading: 'Planning a trip?',
-        body: 'Browse the full list of reciprocal clubs or contact our team for help choosing the right one for your destination.',
-        variant: 'dark',
-        ctas: [
-          { label: 'Contact Member Services', href: 'mailto:membership@amclub.org.sg', isExternal: true },
+        title: 'Membership Office Operating Hours',
+        rows: [
+          { dayRange: 'Monday to Friday', time: '9:00 AM – 7:00 PM' },
+          { dayRange: 'Saturday', time: '10:00 AM – 6:00 PM' },
+          { dayRange: 'Sunday', time: 'Closed' },
         ],
       },
     ],
+    downloads: {
+      heading: "Forms You'll Need",
+      items: [
+        { label: 'Application Checklist', href: '/documents/membership/forms/application-checklist.pdf' },
+        { label: 'Application Form', href: '/documents/membership/forms/membership-application-form.pdf' },
+        { label: 'Endorsement Form', href: '/documents/membership/forms/endorsement-form.pdf' },
+        { label: 'Junior Membership Application Form', href: 'https://amclub.jotform.com/253623954879979', isExternal: true },
+        { label: 'PDPA Acknowledgement Form', href: '/documents/membership/forms/pdpa-acknowledgement-form.pdf' },
+        { label: 'GIRO Payment Form', href: '/documents/membership/forms/giro-payment-form.pdf' },
+        { label: 'Car Registration Form', href: 'https://amclub.jotform.com/250688995352877', isExternal: true },
+      ],
+    },
+    ctas: [
+      { label: 'Application Checklist', href: '/documents/membership/forms/application-checklist.pdf', icon: 'arrow' },
+    ],
   });
 
-  await upsertSingleton('start-application-page', {
-    title: 'Start an Application',
+  await upsertSingleton('reciprocal-clubs-page', {
+    title: 'Reciprocal Clubs',
+    label: 'PROGRAMS',
+    heading: 'Reciprocal Clubs',
     parentLabel: 'Membership',
     parentHref: '/membership',
-    heading: 'Start Your Membership Journey',
-    intro:
-      'Our Membership Team will guide you through the application, tour, and onboarding. Begin by completing the interest form below — we will be in touch within 2 business days.',
-    ctas: [
-      { label: 'Start an Application', href: 'https://amclub.jotform.com/260813837273966', isExternal: true },
-      { label: 'Book a Club Tour', href: 'https://amclub.jotform.com/260813837273966?type=tour', isExternal: true },
-    ],
+    description:
+      'As a Member of The American Club, you and your family enjoy reciprocal access to over 200 private clubs around the world. Use your Letter of Introduction to access dining, fitness, and social spaces at our partner clubs.',
+    downloads: {
+      heading: 'Resources',
+      items: [
+        { label: 'Reciprocal Club List', href: '/documents/membership/reciprocal-club-list.pdf' },
+        { label: 'Request Letter of Introduction', href: 'https://amclub.jotform.com/form/tac-reciprocal-club-LOI', isExternal: true },
+      ],
+    },
   });
 
   await upsertSingleton('niche-group-membership-page', {
     title: 'Niche Group Membership',
+    label: 'PROGRAMS',
+    heading: 'The Niche Group Membership',
     parentLabel: 'Membership',
     parentHref: '/membership',
-    heading: 'The Niche Group Membership',
-    intro:
+    description:
       'A rewards-based recognition program for Members who actively enjoy the Club. Members move through tiers based on annual spending — each tier brings additional benefits.',
   });
 
   await upsertSingleton('advertise-with-us-page', {
     title: 'Advertise With Us',
-    parentLabel: 'Membership',
-    parentHref: '/membership',
-    heading: 'Reach Our Engaged Member Community',
-    intro:
-      'The Club\'s Member-only publications and digital channels reach an affluent, professional community of expat families in Singapore. Download the rate card for advertising opportunities.',
+    label: 'ADVERTISING & SPONSORSHIPS',
+    heading: 'Advertise With Us',
+    parentLabel: 'The American Club',
+    parentHref: '/home',
+    description:
+      "The Club's Member-only publications and digital channels reach an affluent, professional community of expat families in Singapore. Download the rate card for advertising opportunities.",
   });
 }
 

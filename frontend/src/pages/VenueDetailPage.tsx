@@ -188,6 +188,77 @@ interface VenueData {
   body?: DetailBody;
 }
 
+// Singleton overrides — specific (section, slug) tuples that are backed by
+// a dedicated single-type in Strapi rather than a collection. The frontend
+// renders them through the same VenueDetailPage layout so authors get a
+// tailored admin form (one entry per page) without any visual divergence.
+const SINGLETON_OVERRIDES: Record<string, string> = {
+  'membership/start-application': '/start-application-page',
+  'membership/niche-group-membership': '/niche-group-membership-page',
+  'membership/reciprocal-clubs': '/reciprocal-clubs-page',
+  'home-sub/advertise-with-us': '/advertise-with-us-page',
+};
+
+/** Raw shape returned by the membership / advertise-with-us singletons. */
+interface SingletonResponse {
+  title?: string;
+  label?: string;
+  heading?: string;
+  description?: string;
+  intro?: string;
+  parentLabel?: string;
+  parentHref?: string;
+  heroImage?: { url: string; alternativeText?: string };
+  locationLevel?: string;
+  phone?: string;
+  email?: string;
+  locationContact?: LocationContact | null;
+  operatingHoursSections?: OperatingHoursSection[];
+  downloads?: { heading?: string; items?: { label?: string; href?: string; isExternal?: boolean }[] };
+  ctas?: { label?: string; href?: string; isExternal?: boolean; icon?: CtaIconName | null }[];
+  bottomCtas?: { label?: string; href?: string; isExternal?: boolean }[];
+  body?: unknown[];
+}
+
+/** Adapt a singleton response into the VenueData shape the page renders. */
+function adaptSingleton(s: SingletonResponse, slug: string): VenueData {
+  const filterCtas = <T extends { label?: string; href?: string }>(arr?: T[]): { label: string; href: string }[] | undefined => {
+    if (!arr?.length) return undefined;
+    const filtered = arr
+      .filter((c) => c.label && c.href)
+      .map((c) => ({ ...c, label: c.label!, href: c.href! }));
+    return filtered.length ? filtered : undefined;
+  };
+  const ctas = filterCtas(s.ctas) as VenueData['ctas'];
+  const bottomCtas = filterCtas(s.bottomCtas);
+  const downloads =
+    s.downloads && s.downloads.items?.length
+      ? {
+          heading: s.downloads.heading,
+          items: s.downloads.items
+            .filter((i) => i.label && i.href)
+            .map((i) => ({ label: i.label!, href: i.href!, isExternal: i.isExternal })),
+        }
+      : undefined;
+  return {
+    name: s.heading || s.title || '',
+    slug,
+    description: s.description ?? s.intro ?? '',
+    parentSection: s.parentLabel,
+    parentHref: s.parentHref,
+    image: s.heroImage,
+    cuisineType: s.label,
+    locationLevel: s.locationLevel,
+    phone: s.phone,
+    email: s.email,
+    locationContact: s.locationContact ?? null,
+    operatingHoursSections: s.operatingHoursSections,
+    downloads,
+    ctas,
+    bottomCtas,
+  };
+}
+
 // Each section now has its own dedicated content type (Phase A). The
 // legacy `/facilities` endpoint is still queried as a fallback so any
 // entries still living there during the seed cutover keep rendering.
@@ -334,26 +405,36 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
     if (!config || !lookupSlug || !section) return;
     const load = async () => {
       setLoading(true);
-      // Each collection's custom controller (cms/src/api/{restaurant,venue,
-      // facility}/controllers/) supplies its own POPULATE map server-side.
-      // Strapi 5.46's stricter populate-validator rejects `=*` on leaf fields
-      // and unknown keys (e.g. `teamMembers` doesn't exist on restaurant),
-      // so we keep populate out of the request entirely.
-      // Phase A migrated fitness / kids / event-spaces from /facilities to
-      // section-specific endpoints. During the seed cutover we try the new
-      // endpoint first, then fall back to /facilities. Once Phase D removes
-      // /facilities, fallbackApiPath disappears.
-      const primary = await fetchAPI<VenueData[]>(config.apiPath, {
-        'filters[slug][$eq]': lookupSlug,
-      });
-      const items =
-        primary && primary.length > 0
-          ? primary
-          : config.fallbackApiPath
-            ? await fetchAPI<VenueData[]>(config.fallbackApiPath, {
-                'filters[slug][$eq]': lookupSlug,
-              })
-            : primary;
+      // Singleton override: certain (section, slug) tuples are backed by a
+      // dedicated single-type in Strapi. We fetch that instead of the
+      // collection and adapt the response into VenueData shape.
+      const singletonEndpoint = SINGLETON_OVERRIDES[`${section}/${lookupSlug}`];
+      let items: VenueData[] | null = null;
+      if (singletonEndpoint) {
+        const s = await fetchAPI<SingletonResponse>(singletonEndpoint);
+        if (s) items = [adaptSingleton(s, lookupSlug)];
+      } else {
+        // Each collection's custom controller (cms/src/api/{restaurant,venue,
+        // facility}/controllers/) supplies its own POPULATE map server-side.
+        // Strapi 5.46's stricter populate-validator rejects `=*` on leaf fields
+        // and unknown keys (e.g. `teamMembers` doesn't exist on restaurant),
+        // so we keep populate out of the request entirely.
+        // Phase A migrated fitness / kids / event-spaces from /facilities to
+        // section-specific endpoints. During the seed cutover we try the new
+        // endpoint first, then fall back to /facilities. Once Phase D removes
+        // /facilities, fallbackApiPath disappears.
+        const primary = await fetchAPI<VenueData[]>(config.apiPath, {
+          'filters[slug][$eq]': lookupSlug,
+        });
+        items =
+          primary && primary.length > 0
+            ? primary
+            : config.fallbackApiPath
+              ? await fetchAPI<VenueData[]>(config.fallbackApiPath, {
+                  'filters[slug][$eq]': lookupSlug,
+                })
+              : primary;
+      }
       const fallback = staticFallback(section, lookupSlug);
       if (items && items.length > 0) {
         const api = items[0];

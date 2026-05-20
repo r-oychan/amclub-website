@@ -486,13 +486,13 @@ export interface ApiAdvertiseWithUsPageAdvertiseWithUsPage
   extends Struct.SingleTypeSchema {
   collectionName: 'advertise_with_us_pages';
   info: {
-    description: 'Content for /membership/advertise-with-us';
+    description: 'Content for /home-sub/advertise-with-us \u2014 rendered through VenueDetailPage layout';
     displayName: 'Advertise With Us Page';
     pluralName: 'advertise-with-us-pages';
     singularName: 'advertise-with-us-page';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     body: Schema.Attribute.DynamicZone<
@@ -529,17 +529,31 @@ export interface ApiAdvertiseWithUsPageAdvertiseWithUsPage
         },
         number
       >;
+    description: Schema.Attribute.Text;
+    downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
+    email: Schema.Attribute.Email;
     heading: Schema.Attribute.String;
     heroImage: Schema.Attribute.Media<'images'>;
     intro: Schema.Attribute.Text;
+    label: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::advertise-with-us-page.advertise-with-us-page'
     > &
       Schema.Attribute.Private;
+    locationContact: Schema.Attribute.Component<
+      'blocks.location-contact',
+      false
+    >;
+    locationLevel: Schema.Attribute.String;
+    operatingHoursSections: Schema.Attribute.Component<
+      'blocks.operating-hours-section',
+      true
+    >;
     parentHref: Schema.Attribute.String;
     parentLabel: Schema.Attribute.String;
+    phone: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     title: Schema.Attribute.String;
@@ -889,7 +903,7 @@ export interface ApiEventSpaceEventSpace extends Struct.CollectionTypeSchema {
     singularName: 'event-space';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     body: Schema.Attribute.DynamicZone<
@@ -1236,7 +1250,7 @@ export interface ApiFitnessFacilityFitnessFacility
     singularName: 'fitness-facility';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     body: Schema.Attribute.DynamicZone<
@@ -1607,7 +1621,7 @@ export interface ApiKidsExperienceKidsExperience
     singularName: 'kids-experience';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     ageRange: Schema.Attribute.String;
@@ -1833,13 +1847,13 @@ export interface ApiNicheGroupMembershipPageNicheGroupMembershipPage
   extends Struct.SingleTypeSchema {
   collectionName: 'niche_group_membership_pages';
   info: {
-    description: 'Content for /membership/niche-group-membership';
+    description: 'Content for /membership/niche-group-membership \u2014 rendered through VenueDetailPage layout';
     displayName: 'Niche Group Membership Page';
     pluralName: 'niche-group-membership-pages';
     singularName: 'niche-group-membership-page';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     body: Schema.Attribute.DynamicZone<
@@ -1876,17 +1890,31 @@ export interface ApiNicheGroupMembershipPageNicheGroupMembershipPage
         },
         number
       >;
+    description: Schema.Attribute.Text;
+    downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
+    email: Schema.Attribute.Email;
     heading: Schema.Attribute.String;
     heroImage: Schema.Attribute.Media<'images'>;
     intro: Schema.Attribute.Text;
+    label: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::niche-group-membership-page.niche-group-membership-page'
     > &
       Schema.Attribute.Private;
+    locationContact: Schema.Attribute.Component<
+      'blocks.location-contact',
+      false
+    >;
+    locationLevel: Schema.Attribute.String;
+    operatingHoursSections: Schema.Attribute.Component<
+      'blocks.operating-hours-section',
+      true
+    >;
     parentHref: Schema.Attribute.String;
     parentLabel: Schema.Attribute.String;
+    phone: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     title: Schema.Attribute.String;
@@ -1900,13 +1928,13 @@ export interface ApiReciprocalClubsPageReciprocalClubsPage
   extends Struct.SingleTypeSchema {
   collectionName: 'reciprocal_clubs_pages';
   info: {
-    description: 'Content for /membership/reciprocal-clubs';
+    description: 'Content for /membership/reciprocal-clubs \u2014 rendered through VenueDetailPage layout';
     displayName: 'Reciprocal Clubs Page';
     pluralName: 'reciprocal-clubs-pages';
     singularName: 'reciprocal-clubs-page';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     body: Schema.Attribute.DynamicZone<
@@ -1945,17 +1973,31 @@ export interface ApiReciprocalClubsPageReciprocalClubsPage
         },
         number
       >;
+    description: Schema.Attribute.Text;
+    downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
+    email: Schema.Attribute.Email;
     heading: Schema.Attribute.String;
     heroImage: Schema.Attribute.Media<'images'>;
     intro: Schema.Attribute.Text;
+    label: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::reciprocal-clubs-page.reciprocal-clubs-page'
     > &
       Schema.Attribute.Private;
+    locationContact: Schema.Attribute.Component<
+      'blocks.location-contact',
+      false
+    >;
+    locationLevel: Schema.Attribute.String;
+    operatingHoursSections: Schema.Attribute.Component<
+      'blocks.operating-hours-section',
+      true
+    >;
     parentHref: Schema.Attribute.String;
     parentLabel: Schema.Attribute.String;
+    phone: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     title: Schema.Attribute.String;
@@ -2126,13 +2168,13 @@ export interface ApiStartApplicationPageStartApplicationPage
   extends Struct.SingleTypeSchema {
   collectionName: 'start_application_pages';
   info: {
-    description: 'Content for /membership/start-application';
+    description: 'Content for /membership/start-application \u2014 rendered through VenueDetailPage layout';
     displayName: 'Start Application Page';
     pluralName: 'start-application-pages';
     singularName: 'start-application-page';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     body: Schema.Attribute.DynamicZone<
@@ -2169,17 +2211,31 @@ export interface ApiStartApplicationPageStartApplicationPage
         },
         number
       >;
+    description: Schema.Attribute.Text;
+    downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
+    email: Schema.Attribute.Email;
     heading: Schema.Attribute.String;
     heroImage: Schema.Attribute.Media<'images'>;
     intro: Schema.Attribute.Text;
+    label: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::start-application-page.start-application-page'
     > &
       Schema.Attribute.Private;
+    locationContact: Schema.Attribute.Component<
+      'blocks.location-contact',
+      false
+    >;
+    locationLevel: Schema.Attribute.String;
+    operatingHoursSections: Schema.Attribute.Component<
+      'blocks.operating-hours-section',
+      true
+    >;
     parentHref: Schema.Attribute.String;
     parentLabel: Schema.Attribute.String;
+    phone: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     title: Schema.Attribute.String;
