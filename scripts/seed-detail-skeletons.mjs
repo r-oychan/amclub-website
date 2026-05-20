@@ -204,6 +204,27 @@ async function seedMembershipSingletons() {
     heading: 'A Global Network of Reciprocal Clubs',
     intro:
       'As a Member of The American Club, you and your family enjoy reciprocal access to over 200 private clubs around the world. Use your Letter of Introduction to access dining, fitness, and social spaces at our partner clubs.',
+    ctas: [
+      { label: 'Download Reciprocal Club List', href: '/documents/membership/reciprocal-club-list.pdf', isExternal: false },
+      { label: 'Request Letter of Introduction', href: 'https://amclub.jotform.com/form/tac-reciprocal-club-LOI', isExternal: true },
+    ],
+    body: [
+      {
+        __component: 'blocks.text-block',
+        heading: 'How It Works',
+        body:
+          'Before visiting a reciprocal club, contact our Member Services team to request a Letter of Introduction. The Letter identifies you as a Member in good standing of The American Club and grants access according to the host club\'s reciprocal policy.',
+      },
+      {
+        __component: 'blocks.cta-banner',
+        heading: 'Planning a trip?',
+        body: 'Browse the full list of reciprocal clubs or contact our team for help choosing the right one for your destination.',
+        variant: 'dark',
+        ctas: [
+          { label: 'Contact Member Services', href: 'mailto:membership@amclub.org.sg', isExternal: true },
+        ],
+      },
+    ],
   });
 
   await upsertSingleton('start-application-page', {
@@ -213,6 +234,10 @@ async function seedMembershipSingletons() {
     heading: 'Start Your Membership Journey',
     intro:
       'Our Membership Team will guide you through the application, tour, and onboarding. Begin by completing the interest form below — we will be in touch within 2 business days.',
+    ctas: [
+      { label: 'Start an Application', href: 'https://amclub.jotform.com/260813837273966', isExternal: true },
+      { label: 'Book a Club Tour', href: 'https://amclub.jotform.com/260813837273966?type=tour', isExternal: true },
+    ],
   });
 
   await upsertSingleton('niche-group-membership-page', {

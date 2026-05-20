@@ -3,9 +3,9 @@ import { BODY_POPULATE, HEADER_POPULATE } from '../../../lib/detail-page-populat
 
 const POPULATE = {
   ...HEADER_POPULATE,
-  teamMembers: { populate: { image: true } },
+  teamMembers: { populate: { image: true, bioImage: true } },
   downloads: { populate: { items: true } },
-  coaches: { populate: { image: true } },
+  coaches: { populate: { photo: true } },
   parent: true,
   children: true,
   body: BODY_POPULATE,
