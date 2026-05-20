@@ -39,14 +39,12 @@ export default function MembershipSingletonPage({
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    fetchAPI<SingletonPageData>(endpoint)
-      .then((d) => {
-        if (!cancelled) setData(d);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
+    (async () => {
+      const d = await fetchAPI<SingletonPageData>(endpoint);
+      if (cancelled) return;
+      setData(d);
+      setLoading(false);
+    })();
     return () => {
       cancelled = true;
     };

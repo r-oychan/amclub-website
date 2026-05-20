@@ -13,7 +13,7 @@ const POPULATE = {
   operatingHoursSections: { populate: { rows: true } },
   gallery: true,
   body: BODY_POPULATE,
-  seo: { populate: { image: true } },
+  seo: { populate: { metaImage: true } },
 };
 
 export default factories.createCoreController('api::restaurant.restaurant', ({ strapi }) => ({

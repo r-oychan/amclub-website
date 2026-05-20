@@ -5,7 +5,7 @@ const POPULATE = {
   heroImage: true,
   ctas: true,
   bottomCtas: true,
-  seo: { populate: { image: true } },
+  seo: { populate: { metaImage: true } },
   body: BODY_POPULATE,
 };
 

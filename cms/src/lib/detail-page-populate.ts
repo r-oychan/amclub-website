@@ -75,5 +75,5 @@ export const HEADER_POPULATE = {
   bottomCtas: true,
   locationContact: true,
   operatingHoursSections: { populate: { rows: true } },
-  seo: { populate: { image: true } },
+  seo: { populate: { metaImage: true } },
 } as const;
