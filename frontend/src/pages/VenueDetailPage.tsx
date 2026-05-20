@@ -11,7 +11,9 @@ import { FaqAccordion } from '../components/blocks/FaqAccordion';
 import { MarqueeGallery } from '../components/detail/MarqueeGallery';
 import { KidsPartyPackages } from '../components/kids/KidsPartyPackages';
 import { Testimonials } from '../components/blocks/Testimonials';
+import { BlockRenderer } from '../components/blocks/BlockRenderer';
 import { CtaIcon, type CtaIconName } from '../components/shared/CtaIcon';
+import type { DetailBody } from '../lib/blocks';
 
 interface ScheduleRow {
   dayRange: string;
@@ -182,13 +184,33 @@ interface VenueData {
       image?: string;
     }[];
   };
+  /** Strapi dynamiczone — new in Phase A. Rendered after legacy sections by `<BlockRenderer>`. */
+  body?: DetailBody;
 }
 
-const SECTION_MAP: Record<string, { apiPath: string; parentLabel: string; parentHref: string }> = {
+// Each section now has its own dedicated content type (Phase A). The
+// legacy `/facilities` endpoint is still queried as a fallback so any
+// entries still living there during the seed cutover keep rendering.
+const SECTION_MAP: Record<string, { apiPath: string; fallbackApiPath?: string; parentLabel: string; parentHref: string }> = {
   dining: { apiPath: '/restaurants', parentLabel: 'Dining & Retail', parentHref: '/dining' },
-  fitness: { apiPath: '/facilities', parentLabel: 'Fitness & Wellness', parentHref: '/fitness' },
-  kids: { apiPath: '/facilities', parentLabel: 'Kids', parentHref: '/kids' },
-  'event-spaces': { apiPath: '/facilities', parentLabel: 'Private Events & Catering', parentHref: '/event-spaces' },
+  fitness: {
+    apiPath: '/fitness-facilities',
+    fallbackApiPath: '/facilities',
+    parentLabel: 'Fitness & Wellness',
+    parentHref: '/fitness',
+  },
+  kids: {
+    apiPath: '/kids-experiences',
+    fallbackApiPath: '/facilities',
+    parentLabel: 'Kids',
+    parentHref: '/kids',
+  },
+  'event-spaces': {
+    apiPath: '/event-spaces',
+    fallbackApiPath: '/facilities',
+    parentLabel: 'Private Events & Catering',
+    parentHref: '/event-spaces',
+  },
   membership: { apiPath: '/facilities', parentLabel: 'Membership', parentHref: '/membership' },
   'home-sub': { apiPath: '/facilities', parentLabel: 'The American Club', parentHref: '/home' },
 };
@@ -317,9 +339,21 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
       // Strapi 5.46's stricter populate-validator rejects `=*` on leaf fields
       // and unknown keys (e.g. `teamMembers` doesn't exist on restaurant),
       // so we keep populate out of the request entirely.
-      const items = await fetchAPI<VenueData[]>(config.apiPath, {
+      // Phase A migrated fitness / kids / event-spaces from /facilities to
+      // section-specific endpoints. During the seed cutover we try the new
+      // endpoint first, then fall back to /facilities. Once Phase D removes
+      // /facilities, fallbackApiPath disappears.
+      const primary = await fetchAPI<VenueData[]>(config.apiPath, {
         'filters[slug][$eq]': lookupSlug,
       });
+      const items =
+        primary && primary.length > 0
+          ? primary
+          : config.fallbackApiPath
+            ? await fetchAPI<VenueData[]>(config.fallbackApiPath, {
+                'filters[slug][$eq]': lookupSlug,
+              })
+            : primary;
       const fallback = staticFallback(section, lookupSlug);
       if (items && items.length > 0) {
         const api = items[0];
@@ -1896,6 +1930,10 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           </Link>
         </div>
       </section>
+
+      {/* ── CMS dynamiczone body (Phase A). Renders any blocks the entry
+            has authored. Falls through silently if no body. ── */}
+      <BlockRenderer blocks={venue?.body} />
 
       {/* ── Team member bio modal (click avatar in Meet Our Team) ── */}
       {bioModal && (

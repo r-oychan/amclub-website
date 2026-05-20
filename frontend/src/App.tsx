@@ -14,6 +14,7 @@ import MembershipPage from './pages/MembershipPage';
 import JoiningFeesPage from './pages/JoiningFeesPage';
 import ReferralPage from './pages/ReferralPage';
 import ReciprocalClubsPage from './pages/ReciprocalClubsPage';
+import MembershipSingletonPage from './pages/MembershipSingletonPage';
 import WhatsOnPage from './pages/WhatsOnPage';
 import EventDetailPage from './pages/EventDetailPage';
 import NewsPage from './pages/NewsPage';
@@ -52,8 +53,24 @@ export default function App() {
             <Route path="/membership/referal" element={<ReferralPage />} />
             <Route path="/membership/reciprocal-clubs" element={<ReciprocalClubsPage />} />
             <Route
+              path="/membership/start-application"
+              element={<MembershipSingletonPage endpoint="/start-application-page" />}
+            />
+            <Route
+              path="/membership/niche-group-membership"
+              element={<MembershipSingletonPage endpoint="/niche-group-membership-page" />}
+            />
+            <Route
+              path="/membership/advertise-with-us"
+              element={<MembershipSingletonPage endpoint="/advertise-with-us-page" />}
+            />
+            <Route
               path="/membership/the-eagles-rewards-program"
               element={<Navigate to="/membership/niche-group-membership" replace />}
+            />
+            <Route
+              path="/home-sub/advertise-with-us"
+              element={<Navigate to="/membership/advertise-with-us" replace />}
             />
             <Route path="/membership/:slug" element={<VenueDetailPage section="membership" />} />
             <Route path="/whats-on" element={<WhatsOnPage />} />
