@@ -9,6 +9,14 @@ uat: pending
 seed: pending
 ---
 
+## Applied to prod
+
+Created on 2026-05-22 via `scripts/patch-whats-on-2026-05-22.mjs` (op #8). Verified live.
+- Slug: `heroes-and-sidekicks-fathers-day-2026`
+- Category: Kids
+- Image: not set.
+- **Register CTA NOT added** — URL was missing from batch 1. Add via /admin once URL is supplied.
+
 ## What changed
 
 Created a new published event on the What's On page.

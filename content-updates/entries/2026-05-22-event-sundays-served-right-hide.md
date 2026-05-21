@@ -9,6 +9,23 @@ uat: pending
 seed: pending
 ---
 
+## Applied to prod
+
+**Not yet applied — needs manual /admin click.**
+
+REST API attempt:
+```
+POST /api/events/<documentId>/actions/unpublish → 405 Method Not Allowed
+```
+
+Strapi v5's core REST API doesn't expose publish/unpublish actions (they're admin-API only). Setting `publishedAt: null` via PUT was a no-op — Strapi immediately re-set it to "now".
+
+Two ways forward:
+1. **Manual /admin (30 seconds, recommended):** open the entry in prod `/admin` → click Unpublish.
+2. **Code path:** add custom routes that expose `/actions/unpublish` on the event controller, then re-run `scripts/patch-whats-on-2026-05-22.mjs --only=12`. Deferred.
+
+Until done, the event remains visible on https://www.amclub.org.sg/whats-on.
+
 ## What changed
 
 Hid the "Sundays Served Right" event from the What's On page.

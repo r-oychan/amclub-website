@@ -9,6 +9,14 @@ uat: pending
 seed: pending
 ---
 
+## Applied to prod
+
+Created on 2026-05-22 via `scripts/patch-whats-on-2026-05-22.mjs` (op #5). Verified live.
+- Slug: `smokin-sundays-grillhouse-2026-06`
+- Category: Dining
+- Image: not set — upload in /admin.
+- Note: a separate existing event `Smokin' Sundays at Grillhouse` (slug ending in `-grillhouse`, date 2026-10-11) remains untouched. The new June 21 entry uses a distinct slug.
+
 ## What changed
 
 Created a new published event on the What's On page.

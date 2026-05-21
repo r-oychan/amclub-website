@@ -9,6 +9,13 @@ uat: pending
 seed: pending
 ---
 
+## Applied to prod
+
+Updated on 2026-05-22 via `scripts/patch-whats-on-2026-05-22.mjs` (op #13). Verified live.
+- `ctas` array PUT with the Register CTA href set to `https://forms.office.com/r/yDrPtgvgbF`.
+- Existing label `Register Here`, variant `primary`, icon `calendar` preserved.
+- Previous href was `https://forms.office.com/r/h9s4kycJXS?origin=lprLink`.
+
 ## What changed
 
 Updated the registration link on the existing "A Delicious Spread" event at The 2nd Floor.

@@ -9,6 +9,14 @@ uat: pending
 seed: pending
 ---
 
+## Applied to prod
+
+Created on 2026-05-22 via `scripts/patch-whats-on-2026-05-22.mjs` (op #3). Verified live.
+- Slug: `basketball-finals-live-screening-union-bar-2026`
+- Category: Member Engagement (best-guess; recategorize in /admin if needed)
+- Image: **not set** — no asset in batch 1. Upload in /admin and attach.
+- Date stored: `2026-06-03` (start of June 3–19 range; full range in longDescription).
+
 ## What changed
 
 Created a new published event on the What's On page.

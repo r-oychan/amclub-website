@@ -9,6 +9,14 @@ uat: pending
 seed: pending
 ---
 
+## Applied to prod
+
+Created on 2026-05-22 via `scripts/patch-whats-on-2026-05-22.mjs` (op #9). Verified live.
+- Slug: `camp-eagle-explorers-summer-2026`
+- Category: Kids
+- Image: not set.
+- One Register CTA created using the long Office Forms URL (same form for both age groups, per batch 1).
+
 ## What changed
 
 Created a new published event on the What's On page.

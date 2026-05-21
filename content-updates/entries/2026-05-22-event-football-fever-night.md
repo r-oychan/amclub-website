@@ -9,6 +9,14 @@ uat: pending
 seed: pending
 ---
 
+## Applied to prod
+
+Created on 2026-05-22 via `scripts/patch-whats-on-2026-05-22.mjs` (op #4). Verified live.
+- Slug: `football-fever-night-union-bar-2026`
+- Category: Member Engagement
+- Image: not set — upload in /admin.
+- Time stored: `12:00 AM` (formatted with space per Strapi precedent).
+
 ## What changed
 
 Created a new published event on the What's On page.

@@ -1,65 +1,67 @@
 ---
 date: 2026-05-22
 environment: prod
-content_type: restaurant + dining-page
-entry: "Tradewinds (restaurant) + Dining Page (singleton) — menu PDF surfaced on both"
-author: client (recorded in 1st batch on 2026-05-22)
+content_type: frontend static asset (NOT Strapi)
+entry: "Tradewinds menu PDF — frontend/public/menus/tradewinds-menu.pdf"
+author: dev (Claude) on 2026-05-22
 dev: pending
 uat: pending
-seed: pending
+seed: n/a
 ---
 
 ## What changed
 
-Replaced the Tradewinds menu PDF with the new "[080526, 12.20PM] TW Menu.pdf" on (a) the Tradewinds restaurant detail page and (b) the Dining home page card/link that points to the Tradewinds menu.
+Replaced the Tradewinds menu PDF on the live site.
 
-> Note: User originally referred to "tailwind menu" / "tailwind main page" — confirmed as **Tradewinds** (the restaurant). Same asset on two surfaces.
+> Originally framed as "Tradewinds menu update in Strapi". Investigation showed the menu lives as a static frontend asset, NOT a CMS field. See "Mechanism" below.
 
-## Fields touched
+## Mechanism (verified 2026-05-22)
 
-### `restaurant.menuUrl` (entry: Tradewinds)
+The Tradewinds menu link is rendered from THREE places, all pointing to the same static path `/menus/tradewinds-menu.pdf`:
 
-- **Type:** string (URL to the uploaded PDF in Strapi media library)
-- **Before:** previous Tradewinds menu PDF URL (whatever was there pre-2026-05-22)
-- **After:** URL of the newly-uploaded `[080526, 12.20PM] TW Menu.pdf`
+1. **Strapi `restaurant.ctas[0].href`** (Tradewinds entry, documentId `d5ffaqysdqbih88mybe2pb7e`) — stores the relative string `"/menus/tradewinds-menu.pdf"`, NOT a Strapi media URL. `restaurant.menuUrl` is `null` and unused.
+2. **`frontend/src/data/subpages.ts:346`** — hardcoded `{ label: 'View Menu', href: '/menus/tradewinds-menu.pdf', isExternal: true }` (violates the project memory `feedback_no_hardcoded_subpages` — long-term migration debt).
+3. **`frontend/src/pages/DiningPromotionsPage.tsx:72`** — slug → menu URL map for the promotion pages.
 
-### `dining-page.clubFavorites` → Tradewinds card menu link (singleton: Dining Page)
+All three resolve to the same static file at `frontend/public/menus/tradewinds-menu.pdf`, which is served by the deployed frontend container.
 
-- **Type:** link/CTA pointing to Tradewinds menu
-- **Before:** prior menu link
-- **After:** same new PDF URL as above
+**The dining home page (`/dining`) does NOT have a separate Tradewinds menu link** — its `dining-page.clubFavorites` cards are `TAC2Go!` + `Bottles2Go!`, no Tradewinds card. The Tradewinds menu surfaces via the restaurant card → detail page only.
 
-> Verify exact field name during replay — the dining-page singleton uses `blocks.card-grid` for `clubFavorites`; the Tradewinds card's menu link should be updated to the new PDF.
+## Files touched
 
-## Media added / replaced
+### `frontend/public/menus/tradewinds-menu.pdf`
+- **Before:** 19 May version (~496 KB)
+- **After:** new content from the 2026-05-22 menu (~SHA `20cf633e…`)
+- **Source:** `media/dining/tradewinds/tradewinds-menu.pdf` (canonical copy in media/)
 
-- `media/dining/tradewinds/[080526, 12.20PM] TW Menu.pdf` — uploaded to Strapi media library. **Project naming rule** says lowercase-hyphens; recommend renaming to e.g. `tradewinds-menu-2026-05-08.pdf` next time we touch this asset (rename file + reupload + update both references).
+### `media/dining/tradewinds/tradewinds-menu.pdf`
+- **Before:** older copy
+- **After:** same new content as the public/menus version (matching SHA)
 
-## Media removed
-
-- Previous Tradewinds menu PDF (filename TBD — check Strapi media library "Used by" history). Should be deleted from `media/dining/tradewinds/` once replay across envs is confirmed.
+### `media/dining/tradewinds/[080526, 12.20PM] TW Menu.pdf`
+- **Deleted** — the upload-time-stamped filename violated the project naming rule. Content preserved under the canonical `tradewinds-menu.pdf` name.
 
 ## Replay instructions (for dev)
 
-**Path A — `/admin`:**
-
-1. Upload `media/dining/tradewinds/[080526, 12.20PM] TW Menu.pdf` to dev Strapi media library.
-2. Content Manager → Restaurant → Tradewinds → set `menuUrl` to the new PDF's URL → Save → Publish.
-3. Content Manager → Dining Page (singleton) → in `clubFavorites` card-grid, find the Tradewinds card → update its menu CTA/link to the new PDF URL → Save → Publish.
-4. Confirm both surfaces render the new PDF.
+1. Pull the change on `dev` branch (or cherry-pick the relevant commit).
+2. Frontend rebuilds via CI; the dev container redeploys with the new PDF.
+3. No Strapi action needed on dev — the menu link stays as `"/menus/tradewinds-menu.pdf"`.
 
 ## Seed script status
 
-- **Target script:** `scripts/seed-dining-page.mjs` (and the Tradewinds restaurant seed — likely `scripts/seed-detail-skeletons.mjs` or similar)
-- **Port status:** pending
-- **Notes:** When porting, also fix the filename to lowercase-hyphens per project rules and update both surface references.
+- **Target script:** n/a (static asset, no seed)
+- **Port status:** n/a
 
 ## Verification
 
-- Tradewinds restaurant detail page on prod: menu link/button opens the new PDF.
-- Dining home page on prod: the Tradewinds card's "View Menu" (or equivalent) opens the same new PDF.
+After frontend redeploy:
+- Visit https://www.amclub.org.sg/dining/tradewinds and click "View Menu" → PDF should be the new 080526 version.
+- Same on the dining promotion page when a tradewinds promotion is clicked.
+
+## Long-term debt flagged
+
+The `subpages.ts:346` hardcoding violates `feedback_no_hardcoded_subpages`. Same pattern exists for all 6 restaurant menus. Migrating all 6 to CMS-managed menus (upload to Strapi, store URL in `restaurant.menuUrl`, remove `subpages.ts` entries) is its own work item — out of scope for this batch.
 
 ## Related
 
-- Prod commit / PR / admin event: n/a (direct admin upload)
-- Linked entries: none
+- Linked entries: none. Future menu refactor will live as its own entry.

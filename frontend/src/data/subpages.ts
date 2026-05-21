@@ -451,7 +451,7 @@ export const diningSubpages: SubpageData[] = [
       },
     ],
     level: 'Level 1',
-    phone: '6739 4340',
+    phone: '6739 4407',
     email: 'gourmetpantry@amclub.org.sg',
     image:
       '/uploads/restaurants/the-gourmet-pantry.jpeg',

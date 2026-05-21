@@ -9,6 +9,13 @@ uat: pending
 seed: pending
 ---
 
+## Applied to prod
+
+Updated on 2026-05-22 via `scripts/patch-whats-on-2026-05-22.mjs` (op #11). Verified live.
+- Replaced longDescription from the `Bespoke Cocktails` heading onward with the new `Signature Cocktails` + Happy Hour list + Bar Snacks list.
+- Intro paragraph **preserved verbatim** — it still contains the lowercase descriptive phrase "Bespoke cocktails, an exclusive Bar Snack Menu…". If you want that rephrased too, edit in /admin or extend the patch.
+- Trademark symbols (™, ®) and the vegetarian footnote asterisk are preserved.
+
 ## What changed
 
 Updated the body content of the existing "Shaken, Not Sorry 2.0" event. Re-labelled "Bespoke Cocktails" as "Signature Cocktails" and replaced the cocktails/snacks content block with the new detailed list (Happy Hour menu + Bar Snacks).

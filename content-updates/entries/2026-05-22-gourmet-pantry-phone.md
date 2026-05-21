@@ -1,9 +1,9 @@
 ---
 date: 2026-05-22
 environment: prod
-content_type: restaurant
-entry: "The Gourmet Pantry"
-author: client (recorded 2026-05-22)
+content_type: restaurant + frontend static fallback
+entry: "The Gourmet Pantry — phone number"
+author: dev (Claude) on 2026-05-22
 dev: pending
 uat: pending
 seed: pending
@@ -11,44 +11,58 @@ seed: pending
 
 ## What changed
 
-Updated The Gourmet Pantry phone number.
+Updated The Gourmet Pantry phone to `6739 4407` on both surfaces:
+1. Prod Strapi `restaurant.locationContact.phone` (the value the live site actually renders)
+2. Frontend static fallback `subpages.ts:454` (shadowed dead code, but kept in sync to avoid drift)
+
+## Mechanism (verified 2026-05-22)
+
+`VenueDetailPage.tsx:404–414` merges CMS data with `subpages.ts` fallback. For Gourmet Pantry:
+- Strapi returns `locationContact = { locationLevel, phone, email }`
+- Fallback `phone` lives at the top level of the subpage entry
+- Lines 404–409 prefer `venue.locationContact` if any field is set → **Strapi wins** for this entry.
+
+The displayed phone before this change was `6739 4361` (from Strapi). The `'6739 4340'` in `subpages.ts:454` was never displayed — but fixing it removes drift risk if the merge logic ever changes.
 
 ## Fields touched
 
-### `restaurant.phone` (entry: The Gourmet Pantry)
+### Prod Strapi: `restaurant.locationContact.phone` (entry: The Gourmet Pantry, documentId `xw8h044t7bi3q7bg66ekelfq`)
 
-- **Type:** string
-- **Before:** previous phone number (unknown — capture from current dev value before overwriting)
+- **Before:** `6739 4361`
 - **After:** `6739 4407`
+- **Other locationContact fields preserved:** `locationLevel: "Level 1"`, `email: "pantry@amclub.org.sg"`
 
-> The restaurant content type also has a `locationContact` component (`blocks.location-contact`) which may carry a phone field — confirm during replay whether both `phone` and `locationContact.phone` exist on this entry and update both for consistency.
+### `frontend/src/data/subpages.ts:454`
 
-## Media added / replaced
+- **Before:** `phone: '6739 4340'`
+- **After:** `phone: '6739 4407'`
 
-_(none)_
+## Applied
 
-## Media removed
+- **Prod Strapi:** applied 2026-05-22 via `scripts/patch-gourmet-pantry-phone.mjs` against `SEED_ENV=prod`. Live. Verified by reading back — new component id 24 with phone `6739 4407`.
+- **`subpages.ts`:** edited locally. Holds until next frontend deploy.
 
-_(none)_
+## Strapi v5 quirk learned
+
+Sending the existing component `id` in the PUT payload causes a 400: `"Some of the provided components in locationContact are not related to the entity"`. Omit the `id` and Strapi replaces the component in place. The patch script reflects this.
 
 ## Replay instructions (for dev)
 
-**Path A — `/admin`:**
+```bash
+SEED_ENV=dev node scripts/patch-gourmet-pantry-phone.mjs
+```
 
-1. Content Manager → Restaurant → The Gourmet Pantry → set `phone` to `6739 4407`.
-2. If `locationContact` component exists on this entry and has a phone field, update it to the same value.
-3. Save → Publish.
+Then pull the `subpages.ts` change on the dev branch. Frontend redeploys on dev pick up the fallback fix.
 
 ## Seed script status
 
-- **Target script:** the restaurant seed (likely `scripts/seed-detail-skeletons.mjs` or a dining-outlets seed — confirm)
-- **Port status:** pending
+- **Target script:** none of the existing seed scripts seed restaurants today; the patch is reproducible via `scripts/patch-gourmet-pantry-phone.mjs`.
+- **Port status:** n/a (patch script is permanent and replayable).
 
 ## Verification
 
-- Gourmet Pantry detail page on prod displays `6739 4407` wherever the phone is shown (likely in location/contact block and any "tap to call" CTA).
+- Visit https://www.amclub.org.sg/dining/the-gourmet-pantry → contact section shows `6739 4407`. (May need a hard refresh past any CDN cache.)
 
 ## Related
 
-- Prod commit / PR / admin event: n/a (direct admin edit)
-- Linked entries: none
+- Linked entries: none.

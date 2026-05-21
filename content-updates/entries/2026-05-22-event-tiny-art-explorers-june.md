@@ -9,6 +9,14 @@ uat: pending
 seed: pending
 ---
 
+## Applied to prod
+
+Created on 2026-05-22 via `scripts/patch-whats-on-2026-05-22.mjs` (op #7). Verified live.
+- Slug: `tiny-art-explorers-2026-06`
+- Category: Kids
+- Image: not set.
+- Date stored: `2026-06-04` (first Thursday); the other three Thursday dates and their themes are in longDescription.
+
 ## What changed
 
 Created a new published event on the What's On page (recurring weekly Thursdays in June 2026).

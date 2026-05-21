@@ -9,6 +9,14 @@ uat: pending
 seed: pending
 ---
 
+## Applied to prod
+
+Created on 2026-05-22 via `scripts/patch-whats-on-2026-05-22.mjs` (op #6). Verified live.
+- Slug: `sip-and-serve-french-open-2026`
+- Category: Fitness & Wellness (Tennis Courts venue)
+- Image: not set.
+- No external CTA — TAC Book app registration instructions are inline in longDescription.
+
 ## What changed
 
 Created a new published event on the What's On page.

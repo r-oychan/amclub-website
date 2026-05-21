@@ -9,6 +9,14 @@ uat: pending
 seed: pending
 ---
 
+## Applied to prod
+
+Created on 2026-05-22 via `scripts/patch-whats-on-2026-05-22.mjs` (op #10). Verified live.
+- Slug: `fourth-of-july-celebration-2026`
+- Category: Member Engagement
+- Image: not set.
+- Promo code `FOJ250TAC` and the inclusive-tickets disclaimer are in longDescription. Tickets CTA points to aasingapore.com.
+
 ## What changed
 
 Created a new published event on the What's On page.
