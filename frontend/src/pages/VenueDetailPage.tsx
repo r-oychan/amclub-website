@@ -256,6 +256,7 @@ function adaptSingleton(s: SingletonResponse, slug: string): VenueData {
     downloads,
     ctas,
     bottomCtas,
+    body: s.body as VenueData['body'],
   };
 }
 
