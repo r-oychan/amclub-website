@@ -30,6 +30,7 @@ const ctx = initEnv();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 const MEMBERSHIP_MEDIA_DIR = join(ROOT, 'media', 'membership');
+const MARKETING_MEDIA_DIR = join(ROOT, 'media', 'marketing');
 
 /** Helper — upsert an entry on a collection by slug. */
 async function upsertBySlug(plural, payload) {
@@ -213,6 +214,12 @@ async function seedMembershipSingletons() {
     ['reciprocal-clubs-hero.jpg', 'tower-club-atlantic-dining-room.jpg'],
     { dry: DRY }
   );
+  const marketingMedia = await uploadAll(
+    ctx,
+    MARKETING_MEDIA_DIR,
+    ['advertise-with-us.jpg'],
+    { dry: DRY }
+  );
 
   await upsertSingleton('start-application-page', {
     title: 'Start an Application',
@@ -387,6 +394,7 @@ async function seedMembershipSingletons() {
     heading: 'Advertise with Us',
     parentLabel: 'The American Club',
     parentHref: '/home',
+    heroImage: marketingMedia['advertise-with-us.jpg']?.id,
     description:
       'Reach a community of over 11,000 engaged Members at The American Club.\n\nWith a suite of targeted communication channels, we provide advertising opportunities that connect your message with our Member community in a thoughtful and purposeful way.',
     phone: '6739-4388',
