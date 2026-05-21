@@ -370,6 +370,8 @@ async function seedMembershipSingletons() {
     parentHref: '/home',
     description:
       'Reach a community of over 11,000 engaged Members at The American Club.\n\nWith a suite of targeted communication channels, we provide advertising opportunities that connect your message with our Member community in a thoughtful and purposeful way.',
+    phone: '6739-4388',
+    email: 'marketing@amclub.org.sg',
     ctas: [
       { label: 'View Advertising Rate Card', href: '/documents/ad-rate-card.pdf', isExternal: true, icon: 'arrow' },
       { label: 'Enquire Now', href: 'mailto:marketing@amclub.org.sg', isExternal: true, icon: 'mail' },
@@ -379,7 +381,7 @@ async function seedMembershipSingletons() {
         __component: 'blocks.text-block',
         heading: 'Sponsorship',
         body:
-          'Access a Premium Network of Affluent, International Members\n\nOur sponsors and strategic partners gain prominent brand exposure and meaningful engagement opportunities within our Club community. Reach out to schedule a discussion on the best channels to showcase your brand.\n\nPhone: 6739-4388\nEmail: marketing@amclub.org.sg',
+          'Access a Premium Network of Affluent, International Members\n\nOur sponsors and strategic partners gain prominent brand exposure and meaningful engagement opportunities within our Club community. Reach out to schedule a discussion on the best channels to showcase your brand.',
       },
     ],
   });

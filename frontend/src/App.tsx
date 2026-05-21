@@ -14,6 +14,7 @@ import MembershipPage from './pages/MembershipPage';
 import JoiningFeesPage from './pages/JoiningFeesPage';
 import ReferralPage from './pages/ReferralPage';
 import ReciprocalClubsPage from './pages/ReciprocalClubsPage';
+import AdvertiseWithUsPage from './pages/AdvertiseWithUsPage';
 import WhatsOnPage from './pages/WhatsOnPage';
 import EventDetailPage from './pages/EventDetailPage';
 import NewsPage from './pages/NewsPage';
@@ -62,6 +63,7 @@ export default function App() {
             <Route path="/home-sub/club-news/:slug" element={<NewsArticlePage />} />
             <Route path="/home-sub/gallery" element={<GalleryPage />} />
             <Route path="/home-sub/contact-us" element={<ContactUsPage />} />
+            <Route path="/home-sub/advertise-with-us" element={<AdvertiseWithUsPage />} />
             <Route path="/faq" element={<FaqPage />} />
             <Route path="/privacy-statement" element={<PrivacyStatementPage />} />
             <Route path="/home-sub/:slug" element={<VenueDetailPage section="home-sub" />} />
