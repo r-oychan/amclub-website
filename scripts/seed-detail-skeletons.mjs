@@ -243,6 +243,17 @@ async function seedMembershipSingletons() {
     parentHref: '/membership',
     description:
       'As a Member of The American Club, enjoy privileged access to over 150 distinguished clubs worldwide, extending the comfort of membership wherever you travel.\n\nSimply present a Letter of Introduction to visit your destination club, with all payments conveniently made on-site via major credit cards or cash where accepted.',
+    ctas: [
+      { label: 'List of Reciprocal Clubs', href: '/documents/membership/reciprocal-club-list.pdf', icon: 'arrow' },
+      { label: 'Letter of Introduction Application', href: 'https://amclub.jotform.com/form/tac-reciprocal-club-LOI', isExternal: true, icon: 'arrow' },
+    ],
+    // Secondary block — image + Tower Club partnership detail
+    secondaryImageCaption: 'Atlantic Dining Room',
+    secondaryImageSubCaption: 'Tower Club Singapore',
+    secondaryHeading: 'Local Reciprocity',
+    secondaryBody:
+      "The American Club maintains a reciprocal partnership with Tower Club, extending exclusive privileges to our Members and their guests. Enjoy complimentary access to Singapore's only premier private business club located in the heart of the Central Business District.",
+    secondaryCta: { label: 'Learn More About Tower Club', href: 'https://www.tower-club.com.sg/', isExternal: true, icon: 'arrow' },
     operatingHoursSections: [
       {
         title: 'Tower Club Operating Hours',
@@ -271,25 +282,9 @@ async function seedMembershipSingletons() {
         ],
       },
     ],
-    ctas: [
-      { label: 'List of Reciprocal Clubs', href: '/documents/membership/reciprocal-club-list.pdf', icon: 'arrow' },
-      { label: 'Letter of Introduction Application', href: 'https://amclub.jotform.com/form/tac-reciprocal-club-LOI', isExternal: true, icon: 'arrow' },
-    ],
-    body: [
-      {
-        __component: 'blocks.text-block',
-        heading: 'Local Reciprocity',
-        body:
-          "The American Club maintains a reciprocal partnership with Tower Club, extending exclusive privileges to our Members and their guests. Enjoy complimentary access to Singapore's only premier private business club located in the heart of the Central Business District.",
-        cta: { label: 'Learn More About Tower Club', href: 'https://www.tower-club.com.sg/', isExternal: true },
-      },
-      {
-        __component: 'blocks.text-block',
-        heading: 'Important things to note',
-        body:
-          "• The dress code is Business Attire\n• Dining reservations must be made directly to Tower Club in advance. Please mention your child's age, if any, when making your dining reservation.\n• The American Club membership card must be presented upon arrival at Tower Club\n• The American Club Members are subject to 10% Surcharge and 10% Service Charge in addition to the prevailing GST\n• No restrictions on the number of guests but they must be accompanied by an American Club Member at all times\n• Children aged 12 years and above, accompanied by a Member, may only dine in the Private Dining Rooms during lunch\n• In the evenings, children aged 6 years and above, accompanied by a Member, are welcome to dine in the Atlantic, Ba Xian and any of the Private Dining Rooms\n• Parents are requested to ensure the good behavior of their children so as not to disturb other members\n• Carpark charges would be \"as charged\" and based on the Republic Plaza Building Management's prevailing carpark rates\n• Strictly no access to the Fitness Centre\n• All charges must be settled at Tower Club; no inter-club billing allowed",
-      },
-    ],
+    notesHeading: 'Important things to note',
+    notes:
+      "The dress code is Business Attire\nDining reservations must be made directly to Tower Club in advance. Please mention your child's age, if any, when making your dining reservation.\nThe American Club membership card must be presented upon arrival at Tower Club\nThe American Club Members are subject to 10% Surcharge and 10% Service Charge in addition to the prevailing GST\nNo restrictions on the number of guests but they must be accompanied by an American Club Member at all times\nChildren aged 12 years and above, accompanied by a Member, may only dine in the Private Dining Rooms during lunch\nIn the evenings, children aged 6 years and above, accompanied by a Member, are welcome to dine in the Atlantic, Ba Xian and any of the Private Dining Rooms\nParents are requested to ensure the good behavior of their children so as not to disturb other members\nCarpark charges would be \"as charged\" and based on the Republic Plaza Building Management's prevailing carpark rates\nStrictly no access to the Fitness Centre\nAll charges must be settled at Tower Club; no inter-club billing allowed",
   });
 
   await upsertSingleton('niche-group-membership-page', {

@@ -23,6 +23,22 @@
     "heading": { "type": "string" },
     "description": { "type": "text" },
     "intro": { "type": "text" },
+    "secondaryImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "secondaryImageCaption": { "type": "string" },
+    "secondaryImageSubCaption": { "type": "string" },
+    "secondaryHeading": { "type": "string" },
+    "secondaryBody": { "type": "text" },
+    "secondaryCta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.link"
+    },
+    "notesHeading": { "type": "string" },
+    "notes": { "type": "text" },
     "locationLevel": { "type": "string" },
     "phone": { "type": "string" },
     "email": { "type": "email" },

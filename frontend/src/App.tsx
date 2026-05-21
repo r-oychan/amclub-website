@@ -13,6 +13,7 @@ import EventSpacesPage from './pages/EventSpacesPage';
 import MembershipPage from './pages/MembershipPage';
 import JoiningFeesPage from './pages/JoiningFeesPage';
 import ReferralPage from './pages/ReferralPage';
+import ReciprocalClubsPage from './pages/ReciprocalClubsPage';
 import WhatsOnPage from './pages/WhatsOnPage';
 import EventDetailPage from './pages/EventDetailPage';
 import NewsPage from './pages/NewsPage';
@@ -49,6 +50,7 @@ export default function App() {
             <Route path="/membership" element={<MembershipPage />} />
             <Route path="/membership/joining-fees" element={<JoiningFeesPage />} />
             <Route path="/membership/referal" element={<ReferralPage />} />
+            <Route path="/membership/reciprocal-clubs" element={<ReciprocalClubsPage />} />
             <Route
               path="/membership/the-eagles-rewards-program"
               element={<Navigate to="/membership/niche-group-membership" replace />}

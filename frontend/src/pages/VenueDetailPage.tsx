@@ -195,8 +195,10 @@ interface VenueData {
 const SINGLETON_OVERRIDES: Record<string, string> = {
   'membership/start-application': '/start-application-page',
   'membership/niche-group-membership': '/niche-group-membership-page',
-  'membership/reciprocal-clubs': '/reciprocal-clubs-page',
   'home-sub/advertise-with-us': '/advertise-with-us-page',
+  // /membership/reciprocal-clubs uses a dedicated ReciprocalClubsPage layout
+  // — see App.tsx. The standard VenueDetailPage shape can't render its
+  // two-block (image+content × 2) layout.
 };
 
 /** Raw shape returned by the membership / advertise-with-us singletons. */

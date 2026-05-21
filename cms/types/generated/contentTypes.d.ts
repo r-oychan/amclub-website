@@ -942,6 +942,7 @@ export interface ApiEventSpaceEventSpace extends Struct.CollectionTypeSchema {
         },
         number
       >;
+    downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
     email: Schema.Attribute.Email;
     floorPlanPdf: Schema.Attribute.Media<'files'>;
     heroImage: Schema.Attribute.Media<'images'>;
@@ -1660,6 +1661,7 @@ export interface ApiKidsExperienceKidsExperience
         },
         number
       >;
+    downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
     email: Schema.Attribute.Email;
     heroImage: Schema.Attribute.Media<'images'>;
     heroVideo: Schema.Attribute.String;
@@ -1991,6 +1993,8 @@ export interface ApiReciprocalClubsPageReciprocalClubsPage
       false
     >;
     locationLevel: Schema.Attribute.String;
+    notes: Schema.Attribute.Text;
+    notesHeading: Schema.Attribute.String;
     operatingHoursSections: Schema.Attribute.Component<
       'blocks.operating-hours-section',
       true
@@ -1999,6 +2003,12 @@ export interface ApiReciprocalClubsPageReciprocalClubsPage
     parentLabel: Schema.Attribute.String;
     phone: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    secondaryBody: Schema.Attribute.Text;
+    secondaryCta: Schema.Attribute.Component<'shared.link', false>;
+    secondaryHeading: Schema.Attribute.String;
+    secondaryImage: Schema.Attribute.Media<'images'>;
+    secondaryImageCaption: Schema.Attribute.String;
+    secondaryImageSubCaption: Schema.Attribute.String;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
