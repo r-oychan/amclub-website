@@ -11,22 +11,49 @@
     "draftAndPublish": false
   },
   "attributes": {
-    "name": { "type": "string", "required": true },
-    "slug": { "type": "uid", "targetField": "name", "required": true },
-    "shortDescription": { "type": "text" },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "shortDescription": {
+      "type": "text"
+    },
     "heroImage": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
-    "heroVideo": { "type": "string" },
-    "parentLabel": { "type": "string" },
-    "parentHref": { "type": "string" },
-    "ageRange": { "type": "string" },
-    "programType": { "type": "string" },
-    "locationLevel": { "type": "string" },
-    "phone": { "type": "string" },
-    "email": { "type": "email" },
+    "heroVideo": {
+      "type": "string"
+    },
+    "parentLabel": {
+      "type": "string"
+    },
+    "parentHref": {
+      "type": "string"
+    },
+    "ageRange": {
+      "type": "string"
+    },
+    "programType": {
+      "type": "string"
+    },
+    "locationLevel": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "email"
+    },
     "operatingHoursSections": {
       "type": "component",
       "repeatable": true,
@@ -36,6 +63,11 @@
       "type": "component",
       "repeatable": false,
       "component": "blocks.location-contact"
+    },
+    "downloads": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.downloads-section"
     },
     "ctas": {
       "type": "component",
@@ -68,7 +100,10 @@
         "blocks.collage-gallery"
       ]
     },
-    "order": { "type": "integer", "default": 0 },
+    "order": {
+      "type": "integer",
+      "default": 0
+    },
     "seo": {
       "type": "component",
       "repeatable": false,
