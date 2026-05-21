@@ -238,38 +238,155 @@ async function seedMembershipSingletons() {
   await upsertSingleton('reciprocal-clubs-page', {
     title: 'Reciprocal Clubs',
     label: 'PROGRAMS',
-    heading: 'Reciprocal Clubs',
+    heading: 'Membership Without Borders',
     parentLabel: 'Membership',
     parentHref: '/membership',
     description:
-      'As a Member of The American Club, you and your family enjoy reciprocal access to over 200 private clubs around the world. Use your Letter of Introduction to access dining, fitness, and social spaces at our partner clubs.',
-    downloads: {
-      heading: 'Resources',
-      items: [
-        { label: 'Reciprocal Club List', href: '/documents/membership/reciprocal-club-list.pdf' },
-        { label: 'Request Letter of Introduction', href: 'https://amclub.jotform.com/form/tac-reciprocal-club-LOI', isExternal: true },
-      ],
-    },
+      'As a Member of The American Club, enjoy privileged access to over 150 distinguished clubs worldwide, extending the comfort of membership wherever you travel.\n\nSimply present a Letter of Introduction to visit your destination club, with all payments conveniently made on-site via major credit cards or cash where accepted.',
+    operatingHoursSections: [
+      {
+        title: 'Tower Club Operating Hours',
+        rows: [
+          { dayRange: 'Mondays to Fridays', time: '7:30 AM – 11:00 PM' },
+          { dayRange: 'Saturdays', time: '9:00 AM – 11:00 PM' },
+        ],
+      },
+      {
+        title: 'Atlantic Dining Room (Level 62)',
+        rows: [
+          { dayRange: 'Mondays to Fridays', time: 'Breakfast: 7:30 AM – 10:30 AM\nLunch: 11:30 AM – 2:30 PM\nDinner: 6:30 PM – 11:00 PM' },
+          { dayRange: 'Saturdays', time: 'Dinner: 6:30 PM – 11:00 PM' },
+        ],
+      },
+      {
+        title: 'Ba Xian Dining Room (Level 63)',
+        rows: [
+          { dayRange: 'Mondays to Saturdays', time: 'Lunch: 11:30 AM – 2:30 PM\nDinner: 6:30 PM – 11:00 PM' },
+        ],
+      },
+      {
+        title: 'Straits Bar (Level 64)',
+        rows: [
+          { dayRange: 'Mondays to Saturdays', time: 'All day dining from 11:30 AM – 11:00 PM' },
+        ],
+      },
+    ],
+    ctas: [
+      { label: 'List of Reciprocal Clubs', href: '/documents/membership/reciprocal-club-list.pdf', icon: 'arrow' },
+      { label: 'Letter of Introduction Application', href: 'https://amclub.jotform.com/form/tac-reciprocal-club-LOI', isExternal: true, icon: 'arrow' },
+    ],
+    body: [
+      {
+        __component: 'blocks.text-block',
+        heading: 'Local Reciprocity',
+        body:
+          "The American Club maintains a reciprocal partnership with Tower Club, extending exclusive privileges to our Members and their guests. Enjoy complimentary access to Singapore's only premier private business club located in the heart of the Central Business District.",
+        ctas: [{ label: 'Learn More About Tower Club', href: 'https://www.tower-club.com.sg/', isExternal: true }],
+      },
+      {
+        __component: 'blocks.text-block',
+        heading: 'Important things to note',
+        body:
+          "• The dress code is Business Attire\n• Dining reservations must be made directly to Tower Club in advance. Please mention your child's age, if any, when making your dining reservation.\n• The American Club membership card must be presented upon arrival at Tower Club\n• The American Club Members are subject to 10% Surcharge and 10% Service Charge in addition to the prevailing GST\n• No restrictions on the number of guests but they must be accompanied by an American Club Member at all times\n• Children aged 12 years and above, accompanied by a Member, may only dine in the Private Dining Rooms during lunch\n• In the evenings, children aged 6 years and above, accompanied by a Member, are welcome to dine in the Atlantic, Ba Xian and any of the Private Dining Rooms\n• Parents are requested to ensure the good behavior of their children so as not to disturb other members\n• Carpark charges would be \"as charged\" and based on the Republic Plaza Building Management's prevailing carpark rates\n• Strictly no access to the Fitness Centre\n• All charges must be settled at Tower Club; no inter-club billing allowed",
+      },
+    ],
   });
 
   await upsertSingleton('niche-group-membership-page', {
     title: 'Niche Group Membership',
-    label: 'PROGRAMS',
-    heading: 'The Niche Group Membership',
+    label: 'Loyalty',
+    heading: 'Niche Group Membership',
     parentLabel: 'Membership',
     parentHref: '/membership',
     description:
-      'A rewards-based recognition program for Members who actively enjoy the Club. Members move through tiers based on annual spending — each tier brings additional benefits.',
+      'The American Club Niche Group Membership rewards Members for their membership tenure or spending. VIP Gold, 10K, 15K & Elite are the four tiers.',
+    phone: '6739-4331',
+    email: 'membership@amclub.org.sg',
+    body: [
+      {
+        __component: 'blocks.priced-card-grid',
+        heading: 'The Niche Group Membership Tiers',
+        subheading: 'From your first tier to the highest level, each level brings added benefits created to enrich your time at your Club.',
+        variant: 'tier',
+        columns: 2,
+        items: [
+          {
+            name: 'Elite Membership',
+            description: 'A minimum of $20,000 cumulative calendar year spending, excluding monthly dues.',
+            bullets: [
+              { text: 'Welcome dining voucher worth $250 and $150 sên Spa voucher.' },
+              { text: 'Annual welcome gift.' },
+              { text: 'Wedding Anniversary Privilege.' },
+              { text: 'Exclusive privileges during birthday month' },
+              { text: 'Annual Elite party invites.' },
+              { text: 'Up to 25% dining discounts.' },
+              { text: 'Up to 20% off treatments at sên Spa.' },
+              { text: 'Membership card replacement fee waiver ($10 for the first card replacement, $50 for subsequent replacements).' },
+              { text: 'Ad-hoc discounts for products, events etc.' },
+              { text: 'Free parking for two cars (fee waiver will be applied at the next annual billing cycle in July).' },
+            ],
+          },
+          {
+            name: 'VIP Gold',
+            description: 'Members are accorded this status based on a minimum tenure of 25 years of active membership.',
+            bullets: [
+              { text: 'A welcome dining voucher worth $200.' },
+              { text: 'Exclusive privileges during birthday month' },
+              { text: 'Annual VIP party invites.' },
+              { text: 'Up to 20% dining discounts.' },
+              { text: 'Up to 20% off treatments at sên Spa.' },
+              { text: 'Ad-hoc discounts for products, events etc.' },
+            ],
+          },
+          {
+            name: '15K Membership',
+            description: 'A minimum of $15,000 cumulative calendar year spending, excluding monthly dues.',
+            bullets: [
+              { text: 'A welcome dining voucher worth $200.' },
+              { text: 'Exclusive privileges during birthday month' },
+              { text: 'Up to 20% dining discounts.' },
+              { text: 'Up to 15% off treatments at sên Spa.' },
+              { text: 'Membership card replacement fee waiver ($10 for the first card replacement, $50 for subsequent replacements).' },
+              { text: 'Ad-hoc discounts for products, events etc.' },
+              { text: 'Free parking for one car (fee waiver will be applied at the next annual billing cycle in July).' },
+            ],
+          },
+          {
+            name: '10K Membership',
+            description: 'A minimum of $10,000 cumulative calendar year spending, excluding monthly dues.',
+            bullets: [
+              { text: 'Exclusive privileges during birthday month' },
+              { text: 'Up to 15% dining discounts.' },
+              { text: 'Up to 15% off treatments at sên Spa.' },
+              { text: 'Membership card replacement fee waiver ($10 for the first card replacement, $50 for subsequent replacements).' },
+              { text: 'Ad-hoc discounts for products, events etc.' },
+            ],
+          },
+        ],
+      },
+    ],
   });
 
   await upsertSingleton('advertise-with-us-page', {
     title: 'Advertise With Us',
-    label: 'ADVERTISING & SPONSORSHIPS',
-    heading: 'Advertise With Us',
+    label: '',
+    heading: 'Advertise with Us',
     parentLabel: 'The American Club',
     parentHref: '/home',
     description:
-      "The Club's Member-only publications and digital channels reach an affluent, professional community of expat families in Singapore. Download the rate card for advertising opportunities.",
+      'Reach a community of over 11,000 engaged Members at The American Club.\n\nWith a suite of targeted communication channels, we provide advertising opportunities that connect your message with our Member community in a thoughtful and purposeful way.',
+    ctas: [
+      { label: 'View Advertising Rate Card', href: '/documents/ad-rate-card.pdf', isExternal: true, icon: 'arrow' },
+      { label: 'Enquire Now', href: 'mailto:marketing@amclub.org.sg', isExternal: true, icon: 'mail' },
+    ],
+    body: [
+      {
+        __component: 'blocks.text-block',
+        heading: 'Sponsorship',
+        body:
+          'Access a Premium Network of Affluent, International Members\n\nOur sponsors and strategic partners gain prominent brand exposure and meaningful engagement opportunities within our Club community. Reach out to schedule a discussion on the best channels to showcase your brand.\n\nPhone: 6739-4388\nEmail: marketing@amclub.org.sg',
+      },
+    ],
   });
 }
 
