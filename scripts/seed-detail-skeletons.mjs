@@ -20,10 +20,16 @@
 //   SEED_ENV=uat node scripts/seed-detail-skeletons.mjs --dry-run
 //   SEED_ENV=uat node scripts/seed-detail-skeletons.mjs
 
-import { initEnv, api, findOneBySlug, isDryRun } from './seed-helpers.mjs';
+import { join, resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { initEnv, api, findOneBySlug, uploadAll, isDryRun } from './seed-helpers.mjs';
 
 const DRY = isDryRun();
 const ctx = initEnv();
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const ROOT = resolve(__dirname, '..');
+const MEMBERSHIP_MEDIA_DIR = join(ROOT, 'media', 'membership');
 
 /** Helper — upsert an entry on a collection by slug. */
 async function upsertBySlug(plural, payload) {
@@ -197,6 +203,17 @@ async function seedEventSpaces() {
 async function seedMembershipSingletons() {
   console.log('\n─── Membership Singletons ───');
 
+  // Upload images used by the dedicated singleton layouts before any
+  // payload references them. uploadAll is idempotent (skips existing
+  // files unless --replace).
+  console.log('  uploading images…');
+  const media = await uploadAll(
+    ctx,
+    MEMBERSHIP_MEDIA_DIR,
+    ['reciprocal-clubs-hero.jpg', 'tower-club-atlantic-dining-room.jpg'],
+    { dry: DRY }
+  );
+
   await upsertSingleton('start-application-page', {
     title: 'Start an Application',
     label: 'APPLICATION',
@@ -241,6 +258,8 @@ async function seedMembershipSingletons() {
     heading: 'Membership Without Borders',
     parentLabel: 'Membership',
     parentHref: '/membership',
+    heroImage: media['reciprocal-clubs-hero.jpg']?.id,
+    secondaryImage: media['tower-club-atlantic-dining-room.jpg']?.id,
     description:
       'As a Member of The American Club, enjoy privileged access to over 150 distinguished clubs worldwide, extending the comfort of membership wherever you travel.\n\nSimply present a Letter of Introduction to visit your destination club, with all payments conveniently made on-site via major credit cards or cash where accepted.',
     ctas: [
