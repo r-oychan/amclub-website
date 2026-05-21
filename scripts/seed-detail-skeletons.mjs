@@ -281,7 +281,7 @@ async function seedMembershipSingletons() {
         heading: 'Local Reciprocity',
         body:
           "The American Club maintains a reciprocal partnership with Tower Club, extending exclusive privileges to our Members and their guests. Enjoy complimentary access to Singapore's only premier private business club located in the heart of the Central Business District.",
-        ctas: [{ label: 'Learn More About Tower Club', href: 'https://www.tower-club.com.sg/', isExternal: true }],
+        cta: { label: 'Learn More About Tower Club', href: 'https://www.tower-club.com.sg/', isExternal: true },
       },
       {
         __component: 'blocks.text-block',
