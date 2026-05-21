@@ -1991,6 +1991,11 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
         />
       )}
 
+      {/* ── CMS dynamiczone body (Phase A). Renders any blocks the entry
+            has authored before the back link so the page flow reads
+            top-to-bottom; falls through silently if no body. ── */}
+      <BlockRenderer blocks={venue?.body} />
+
       {/* ── Back link ── */}
       <section className="py-10 bg-bg">
         <div className="max-w-7xl mx-auto px-10">
@@ -2012,10 +2017,6 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           </Link>
         </div>
       </section>
-
-      {/* ── CMS dynamiczone body (Phase A). Renders any blocks the entry
-            has authored. Falls through silently if no body. ── */}
-      <BlockRenderer blocks={venue?.body} />
 
       {/* ── Team member bio modal (click avatar in Meet Our Team) ── */}
       {bioModal && (
