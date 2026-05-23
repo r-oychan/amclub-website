@@ -19,12 +19,18 @@ type StrapiLink = {
   variant?: 'primary' | 'accent' | 'outline';
 };
 
+// Strapi stores `breakdown` as a single `text` field (newline-separated),
+// not a repeatable. So the API returns it as `string` even though the
+// rendered shape needs `string[]`. Mirror that here so we normalize at
+// the boundary instead of crashing inside IndividualCardView.map().
+type StrapiPricedCard = Omit<PricedCard, 'breakdown'> & { breakdown?: string | string[] };
+
 interface StrapiJoiningFeesPage {
   title?: string;
   individualHeading?: string;
   individualSubheading?: string;
   individualCtas?: StrapiLink[];
-  individualCards?: PricedCard[];
+  individualCards?: StrapiPricedCard[];
   corporateHeading?: string;
   corporateIntro1?: string;
   corporateIntro2?: string;
@@ -36,6 +42,22 @@ interface StrapiJoiningFeesPage {
   refundBody?: string;
   additionalNotesHeading?: string;
   additionalNotes?: { text: string }[];
+}
+
+function normalizeIndividualCards(
+  api: StrapiPricedCard[] | undefined,
+  fallback: PricedCard[],
+): PricedCard[] {
+  if (!api || api.length === 0) return fallback;
+  return api.map((c) => ({
+    ...c,
+    breakdown:
+      Array.isArray(c.breakdown)
+        ? c.breakdown
+        : typeof c.breakdown === 'string'
+          ? c.breakdown.split(/\r?\n/).map((s) => s.trim()).filter(Boolean)
+          : [],
+  }));
 }
 
 const PILL_BASE =
@@ -503,7 +525,7 @@ export default function JoiningFeesPage() {
         individualHeading: pickStr(api.individualHeading, fb.individualHeading),
         individualSubheading: pickStr(api.individualSubheading, fb.individualSubheading),
         individualCtas: normalizeLinks(api.individualCtas, fb.individualCtas),
-        individualCards: pickArr(api.individualCards, fb.individualCards),
+        individualCards: normalizeIndividualCards(api.individualCards, fb.individualCards),
         corporateHeading: pickStr(api.corporateHeading, fb.corporateHeading),
         corporateIntro1: pickStr(api.corporateIntro1, fb.corporateIntro1),
         corporateIntro2: pickStr(api.corporateIntro2, fb.corporateIntro2),
