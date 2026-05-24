@@ -11,6 +11,7 @@ const POPULATE = {
   bottomCtas: true,
   locationContact: true,
   operatingHoursSections: { populate: { rows: true } },
+  extraSections: true,
   downloads: { populate: { items: true } },
   parent: { fields: ['slug', 'name'] },
   children: { fields: ['slug', 'name', 'order'] },

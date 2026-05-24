@@ -131,6 +131,20 @@ export interface BlocksEventListing extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksExtraSection extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_extra_sections';
+  info: {
+    description: "Free-form titled section on a venue detail page (e.g. 'Reservation Policy', 'Court Booking', 'Tennis Etiquette'). Title + optional prose body + optional bullet list.";
+    displayName: 'Extra Section';
+    icon: 'doc';
+  };
+  attributes: {
+    bullets: Schema.Attribute.JSON;
+    content: Schema.Attribute.Text;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface BlocksFaqSection extends Struct.ComponentSchema {
   collectionName: 'components_blocks_faq_sections';
   info: {
@@ -1059,6 +1073,7 @@ declare module '@strapi/strapi' {
       'blocks.distinctive-event-spaces': BlocksDistinctiveEventSpaces;
       'blocks.downloads-section': BlocksDownloadsSection;
       'blocks.event-listing': BlocksEventListing;
+      'blocks.extra-section': BlocksExtraSection;
       'blocks.faq-section': BlocksFaqSection;
       'blocks.feature-grid': BlocksFeatureGrid;
       'blocks.governance': BlocksGovernance;

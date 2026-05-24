@@ -31,6 +31,11 @@
       "repeatable": true,
       "component": "blocks.operating-hours-section"
     },
+    "extraSections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.extra-section"
+    },
     "locationContact": {
       "type": "component",
       "repeatable": false,

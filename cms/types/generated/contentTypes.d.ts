@@ -1351,9 +1351,11 @@ export interface ApiFitnessFacilityFitnessFacility
         },
         number
       >;
+    description: Schema.Attribute.Text;
     downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
     dressCode: Schema.Attribute.String;
     email: Schema.Attribute.Email;
+    extraSections: Schema.Attribute.Component<'blocks.extra-section', true>;
     gallery: Schema.Attribute.Media<'images', true>;
     heroImage: Schema.Attribute.Media<'images'>;
     heroVideo: Schema.Attribute.String;
@@ -1383,7 +1385,6 @@ export interface ApiFitnessFacilityFitnessFacility
     phone: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
-    shortDescription: Schema.Attribute.Text;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &

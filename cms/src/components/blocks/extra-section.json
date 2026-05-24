@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_blocks_extra_sections",
+  "info": {
+    "displayName": "Extra Section",
+    "icon": "doc",
+    "description": "Free-form titled section on a venue detail page (e.g. 'Reservation Policy', 'Court Booking', 'Tennis Etiquette'). Title + optional prose body + optional bullet list."
+  },
+  "attributes": {
+    "title": { "type": "string", "required": true },
+    "content": { "type": "text" },
+    "bullets": { "type": "json" }
+  }
+}

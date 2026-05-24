@@ -94,7 +94,7 @@ function normDownloads(d) {
 
 async function upsertFacility(slug, entry, idx, parentDocId) {
   const heroImage = await uploadIfPresent(entry.image);
-  const operatingHoursSections = (entry.operatingHoursSections ?? []).map((s) => ({
+  let operatingHoursSections = (entry.operatingHoursSections ?? []).map((s) => ({
     title: s.title,
     rows: (s.rows ?? []).map((r) => ({
       dayRange: r.dayRange,
@@ -103,6 +103,26 @@ async function upsertFacility(slug, entry, idx, parentDocId) {
       note: r.note,
     })),
   }));
+  // Some facilities (gym) only have a plain `hours` string in the legacy
+  // data — convert pairs of lines (dayRange / time) into a single
+  // operating-hours-section so the new schema still carries the data.
+  if (operatingHoursSections.length === 0 && typeof entry.hours === 'string') {
+    const lines = entry.hours.split('\n').map((l) => l.trim()).filter(Boolean);
+    const rows = [];
+    for (let i = 0; i + 1 < lines.length; i += 2) {
+      rows.push({ dayRange: lines[i], time: lines[i + 1] });
+    }
+    if (rows.length) operatingHoursSections = [{ title: 'Operating Hours', rows }];
+  }
+  // Extra prose sections (Reservation Policy, Court Booking, etc.) move to
+  // the new `extraSections` repeatable component on fitness-facility.
+  const extraSections = (entry.extraSections ?? [])
+    .filter((s) => s && s.title)
+    .map((s) => ({
+      title: s.title,
+      content: s.content ?? null,
+      bullets: Array.isArray(s.bullets) && s.bullets.length ? s.bullets : null,
+    }));
   const locationContact =
     entry.locationContact ?? (entry.level || entry.phone || entry.email
       ? { locationLevel: entry.level, phone: entry.phone, email: entry.email }
@@ -119,6 +139,7 @@ async function upsertFacility(slug, entry, idx, parentDocId) {
     dressCode: entry.dressCode,
     heroImage: heroImage?.id ?? null,
     operatingHoursSections,
+    extraSections,
     locationContact,
     ctas: normCtas(entry.ctas),
     bottomCtas: normCtas(entry.bottomCtas),
