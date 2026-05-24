@@ -1,12 +1,34 @@
 #!/usr/bin/env node
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { initEnv, api, findOneBySlug, uploadAll, slugify, isDryRun } from './seed-helpers.mjs';
+import { readFileSync } from 'node:fs';
+import { initEnv, api, findOneBySlug, uploadAll, publishDocument, slugify, isDryRun } from './seed-helpers.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 const DRY = isDryRun();
 const ctx = initEnv();
+
+// Pre-extracted extraSections per restaurant slug (from the legacy
+// subpages.ts via scripts/data/dining-data.json). Used to fill the new
+// `extraSections` field on the restaurant collection.
+const EXTRAS_BY_SLUG = (() => {
+  try {
+    const map = {};
+    const dataPath = join(resolve(dirname(fileURLToPath(import.meta.url)), '..'), 'scripts', 'data', 'dining-data.json');
+    const data = JSON.parse(readFileSync(dataPath, 'utf8'));
+    for (const [slug, e] of Object.entries(data)) {
+      if (Array.isArray(e?.extraSections) && e.extraSections.length) {
+        map[slug] = e.extraSections.map((s) => ({
+          title: s.title,
+          content: s.content ?? null,
+          bullets: Array.isArray(s.bullets) && s.bullets.length ? s.bullets : null,
+        }));
+      }
+    }
+    return map;
+  } catch { return {}; }
+})();
 
 // 6 restaurant photos + 6 logos + 1 hero + 2 delivery + 1 essentials = 16
 const HERO_DIR = join(ROOT, 'media', 'pages', 'dining');
@@ -190,13 +212,16 @@ async function ensureRestaurant(r, imageId, logoId) {
     ctas,
     operatingHoursSections: r.operatingHoursSections ?? [],
     locationContact: r.locationContact ?? null,
+    extraSections: EXTRAS_BY_SLUG[r.slug] ?? [],
     publishedAt: new Date().toISOString(),
   };
   if (existing) {
     const resp = await api(ctx, `/restaurants/${existing.documentId}`, { method: 'PUT', body: { data: payload } });
+    await publishDocument(ctx, 'restaurants', resp?.data?.documentId ?? existing.documentId);
     return resp.data;
   }
   const resp = await api(ctx, '/restaurants', { method: 'POST', body: { data: payload } });
+  if (resp?.data?.documentId) await publishDocument(ctx, 'restaurants', resp.data.documentId);
   return resp.data;
 }
 

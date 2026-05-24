@@ -2279,6 +2279,7 @@ export interface ApiRestaurantRestaurant extends Struct.CollectionTypeSchema {
     detailedDescription: Schema.Attribute.Blocks;
     dressCode: Schema.Attribute.String;
     email: Schema.Attribute.Email;
+    extraSections: Schema.Attribute.Component<'blocks.extra-section', true>;
     gallery: Schema.Attribute.Media<'images', true>;
     image: Schema.Attribute.Media<'images'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;

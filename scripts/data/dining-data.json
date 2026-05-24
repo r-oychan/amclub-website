@@ -1,0 +1,365 @@
+{
+  "central": {
+    "slug": "central",
+    "name": "Central",
+    "type": "Cafe",
+    "description": "Have a cup of joe, bagels, pastries and salads at this contemporary café with counter service and self check-out kiosk. Customized cake orders must be placed at least three working days in advance.\n\nNo wet attire allowed in the cafe.",
+    "hours": "Daily\n7:00 AM – 7:00 PM",
+    "operatingHoursSections": [
+      {
+        "title": "Opening Hours",
+        "rows": [
+          {
+            "dayRange": "Daily",
+            "time": "7:00 AM - 7:00 PM"
+          }
+        ]
+      }
+    ],
+    "level": "Level 1",
+    "phone": "6739 4359",
+    "email": "central@amclub.org.sg",
+    "image": "/uploads/restaurants/central.jpeg",
+    "parentSection": "Dining & Retail",
+    "parentHref": "/dining",
+    "ctas": [
+      {
+        "label": "View Menu",
+        "href": "/menus/central-menu.pdf",
+        "isExternal": true
+      }
+    ]
+  },
+  "the-2nd-floor": {
+    "slug": "the-2nd-floor",
+    "name": "The 2nd Floor",
+    "type": "Fusion Fine Dining",
+    "description": "Amidst the plethora of fusion restaurants in Singapore, none is as exquisite as the award-winning, The 2nd Floor. The logo suggests its East and West origin. The two bold strokes represent the Chinese character for 2 – \"er\". The Eastern menu is in perfect harmony with authentic Asian flavors and unique contemporary presentations.\n\nThe Western menu is an interpretation of the Modern American Steakhouse and combines bistro ambiance with fine dining fare. The restaurant attained the Excellent Dining Venue award at the Global Gourmet 2020 Chef par Excellence Culinary Competition.",
+    "hours": "Tuesday to Sunday\nLunch: 11:30 AM – 2:30 PM\nDinner: 5:30 PM – 10:00 PM\nThe 2nd Floor is closed on Mondays",
+    "operatingHoursSections": [
+      {
+        "title": "Operating Hours",
+        "rows": [
+          {
+            "dayRange": "Tuesday to Sunday",
+            "time": "Lunch: 11:30 AM – 2:30 PM\nDinner: 5:30 PM – 10:00 PM",
+            "note": "The 2nd Floor is closed on Mondays"
+          }
+        ]
+      }
+    ],
+    "level": "Level 2",
+    "phone": "6739 4329",
+    "email": "2ndfloor@amclub.org.sg",
+    "dressCode": "Smart Casual",
+    "image": "/uploads/restaurants/the-2nd-floor.jpeg",
+    "parentSection": "Dining & Retail",
+    "parentHref": "/dining",
+    "ctas": [
+      {
+        "label": "View Menu",
+        "href": "/menus/the-2nd-floor-menu.pdf",
+        "isExternal": true
+      },
+      {
+        "label": "Reserve a Table",
+        "href": "mailto:2ndfloor@amclub.org.sg",
+        "isExternal": true
+      }
+    ],
+    "extraSections": [
+      {
+        "title": "Reservation",
+        "content": "Or contact The 2nd Floor at 6739 4329 or 2ndfloor@amclub.org.sg to make a reservation."
+      },
+      {
+        "title": "Wine Corkage Policy",
+        "content": "Enjoy complimentary corkage with every bottle purchased from our restaurants.\nStandard corkage is $20 per bottle."
+      },
+      {
+        "title": "Cancellation Policy",
+        "content": "Cancellation of reservations within 24 hours will incur a $25 per person fee*. Exceptions for compassionate or medical reasons apply. No discounts or vouchers can be applied to the cancellation fee.\n\n*Excluding ticketed and private events where a separate cancellation policy applies."
+      }
+    ]
+  },
+  "tradewinds": {
+    "slug": "tradewinds",
+    "name": "Tradewinds",
+    "type": "International",
+    "description": "Tradewinds takes your tastebuds around the world with its international menu offering. The menu selection features nuances of flavors from America to Singapore.\n\nThis restaurant takes its name from the prevailing surface winds – also known as trade winds – that blow predominantly from the northeast in the Northern Hemisphere and from the southeast in the Southern Hemisphere.\n\nFor centuries, trade winds have facilitated ships to cross the world's oceans, establishing trade routes across the Atlantic and Pacific oceans.\n\nTradewinds brings the world's flavors to The American Club table.",
+    "hours": "Sunday to Thursday\n8:00 AM – 9:00 PM (Last order at 8:30 PM)\nFriday & Saturday\n8:00 AM – 10:00 PM (Last order at 9:30 PM)",
+    "operatingHoursSections": [
+      {
+        "title": "Opening Hours",
+        "rows": [
+          {
+            "dayRange": "Sunday to Thursday",
+            "time": "8:00 AM - 9:00 PM",
+            "lastOrder": "Last order at 8:30 PM"
+          },
+          {
+            "dayRange": "Friday & Saturday",
+            "time": "8:00 AM - 10:00 PM",
+            "lastOrder": "Last order at 9:30 PM"
+          }
+        ]
+      }
+    ],
+    "level": "Level 1",
+    "phone": "6739 4361",
+    "email": "tradewinds@amclub.org.sg",
+    "image": "/uploads/restaurants/tradewinds.jpeg",
+    "parentSection": "Dining & Retail",
+    "parentHref": "/dining",
+    "ctas": [
+      {
+        "label": "View Menu",
+        "href": "/menus/tradewinds-menu.pdf",
+        "isExternal": true
+      }
+    ],
+    "extraSections": [
+      {
+        "title": "Wine Corkage Policy",
+        "content": "Enjoy complimentary corkage with every bottle purchased from our restaurants.\nStandard corkage is $20 per bottle."
+      }
+    ]
+  },
+  "grillhouse": {
+    "slug": "grillhouse",
+    "name": "Grillhouse & Tiki Bar",
+    "type": "American BBQ and Grill",
+    "description": "Welcome to a casual poolside dining restaurant – perfect for families with children and swimmers looking to have a delicious meal.\n\nDevour authentic American cuisine featuring Texas-style BBQ, mouth-watering burgers, delicious pizzas and salads with ice-cold American beer and special Grillhouse shakes.",
+    "hours": "Grillhouse\nSunday to Thursday: 11:00 AM – 9:00 PM (Last order at 8:30 PM)\nFriday and Saturday: 11:00 AM – 9:30 PM (Last order at 9:00 PM)\n\nTiki Bar\nFridays & Saturdays: 11:30 AM – 12:00 AM (Last order at 11:30 PM)\nSundays: 11:30 AM – 11:00 PM (Last order at 10:30 PM)",
+    "operatingHoursSections": [
+      {
+        "title": "Grillhouse Operating Hours",
+        "rows": [
+          {
+            "dayRange": "Sunday to Thursday",
+            "time": "11:00 AM - 9:00 PM",
+            "lastOrder": "Last order at 8:30 PM"
+          },
+          {
+            "dayRange": "Friday",
+            "time": "11:00 AM - 9:30 PM",
+            "lastOrder": "Last order at 9:00 PM"
+          },
+          {
+            "dayRange": "Saturday",
+            "time": "8:30 AM - 9:30 PM",
+            "lastOrder": "Last order at 9:00 PM"
+          }
+        ]
+      },
+      {
+        "title": "Tiki Bar Operating Hours",
+        "rows": [
+          {
+            "dayRange": "Friday & Saturday",
+            "time": "11:30 AM - 12:00 AM",
+            "lastOrder": "Last order at 11:30 PM"
+          },
+          {
+            "dayRange": "Sunday",
+            "time": "11:30 AM - 11:00 PM",
+            "lastOrder": "Last order at 10:30 PM"
+          }
+        ]
+      }
+    ],
+    "level": "Level 1",
+    "phone": "6739 4357",
+    "email": "grillhouse@amclub.org.sg",
+    "image": "/uploads/restaurants/grillhouse.jpeg",
+    "parentSection": "Dining & Retail",
+    "parentHref": "/dining",
+    "ctas": [
+      {
+        "label": "View Menu",
+        "href": "/menus/grillhouse-menu.pdf",
+        "isExternal": true
+      }
+    ]
+  },
+  "union-bar": {
+    "slug": "union-bar",
+    "name": "Union Bar",
+    "type": "American Bar Food",
+    "description": "Nothing feels like a Friday night than bar bites and a cold beer. Grab a bite and a drink after work, and watch the latest football or basketball game on TV, only at the Union Bar.\n\nHappy Hours are even happier now that you can enjoy 20% off house pour and beer starting an hour earlier, from 4:00 PM, until 8:00 PM, daily!\n\nPlease be informed that Union Bar does not take any reservations. Strictly walk-ins only.",
+    "hours": "Sunday to Thursday\n12:00 PM – 11:00 PM\nFriday and Saturday & Eve of PH\n12:00 PM – 12:00 AM",
+    "operatingHoursSections": [
+      {
+        "title": "Opening Hours",
+        "rows": [
+          {
+            "dayRange": "Sunday to Thursday",
+            "time": "12:00 PM - 11:00 PM"
+          },
+          {
+            "dayRange": "Friday and Saturday & Eve of PH",
+            "time": "12:00 PM - 12:00 AM"
+          }
+        ]
+      }
+    ],
+    "level": "Basement 2",
+    "phone": "6739 4340",
+    "email": "unionbar@amclub.org.sg",
+    "image": "/uploads/restaurants/union-bar.jpeg",
+    "parentSection": "Dining & Retail",
+    "parentHref": "/dining",
+    "ctas": [
+      {
+        "label": "View Menu",
+        "href": "/menus/union-bar-menu.pdf",
+        "isExternal": true
+      },
+      {
+        "label": "Sports Screening Schedule",
+        "href": "https://docs.google.com/presentation/d/1Ruk_oS8bijGO1Osuuuc4cL3aGc7DknzVmMRqsyN7gZ8/edit?slide=id.g36c0dd5bddb_0_2#slide=id.g36c0dd5bddb_0_2",
+        "isExternal": true
+      }
+    ],
+    "extraSections": [
+      {
+        "title": "Wine Corkage Policy",
+        "content": "Members and Guests are welcome to bring their own wine with a standard corkage of $20. You can also enjoy 1-for-1 corkage or complimentary corkage with the purchase of one of our bottles.\n\nPlease note that Union Bar operates on a walk-in basis only, and reservations are not accepted. Members and Guests must be above 18 years old to order alcoholic beverages."
+      },
+      {
+        "title": "Age Policy",
+        "content": "Members and Guests above 18 years of age are welcome.\n\nMembers and Guests ordering alcoholic beverages are required to present a valid photo ID. The following IDs are recognized: Club membership card, passport, Singapore NRIC, driver's license and government issued IDs only."
+      }
+    ]
+  },
+  "the-gourmet-pantry": {
+    "slug": "the-gourmet-pantry",
+    "name": "The Gourmet Pantry",
+    "type": "Retail",
+    "description": "The Gourmet Pantry brings together an excellent selection of wines, featuring more than 100 American wine labels alongside over 300 international labels, thoughtfully curated for every occasion – from easy-drinking table wines to premium selections and celebratory bubblies.\n\nComplementing the wine collection is a distinctive range of homeware and table settings, making it a convenient, one-stop destination for both everyday needs and special moments.",
+    "hours": "Monday to Thursday\n11:00 AM – 8:00 PM\nFriday to Sunday\n10:00 AM – 8:00 PM",
+    "operatingHoursSections": [
+      {
+        "title": "Opening Hours",
+        "rows": [
+          {
+            "dayRange": "Monday to Thursday",
+            "time": "11:00 AM - 8:00 PM"
+          },
+          {
+            "dayRange": "Friday to Sunday",
+            "time": "10:00 AM - 8:00 PM"
+          }
+        ]
+      }
+    ],
+    "level": "Level 1",
+    "phone": "6739 4340",
+    "email": "gourmetpantry@amclub.org.sg",
+    "image": "/uploads/restaurants/the-gourmet-pantry.jpeg",
+    "parentSection": "Dining & Retail",
+    "parentHref": "/dining",
+    "ctas": [
+      {
+        "label": "View Menu",
+        "href": "/menus/the-gourmet-pantry-menu.pdf",
+        "isExternal": true
+      }
+    ],
+    "extraSections": [
+      {
+        "title": "A Refined Way to Unwind",
+        "content": "Unwind at the Wine Bar @ The Gourmet Pantry and enjoy your favourite pours from Monday to Sunday, 12:00 PM – 8:00 PM"
+      }
+    ],
+    "promoCards": {
+      "heading": "From Our Cellar to Your Home",
+      "description": "Shop a curated selection of wines, available for convenient delivery or takeaway. Become an UNCORKED Member for first access to exclusive wine offers and privileges.",
+      "cards": [
+        {
+          "title": "UNCORKED",
+          "subtitle": "An exclusive world for wine lovers.",
+          "image": "/subpages/dining-uncorked.jpg",
+          "cta": {
+            "label": "Learn More",
+            "href": "/dining/uncorked"
+          }
+        },
+        {
+          "title": "Bottles2Go!",
+          "subtitle": "Bringing the Club's cellar to your home with a curated range of premium wines.",
+          "image": "/subpages/dining-bottles2go.jpg",
+          "cta": {
+            "label": "Order Now",
+            "href": "https://amclub.jotform.com/252638314015956"
+          }
+        }
+      ]
+    }
+  },
+  "uncorked": {
+    "slug": "uncorked",
+    "name": "UNCORKED",
+    "type": "Wine Club",
+    "description": "",
+    "parentSection": "Dining & Retail",
+    "parentHref": "/dining",
+    "extraSections": [
+      {
+        "title": "Membership",
+        "content": "Annual Membership Fee: $125",
+        "bullets": [
+          "Welcome gift",
+          "Exclusive 10% off regular priced wines (by the bottle) across all of the Club's dining outlets",
+          "Exclusive 5% off regular priced wines at The Gourmet Pantry. Stackable with Niche Group discounts",
+          "Exclusive 10% off regular priced liquor (by the bottle) from the Union Bar Beverage Menu",
+          "Enjoy 10% off wine accessories at The Gourmet Pantry",
+          "Early access to Flash Wine Sales and wine/liquor updates",
+          "Exclusive UNCORKED promotions at all of the Club's dining outlets",
+          "Exclusive access to limited wines from The Gourmet Pantry",
+          "Priority booking and special prices for wine dinners and events"
+        ]
+      }
+    ]
+  },
+  "essentials": {
+    "slug": "essentials",
+    "name": "Essentials",
+    "type": "Retail",
+    "description": "Essentials is your convenient one-stop shop for everyday needs – featuring exclusive items imported directly from the US, as well as pantry staples, seasonal treats, premium beverages, baking supplies, and laundry services.\n\nEssentials2Go!, our online platform, makes shopping effortless – available for home delivery or self-collection at Essentials, whichever suits you best.",
+    "hours": "Daily\n8:00 AM – 8:00 PM",
+    "operatingHoursSections": [
+      {
+        "title": "Opening Hours",
+        "rows": [
+          {
+            "dayRange": "Daily",
+            "time": "8:00 AM - 8:00 PM"
+          }
+        ]
+      }
+    ],
+    "level": "Level 1",
+    "phone": "6739 4332",
+    "email": "essentials@amclub.org.sg",
+    "image": "/uploads/services/essentials.jpeg",
+    "parentSection": "Dining & Retail",
+    "parentHref": "/dining",
+    "ctas": [
+      {
+        "label": "Essentials2Go!",
+        "href": "https://amclub.jotform.com/253312807189965",
+        "isExternal": true
+      }
+    ]
+  },
+  "dining-promotion": {
+    "slug": "dining-promotion",
+    "name": "Dining Promotions",
+    "type": "Promotions",
+    "description": "Browse the latest dining experiences and seasonal highlights.",
+    "image": "/promotions/dining-promotions-hero.jpg",
+    "parentSection": "Dining & Retail",
+    "parentHref": "/dining"
+  }
+}

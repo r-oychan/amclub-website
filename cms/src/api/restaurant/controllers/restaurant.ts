@@ -12,6 +12,7 @@ const POPULATE = {
   locationContact: true,
   operatingHoursSections: { populate: { rows: true } },
   gallery: true,
+  extraSections: true,
   body: BODY_POPULATE,
   seo: { populate: { metaImage: true } },
 };

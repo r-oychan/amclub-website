@@ -114,6 +114,11 @@
         "blocks.collage-gallery"
       ]
     },
+    "extraSections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.extra-section"
+    },
     "seo": {
       "type": "component",
       "repeatable": false,
