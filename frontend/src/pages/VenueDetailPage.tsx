@@ -264,31 +264,22 @@ function adaptSingleton(s: SingletonResponse, slug: string): VenueData {
   };
 }
 
-// Each section now has its own dedicated content type (Phase A). The
-// legacy `/facilities` endpoint is still queried as a fallback so any
-// entries still living there during the seed cutover keep rendering.
-const SECTION_MAP: Record<string, { apiPath: string; fallbackApiPath?: string; parentLabel: string; parentHref: string }> = {
+// `apiPath` is optional — when omitted, the section renders entirely from
+// the subpages.ts static fallback. The legacy `facility` collection was
+// dropped in Section 2; only the fitness section has a CMS-backed
+// collection right now. kids / event-spaces / membership / home-sub will
+// get their own per-section collections in future audits.
+const SECTION_MAP: Record<string, { apiPath?: string; parentLabel: string; parentHref: string }> = {
   dining: { apiPath: '/restaurants', parentLabel: 'Dining & Retail', parentHref: '/dining' },
   fitness: {
     apiPath: '/fitness-facilities',
-    fallbackApiPath: '/facilities',
     parentLabel: 'Fitness & Wellness',
     parentHref: '/fitness',
   },
-  kids: {
-    apiPath: '/kids-experiences',
-    fallbackApiPath: '/facilities',
-    parentLabel: 'Kids',
-    parentHref: '/kids',
-  },
-  'event-spaces': {
-    apiPath: '/event-spaces',
-    fallbackApiPath: '/facilities',
-    parentLabel: 'Private Events & Catering',
-    parentHref: '/event-spaces',
-  },
-  membership: { apiPath: '/facilities', parentLabel: 'Membership', parentHref: '/membership' },
-  'home-sub': { apiPath: '/facilities', parentLabel: 'The American Club', parentHref: '/home' },
+  kids: { parentLabel: 'Kids', parentHref: '/kids' },
+  'event-spaces': { parentLabel: 'Private Events & Catering', parentHref: '/event-spaces' },
+  membership: { parentLabel: 'Membership', parentHref: '/membership' },
+  'home-sub': { parentLabel: 'The American Club', parentHref: '/home' },
 };
 
 function staticFallback(section: string, slug: string): VenueData | null {
@@ -418,27 +409,16 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
       if (singletonEndpoint) {
         const s = await fetchAPI<SingletonResponse>(singletonEndpoint);
         if (s) items = [adaptSingleton(s, lookupSlug)];
-      } else {
-        // Each collection's custom controller (cms/src/api/{restaurant,venue,
-        // facility}/controllers/) supplies its own POPULATE map server-side.
-        // Strapi 5.46's stricter populate-validator rejects `=*` on leaf fields
-        // and unknown keys (e.g. `teamMembers` doesn't exist on restaurant),
-        // so we keep populate out of the request entirely.
-        // Phase A migrated fitness / kids / event-spaces from /facilities to
-        // section-specific endpoints. During the seed cutover we try the new
-        // endpoint first, then fall back to /facilities. Once Phase D removes
-        // /facilities, fallbackApiPath disappears.
-        const primary = await fetchAPI<VenueData[]>(config.apiPath, {
+      } else if (config.apiPath) {
+        // Each collection's custom controller supplies its own POPULATE map
+        // server-side. Strapi 5.46's stricter populate-validator rejects
+        // `=*` on leaf fields and unknown keys, so we keep populate out of
+        // the request. Sections without an apiPath (kids, event-spaces,
+        // membership, home-sub) skip the CMS hit and render entirely from
+        // the subpages.ts static fallback below.
+        items = await fetchAPI<VenueData[]>(config.apiPath, {
           'filters[slug][$eq]': lookupSlug,
         });
-        items =
-          primary && primary.length > 0
-            ? primary
-            : config.fallbackApiPath
-              ? await fetchAPI<VenueData[]>(config.fallbackApiPath, {
-                  'filters[slug][$eq]': lookupSlug,
-                })
-              : primary;
       }
       const fallback = staticFallback(section, lookupSlug);
 

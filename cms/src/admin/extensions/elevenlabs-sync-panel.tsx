@@ -25,7 +25,7 @@ const SYNCABLE_UIDS = new Set([
   'api::news-article.news-article',
   'api::restaurant.restaurant',
   'api::venue.venue',
-  'api::facility.facility',
+  'api::fitness-facility.fitness-facility',
   'api::committee-member.committee-member',
   'api::faq-item.faq-item',
   'api::testimonial.testimonial',

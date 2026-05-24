@@ -1305,13 +1305,13 @@ export interface ApiFitnessFacilityFitnessFacility
   extends Struct.CollectionTypeSchema {
   collectionName: 'fitness_facilities';
   info: {
-    description: 'Fitness section detail pages: gym, aquatics, tennis, squash, pilates, etc. Self-relation `parent` lets nested programs (e.g. aquatics \u2192 swimamerica) live as child entries.';
+    description: 'Fitness section detail pages: gym, aquatics, tennis, squash, pilates, s\u00EAn Spa, etc. Self-relation `parent` lets nested programs (e.g. aquatics \u2192 swimamerica) live as child entries. Team grid is sourced from the per-discipline coach collections (aquatics-coach, tennis-coach, pilates-instructor, gym-trainer) \u2014 not a relation here, looked up by slug at render time.';
     displayName: 'Fitness Facility';
     pluralName: 'fitness-facilities';
     singularName: 'fitness-facility';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     body: Schema.Attribute.DynamicZone<
@@ -1324,8 +1324,6 @@ export interface ApiFitnessFacilityFitnessFacility
         'blocks.faq-section',
         'blocks.downloads-section',
         'blocks.tabs-section',
-        'blocks.party-packages',
-        'blocks.team-grid',
         'blocks.image-panel-slideshow',
         'blocks.priced-card-grid',
         'blocks.quotes-block',
@@ -1343,7 +1341,6 @@ export interface ApiFitnessFacilityFitnessFacility
       'oneToMany',
       'api::fitness-facility.fitness-facility'
     >;
-    coaches: Schema.Attribute.Relation<'manyToMany', 'api::coach.coach'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1357,6 +1354,7 @@ export interface ApiFitnessFacilityFitnessFacility
     downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
     dressCode: Schema.Attribute.String;
     email: Schema.Attribute.Email;
+    gallery: Schema.Attribute.Media<'images', true>;
     heroImage: Schema.Attribute.Media<'images'>;
     heroVideo: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -1387,8 +1385,6 @@ export interface ApiFitnessFacilityFitnessFacility
     seo: Schema.Attribute.Component<'shared.seo', false>;
     shortDescription: Schema.Attribute.Text;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
-    teamHeading: Schema.Attribute.String;
-    teamMembers: Schema.Attribute.Component<'shared.team-member', true>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;

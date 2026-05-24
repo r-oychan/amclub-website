@@ -22,7 +22,6 @@ const PUBLIC_FIND_TYPES = [
   'api::faq-page.faq-page',
   'api::venue.venue',
   'api::restaurant.restaurant',
-  'api::facility.facility',
   'api::coach.coach',
   // Section 2 (Fitness) — per-discipline coach collections. Legacy `coach`
   // collection above will be dropped once data migration is verified.
@@ -39,14 +38,11 @@ const PUBLIC_FIND_TYPES = [
   'api::dining-promotion.dining-promotion',
   'api::dining-promotions-page.dining-promotions-page',
   'api::site-settings.site-settings',
-  // Phase A — section-specific detail-page types + membership singletons.
+  // Section 2 — replaces legacy `facility` for fitness venues. Other
+  // sections (kids / event-spaces / membership / home-sub) currently
+  // render from subpages.ts static fallback and will get their own
+  // per-section collections later.
   'api::fitness-facility.fitness-facility',
-  'api::kids-experience.kids-experience',
-  'api::event-space.event-space',
-  'api::reciprocal-clubs-page.reciprocal-clubs-page',
-  'api::start-application-page.start-application-page',
-  'api::niche-group-membership-page.niche-group-membership-page',
-  'api::advertise-with-us-page.advertise-with-us-page',
 ];
 
 async function grantPublicReadAccess(strapi: any) {

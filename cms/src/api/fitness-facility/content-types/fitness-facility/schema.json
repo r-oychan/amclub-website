@@ -5,10 +5,10 @@
     "singularName": "fitness-facility",
     "pluralName": "fitness-facilities",
     "displayName": "Fitness Facility",
-    "description": "Fitness section detail pages: gym, aquatics, tennis, squash, pilates, etc. Self-relation `parent` lets nested programs (e.g. aquatics → swimamerica) live as child entries."
+    "description": "Fitness section detail pages: gym, aquatics, tennis, squash, pilates, sên Spa, etc. Self-relation `parent` lets nested programs (e.g. aquatics → swimamerica) live as child entries. Team grid is sourced from the per-discipline coach collections (aquatics-coach, tennis-coach, pilates-instructor, gym-trainer) — not a relation here, looked up by slug at render time."
   },
   "options": {
-    "draftAndPublish": false
+    "draftAndPublish": true
   },
   "attributes": {
     "name": { "type": "string", "required": true },
@@ -26,17 +26,6 @@
     "phone": { "type": "string" },
     "email": { "type": "email" },
     "dressCode": { "type": "string" },
-    "teamHeading": { "type": "string" },
-    "teamMembers": {
-      "type": "component",
-      "repeatable": true,
-      "component": "shared.team-member"
-    },
-    "downloads": {
-      "type": "component",
-      "repeatable": false,
-      "component": "blocks.downloads-section"
-    },
     "operatingHoursSections": {
       "type": "component",
       "repeatable": true,
@@ -59,6 +48,16 @@
       "component": "shared.link",
       "max": 4
     },
+    "downloads": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.downloads-section"
+    },
+    "gallery": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["images"]
+    },
     "body": {
       "type": "dynamiczone",
       "components": [
@@ -70,8 +69,6 @@
         "blocks.faq-section",
         "blocks.downloads-section",
         "blocks.tabs-section",
-        "blocks.party-packages",
-        "blocks.team-grid",
         "blocks.image-panel-slideshow",
         "blocks.priced-card-grid",
         "blocks.quotes-block",
@@ -90,11 +87,6 @@
       "relation": "oneToMany",
       "target": "api::fitness-facility.fitness-facility",
       "mappedBy": "parent"
-    },
-    "coaches": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::coach.coach"
     },
     "seo": {
       "type": "component",
