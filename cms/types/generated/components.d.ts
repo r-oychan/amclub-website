@@ -618,6 +618,19 @@ export interface SharedEventPackageItem extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedFaqPair extends Struct.ComponentSchema {
+  collectionName: 'components_shared_faq_pairs';
+  info: {
+    description: "Inline question/answer pair. For page-scoped FAQs that don't need to live in the global faq-item collection.";
+    displayName: 'FAQ Pair';
+    icon: 'question';
+  };
+  attributes: {
+    answer: Schema.Attribute.Text;
+    question: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface SharedFeatureItem extends Struct.ComponentSchema {
   collectionName: 'components_shared_feature_items';
   info: {
@@ -1102,6 +1115,7 @@ declare module '@strapi/strapi' {
       'shared.catering-sub-banner': SharedCateringSubBanner;
       'shared.corporate-class-card': SharedCorporateClassCard;
       'shared.event-package-item': SharedEventPackageItem;
+      'shared.faq-pair': SharedFaqPair;
       'shared.feature-item': SharedFeatureItem;
       'shared.footer-column': SharedFooterColumn;
       'shared.hero-slide': SharedHeroSlide;

@@ -43,6 +43,8 @@ const PUBLIC_FIND_TYPES = [
   // render from subpages.ts static fallback and will get their own
   // per-section collections later.
   'api::fitness-facility.fitness-facility',
+  // Section 3 — replaces legacy `facility` rows for /kids/:slug.
+  'api::kids-experience.kids-experience',
 ];
 
 async function grantPublicReadAccess(strapi: any) {

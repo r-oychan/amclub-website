@@ -276,7 +276,7 @@ const SECTION_MAP: Record<string, { apiPath?: string; parentLabel: string; paren
     parentLabel: 'Fitness & Wellness',
     parentHref: '/fitness',
   },
-  kids: { parentLabel: 'Kids', parentHref: '/kids' },
+  kids: { apiPath: '/kids-experiences', parentLabel: 'Kids', parentHref: '/kids' },
   'event-spaces': { parentLabel: 'Private Events & Catering', parentHref: '/event-spaces' },
   membership: { parentLabel: 'Membership', parentHref: '/membership' },
   'home-sub': { parentLabel: 'The American Club', parentHref: '/home' },

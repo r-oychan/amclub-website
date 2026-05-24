@@ -5,69 +5,40 @@
     "singularName": "kids-experience",
     "pluralName": "kids-experiences",
     "displayName": "Kids Experience",
-    "description": "Kids section detail pages: the-quad, the-hangout, recreational-classes, camps, kids-parties, bowling-alley, etc."
+    "description": "Kids section detail pages — venues (The Quad, The Hangout) and programs (Recreational Classes, Seasonal Camps, Kids Parties). Mirrors the fitness-facility shape with added inline FAQ + quotes + party packages."
   },
   "options": {
-    "draftAndPublish": false
+    "draftAndPublish": true
   },
   "attributes": {
-    "name": {
-      "type": "string",
-      "required": true
-    },
-    "slug": {
-      "type": "uid",
-      "targetField": "name",
-      "required": true
-    },
-    "shortDescription": {
-      "type": "text"
-    },
+    "name": { "type": "string", "required": true },
+    "slug": { "type": "uid", "targetField": "name", "required": true },
+    "description": { "type": "text" },
     "heroImage": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": [
-        "images"
-      ]
+      "allowedTypes": ["images"]
     },
-    "heroVideo": {
-      "type": "string"
-    },
-    "parentLabel": {
-      "type": "string"
-    },
-    "parentHref": {
-      "type": "string"
-    },
-    "ageRange": {
-      "type": "string"
-    },
-    "programType": {
-      "type": "string"
-    },
-    "locationLevel": {
-      "type": "string"
-    },
-    "phone": {
-      "type": "string"
-    },
-    "email": {
-      "type": "email"
-    },
+    "heroVideo": { "type": "string" },
+    "parentLabel": { "type": "string" },
+    "parentHref": { "type": "string" },
+    "locationLevel": { "type": "string" },
+    "phone": { "type": "string" },
+    "email": { "type": "email" },
     "operatingHoursSections": {
       "type": "component",
       "repeatable": true,
       "component": "blocks.operating-hours-section"
     },
+    "extraSections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.extra-section"
+    },
     "locationContact": {
       "type": "component",
       "repeatable": false,
       "component": "blocks.location-contact"
-    },
-    "downloads": {
-      "type": "component",
-      "repeatable": false,
-      "component": "blocks.downloads-section"
     },
     "ctas": {
       "type": "component",
@@ -81,28 +52,43 @@
       "component": "shared.link",
       "max": 4
     },
-    "body": {
-      "type": "dynamiczone",
-      "components": [
-        "blocks.text-block",
-        "blocks.card-grid",
-        "blocks.feature-grid",
-        "blocks.three-col-grid",
-        "blocks.cta-banner",
-        "blocks.faq-section",
-        "blocks.downloads-section",
-        "blocks.tabs-section",
-        "blocks.party-packages",
-        "blocks.team-grid",
-        "blocks.image-panel-slideshow",
-        "blocks.priced-card-grid",
-        "blocks.quotes-block",
-        "blocks.collage-gallery"
-      ]
+    "downloads": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.downloads-section"
     },
-    "order": {
-      "type": "integer",
-      "default": 0
+    "gallery": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["images"]
+    },
+    "faq": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.faq-pair"
+    },
+    "quotes": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.quotes-block"
+    },
+    "partyPackages": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.party-packages"
+    },
+    "order": { "type": "integer", "default": 0 },
+    "parent": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::kids-experience.kids-experience",
+      "inversedBy": "children"
+    },
+    "children": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::kids-experience.kids-experience",
+      "mappedBy": "parent"
     },
     "seo": {
       "type": "component",

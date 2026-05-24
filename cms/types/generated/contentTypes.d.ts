@@ -1740,34 +1740,15 @@ export interface ApiKidsExperienceKidsExperience
   extends Struct.CollectionTypeSchema {
   collectionName: 'kids_experiences';
   info: {
-    description: 'Kids section detail pages: the-quad, the-hangout, recreational-classes, camps, kids-parties, bowling-alley, etc.';
+    description: 'Kids section detail pages \u2014 venues (The Quad, The Hangout) and programs (Recreational Classes, Seasonal Camps, Kids Parties). Mirrors the fitness-facility shape with added inline FAQ + quotes + party packages.';
     displayName: 'Kids Experience';
     pluralName: 'kids-experiences';
     singularName: 'kids-experience';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
-    ageRange: Schema.Attribute.String;
-    body: Schema.Attribute.DynamicZone<
-      [
-        'blocks.text-block',
-        'blocks.card-grid',
-        'blocks.feature-grid',
-        'blocks.three-col-grid',
-        'blocks.cta-banner',
-        'blocks.faq-section',
-        'blocks.downloads-section',
-        'blocks.tabs-section',
-        'blocks.party-packages',
-        'blocks.team-grid',
-        'blocks.image-panel-slideshow',
-        'blocks.priced-card-grid',
-        'blocks.quotes-block',
-        'blocks.collage-gallery',
-      ]
-    >;
     bottomCtas: Schema.Attribute.Component<'shared.link', true> &
       Schema.Attribute.SetMinMax<
         {
@@ -1775,6 +1756,10 @@ export interface ApiKidsExperienceKidsExperience
         },
         number
       >;
+    children: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::kids-experience.kids-experience'
+    >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1785,8 +1770,12 @@ export interface ApiKidsExperienceKidsExperience
         },
         number
       >;
+    description: Schema.Attribute.Text;
     downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
     email: Schema.Attribute.Email;
+    extraSections: Schema.Attribute.Component<'blocks.extra-section', true>;
+    faq: Schema.Attribute.Component<'shared.faq-pair', true>;
+    gallery: Schema.Attribute.Media<'images', true>;
     heroImage: Schema.Attribute.Media<'images'>;
     heroVideo: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -1806,13 +1795,17 @@ export interface ApiKidsExperienceKidsExperience
       true
     >;
     order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    parent: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::kids-experience.kids-experience'
+    >;
     parentHref: Schema.Attribute.String;
     parentLabel: Schema.Attribute.String;
+    partyPackages: Schema.Attribute.Component<'blocks.party-packages', false>;
     phone: Schema.Attribute.String;
-    programType: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    quotes: Schema.Attribute.Component<'blocks.quotes-block', false>;
     seo: Schema.Attribute.Component<'shared.seo', false>;
-    shortDescription: Schema.Attribute.Text;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
