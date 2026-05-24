@@ -8,7 +8,7 @@
     "description": "Groups for FAQ items (Membership, Facilities, Dining, etc.)"
   },
   "options": {
-    "draftAndPublish": false
+    "draftAndPublish": true
   },
   "attributes": {
     "name": {

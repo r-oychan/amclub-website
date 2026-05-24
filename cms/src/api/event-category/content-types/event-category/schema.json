@@ -8,7 +8,7 @@
     "description": "Categories for club events (Dining, Kids, Fitness, etc.)"
   },
   "options": {
-    "draftAndPublish": false
+    "draftAndPublish": true
   },
   "attributes": {
     "name": {

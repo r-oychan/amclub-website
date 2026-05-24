@@ -8,7 +8,7 @@
     "description": "Club committee and management members"
   },
   "options": {
-    "draftAndPublish": false
+    "draftAndPublish": true
   },
   "attributes": {
     "name": {

@@ -105,12 +105,18 @@ async function upsertKids(slug, entry, idx, parentDocId) {
     ? { locationLevel: entry.level, phone: entry.phone, email: entry.email }
     : null);
   const faq = (entry.faq ?? []).map((f) => ({ question: f.question, answer: f.answer }));
+  // Source uses { text, attribution, role } per quote; schema uses
+  // { quote, author, role } (matching shared.quote-item).
   const quotes = entry.quotes?.items?.length
     ? {
         heading: entry.quotes.heading,
-        items: entry.quotes.items.map((q) => ({
-          quote: q.quote, author: q.author, role: q.role,
-        })),
+        items: entry.quotes.items
+          .filter((q) => q.text || q.quote)
+          .map((q) => ({
+            quote: q.quote ?? q.text ?? '',
+            author: q.author ?? q.attribution ?? null,
+            role: q.role ?? null,
+          })),
       }
     : undefined;
   const partyPackages = await normPartyPackages(entry.partyPackages);
@@ -142,6 +148,9 @@ async function upsertKids(slug, entry, idx, parentDocId) {
   if (DRY) {
     console.log(`  [dry] upsert ${slug} (faq=${faq.length}, extras=${extraSections.length}, packages=${partyPackages?.items?.length ?? 0})`);
     return null;
+  }
+  if (process.env.DEBUG_PAYLOAD) {
+    console.log(`payload for ${slug}:`, JSON.stringify(payload, null, 2).slice(0, 3000));
   }
   const existing = await findOneBySlug(ctx, 'kids-experiences', slug);
   let resp;
