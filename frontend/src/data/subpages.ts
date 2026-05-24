@@ -279,7 +279,6 @@ export const diningSubpages: SubpageData[] = [
     parentHref: '/dining',
     ctas: [
       { label: 'View Menu', href: '/menus/central-menu.pdf', isExternal: true },
-      { label: 'Promotions', href: '/dining/dining-promotion#promo-central' },
     ],
   },
   {
@@ -313,7 +312,6 @@ export const diningSubpages: SubpageData[] = [
     ctas: [
       { label: 'View Menu', href: '/menus/the-2nd-floor-menu.pdf', isExternal: true },
       { label: 'Reserve a Table', href: 'mailto:2ndfloor@amclub.org.sg', isExternal: true },
-      { label: 'Promotions', href: '/dining/dining-promotion#promo-the-2nd-floor' },
     ],
     extraSections: [
       {
@@ -359,7 +357,6 @@ export const diningSubpages: SubpageData[] = [
     parentHref: '/dining',
     ctas: [
       { label: 'View Menu', href: '/menus/tradewinds-menu.pdf', isExternal: true },
-      { label: 'Promotions', href: '/dining/dining-promotion#promo-tradewinds' },
     ],
     extraSections: [
       {
@@ -403,7 +400,6 @@ export const diningSubpages: SubpageData[] = [
     parentHref: '/dining',
     ctas: [
       { label: 'View Menu', href: '/menus/grillhouse-menu.pdf', isExternal: true },
-      { label: 'Promotions', href: '/dining/dining-promotion#promo-grillhouse' },
     ],
   },
   {
@@ -433,7 +429,6 @@ export const diningSubpages: SubpageData[] = [
     ctas: [
       { label: 'View Menu', href: '/menus/union-bar-menu.pdf', isExternal: true },
       { label: 'Sports Screening Schedule', href: 'https://docs.google.com/presentation/d/1Ruk_oS8bijGO1Osuuuc4cL3aGc7DknzVmMRqsyN7gZ8/edit?slide=id.g36c0dd5bddb_0_2#slide=id.g36c0dd5bddb_0_2', isExternal: true },
-      { label: 'Promotions', href: '/dining/dining-promotion#promo-union-bar' },
     ],
     extraSections: [
       {

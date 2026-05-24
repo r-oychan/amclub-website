@@ -23,19 +23,14 @@
     "summary": {
       "type": "text"
     },
-    "restaurantTag": {
-      "type": "enumeration",
-      "enum": [
-        "club-wide",
-        "central",
-        "grillhouse",
-        "the-2nd-floor",
-        "tradewinds",
-        "union-bar",
-        "the-gourmet-pantry"
-      ],
-      "default": "club-wide",
-      "required": true
+    "restaurant": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::restaurant.restaurant"
+    },
+    "isClubWide": {
+      "type": "boolean",
+      "default": false
     },
     "validFrom": {
       "type": "date"

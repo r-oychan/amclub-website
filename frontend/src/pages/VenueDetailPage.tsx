@@ -441,6 +441,34 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
               : primary;
       }
       const fallback = staticFallback(section, lookupSlug);
+
+      // For dining venues, check if any dining-promotions reference this
+      // restaurant. If so, inject a "Promotions" CTA pointing at the matching
+      // #promo-<slug> anchor on /dining/dining-promotion. Replaces the
+      // hardcoded CTAs previously kept in subpages.ts.
+      let promotionsCta: { label: string; href: string; isExternal?: boolean } | null = null;
+      if (section === 'dining' && lookupSlug) {
+        const promos = await fetchAPI<{ slug: string }[]>('/dining-promotions', {
+          'filters[restaurant][slug][$eq]': lookupSlug,
+          'pagination[pageSize]': '1',
+          'fields[0]': 'slug',
+        });
+        if (promos && promos.length > 0) {
+          promotionsCta = {
+            label: 'Promotions',
+            href: `/dining/dining-promotion#promo-${lookupSlug}`,
+          };
+        }
+      }
+      const injectPromotionsCta = <T extends { label: string; href: string; isExternal?: boolean }>(
+        ctas?: T[] | null,
+      ): T[] | undefined => {
+        if (!promotionsCta) return ctas ?? undefined;
+        const list = ctas ? [...ctas] : [];
+        if (list.some((c) => c.label === 'Promotions')) return list;
+        return [...list, promotionsCta as unknown as T];
+      };
+
       if (items && items.length > 0) {
         const api = items[0];
         // Strapi v5 returns media as `{ url, alternativeText, ... }`; the team
@@ -459,7 +487,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           ...api,
           image: api.image ?? fallback?.image,
           video: api.video ?? fallback?.video,
-          ctas: api.ctas?.length ? api.ctas : fallback?.ctas,
+          ctas: injectPromotionsCta(api.ctas?.length ? api.ctas : fallback?.ctas),
           extraSections: api.extraSections?.length ? api.extraSections : fallback?.extraSections,
           promoCards: api.promoCards ?? fallback?.promoCards,
           teamMembers: apiTeam?.length ? apiTeam : fallback?.teamMembers,
@@ -476,8 +504,10 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           venueCards: api.venueCards ?? fallback?.venueCards,
           packageCards: api.packageCards ?? fallback?.packageCards,
         });
+      } else if (fallback) {
+        setVenue({ ...fallback, ctas: injectPromotionsCta(fallback.ctas) });
       } else {
-        setVenue(fallback);
+        setVenue(null);
       }
       setLoading(false);
     };

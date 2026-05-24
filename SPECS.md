@@ -236,7 +236,8 @@ All four detail-page collection types + the membership singletons share one dyna
 ### Collections (multiple records)
 | Name | API ID | Key Fields |
 |---|---|---|
-| restaurant | `restaurant` | name, slug, description, image, gallery, contact, category, ctas |
+| restaurant | `restaurant` | name, slug, cuisineType, dressCode, smartCasual, description, image, logo, cuisineIconSlug, **menuUrl** (single source of truth for the per-restaurant menu PDF — read by both `/dining/:slug` and the dining-promotion CTAs), gallery, contact, ctas, order |
+| dining-promotion | `dining-promotion` | title, slug, summary, **`restaurant`** (relation manyToOne → `restaurant`, replaces the old hardcoded enum), **`isClubWide`** (boolean — true when the promo applies club-wide, no restaurant relation needed), validFrom, validTo, image, images (multi-page), ctas, order, seo. The promotions page derives anchor (`#promo-<slug>`), sidebar label, and "View Menu" link from the populated relation — `MENU_URLS` constant on the frontend was removed. |
 | venue | `venue` | name, slug, description, image, gallery, capacity, contact, ctas |
 | facility | `facility` | name, slug, description, image, gallery, section (fitness/kids/event), ctas |
 | event | `event` | title, slug, date, time, location, dressCode, reservation, description, longDescription, image, category (→ event-category), featured, ctas (shared.link[]) |

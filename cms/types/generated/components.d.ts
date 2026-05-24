@@ -852,6 +852,21 @@ export interface SharedQuoteItem extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedQuoteItem extends Struct.ComponentSchema {
+  collectionName: 'components_shared_quote_items';
+  info: {
+    description: 'Single quote with optional author + role.';
+    displayName: 'Quote Item';
+    icon: 'quote';
+  };
+  attributes: {
+    author: Schema.Attribute.String;
+    image: Schema.Attribute.Media<'images'>;
+    quote: Schema.Attribute.Text & Schema.Attribute.Required;
+    role: Schema.Attribute.String;
+  };
+}
+
 export interface SharedReferralColumnHeadings extends Struct.ComponentSchema {
   collectionName: 'components_shared_referral_column_headings';
   info: {

@@ -737,6 +737,7 @@ export interface ApiDiningPromotionDiningPromotion
       >;
     image: Schema.Attribute.Media<'images'>;
     images: Schema.Attribute.Media<'images', true>;
+    isClubWide: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -745,19 +746,10 @@ export interface ApiDiningPromotionDiningPromotion
       Schema.Attribute.Private;
     order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     publishedAt: Schema.Attribute.DateTime;
-    restaurantTag: Schema.Attribute.Enumeration<
-      [
-        'club-wide',
-        'central',
-        'grillhouse',
-        'the-2nd-floor',
-        'tradewinds',
-        'union-bar',
-        'the-gourmet-pantry',
-      ]
-    > &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<'club-wide'>;
+    restaurant: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::restaurant.restaurant'
+    >;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
     summary: Schema.Attribute.Text;
