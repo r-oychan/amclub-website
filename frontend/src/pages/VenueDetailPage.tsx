@@ -1,7 +1,6 @@
 import { useParams, useLocation, Link } from 'react-router';
 import { useEffect, useState, type ReactNode } from 'react';
 import { fetchAPI } from '../lib/api';
-import { getSubpage } from '../data/subpages';
 import { Button } from '../components/shared/Button';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
 import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
@@ -282,45 +281,9 @@ const SECTION_MAP: Record<string, { apiPath?: string; parentLabel: string; paren
   'home-sub': { parentLabel: 'The American Club', parentHref: '/home' },
 };
 
-function staticFallback(section: string, slug: string): VenueData | null {
-  const sp = getSubpage(section, slug);
-  if (!sp) return null;
-  return {
-    name: sp.name,
-    slug: sp.slug,
-    parentSection: sp.parentSection,
-    parentHref: sp.parentHref,
-    description: sp.description,
-    cuisineType: sp.type,
-    locationLevel: sp.level,
-    phone: sp.phone,
-    email: sp.email,
-    hours: sp.hours,
-    dressCode: sp.dressCode,
-    capacity: sp.capacity,
-    image: sp.image ? { url: sp.image } : undefined,
-    video: sp.video,
-    ctas: sp.ctas,
-    extraSections: sp.extraSections,
-    promoCards: sp.promoCards,
-    teamMembers: sp.teamMembers,
-    teamHeading: sp.teamHeading,
-    teamLayout: sp.teamLayout,
-    bottomCtas: sp.bottomCtas,
-    imagePanels: sp.imagePanels,
-    cardSections: sp.cardSections,
-    faq: sp.faq,
-    gallery: sp.gallery,
-    partyPackages: sp.partyPackages,
-    quotes: sp.quotes,
-    operatingHoursSections: sp.operatingHoursSections,
-    locationContact: sp.locationContact ?? null,
-    downloads: sp.downloads,
-    tierCards: sp.tierCards,
-    venueCards: sp.venueCards,
-    packageCards: sp.packageCards,
-  };
-}
+// Static fallback removed (subpages.ts deleted) — every section is now
+// CMS-driven via its per-section collection. If a CMS row is missing,
+// the page falls through to the loading/empty state below.
 
 /* Map extra section titles to DetailSection icon names */
 function resolveIcon(
@@ -420,8 +383,6 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           'filters[slug][$eq]': lookupSlug,
         });
       }
-      const fallback = staticFallback(section, lookupSlug);
-
       // For dining venues, check if any dining-promotions reference this
       // restaurant. If so, inject a "Promotions" CTA pointing at the matching
       // #promo-<slug> anchor on /dining/dining-promotion. Replaces the
@@ -526,34 +487,14 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
               ? m.bioImage
               : (m.bioImage as { url?: string } | undefined)?.url,
         }));
-        // Enrich with static fallback for fields missing from CMS
+        // All sections are now fully CMS-driven (subpages.ts deleted).
+        // The merge just layers per-section overrides (Promotions CTA for
+        // dining, per-discipline coach team for fitness) on top of the
+        // adapted API response.
         setVenue({
-          ...fallback,
           ...api,
-          image: api.image ?? fallback?.image,
-          video: api.video ?? fallback?.video,
-          ctas: injectPromotionsCta(api.ctas?.length ? api.ctas : fallback?.ctas),
-          extraSections: api.extraSections?.length ? api.extraSections : fallback?.extraSections,
-          promoCards: api.promoCards ?? fallback?.promoCards,
-          teamMembers: coachTeam?.length ? coachTeam : (apiTeam?.length ? apiTeam : fallback?.teamMembers),
-          teamHeading: api.teamHeading ?? fallback?.teamHeading,
-          bottomCtas: api.bottomCtas?.length ? api.bottomCtas : fallback?.bottomCtas,
-          imagePanels: api.imagePanels?.length ? api.imagePanels : fallback?.imagePanels,
-          cardSections: api.cardSections?.length ? api.cardSections : fallback?.cardSections,
-          faq: api.faq?.length ? api.faq : fallback?.faq,
-          gallery: api.gallery ?? fallback?.gallery,
-          partyPackages: api.partyPackages ?? fallback?.partyPackages,
-          quotes: api.quotes ?? fallback?.quotes,
-          downloads: api.downloads ?? fallback?.downloads,
-          tierCards: api.tierCards ?? fallback?.tierCards,
-          venueCards: api.venueCards ?? fallback?.venueCards,
-          packageCards: api.packageCards ?? fallback?.packageCards,
-        });
-      } else if (fallback) {
-        setVenue({
-          ...fallback,
-          ctas: injectPromotionsCta(fallback.ctas),
-          teamMembers: coachTeam?.length ? coachTeam : fallback.teamMembers,
+          ctas: injectPromotionsCta(api.ctas),
+          teamMembers: coachTeam?.length ? coachTeam : apiTeam,
         });
       } else {
         setVenue(null);

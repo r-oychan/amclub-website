@@ -8,7 +8,7 @@
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { existsSync } from 'node:fs';
-import { initEnv, api, uploadFile, isDryRun } from './seed-helpers.mjs';
+import { initEnv, api, uploadFile, publishDocument, isDryRun } from './seed-helpers.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
@@ -70,6 +70,7 @@ const MEMBER_LINKS = [
     return;
   }
   await api(ctx, '/footer', { method: 'PUT', body: { data: payload } });
+  await publishDocument(ctx, 'footer');
   console.log('  ↻ upserted footer');
   console.log('\n✓ Done.');
 })().catch((err) => { console.error(err); process.exit(1); });

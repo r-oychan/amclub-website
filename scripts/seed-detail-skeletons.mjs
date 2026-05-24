@@ -22,7 +22,7 @@
 
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { initEnv, api, findOneBySlug, uploadAll, isDryRun } from './seed-helpers.mjs';
+import { initEnv, api, findOneBySlug, uploadAll, publishDocument, isDryRun } from './seed-helpers.mjs';
 
 const DRY = isDryRun();
 const ctx = initEnv();
@@ -45,17 +45,19 @@ async function upsertBySlug(plural, payload) {
       console.log(`  [dry] PUT /${plural}/${existing.documentId} (${slug})`);
       return;
     }
-    await api(ctx, `/${plural}/${existing.documentId}`, {
+    const resp = await api(ctx, `/${plural}/${existing.documentId}`, {
       method: 'PUT',
       body,
     });
+    await publishDocument(ctx, plural, resp?.data?.documentId ?? existing.documentId);
     console.log(`  ↻ updated ${plural}/${slug}`);
   } else {
     if (DRY) {
       console.log(`  [dry] POST /${plural} (${slug})`);
       return;
     }
-    await api(ctx, `/${plural}`, { method: 'POST', body });
+    const resp = await api(ctx, `/${plural}`, { method: 'POST', body });
+    if (resp?.data?.documentId) await publishDocument(ctx, plural, resp.data.documentId);
     console.log(`  + created ${plural}/${slug}`);
   }
 }
@@ -70,6 +72,10 @@ async function upsertSingleton(slug, payload) {
     return;
   }
   await api(ctx, `/${slug}`, { method: 'PUT', body });
+  // Strapi v5: PUT creates/updates a draft. Publish explicitly so anonymous
+  // GET /api/<slug> returns the new content. publishDocument silently
+  // ignores 404 when the type doesn't have draftAndPublish enabled.
+  await publishDocument(ctx, slug);
   console.log(`  ↻ upserted singleton ${slug}`);
 }
 

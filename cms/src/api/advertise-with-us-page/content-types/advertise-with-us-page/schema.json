@@ -8,7 +8,7 @@
     "description": "Content for /home-sub/advertise-with-us — rendered through VenueDetailPage layout"
   },
   "options": {
-    "draftAndPublish": false
+    "draftAndPublish": true
   },
   "attributes": {
     "title": { "type": "string" },

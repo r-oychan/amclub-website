@@ -8,7 +8,7 @@
     "description": "Site navigation header"
   },
   "options": {
-    "draftAndPublish": false
+    "draftAndPublish": true
   },
   "attributes": {
     "logo": {

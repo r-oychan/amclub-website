@@ -197,3 +197,31 @@ export async function uploadAll(ctx, dir, names, { dry = false, replace = isRepl
 }
 
 export const isReplace = () => process.argv.includes('--replace');
+
+/**
+ * Publish a Strapi v5 document. v5 changed the publish flow — sending
+ * `publishedAt: new Date()` in the data body no longer publishes a
+ * draft (the document stays in `draft` status). The official REST way
+ * is to call the publish action endpoint.
+ *
+ * Usage after upserting a draftAndPublish: true entry:
+ *   await publishDocument(ctx, 'fitness-facilities', resp.data.documentId)
+ *
+ * For singletons, omit the documentId — we POST to
+ * /api/<plural>/actions/publish.
+ */
+export async function publishDocument(ctx, plural, documentId) {
+  const path = documentId
+    ? `/${plural}/${documentId}/actions/publish`
+    : `/${plural}/actions/publish`;
+  try {
+    return await api(ctx, path, { method: 'POST' });
+  } catch (e) {
+    // Strapi sometimes responds 200 with empty body — our api() helper
+    // throws on JSON parse failure. Swallow only that case. Anything
+    // else: warn (the document may already be published).
+    if (!/JSON|parse/i.test(String(e.message))) {
+      console.warn(`  ! publishDocument(${plural}, ${documentId ?? '<singleton>'}) failed: ${e.message}`);
+    }
+  }
+}

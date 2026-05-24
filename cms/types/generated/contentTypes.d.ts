@@ -492,7 +492,7 @@ export interface ApiAdvertiseWithUsPageAdvertiseWithUsPage
     singularName: 'advertise-with-us-page';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     body: Schema.Attribute.DynamicZone<
@@ -679,7 +679,7 @@ export interface ApiCommitteeMemberCommitteeMember
     singularName: 'committee-member';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     bio: Schema.Attribute.Text;
@@ -929,7 +929,7 @@ export interface ApiEventCategoryEventCategory
     singularName: 'event-category';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;
@@ -1186,7 +1186,7 @@ export interface ApiFaqCategoryFaqCategory extends Struct.CollectionTypeSchema {
     singularName: 'faq-category';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;
@@ -1221,7 +1221,7 @@ export interface ApiFaqItemFaqItem extends Struct.CollectionTypeSchema {
     singularName: 'faq-item';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     answer: Schema.Attribute.Blocks;
@@ -1429,7 +1429,7 @@ export interface ApiFooterFooter extends Struct.SingleTypeSchema {
     singularName: 'footer';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     address: Schema.Attribute.Text;
@@ -1600,7 +1600,7 @@ export interface ApiHeaderHeader extends Struct.SingleTypeSchema {
     singularName: 'header';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;
@@ -1956,7 +1956,7 @@ export interface ApiNicheGroupMembershipPageNicheGroupMembershipPage
     singularName: 'niche-group-membership-page';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     body: Schema.Attribute.DynamicZone<
@@ -2105,7 +2105,7 @@ export interface ApiReciprocalClubsPageReciprocalClubsPage
     singularName: 'reciprocal-clubs-page';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     body: Schema.Attribute.DynamicZone<
@@ -2321,7 +2321,7 @@ export interface ApiSiteSettingsSiteSettings extends Struct.SingleTypeSchema {
     singularName: 'site-settings';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     chatbotEnabled: Schema.Attribute.Boolean &
@@ -2353,7 +2353,7 @@ export interface ApiStartApplicationPageStartApplicationPage
     singularName: 'start-application-page';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     body: Schema.Attribute.DynamicZone<

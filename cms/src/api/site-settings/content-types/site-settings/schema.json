@@ -8,7 +8,7 @@
     "description": "Global site-wide feature flags and toggles"
   },
   "options": {
-    "draftAndPublish": false
+    "draftAndPublish": true
   },
   "attributes": {
     "chatbotEnabled": {
