@@ -5,76 +5,41 @@
     "singularName": "event-space",
     "pluralName": "event-spaces",
     "displayName": "Event Space",
-    "description": "Event-spaces detail pages: ballroom, thinkspace, bowling-alley, library, meeting-rooms, weddings, corporate-functions, parties, etc."
+    "description": "Event-spaces detail pages — venues (Galbraith Ballroom, Thinkspace, Bowling Alley, Library, Meeting Rooms) and package pages (Wedding Celebrations, Corporate Functions, Parties)."
   },
   "options": {
-    "draftAndPublish": false
+    "draftAndPublish": true
   },
   "attributes": {
-    "name": {
-      "type": "string",
-      "required": true
-    },
-    "slug": {
-      "type": "uid",
-      "targetField": "name",
-      "required": true
-    },
-    "shortDescription": {
-      "type": "text"
-    },
+    "name": { "type": "string", "required": true },
+    "slug": { "type": "uid", "targetField": "name", "required": true },
+    "description": { "type": "text" },
     "heroImage": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": [
-        "images"
-      ]
+      "allowedTypes": ["images"]
     },
-    "heroVideo": {
-      "type": "string"
-    },
-    "parentLabel": {
-      "type": "string"
-    },
-    "parentHref": {
-      "type": "string"
-    },
-    "capacity": {
-      "type": "string"
-    },
-    "floorPlanPdf": {
-      "type": "media",
-      "multiple": false,
-      "allowedTypes": [
-        "files"
-      ]
-    },
-    "setupOptions": {
-      "type": "text"
-    },
-    "locationLevel": {
-      "type": "string"
-    },
-    "phone": {
-      "type": "string"
-    },
-    "email": {
-      "type": "email"
-    },
+    "heroVideo": { "type": "string" },
+    "parentLabel": { "type": "string" },
+    "parentHref": { "type": "string" },
+    "capacity": { "type": "string" },
+    "locationLevel": { "type": "string" },
+    "phone": { "type": "string" },
+    "email": { "type": "email" },
     "operatingHoursSections": {
       "type": "component",
       "repeatable": true,
       "component": "blocks.operating-hours-section"
     },
+    "extraSections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.extra-section"
+    },
     "locationContact": {
       "type": "component",
       "repeatable": false,
       "component": "blocks.location-contact"
-    },
-    "downloads": {
-      "type": "component",
-      "repeatable": false,
-      "component": "blocks.downloads-section"
     },
     "ctas": {
       "type": "component",
@@ -88,29 +53,27 @@
       "component": "shared.link",
       "max": 4
     },
-    "body": {
-      "type": "dynamiczone",
-      "components": [
-        "blocks.text-block",
-        "blocks.card-grid",
-        "blocks.feature-grid",
-        "blocks.three-col-grid",
-        "blocks.cta-banner",
-        "blocks.faq-section",
-        "blocks.downloads-section",
-        "blocks.tabs-section",
-        "blocks.party-packages",
-        "blocks.team-grid",
-        "blocks.image-panel-slideshow",
-        "blocks.priced-card-grid",
-        "blocks.quotes-block",
-        "blocks.collage-gallery"
-      ]
+    "downloads": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.downloads-section"
     },
-    "order": {
-      "type": "integer",
-      "default": 0
+    "gallery": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["images"]
     },
+    "venueCards": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.venue-card-grid"
+    },
+    "packageCards": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.package-card-grid"
+    },
+    "order": { "type": "integer", "default": 0 },
     "seo": {
       "type": "component",
       "repeatable": false,

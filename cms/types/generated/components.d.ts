@@ -345,6 +345,29 @@ export interface BlocksOverlaySection extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksPackageCardGrid extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_package_card_grids';
+  info: {
+    description: 'Grid of event package cards (Wedding / Corporate / Parties packages).';
+    displayName: 'Package Card Grid';
+    icon: 'gift';
+  };
+  attributes: {
+    cards: Schema.Attribute.Component<'shared.package-card', true>;
+    columns: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<3>;
+    heading: Schema.Attribute.String;
+    subheading: Schema.Attribute.Text;
+  };
+}
+
 export interface BlocksPartnerOrganizations extends Struct.ComponentSchema {
   collectionName: 'components_blocks_partner_organizations';
   info: {
@@ -522,6 +545,29 @@ export interface BlocksThreeColGrid extends Struct.ComponentSchema {
     subheading: Schema.Attribute.Text;
     variant: Schema.Attribute.Enumeration<['centered', 'left']> &
       Schema.Attribute.DefaultTo<'centered'>;
+  };
+}
+
+export interface BlocksVenueCardGrid extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_venue_card_grids';
+  info: {
+    description: 'Grid of venue cards (event-spaces package pages list of available venues).';
+    displayName: 'Venue Card Grid';
+    icon: 'grid';
+  };
+  attributes: {
+    cards: Schema.Attribute.Component<'shared.venue-card', true>;
+    columns: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+          min: 1;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<3>;
+    heading: Schema.Attribute.String;
+    subheading: Schema.Attribute.Text;
   };
 }
 
@@ -798,6 +844,24 @@ export interface SharedNavItem extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedPackageCard extends Struct.ComponentSchema {
+  collectionName: 'components_shared_package_cards';
+  info: {
+    description: 'Single event-package card \u2014 used inside package-card-grid blocks (Wedding/Corporate/Parties packages).';
+    displayName: 'Package Card';
+    icon: 'gift';
+  };
+  attributes: {
+    benefits: Schema.Attribute.JSON;
+    detailsLabel: Schema.Attribute.String;
+    downloadLink: Schema.Attribute.Component<'shared.link', false>;
+    heading: Schema.Attribute.String & Schema.Attribute.Required;
+    image: Schema.Attribute.Media<'images'>;
+    imageAlt: Schema.Attribute.String;
+    tagline: Schema.Attribute.Text;
+  };
+}
+
 export interface SharedPartnerGroup extends Struct.ComponentSchema {
   collectionName: 'components_shared_partner_groups';
   info: {
@@ -1059,6 +1123,23 @@ export interface SharedTimelineSlide extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedVenueCard extends Struct.ComponentSchema {
+  collectionName: 'components_shared_venue_cards';
+  info: {
+    description: 'Single venue card \u2014 used inside venue-card-grid blocks on the event-spaces package pages (Wedding Celebrations, Corporate Functions).';
+    displayName: 'Venue Card';
+    icon: 'building';
+  };
+  attributes: {
+    capacity: Schema.Attribute.String;
+    description: Schema.Attribute.Text;
+    downloadLink: Schema.Attribute.Component<'shared.link', false>;
+    heading: Schema.Attribute.String & Schema.Attribute.Required;
+    image: Schema.Attribute.Media<'images'>;
+    imageAlt: Schema.Attribute.String;
+  };
+}
+
 export interface SharedVenueRow extends Struct.ComponentSchema {
   collectionName: 'components_shared_venue_rows';
   info: {
@@ -1098,6 +1179,7 @@ declare module '@strapi/strapi' {
       'blocks.offsite-catering-services': BlocksOffsiteCateringServices;
       'blocks.operating-hours-section': BlocksOperatingHoursSection;
       'blocks.overlay-section': BlocksOverlaySection;
+      'blocks.package-card-grid': BlocksPackageCardGrid;
       'blocks.partner-organizations': BlocksPartnerOrganizations;
       'blocks.party-packages': BlocksPartyPackages;
       'blocks.priced-card-grid': BlocksPricedCardGrid;
@@ -1109,6 +1191,7 @@ declare module '@strapi/strapi' {
       'blocks.testimonial-slider': BlocksTestimonialSlider;
       'blocks.text-block': BlocksTextBlock;
       'blocks.three-col-grid': BlocksThreeColGrid;
+      'blocks.venue-card-grid': BlocksVenueCardGrid;
       'blocks.vision-mission': BlocksVisionMission;
       'shared.award-item': SharedAwardItem;
       'shared.catering-pillar': SharedCateringPillar;
@@ -1125,6 +1208,7 @@ declare module '@strapi/strapi' {
       'shared.nav-column': SharedNavColumn;
       'shared.nav-dropdown': SharedNavDropdown;
       'shared.nav-item': SharedNavItem;
+      'shared.package-card': SharedPackageCard;
       'shared.partner-group': SharedPartnerGroup;
       'shared.partner-logo': SharedPartnerLogo;
       'shared.party-package-item': SharedPartyPackageItem;
@@ -1140,6 +1224,7 @@ declare module '@strapi/strapi' {
       'shared.text-line': SharedTextLine;
       'shared.three-col-item': SharedThreeColItem;
       'shared.timeline-slide': SharedTimelineSlide;
+      'shared.venue-card': SharedVenueCard;
       'shared.venue-row': SharedVenueRow;
     }
   }

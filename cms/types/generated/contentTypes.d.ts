@@ -957,33 +957,15 @@ export interface ApiEventCategoryEventCategory
 export interface ApiEventSpaceEventSpace extends Struct.CollectionTypeSchema {
   collectionName: 'event_spaces';
   info: {
-    description: 'Event-spaces detail pages: ballroom, thinkspace, bowling-alley, library, meeting-rooms, weddings, corporate-functions, parties, etc.';
+    description: 'Event-spaces detail pages \u2014 venues (Galbraith Ballroom, Thinkspace, Bowling Alley, Library, Meeting Rooms) and package pages (Wedding Celebrations, Corporate Functions, Parties).';
     displayName: 'Event Space';
     pluralName: 'event-spaces';
     singularName: 'event-space';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
-    body: Schema.Attribute.DynamicZone<
-      [
-        'blocks.text-block',
-        'blocks.card-grid',
-        'blocks.feature-grid',
-        'blocks.three-col-grid',
-        'blocks.cta-banner',
-        'blocks.faq-section',
-        'blocks.downloads-section',
-        'blocks.tabs-section',
-        'blocks.party-packages',
-        'blocks.team-grid',
-        'blocks.image-panel-slideshow',
-        'blocks.priced-card-grid',
-        'blocks.quotes-block',
-        'blocks.collage-gallery',
-      ]
-    >;
     bottomCtas: Schema.Attribute.Component<'shared.link', true> &
       Schema.Attribute.SetMinMax<
         {
@@ -1002,9 +984,11 @@ export interface ApiEventSpaceEventSpace extends Struct.CollectionTypeSchema {
         },
         number
       >;
+    description: Schema.Attribute.Text;
     downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
     email: Schema.Attribute.Email;
-    floorPlanPdf: Schema.Attribute.Media<'files'>;
+    extraSections: Schema.Attribute.Component<'blocks.extra-section', true>;
+    gallery: Schema.Attribute.Media<'images', true>;
     heroImage: Schema.Attribute.Media<'images'>;
     heroVideo: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -1024,17 +1008,17 @@ export interface ApiEventSpaceEventSpace extends Struct.CollectionTypeSchema {
       true
     >;
     order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    packageCards: Schema.Attribute.Component<'blocks.package-card-grid', false>;
     parentHref: Schema.Attribute.String;
     parentLabel: Schema.Attribute.String;
     phone: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
-    setupOptions: Schema.Attribute.Text;
-    shortDescription: Schema.Attribute.Text;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    venueCards: Schema.Attribute.Component<'blocks.venue-card-grid', false>;
   };
 }
 

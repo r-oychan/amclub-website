@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_shared_venue_cards",
+  "info": {
+    "displayName": "Venue Card",
+    "icon": "building",
+    "description": "Single venue card — used inside venue-card-grid blocks on the event-spaces package pages (Wedding Celebrations, Corporate Functions)."
+  },
+  "attributes": {
+    "heading": { "type": "string", "required": true },
+    "capacity": { "type": "string" },
+    "description": { "type": "text" },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "imageAlt": { "type": "string" },
+    "downloadLink": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.link"
+    }
+  }
+}

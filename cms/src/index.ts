@@ -20,7 +20,6 @@ const PUBLIC_FIND_TYPES = [
   'api::faq-item.faq-item',
   'api::faq-category.faq-category',
   'api::faq-page.faq-page',
-  'api::venue.venue',
   'api::restaurant.restaurant',
   'api::coach.coach',
   // Section 2 (Fitness) — per-discipline coach collections. Legacy `coach`
@@ -45,6 +44,9 @@ const PUBLIC_FIND_TYPES = [
   'api::fitness-facility.fitness-facility',
   // Section 3 — replaces legacy `facility` rows for /kids/:slug.
   'api::kids-experience.kids-experience',
+  // Section 4 — replaces legacy `venue` (deleted) + `facility` rows for
+  // /event-spaces/:slug.
+  'api::event-space.event-space',
 ];
 
 async function grantPublicReadAccess(strapi: any) {
