@@ -112,7 +112,7 @@ async function upsertFacility(slug, entry, idx, parentDocId) {
     for (let i = 0; i + 1 < lines.length; i += 2) {
       rows.push({ dayRange: lines[i], time: lines[i + 1] });
     }
-    if (rows.length) operatingHoursSections = [{ title: 'Operating Hours', rows }];
+    if (rows.length) operatingHoursSections = [{ title: 'Opening Hours', rows }];
   }
   // Extra prose sections (Reservation Policy, Court Booking, etc.) move to
   // the new `extraSections` repeatable component on fitness-facility.
