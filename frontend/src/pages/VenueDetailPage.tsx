@@ -469,6 +469,54 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
         return [...list, promotionsCta as unknown as T];
       };
 
+      // For fitness facilities, the per-discipline coach collection is the
+      // single source of truth for "Meet Our Team" (Section 2). Map facility
+      // slug → collection plural; if the collection has rows, they override
+      // any inline teamMembers component. Falls back to the inline component
+      // when the collection is empty.
+      const COACH_COLLECTIONS: Record<string, string> = {
+        aquatics: 'aquatics-coaches',
+        tennis: 'tennis-coaches',
+        pilates: 'pilates-instructors',
+        gym: 'gym-trainers',
+      };
+      let coachTeam: VenueData['teamMembers'] | undefined;
+      if (section === 'fitness' && lookupSlug && COACH_COLLECTIONS[lookupSlug]) {
+        type ApiCoach = {
+          slug: string;
+          name: string;
+          role: string;
+          order?: number;
+          photo?: { url?: string } | null;
+          bioImage?: { url?: string } | null;
+          bioDocument?: { url?: string } | null;
+          bioHtml?: string | null;
+          imageOffsetX?: number;
+          imageOffsetY?: number;
+          imageZoom?: number;
+        };
+        const list = await fetchAPI<ApiCoach[]>(`/${COACH_COLLECTIONS[lookupSlug]}`, {
+          'sort[0]': 'order:asc',
+          'pagination[pageSize]': '100',
+        });
+        if (list && list.length > 0) {
+          coachTeam = list.map((c) => ({
+            name: c.name,
+            role: c.role,
+            image: c.photo?.url,
+            bioImage: c.bioImage?.url,
+            imageOffsetX: c.imageOffsetX,
+            imageOffsetY: c.imageOffsetY,
+            imageZoom: c.imageZoom,
+            // Detail-page link only if the entry actually has detail content.
+            coachLink:
+              c.bioImage?.url || c.bioDocument?.url || c.bioHtml
+                ? `/coaches/${lookupSlug}/${c.slug}`
+                : undefined,
+          }));
+        }
+      }
+
       if (items && items.length > 0) {
         const api = items[0];
         // Strapi v5 returns media as `{ url, alternativeText, ... }`; the team
@@ -490,7 +538,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           ctas: injectPromotionsCta(api.ctas?.length ? api.ctas : fallback?.ctas),
           extraSections: api.extraSections?.length ? api.extraSections : fallback?.extraSections,
           promoCards: api.promoCards ?? fallback?.promoCards,
-          teamMembers: apiTeam?.length ? apiTeam : fallback?.teamMembers,
+          teamMembers: coachTeam?.length ? coachTeam : (apiTeam?.length ? apiTeam : fallback?.teamMembers),
           teamHeading: api.teamHeading ?? fallback?.teamHeading,
           bottomCtas: api.bottomCtas?.length ? api.bottomCtas : fallback?.bottomCtas,
           imagePanels: api.imagePanels?.length ? api.imagePanels : fallback?.imagePanels,
@@ -505,7 +553,11 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           packageCards: api.packageCards ?? fallback?.packageCards,
         });
       } else if (fallback) {
-        setVenue({ ...fallback, ctas: injectPromotionsCta(fallback.ctas) });
+        setVenue({
+          ...fallback,
+          ctas: injectPromotionsCta(fallback.ctas),
+          teamMembers: coachTeam?.length ? coachTeam : fallback.teamMembers,
+        });
       } else {
         setVenue(null);
       }

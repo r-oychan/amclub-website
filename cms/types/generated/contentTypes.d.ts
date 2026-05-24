@@ -563,6 +563,74 @@ export interface ApiAdvertiseWithUsPageAdvertiseWithUsPage
   };
 }
 
+export interface ApiAquaticsCoachAquaticsCoach
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'aquatics_coaches';
+  info: {
+    description: 'Aquatics Coach entries \u2014 one row per person. Linked from `facility` team grid by section.';
+    displayName: 'Aquatics Coach';
+    pluralName: 'aquatics-coaches';
+    singularName: 'aquatics-coach';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    bioDocument: Schema.Attribute.Media<'files'>;
+    bioHtml: Schema.Attribute.RichText;
+    bioImage: Schema.Attribute.Media<'images'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    expertise: Schema.Attribute.Text;
+    imageOffsetX: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<50>;
+    imageOffsetY: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<50>;
+    imageZoom: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+          min: 0.5;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<1>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::aquatics-coach.aquatics-coach'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    photo: Schema.Attribute.Media<'images'>;
+    publishedAt: Schema.Attribute.DateTime;
+    qualifications: Schema.Attribute.Text;
+    role: Schema.Attribute.String & Schema.Attribute.Required;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    shortBio: Schema.Attribute.Text;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiCoachCoach extends Struct.CollectionTypeSchema {
   collectionName: 'coaches';
   info: {
@@ -1475,6 +1543,73 @@ export interface ApiGalleryPageGalleryPage extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiGymTrainerGymTrainer extends Struct.CollectionTypeSchema {
+  collectionName: 'gym_trainers';
+  info: {
+    description: 'Gym Trainer entries \u2014 one row per person. Linked from `facility` team grid by section.';
+    displayName: 'Gym Trainer';
+    pluralName: 'gym-trainers';
+    singularName: 'gym-trainer';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    bioDocument: Schema.Attribute.Media<'files'>;
+    bioHtml: Schema.Attribute.RichText;
+    bioImage: Schema.Attribute.Media<'images'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    expertise: Schema.Attribute.Text;
+    imageOffsetX: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<50>;
+    imageOffsetY: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<50>;
+    imageZoom: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+          min: 0.5;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<1>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::gym-trainer.gym-trainer'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    photo: Schema.Attribute.Media<'images'>;
+    publishedAt: Schema.Attribute.DateTime;
+    qualifications: Schema.Attribute.Text;
+    role: Schema.Attribute.String & Schema.Attribute.Required;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    shortBio: Schema.Attribute.Text;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiHeaderHeader extends Struct.SingleTypeSchema {
   collectionName: 'headers';
   info: {
@@ -1918,6 +2053,74 @@ export interface ApiNicheGroupMembershipPageNicheGroupMembershipPage
   };
 }
 
+export interface ApiPilatesInstructorPilatesInstructor
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'pilates_instructors';
+  info: {
+    description: 'Pilates Instructor entries \u2014 one row per person. Linked from `facility` team grid by section.';
+    displayName: 'Pilates Instructor';
+    pluralName: 'pilates-instructors';
+    singularName: 'pilates-instructor';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    bioDocument: Schema.Attribute.Media<'files'>;
+    bioHtml: Schema.Attribute.RichText;
+    bioImage: Schema.Attribute.Media<'images'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    expertise: Schema.Attribute.Text;
+    imageOffsetX: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<50>;
+    imageOffsetY: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<50>;
+    imageZoom: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+          min: 0.5;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<1>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::pilates-instructor.pilates-instructor'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    photo: Schema.Attribute.Media<'images'>;
+    publishedAt: Schema.Attribute.DateTime;
+    qualifications: Schema.Attribute.Text;
+    role: Schema.Attribute.String & Schema.Attribute.Required;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    shortBio: Schema.Attribute.Text;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiReciprocalClubsPageReciprocalClubsPage
   extends Struct.SingleTypeSchema {
   collectionName: 'reciprocal_clubs_pages';
@@ -2241,6 +2444,73 @@ export interface ApiStartApplicationPageStartApplicationPage
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiTennisCoachTennisCoach extends Struct.CollectionTypeSchema {
+  collectionName: 'tennis_coaches';
+  info: {
+    description: 'Tennis Coach entries \u2014 one row per person. Linked from `facility` team grid by section.';
+    displayName: 'Tennis Coach';
+    pluralName: 'tennis-coaches';
+    singularName: 'tennis-coach';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    bioDocument: Schema.Attribute.Media<'files'>;
+    bioHtml: Schema.Attribute.RichText;
+    bioImage: Schema.Attribute.Media<'images'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    expertise: Schema.Attribute.Text;
+    imageOffsetX: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<50>;
+    imageOffsetY: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<50>;
+    imageZoom: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+          min: 0.5;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<1>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::tennis-coach.tennis-coach'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    photo: Schema.Attribute.Media<'images'>;
+    publishedAt: Schema.Attribute.DateTime;
+    qualifications: Schema.Attribute.Text;
+    role: Schema.Attribute.String & Schema.Attribute.Required;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    shortBio: Schema.Attribute.Text;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -2944,6 +3214,7 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::about-page.about-page': ApiAboutPageAboutPage;
       'api::advertise-with-us-page.advertise-with-us-page': ApiAdvertiseWithUsPageAdvertiseWithUsPage;
+      'api::aquatics-coach.aquatics-coach': ApiAquaticsCoachAquaticsCoach;
       'api::coach.coach': ApiCoachCoach;
       'api::committee-member.committee-member': ApiCommitteeMemberCommitteeMember;
       'api::contact-us-page.contact-us-page': ApiContactUsPageContactUsPage;
@@ -2964,6 +3235,7 @@ declare module '@strapi/strapi' {
       'api::footer.footer': ApiFooterFooter;
       'api::gallery-album.gallery-album': ApiGalleryAlbumGalleryAlbum;
       'api::gallery-page.gallery-page': ApiGalleryPageGalleryPage;
+      'api::gym-trainer.gym-trainer': ApiGymTrainerGymTrainer;
       'api::header.header': ApiHeaderHeader;
       'api::home-page.home-page': ApiHomePageHomePage;
       'api::joining-fees-page.joining-fees-page': ApiJoiningFeesPageJoiningFeesPage;
@@ -2973,11 +3245,13 @@ declare module '@strapi/strapi' {
       'api::news-article.news-article': ApiNewsArticleNewsArticle;
       'api::news-page.news-page': ApiNewsPageNewsPage;
       'api::niche-group-membership-page.niche-group-membership-page': ApiNicheGroupMembershipPageNicheGroupMembershipPage;
+      'api::pilates-instructor.pilates-instructor': ApiPilatesInstructorPilatesInstructor;
       'api::reciprocal-clubs-page.reciprocal-clubs-page': ApiReciprocalClubsPageReciprocalClubsPage;
       'api::referral-page.referral-page': ApiReferralPageReferralPage;
       'api::restaurant.restaurant': ApiRestaurantRestaurant;
       'api::site-settings.site-settings': ApiSiteSettingsSiteSettings;
       'api::start-application-page.start-application-page': ApiStartApplicationPageStartApplicationPage;
+      'api::tennis-coach.tennis-coach': ApiTennisCoachTennisCoach;
       'api::testimonial.testimonial': ApiTestimonialTestimonial;
       'api::venue.venue': ApiVenueVenue;
       'api::whats-on-page.whats-on-page': ApiWhatsOnPageWhatsOnPage;

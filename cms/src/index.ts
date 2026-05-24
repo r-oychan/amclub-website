@@ -24,6 +24,12 @@ const PUBLIC_FIND_TYPES = [
   'api::restaurant.restaurant',
   'api::facility.facility',
   'api::coach.coach',
+  // Section 2 (Fitness) — per-discipline coach collections. Legacy `coach`
+  // collection above will be dropped once data migration is verified.
+  'api::aquatics-coach.aquatics-coach',
+  'api::tennis-coach.tennis-coach',
+  'api::pilates-instructor.pilates-instructor',
+  'api::gym-trainer.gym-trainer',
   'api::committee-member.committee-member',
   'api::gallery-album.gallery-album',
   'api::gallery-page.gallery-page',

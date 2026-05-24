@@ -117,7 +117,11 @@ Each row lists, for one route: the React page file, the React components it comp
 | `event` | HomePage (upcoming events block), WhatsOnPage (full listing), EventDetailPage | title, slug, date, time, location, image, category, ctas, longDescription |
 | `event-category` | WhatsOnPage (filter bar) | name, slug, displayOrder |
 | `committee-member` | AboutPage | name, role, image, bio, memberType (general-committee / management), order |
-| `coach` | CoachDetailPage, optionally referenced from facility detail `teamMembers` | name, slug, section, bio, image |
+| `coach` _(legacy, to be removed after Section 2 cleanup)_ | Superseded by per-discipline collections below | name, slug, section, bio, image |
+| `aquatics-coach` _(Section 2)_ | `/coaches/aquatics/:slug` + fitness/aquatics team grid | name, slug, role, order, photo, shortBio, **bioImage**, **bioDocument** (PDF), **bioHtml** (rich text), qualifications, expertise, imageOffsetX/Y, imageZoom, seo. Modal opens only if bioImage / bioDocument / bioHtml is set. |
+| `tennis-coach` _(Section 2)_ | `/coaches/tennis/:slug` + fitness/tennis team grid | same shape as aquatics-coach |
+| `pilates-instructor` _(Section 2)_ | `/coaches/pilates/:slug` + fitness/pilates team grid | same shape as aquatics-coach |
+| `gym-trainer` _(Section 2)_ | `/coaches/gym/:slug` + fitness/gym team grid | same shape as aquatics-coach |
 | `testimonial` | HomePage (moments slider via `home-page.moments.testimonials`) | memberName, quote, photo, video, ctaLabel, ctaUrl |
 | `faq-item` | FaqPage, HomePage faq accordion | question, slug, answer (blocks), category (legacy enum) + faqCategory (→ faq-category), order |
 | `faq-category` | FaqPage | name, slug, displayOrder |
