@@ -34,7 +34,9 @@ const RESTAURANTS = [
     menuLinks: [
       { label: 'View Menu', href: '/menus/central-menu.pdf' },
     ],
-    ctas: [{ label: 'Promotions', href: '/dining/dining-promotion#promo-central', icon: 'arrow' }],
+    // Promotions CTA auto-derived by VenueDetailPage from /dining-promotions
+    // when a promo with this restaurant relation exists.
+    ctas: [],
     operatingHoursSections: [
       { title: 'Opening Hours', rows: [
         { dayRange: 'Daily', time: '7:00 AM - 7:00 PM' },
@@ -50,7 +52,7 @@ const RESTAURANTS = [
     menuLinks: [
       { label: 'View Menu', href: '/menus/grillhouse-menu.pdf' },
     ],
-    ctas: [{ label: 'Promotions', href: '/dining/dining-promotion#promo-grillhouse', icon: 'arrow' }],
+    ctas: [],
     operatingHoursSections: [
       { title: 'Grillhouse Operating Hours', rows: [
         { dayRange: 'Sunday to Thursday', time: '11:00 AM - 9:00 PM', lastOrder: 'Last order at 8:30 PM' },
@@ -72,7 +74,7 @@ const RESTAURANTS = [
     menuLinks: [
       { label: 'View Menu', href: '/menus/the-2nd-floor-menu.pdf' },
     ],
-    ctas: [{ label: 'Promotions', href: '/dining/dining-promotion#promo-the-2nd-floor', icon: 'arrow' }],
+    ctas: [],
     operatingHoursSections: [
       { title: 'Operating Hours', rows: [
         {
@@ -109,7 +111,7 @@ const RESTAURANTS = [
     menuLinks: [
       { label: 'View Menu', href: '/menus/tradewinds-menu.pdf' },
     ],
-    ctas: [{ label: 'Promotions', href: '/dining/dining-promotion#promo-tradewinds', icon: 'arrow' }],
+    ctas: [],
     operatingHoursSections: [
       { title: 'Opening Hours', rows: [
         { dayRange: 'Sunday to Thursday', time: '8:00 AM - 9:00 PM',  lastOrder: 'Last order at 8:30 PM' },
@@ -128,7 +130,6 @@ const RESTAURANTS = [
     ],
     ctas: [
       { label: 'Sports Screening Schedule', href: 'https://docs.google.com/presentation/d/1Ruk_oS8bijGO1Osuuuc4cL3aGc7DknzVmMRqsyN7gZ8/edit?slide=id.g36c0dd5bddb_0_2#slide=id.g36c0dd5bddb_0_2', isExternal: true, icon: 'arrow' },
-      { label: 'Promotions',                href: '/dining/dining-promotion#promo-union-bar',                                                                                                       icon: 'arrow' },
     ],
     operatingHoursSections: [
       { title: 'Opening Hours', rows: [
@@ -170,11 +171,17 @@ async function ensureRestaurant(r, imageId, logoId) {
     ...(c.isExternal != null ? { isExternal: c.isExternal } : {}),
   }));
   const ctas = [...menuCtas, ...extraCtas].slice(0, 3);
+  // The first menuLink (if any) is also written to `restaurant.menuUrl` so
+  // the dining-promotion page can derive each promo's "View Menu" CTA from
+  // its linked restaurant — replaces the old hardcoded `MENU_URLS` constant
+  // in DiningPromotionsPage.tsx.
+  const menuUrl = r.menuLinks?.[0]?.href ?? null;
   const payload = {
     name: r.name,
     slug: r.slug,
     cuisineType: r.cuisineType,
     cuisineIconSlug: r.cuisineIconSlug,
+    menuUrl,
     description: r.description,
     image: imageId,
     logo: logoId,
