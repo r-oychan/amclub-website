@@ -498,7 +498,24 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
       }
 
       if (items && items.length > 0) {
-        const api = items[0];
+        const rawApi = items[0] as VenueData & {
+          heroImage?: { url?: string; alternativeText?: string } | string;
+          parentLabel?: string;
+        };
+        // The new `fitness-facility` schema uses `heroImage` + `parentLabel`
+        // (Phase A naming) where VenueData expects `image` + `parentSection`.
+        // Coerce here so the rest of the merge logic stays uniform.
+        const api: VenueData = {
+          ...rawApi,
+          image:
+            rawApi.image ??
+            (rawApi.heroImage
+              ? typeof rawApi.heroImage === 'string'
+                ? { url: rawApi.heroImage }
+                : { url: rawApi.heroImage.url ?? '', alternativeText: rawApi.heroImage.alternativeText }
+              : undefined),
+          parentSection: rawApi.parentSection ?? rawApi.parentLabel,
+        };
         // Strapi v5 returns media as `{ url, alternativeText, ... }`; the team
         // grid renders `image`/`bioImage` as plain string paths, so flatten.
         const apiTeam = api.teamMembers?.map((m) => ({
