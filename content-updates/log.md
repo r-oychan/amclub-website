@@ -9,7 +9,7 @@ Status legend:
 
 | Date (prod) | Entry | Summary | prod | dev | uat | seed |
 |---|---|---|---|---|---|---|
-| 2026-05-26 | [legacy-blob-url-sweep](entries/2026-05-26-legacy-blob-url-sweep.md) | Replace 13 remaining `amclubdata28a57492` legacy blob URLs in subpages.ts with local `/images/event-spaces/...` + `/documents/event-spaces/capacity-chart.pdf` paths; copy 9 image canonicals into `frontend/public/images/event-spaces/` | code change ready, awaiting git push to main | pending | pending | n/a |
+| 2026-05-26 | [legacy-blob-url-sweep](entries/2026-05-26-legacy-blob-url-sweep.md) | Replace 13 remaining `amclubdata28a57492` legacy blob URLs in subpages.ts with local `/images/event-spaces/...` + `/documents/event-spaces/capacity-chart.pdf` paths; copy 9 image canonicals into `frontend/public/images/event-spaces/` | applied (05-26) | applied (05-26) | pending | n/a |
 | 2026-05-25 | [bowling-alley-rates-and-package-links](entries/2026-05-25-bowling-alley-rates-and-package-links.md) | event-spaces/bowling-alley — fix broken Rates + Party Packages CTAs (point to local `/documents/event-spaces/...` assets) | applied (05-25) | applied (05-25) | pending | n/a |
 | 2026-05-25 | [gym-team-remove-zack-desmond](entries/2026-05-25-gym-team-remove-zack-desmond.md) | fitness/gym — remove Zack + Desmond from Personal Trainer team (subpages.ts) | applied (05-25) | applied (05-25) | pending | n/a |
 | 2026-05-25 | [fitness-gym-rates-pdf-update](entries/2026-05-25-fitness-gym-rates-pdf-update.md) | Fitness home page gym CTA → new Personal Training & Group Fitness Rates 2026 PDF (Strapi + static asset + subpages.ts) | applied (05-25) | applied (05-25) | pending | ported (patch-fitness-and-union-bar-2026-05-25.mjs) |
