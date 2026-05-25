@@ -850,7 +850,7 @@ export const fitnessSubpages: SubpageData[] = [
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [
-      { label: 'Personal Training & Group Fitness Classes', href: '/documents/fitness/personal-training-group-fitness-class.pdf', isExternal: true },
+      { label: 'Personal Training & Group Fitness Rates 2026', href: '/documents/fitness/personal-training-group-fitness-rates-2026.pdf', isExternal: true },
       { label: 'Group Fitness Class Schedule', href: '/documents/fitness/group-fitness-class-schedule.jpg', isExternal: true },
     ],
     extraSections: [
@@ -876,7 +876,7 @@ export const fitnessSubpages: SubpageData[] = [
             imageAlt: 'Personal trainer guiding a member through a dumbbell row',
             cta: {
               label: 'Explore',
-              href: '/documents/fitness/personal-training-group-fitness-class.pdf',
+              href: '/documents/fitness/personal-training-group-fitness-rates-2026.pdf',
               isExternal: true,
             },
           },
@@ -915,8 +915,6 @@ export const fitnessSubpages: SubpageData[] = [
       { name: 'Vanan',    role: 'Personal Trainer', image: '/images/fitness/team-pt/vanan.jpg',    bioImage: '/images/fitness/team-pt/vanan-bio.png' },
       { name: 'Ghazali',  role: 'Personal Trainer', image: '/images/fitness/team-pt/ghazali.jpg',  bioImage: '/images/fitness/team-pt/ghazali-bio.png' },
       { name: 'Andyn',    role: 'Personal Trainer', image: '/images/fitness/team-pt/andyn.jpg',    bioImage: '/images/fitness/team-pt/andyn-bio.png' },
-      { name: 'Zack',     role: 'Personal Trainer',                                                bioImage: '/images/fitness/team-pt/zack-bio.png' },
-      { name: 'Desmond',  role: 'Personal Trainer',                                                bioImage: '/images/fitness/team-pt/desmond-bio.png' },
     ],
   },
   {
