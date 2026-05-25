@@ -1,3 +1,13 @@
 config:
   azure-native:location: southeastasia
+  # Custom domain bound to the dev Container App. MUST be declared here
+  # (not just configured in the portal) — Azure Container Apps uses PUT
+  # semantics, so every `pulumi up` strips any customDomains missing from
+  # the desired-state body. See Pulumi.prod.yaml for the full background.
+  #
+  # certName lookup:
+  #   az containerapp env certificate list -g amclub-dev-rg -n amclub-dev-env
+  amclub-website:customDomains:
+    - name: dev.amclub.org.sg
+      certName: dev.amclub.org.sg-amclub-d-260519023012
 encryptionsalt: v1:HHRft+wXaUQ=:v1:n9nI1xWzf1OcFPd0:skebq/7OuJqdwdeRSwZGs6MDKqo7oQ==
