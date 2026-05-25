@@ -9,6 +9,7 @@ Status legend:
 
 | Date (prod) | Entry | Summary | prod | dev | uat | seed |
 |---|---|---|---|---|---|---|
+| 2026-05-25 | [about-committee-members](entries/2026-05-25-about-committee-members.md) | Replace Michelle Reeb → Christopher Ellis (same role, new photo); delete Rachael Gartman | applied (05-25) | pending | pending | ported (patch-about-committee-2026-05-25.mjs) |
 | 2026-05-22 | [event-delicious-spread-link](entries/2026-05-22-event-delicious-spread-link.md) | "A Delicious Spread" registration link → `forms.office.com/r/yDrPtgvgbF` | applied (05-22) | pending | pending | ported (patch-whats-on-2026-05-22.mjs) |
 | 2026-05-22 | [event-sundays-served-right-hide](entries/2026-05-22-event-sundays-served-right-hide.md) | Hide (unpublish) "Sundays Served Right" event | **pending — manual /admin click required** | pending | pending | n/a |
 | 2026-05-22 | [event-shaken-not-sorry-update](entries/2026-05-22-event-shaken-not-sorry-update.md) | "Shaken, Not Sorry 2.0" — body Bespoke→Signature Cocktails + Happy Hour & Bar Snacks lists | applied (05-22) | pending | pending | ported (patch-whats-on-2026-05-22.mjs) |
