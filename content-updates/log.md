@@ -9,6 +9,9 @@ Status legend:
 
 | Date (prod) | Entry | Summary | prod | dev | uat | seed |
 |---|---|---|---|---|---|---|
+| 2026-05-25 | [gym-team-remove-zack-desmond](entries/2026-05-25-gym-team-remove-zack-desmond.md) | fitness/gym — remove Zack + Desmond from Personal Trainer team (subpages.ts) | code change ready, awaiting git push to main | pending | pending | n/a |
+| 2026-05-25 | [fitness-gym-rates-pdf-update](entries/2026-05-25-fitness-gym-rates-pdf-update.md) | Fitness home page gym CTA → new Personal Training & Group Fitness Rates 2026 PDF (Strapi + static asset + subpages.ts) | applied (05-25) | pending | pending | ported (patch-fitness-and-union-bar-2026-05-25.mjs) |
+| 2026-05-25 | [union-bar-sports-schedule-and-hours](entries/2026-05-25-union-bar-sports-schedule-and-hours.md) | Union Bar — add Sports Screening Schedule CTA + populate operating hours (Sun–Thu / Fri-Sat-PH) | applied (05-25) | pending | pending | ported (patch-fitness-and-union-bar-2026-05-25.mjs) |
 | 2026-05-25 | [galbraith-capacity-chart-link](entries/2026-05-25-galbraith-capacity-chart-link.md) | Fix Galbraith Ballroom "View Capacity Chart" + "Enquire Now" CTAs (subpages.ts:1737, both were `href: '#'`) | code change ready, awaiting git push to main | pending | pending | n/a |
 | 2026-05-25 | [iac-custom-domains-preserve](entries/2026-05-25-iac-custom-domains-preserve.md) | Declare customDomains in Pulumi.prod/uat/dev.yaml so `pulumi up` doesn't strip them (Container Apps PUT semantics) | code change ready, awaiting git push to main | applied (lives on `dev` branch) | pending | n/a |
 | 2026-05-25 | [about-committee-members](entries/2026-05-25-about-committee-members.md) | Replace Michelle Reeb → Christopher Ellis (same role, new photo); delete Rachael Gartman | applied (05-25) | pending | pending | ported (patch-about-committee-2026-05-25.mjs) |
