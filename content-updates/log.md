@@ -9,6 +9,7 @@ Status legend:
 
 | Date (prod) | Entry | Summary | prod | dev | uat | seed |
 |---|---|---|---|---|---|---|
+| 2026-05-25 | [bowling-alley-rates-and-package-links](entries/2026-05-25-bowling-alley-rates-and-package-links.md) | event-spaces/bowling-alley — fix broken Rates + Party Packages CTAs (point to local `/documents/event-spaces/...` assets) | code change ready, awaiting git push to main | pending | pending | n/a |
 | 2026-05-25 | [gym-team-remove-zack-desmond](entries/2026-05-25-gym-team-remove-zack-desmond.md) | fitness/gym — remove Zack + Desmond from Personal Trainer team (subpages.ts) | code change ready, awaiting git push to main | pending | pending | n/a |
 | 2026-05-25 | [fitness-gym-rates-pdf-update](entries/2026-05-25-fitness-gym-rates-pdf-update.md) | Fitness home page gym CTA → new Personal Training & Group Fitness Rates 2026 PDF (Strapi + static asset + subpages.ts) | applied (05-25) | pending | pending | ported (patch-fitness-and-union-bar-2026-05-25.mjs) |
 | 2026-05-25 | [union-bar-sports-schedule-and-hours](entries/2026-05-25-union-bar-sports-schedule-and-hours.md) | Union Bar — add Sports Screening Schedule CTA + populate operating hours (Sun–Thu / Fri-Sat-PH) | applied (05-25) | pending | pending | ported (patch-fitness-and-union-bar-2026-05-25.mjs) |
