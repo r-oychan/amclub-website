@@ -1786,12 +1786,12 @@ export const eventSpacesSubpages: SubpageData[] = [
     ctas: [
       {
         label: 'Rates',
-        href: 'https://amclubdata28a57492.blob.core.windows.net/media/uploads/bowling_alley_rates_95e27a91a0.jpg',
+        href: '/documents/event-spaces/bowling-alley-rates.jpg',
         isExternal: true,
       },
       {
         label: 'Party Packages',
-        href: 'https://amclubdata28a57492.blob.core.windows.net/media/uploads/bowling_alley_party_package_13a9e56910.pdf',
+        href: '/documents/event-spaces/bowling-alley-party-package.pdf',
         isExternal: true,
       },
       { label: 'Book A Lane', href: 'mailto:youth@amclub.org.sg', isExternal: true },
