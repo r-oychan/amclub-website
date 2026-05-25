@@ -1582,7 +1582,7 @@ export const eventSpacesSubpages: SubpageData[] = [
           description:
             'A grand, pillar-less ballroom created for unforgettable "I do" moments. With elegant layouts, seamless audiovisual support, and dedicated event coordination, the space transforms effortlessly from a heartfelt ceremony to an evening of dining and dancing – an enchanting setting for celebrating your love story in style.',
           image:
-            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_galbraith_wedding_db3a81af1f.jpg',
+            '/images/event-spaces/venue-galbraith-wedding.jpg',
           imageAlt: 'The Galbraith Ballroom',
         },
         {
@@ -1591,7 +1591,7 @@ export const eventSpacesSubpages: SubpageData[] = [
           description:
             'An intimate and refined setting for smaller weddings and cocktail receptions, The 2nd Floor offers couples a beautifully curated space for a celebration that feels personal, elegant, and effortlessly memorable.',
           image:
-            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_2nd_floor_wedding_75f86eb499.jpg',
+            '/images/event-spaces/venue-2nd-floor-wedding.jpg',
           imageAlt: 'The 2nd Floor',
         },
       ],
@@ -1604,7 +1604,7 @@ export const eventSpacesSubpages: SubpageData[] = [
           heading: 'The Classic Collection',
           tagline: 'Ideal for intimate weddings and couples seeking a refined yet simple celebration',
           image:
-            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/wedding_package_classic_3f7ac22fc3.jpg',
+            '/images/event-spaces/wedding/wedding-package-classic.jpg',
           benefits: [
             'Exclusive use of The Galbraith Ballroom for up to 4 hours',
             'Elegant round table setup with your choice of linen',
@@ -1620,7 +1620,7 @@ export const eventSpacesSubpages: SubpageData[] = [
           heading: 'The Signature Collection',
           tagline: 'For mid-sized weddings with personalized touches and elevated flair',
           image:
-            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/wedding_package_signature_6d772ce68d.jpg',
+            '/images/event-spaces/wedding/wedding-package-signature.jpg',
           benefits: [
             'Exclusive use of The Galbraith Ballroom for up to 4 hours',
             'Elegant round table setup with your choice of linen',
@@ -1636,7 +1636,7 @@ export const eventSpacesSubpages: SubpageData[] = [
           heading: 'The Prestige Collection',
           tagline: 'Our most comprehensive package, designed for a truly premium wedding experience',
           image:
-            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/wedding_package_prestige_e7474f1a37.jpg',
+            '/images/event-spaces/wedding/wedding-package-prestige.jpg',
           benefits: [
             'Exclusive use of The Galbraith Ballroom for up to 4 hours',
             'Elegant round table setup with your choice of linen',
@@ -1677,7 +1677,7 @@ export const eventSpacesSubpages: SubpageData[] = [
           description:
             "An elegant, pillar-less ballroom ideal for conferences, large-scale meetings, awards nights, and corporate celebrations. Flexible layouts, professional audiovisual support, and a refined setting make it the Club's premier venue for high-profile events.",
           image:
-            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_galbraith_wedding_db3a81af1f.jpg',
+            '/images/event-spaces/venue-galbraith-wedding.jpg',
           imageAlt: 'The Galbraith Ballroom',
         },
         {
@@ -1686,7 +1686,7 @@ export const eventSpacesSubpages: SubpageData[] = [
           description:
             'Purpose-built for focus and collaboration, our Thinkspace Meeting Rooms offer contemporary spaces for board meetings, workshops, training sessions, and breakouts – featuring presentation technology and flexible seating in a professional, comfortable setting.',
           image:
-            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_thinkspace_adult_library_e682b190f4.jpg',
+            '/images/event-spaces/venue-thinkspace-adult-library.jpg',
           imageAlt: 'Thinkspace Meeting Rooms',
         },
         {
@@ -1695,7 +1695,7 @@ export const eventSpacesSubpages: SubpageData[] = [
           description:
             'A refreshing option for team-building, client entertainment, and informal corporate socials, The Bowling Alley offers a lively setting that blends friendly competition with curated food and beverage experiences.',
           image:
-            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_bowling_4120_1c684f909e.jpg',
+            '/images/event-spaces/venue-bowling-4120.jpg',
           imageAlt: 'The Bowling Alley',
         },
       ],
@@ -1714,7 +1714,7 @@ export const eventSpacesSubpages: SubpageData[] = [
     ctas: [
       {
         label: 'View Capacity Chart',
-        href: 'https://amclubdata28a57492.blob.core.windows.net/media/uploads/capacity_chart_72e78149a2.pdf',
+        href: '/documents/event-spaces/capacity-chart.pdf',
         isExternal: true,
       },
       { label: 'Enquire Now', href: 'mailto:catering@amclub.org.sg', isExternal: true },
@@ -1754,7 +1754,7 @@ export const eventSpacesSubpages: SubpageData[] = [
     ctas: [
       {
         label: 'Services & Rates',
-        href: 'https://amclubdata28a57492.blob.core.windows.net/media/uploads/thinkspace_services_flyer_9a83799195.jpg',
+        href: '/images/event-spaces/thinkspace-services-flyer.jpg',
         isExternal: true,
       },
     ],
@@ -1797,7 +1797,7 @@ export const eventSpacesSubpages: SubpageData[] = [
     phone: '6739-4380',
     email: 'library@amclub.org.sg',
     image:
-      'https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_thinkspace_adult_library_e682b190f4.jpg',
+      '/images/event-spaces/venue-thinkspace-adult-library.jpg',
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
   },
@@ -1810,13 +1810,13 @@ export const eventSpacesSubpages: SubpageData[] = [
     hours: 'Daily 9:00 AM – 7:00 PM',
     level: 'Level 3',
     image:
-      'https://amclubdata28a57492.blob.core.windows.net/media/uploads/boardroom_7f09a0e833.jpg',
+      '/images/event-spaces/boardroom.jpg',
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
       {
         label: 'Service & Rates',
-        href: 'https://amclubdata28a57492.blob.core.windows.net/media/uploads/thinkspace_services_flyer_9a83799195.jpg',
+        href: '/images/event-spaces/thinkspace-services-flyer.jpg',
         isExternal: true,
       },
     ],
