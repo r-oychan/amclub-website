@@ -461,7 +461,7 @@ export const diningSubpages: SubpageData[] = [
       },
     ],
     level: 'Level 1',
-    phone: '6739 4340',
+    phone: '6739 4407',
     email: 'gourmetpantry@amclub.org.sg',
     image:
       '/uploads/restaurants/the-gourmet-pantry.jpeg',
@@ -1742,8 +1742,8 @@ export const eventSpacesSubpages: SubpageData[] = [
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
-      { label: 'View Capacity Chart', href: '#' },
-      { label: 'Enquire Now', href: '#' },
+      { label: 'View Capacity Chart', href: '/documents/event-spaces/capacity-chart.pdf', isExternal: true },
+      { label: 'Enquire Now', href: 'mailto:catering@amclub.org.sg', isExternal: true },
     ],
   },
   {
