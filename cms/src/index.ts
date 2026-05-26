@@ -1,5 +1,6 @@
 // import type { Core } from '@strapi/strapi';
-import { registerLifecycleHooks } from './services/elevenlabs-sync/lifecycle';
+// Lifecycle hooks for ElevenLabs KB sync now live in the elevenlabs-chatbot plugin
+// (cms/src/plugins/elevenlabs-chatbot). It registers its own bootstrap.
 
 const PUBLIC_FIND_TYPES = [
   'api::home-page.home-page',
@@ -36,7 +37,6 @@ const PUBLIC_FIND_TYPES = [
   'api::contact-us-page.contact-us-page',
   'api::dining-promotion.dining-promotion',
   'api::dining-promotions-page.dining-promotions-page',
-  'api::site-settings.site-settings',
   // Section 2 — replaces legacy `facility` for fitness venues. Other
   // sections (kids / event-spaces / membership / home-sub) currently
   // render from subpages.ts static fallback and will get their own
@@ -110,19 +110,6 @@ function mimeFromFilename(filename: string): string | null {
   return MIME_BY_EXT[ext] ?? null;
 }
 
-// Strapi v5 singleTypes 404 on `find` until a row exists. site-settings is
-// a global feature-flag store that the frontend hits on every page load, so
-// create a sensible default row on first boot if one isn't already there.
-async function ensureSiteSettings(strapi: any) {
-  const existing = await strapi.documents('api::site-settings.site-settings').findFirst();
-  if (existing) return;
-  await strapi.documents('api::site-settings.site-settings').create({
-    data: { chatbotEnabled: true },
-    status: 'published',
-  });
-  strapi.log.info('[bootstrap] created default site-settings entry');
-}
-
 async function backfillUploadMimes(strapi: any) {
   const stale = await strapi.db.query('plugin::upload.file').findMany({
     where: { mime: 'application/octet-stream' },
@@ -152,19 +139,9 @@ export default {
       strapi.log.error('[bootstrap] failed to grant public read access', e);
     }
     try {
-      await ensureSiteSettings(strapi);
-    } catch (e) {
-      strapi.log.error('[bootstrap] failed to ensure site-settings entry', e);
-    }
-    try {
       await backfillUploadMimes(strapi);
     } catch (e) {
       strapi.log.error('[bootstrap] failed to backfill upload mimes', e);
-    }
-    try {
-      registerLifecycleHooks(strapi);
-    } catch (e) {
-      strapi.log.error('[bootstrap] failed to register elevenlabs sync hooks', e);
     }
   },
 };
