@@ -6,6 +6,7 @@
 
 import { useEffect, useState } from 'react';
 import { useFetchClient } from '@strapi/strapi/admin';
+import { Box, Button, Flex, Typography } from '@strapi/design-system';
 
 interface PanelContext {
   model: string;
@@ -22,7 +23,15 @@ interface StatusResponse {
   configured: { contentTypes: string[] };
 }
 
-function SyncBody({ uid, documentId, isPublished }: { uid: string; documentId?: string; isPublished: boolean }) {
+function SyncBody({
+  uid,
+  documentId,
+  isPublished,
+}: {
+  uid: string;
+  documentId?: string;
+  isPublished: boolean;
+}) {
   const { post } = useFetchClient();
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState<string>('');
@@ -31,10 +40,12 @@ function SyncBody({ uid, documentId, isPublished }: { uid: string; documentId?: 
     setStatus('loading');
     setMessage('Syncing…');
     try {
-      const { data } = await post<{ status: string; documentName: string; documentId?: string; error?: string }>(
-        '/api/elevenlabs-chatbot/sync-entry',
-        { uid, documentId },
-      );
+      const { data } = await post<{
+        status: string;
+        documentName: string;
+        documentId?: string;
+        error?: string;
+      }>('/api/elevenlabs-chatbot/sync-entry', { uid, documentId });
       setStatus(data.error ? 'error' : 'success');
       setMessage(data.error ?? `${data.status}: ${data.documentName}`);
     } catch (err) {
@@ -45,37 +56,42 @@ function SyncBody({ uid, documentId, isPublished }: { uid: string; documentId?: 
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <button
+    <Flex direction="column" gap={2} alignItems="stretch">
+      <Button
         onClick={handleSync}
-        disabled={status === 'loading' || !isPublished}
-        title={isPublished ? 'Push current entry to the ElevenLabs KB' : 'Publish the entry first'}
-        style={{
-          padding: '8px 12px',
-          borderRadius: 4,
-          border: '1px solid #4945FF',
-          background: status === 'loading' || !isPublished ? '#9b9aff' : '#4945FF',
-          color: 'white',
-          cursor: status === 'loading' || !isPublished ? 'not-allowed' : 'pointer',
-          fontWeight: 600,
-          fontSize: 12,
-        }}
+        loading={status === 'loading'}
+        disabled={!isPublished}
+        size="S"
+        fullWidth
       >
         {status === 'loading' ? 'Syncing…' : 'Sync to ElevenLabs'}
-      </button>
+      </Button>
       {message && (
-        <p style={{ margin: 0, fontSize: 11, color: status === 'error' ? '#d02b20' : status === 'success' ? '#328048' : '#666687' }}>
+        <Typography
+          variant="pi"
+          textColor={status === 'error' ? 'danger600' : status === 'success' ? 'success600' : 'neutral600'}
+        >
           {message}
-        </p>
+        </Typography>
       )}
       {!isPublished && (
-        <p style={{ margin: 0, fontSize: 11, color: '#666687' }}>Only published entries can be synced.</p>
+        <Typography variant="pi" textColor="neutral600">
+          Only published entries can be synced.
+        </Typography>
       )}
-    </div>
+    </Flex>
   );
 }
 
-function PanelGate({ uid, documentId, isPublished }: { uid: string; documentId?: string; isPublished: boolean }) {
+function PanelGate({
+  uid,
+  documentId,
+  isPublished,
+}: {
+  uid: string;
+  documentId?: string;
+  isPublished: boolean;
+}) {
   const { get } = useFetchClient();
   const [allow, setAllow] = useState<Set<string> | null>(null);
   useEffect(() => {
@@ -92,8 +108,18 @@ function PanelGate({ uid, documentId, isPublished }: { uid: string; documentId?:
     };
   }, [get]);
 
-  if (allow === null) return <p style={{ fontSize: 11, color: '#666687' }}>Loading…</p>;
-  if (!allow.has(uid)) return <p style={{ fontSize: 11, color: '#666687' }}>Not in sync allow-list.</p>;
+  if (allow === null)
+    return (
+      <Box>
+        <Typography variant="pi" textColor="neutral600">Loading…</Typography>
+      </Box>
+    );
+  if (!allow.has(uid))
+    return (
+      <Box>
+        <Typography variant="pi" textColor="neutral600">Not in sync allow-list.</Typography>
+      </Box>
+    );
   return <SyncBody uid={uid} documentId={documentId} isPublished={isPublished} />;
 }
 
