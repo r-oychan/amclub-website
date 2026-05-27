@@ -1,15 +1,18 @@
 import { EditViewSidePanel } from './pages/EditViewSidePanel';
 
+interface MenuLinkArg {
+  to: string;
+  icon: React.ComponentType;
+  intlLabel: { id: string; defaultMessage: string };
+  permissions: unknown[];
+  Component: () => Promise<{ default: React.ComponentType }>;
+}
+
 interface StrapiAppLike {
   getPlugin?: (name: string) => {
     apis?: { addEditViewSidePanel?: (panels: unknown[]) => void };
   };
-  addMenuLink?: (link: {
-    to: string;
-    icon: React.ComponentType;
-    intlLabel: { id: string; defaultMessage: string };
-    Component: () => Promise<{ default: unknown }>;
-  }) => void;
+  addMenuLink?: (link: MenuLinkArg) => void;
 }
 
 // Speech-bubble outline with ElevenLabs' "II" mark inside. currentColor lets
@@ -37,9 +40,10 @@ function ChatbotMenuIcon() {
 export default {
   register(app: StrapiAppLike) {
     app.addMenuLink?.({
-      to: '/plugins/elevenlabs-chatbot',
+      to: 'plugins/elevenlabs-chatbot',
       icon: ChatbotMenuIcon,
       intlLabel: { id: 'elevenlabs-chatbot.menu.label', defaultMessage: 'ElevenLabs Chatbot' },
+      permissions: [],
       Component: () => import('./pages/SettingsPage').then((m) => ({ default: m.SettingsPage })),
     });
   },

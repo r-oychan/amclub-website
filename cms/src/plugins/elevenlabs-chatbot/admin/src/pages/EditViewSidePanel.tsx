@@ -2,19 +2,27 @@
  * Right-side panel in the Content Manager edit view. Shows a "Sync to
  * ElevenLabs" button for entries whose content type is in the plugin's
  * runtime allow-list (fetched on mount).
+ *
+ * Strapi v5 calls the panel as a React component (see
+ * @strapi/admin/.../DescriptionComponentRenderer), so hooks are allowed
+ * here. The function must return `{ title, content } | null`.
  */
 
 import { useEffect, useState } from 'react';
 import { useFetchClient } from '@strapi/strapi/admin';
 import { Box, Button, Flex, Typography } from '@strapi/design-system';
 
+// Matches @strapi/content-manager's EditViewContext closely enough; the
+// extra fields we don't use are tolerated by structural typing.
 interface PanelContext {
-  model: string;
-  document?: { documentId?: string; publishedAt?: string | null };
+  activeTab?: 'draft' | 'published' | null;
+  collectionType?: string;
+  document?: { documentId?: string; publishedAt?: string | null } | null;
   documentId?: string;
+  model: string;
 }
 
-interface PanelDescriptor {
+interface PanelDescription {
   title: string;
   content: React.ReactNode;
 }
@@ -98,7 +106,7 @@ function PanelGate({
     let cancelled = false;
     get<StatusResponse>('/api/elevenlabs-chatbot/status')
       .then(({ data }) => {
-        if (!cancelled) setAllow(new Set(data.configured.contentTypes));
+        if (!cancelled) setAllow(new Set(data?.configured?.contentTypes ?? []));
       })
       .catch(() => {
         if (!cancelled) setAllow(new Set());
@@ -123,9 +131,10 @@ function PanelGate({
   return <SyncBody uid={uid} documentId={documentId} isPublished={isPublished} />;
 }
 
-export const EditViewSidePanel = (ctx: PanelContext): PanelDescriptor | null => {
-  const uid = ctx.model;
-  if (!uid?.startsWith('api::')) return null;
+// Strapi calls this with EditViewContext; we coerce to the loose shape above.
+export const EditViewSidePanel = (ctx: PanelContext): PanelDescription | null => {
+  const uid = ctx?.model;
+  if (typeof uid !== 'string' || !uid.startsWith('api::')) return null;
 
   const documentId = ctx.document?.documentId ?? ctx.documentId;
   const isPublished = !!ctx.document?.publishedAt;
