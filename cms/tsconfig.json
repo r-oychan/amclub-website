@@ -38,7 +38,13 @@
     "src/admin/",
     // Do not include test files
     "**/*.test.*",
-    // Do not include plugins in the server compilation
-    "src/plugins/**"
+    // Plugin admin entries are bundled by Vite at admin-build time, not by
+    // the server tsc pass. The server-side bits of local plugins DO need to
+    // be compiled though — Strapi's plugin loader only accepts .js/.json
+    // entry points, so excluding the whole tree leaves the plugin silently
+    // unloaded in production. Only exclude the admin subtree + strapi-admin
+    // entry of plugins (those contain JSX/TSX that Vite handles).
+    "src/plugins/**/admin/**",
+    "src/plugins/**/strapi-admin.ts"
   ]
 }

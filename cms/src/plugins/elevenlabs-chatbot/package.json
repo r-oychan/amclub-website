@@ -13,10 +13,11 @@
   "exports": {
     "./strapi-server": {
       "source": "./strapi-server.ts",
-      "default": "./strapi-server.ts"
+      "default": "./strapi-server.js"
     },
     "./strapi-admin": {
       "source": "./strapi-admin.ts",
+      "import": "./strapi-admin.ts",
       "default": "./strapi-admin.ts"
     },
     "./package.json": "./package.json"
