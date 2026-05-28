@@ -26,8 +26,13 @@ RUN npm ci
 # (set per-deploy in infra/index.ts to the current commit SHA). Needed
 # because we saw the buildcache reuse a pre-refactor cms-builder layer
 # even though `cms/` source had clearly changed.
+#
+# Critically: we WRITE the nonce to disk so the resulting layer has an
+# actual filesystem diff. A bare `RUN echo ...` creates an empty diff
+# that BuildKit happily collapses back to the cached parent — which is
+# exactly what bit us last attempt.
 ARG CMS_BUILD_NONCE=fallback
-RUN echo "CMS_BUILD_NONCE=$CMS_BUILD_NONCE"
+RUN echo "$CMS_BUILD_NONCE" > /build/.cms-build-nonce && cat /build/.cms-build-nonce
 COPY cms/ ./
 RUN NODE_ENV=production npm run build
 
