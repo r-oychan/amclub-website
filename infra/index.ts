@@ -247,17 +247,22 @@ const buildCacheRef = pulumi.interpolate`${registry.loginServer}/${projectName}-
 // when the cms/ source had changed, which silently shipped stale code.
 const cmsBuildNonce = process.env.GITHUB_SHA ?? process.env.GIT_SHA ?? new Date().toISOString();
 
+// TEMPORARY: buildx cache disabled — the registry buildcache kept
+// re-using a pre-refactor cms-builder layer set even after multiple
+// cache-busting attempts (build-arg nonce, on-disk nonce file), so
+// every deploy shipped a frozen May-24 admin bundle. Force a clean
+// rebuild on every deploy until we identify exactly what cache key is
+// matching. Re-enable cacheFrom/cacheTo once root-cause is clear.
 const appImage = new dockerBuild.Image(`${projectName}-app-image`, {
   tags: [pulumi.interpolate`${registry.loginServer}/${projectName}-app:latest`],
   context: { location: '..' },
   dockerfile: { location: '../Dockerfile' },
   platforms: ['linux/amd64'],
   push: true,
+  noCache: true,
   buildArgs: {
     CMS_BUILD_NONCE: cmsBuildNonce,
   },
-  cacheFrom: [{ registry: { ref: buildCacheRef } }],
-  cacheTo: [{ registry: { ref: buildCacheRef, mode: 'max' } }],
   registries: [
     {
       address: registry.loginServer,
@@ -266,6 +271,9 @@ const appImage = new dockerBuild.Image(`${projectName}-app-image`, {
     },
   ],
 });
+
+// Reference kept for future re-enable.
+void buildCacheRef;
 
 // ── Container App (Nginx + Strapi) ───────────────────────────
 const appKeys = pulumi.interpolate`${appKey1.result},${appKey2.result}`;
