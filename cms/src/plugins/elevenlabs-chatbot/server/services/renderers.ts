@@ -230,6 +230,48 @@ const humanise = (camel: string): string =>
     .replace(/^./, (c) => c.toUpperCase())
     .trim();
 
+// ── Schedule rows (single row inside an Operating Hours Section) ─────
+
+interface ScheduleRowAttrs {
+  dayRange?: string;
+  time?: string;
+  lastOrder?: string;
+  note?: string;
+}
+
+const formatScheduleRow = (r: ScheduleRowAttrs | undefined | null): string => {
+  if (!r?.dayRange || !r?.time) return '';
+  let line = `- ${r.dayRange}: ${r.time}`;
+  if (r.lastOrder) line += ` (last order ${r.lastOrder})`;
+  if (r.note) line += ` — ${r.note}`;
+  return line;
+};
+
+const renderScheduleRow: RendererFn = (a) => formatScheduleRow(a as ScheduleRowAttrs);
+
+// ── Operating Hours Section (titled block of schedule rows) ──────────
+
+const renderOperatingHoursSection: RendererFn = (a) => {
+  const lines: string[] = [];
+  if (a.title) lines.push(heading(a.title as string, 3));
+  const rows = (a.rows as ScheduleRowAttrs[] | undefined) ?? [];
+  for (const r of rows) {
+    const row = formatScheduleRow(r);
+    if (row) lines.push(row);
+  }
+  return lines.filter(Boolean).join('\n');
+};
+
+// ── Location & Contact (single-row, short scalar fields) ─────────────
+
+const renderLocationContact: RendererFn = (a) => {
+  const lines: string[] = [];
+  if (a.locationLevel) lines.push(`- **Location:** ${a.locationLevel as string}`);
+  if (a.phone) lines.push(`- **Phone:** ${a.phone as string}`);
+  if (a.email) lines.push(`- **Email:** ${a.email as string}`);
+  return lines.join('\n');
+};
+
 // ── Registry ─────────────────────────────────────────────────────────
 
 const registry: Record<string, RendererFn> = {
@@ -246,6 +288,9 @@ const registry: Record<string, RendererFn> = {
   'blocks.tabs-section': renderTabs,
   'blocks.team-grid': renderTeamGrid,
   'blocks.testimonial-slider': renderTestimonialSlider,
+  'blocks.operating-hours-section': renderOperatingHoursSection,
+  'blocks.location-contact': renderLocationContact,
+  'shared.schedule-row': renderScheduleRow,
 };
 
 export function renderBlock(componentName: string, attrs: Record<string, unknown>): string {

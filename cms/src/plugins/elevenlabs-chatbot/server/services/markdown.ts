@@ -37,14 +37,51 @@ export function renderEntryMarkdown({ strapi, uid, entry, publicUrl }: RenderInp
     lines.push('');
   }
 
+  // Scalars worth emitting in the header summary block (above per-section
+  // markdown). These tend to be short single-line attributes that the
+  // chatbot cares about but the generic >30-char rule would drop.
+  const SUMMARY_SCALAR_FIELDS = new Set([
+    'name',
+    'cuisineType',
+    'dressCode',
+    'category',
+    'location',
+    'website',
+    'phone',
+    'email',
+  ]);
+  const summaryRows: string[] = [];
+  for (const [name, attr] of Object.entries(schema.attributes)) {
+    const value = entry[name];
+    if (value == null) continue;
+    if (typeof value !== 'string') continue;
+    if (attr.type !== 'string' && attr.type !== 'text' && attr.type !== 'email' && attr.type !== 'uid') continue;
+    if (!SUMMARY_SCALAR_FIELDS.has(name)) continue;
+    summaryRows.push(`- **${humanise(name)}:** ${value}`);
+  }
+  if (summaryRows.length > 0) {
+    lines.push('## Summary', ...summaryRows, '');
+  }
+
   for (const [name, attr] of Object.entries(schema.attributes)) {
     const value = entry[name];
     if (value == null) continue;
 
     if (attr.type === 'component' && attr.component) {
-      const md = renderBlock(attr.component, value as Record<string, unknown>);
-      if (!md) continue;
-      lines.push(`## ${humanise(name)}`, md, '');
+      // Repeatable components arrive as arrays; iterate and render each.
+      if (attr.repeatable && Array.isArray(value)) {
+        const blocks: string[] = [];
+        for (const item of value as Array<Record<string, unknown>>) {
+          const md = renderBlock(attr.component, item);
+          if (md) blocks.push(md);
+        }
+        if (blocks.length > 0) {
+          lines.push(`## ${humanise(name)}`, blocks.join('\n\n'), '');
+        }
+      } else {
+        const md = renderBlock(attr.component, value as Record<string, unknown>);
+        if (md) lines.push(`## ${humanise(name)}`, md, '');
+      }
       continue;
     }
 
@@ -59,8 +96,13 @@ export function renderEntryMarkdown({ strapi, uid, entry, publicUrl }: RenderInp
       continue;
     }
 
-    // Scalar text fields included verbatim if substantial.
-    if ((attr.type === 'string' || attr.type === 'text') && typeof value === 'string' && value.trim().length > 30) {
+    // Long scalar text fields included verbatim if substantial.
+    if (
+      (attr.type === 'string' || attr.type === 'text') &&
+      typeof value === 'string' &&
+      value.trim().length > 30 &&
+      !SUMMARY_SCALAR_FIELDS.has(name)
+    ) {
       lines.push(`## ${humanise(name)}`, value, '');
     }
 
