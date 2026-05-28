@@ -289,9 +289,17 @@ export async function syncAllDelta(strapi: Strapi): Promise<SyncResult[]> {
   const allow = await getEffectiveAllowList(strapi as never);
   const results: SyncResult[] = [];
   for (const uid of allow) {
-    if (isSingleType(strapi, uid)) {
-      results.push(await safeSync(strapi, uid));
-    } else {
+    try {
+      if (isSingleType(strapi, uid)) {
+        results.push(await safeSync(strapi, uid));
+        continue;
+      }
+      // findMany is OUTSIDE safeSync — if the populate object Strapi
+      // sees is rejected by query validation (most common cause of
+      // "Cannot read properties of undefined (reading 'attributes')"
+      // in the bulk path), the whole loop dies before any individual
+      // sync runs. Wrap the per-uid block so one bad content type
+      // produces an error row instead of taking the whole job down.
       const populate = buildDeepPopulate(strapi, uid);
       const entries = (await strapi.documents(uid).findMany({ populate, status: 'published' })) as Array<{
         documentId?: string;
@@ -301,6 +309,12 @@ export async function syncAllDelta(strapi: Strapi): Promise<SyncResult[]> {
         if (!e.documentId) continue;
         results.push(await safeSync(strapi, uid, e.documentId));
       }
+    } catch (err) {
+      const e = err as Error;
+      strapi.log.error(
+        `[${PLUGIN_ID}] syncAllDelta failed for content type ${uid}: ${e.message}\n${e.stack ?? ''}`,
+      );
+      results.push({ documentName: uid, status: 'error', error: `findMany ${uid}: ${e.message}` });
     }
   }
   return results;

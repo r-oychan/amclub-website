@@ -43,9 +43,16 @@ function startJob(state: JobState, runner: () => Promise<Partial<JobState>>): Jo
       currentJob = { ...state, ...result, finishedAt: new Date().toISOString() };
     })
     .catch((err: unknown) => {
+      // Always dump the full stack to container logs — the admin UI only
+      // surfaces `error.message`, which loses the line/file of failures
+      // happening above the per-entry safeSync wrapper.
+      const e = err as Error;
+      strapi.log.error(
+        `[${PLUGIN_ID}] background job ${state.kind} crashed: ${e?.message ?? String(err)}\n${e?.stack ?? ''}`,
+      );
       currentJob = {
         ...state,
-        error: err instanceof Error ? err.message : String(err),
+        error: e?.message ?? String(err),
         finishedAt: new Date().toISOString(),
       };
     });
