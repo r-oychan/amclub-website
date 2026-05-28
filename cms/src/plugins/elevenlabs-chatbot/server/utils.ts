@@ -35,6 +35,7 @@ export const DEFAULT_RUNTIME_SETTINGS: RuntimeSettings = {
 
 interface StrapiLike {
   plugin: (id: string) => { config: <T>(key?: string) => T };
+  config: { get: <T>(key: string, defaultValue?: T) => T };
   store: (opts: { type: string; name: string }) => {
     get: (opts: { key: string }) => Promise<unknown>;
     set: (opts: { key: string; value: unknown }) => Promise<unknown>;
@@ -42,9 +43,15 @@ interface StrapiLike {
   contentTypes: Record<string, { kind?: string; uid?: string; info?: { singularName?: string } }>;
 }
 
+// `strapi.plugin(name).config()` is for SPECIFIC keys, not the whole bag.
+// To read the merged plugin-config object (defaults from server/config.ts
+// + user overrides from cms/config/plugins.ts), go through strapi.config
+// with the `plugin::<name>` namespace.
 export function getPluginConfig(strapi: StrapiLike): ElevenLabsChatbotPluginConfig {
-  const cfg = strapi.plugin(PLUGIN_ID).config<ElevenLabsChatbotPluginConfig>();
-  return cfg;
+  return (
+    strapi.config.get<ElevenLabsChatbotPluginConfig>(`plugin::${PLUGIN_ID}`) ??
+    ({} as ElevenLabsChatbotPluginConfig)
+  );
 }
 
 export function getResolvedAgentId(strapi: StrapiLike): string | null {
