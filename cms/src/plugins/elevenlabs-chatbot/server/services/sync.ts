@@ -310,7 +310,18 @@ async function safeSync(strapi: Strapi, uid: string, documentId?: string): Promi
   try {
     return await syncEntry(strapi, uid, documentId);
   } catch (err) {
-    return { documentName: `${uid}${documentId ? ':' + documentId : ''}`, status: 'error', error: (err as Error).message };
+    // Log full stack to container logs so we can chase failures that the
+    // admin UI only surfaces as a one-liner. The compact `error` field
+    // returned in the SyncResult is what the admin sees.
+    const e = err as Error;
+    strapi.log.error(
+      `[${PLUGIN_ID}] syncEntry failed for ${uid}${documentId ? ':' + documentId : ''}: ${e.message}\n${e.stack ?? ''}`,
+    );
+    return {
+      documentName: `${uid}${documentId ? ':' + documentId : ''}`,
+      status: 'error',
+      error: e.message,
+    };
   }
 }
 
