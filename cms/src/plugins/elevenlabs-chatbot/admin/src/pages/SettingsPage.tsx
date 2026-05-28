@@ -251,15 +251,19 @@ export const SettingsPage = () => {
             <strong>Status:</strong>{' '}
             {status.configured.apiKeySet && status.configured.agentIdSet ? (
               <>
-                Configured — prefix <code>{status.configured.docNamePrefix}</code>, autoSync{' '}
-                {status.configured.autoSyncOnPublish ? 'on' : 'off'}, {status.configured.contentTypes.length} content
-                type(s) in allow-list
+                Configured — prefix <span style={{ fontFamily: 'monospace' }}>{status.configured.docNamePrefix}</span>
+                , autoSync {status.configured.autoSyncOnPublish ? 'on' : 'off'},{' '}
+                {status.configured.contentTypes.length} content type(s) in allow-list
               </>
             ) : (
               <>
                 Missing env / plugin config:{' '}
-                {!status.configured.apiKeySet && <code>ELEVENLABS_API_KEY </code>}
-                {!status.configured.agentIdSet && <code>ELEVENLABS_AGENT_ID</code>}
+                {!status.configured.apiKeySet && (
+                  <span style={{ fontFamily: 'monospace' }}>ELEVENLABS_API_KEY </span>
+                )}
+                {!status.configured.agentIdSet && (
+                  <span style={{ fontFamily: 'monospace' }}>ELEVENLABS_AGENT_ID</span>
+                )}
               </>
             )}
           </Banner>
@@ -391,8 +395,8 @@ export const SettingsPage = () => {
                     checked={allowSet.has(ct.uid)}
                     onCheckedChange={() => toggleAllow(ct.uid)}
                   >
-                    <Typography variant="pi">
-                      <code>{ct.uid}</code>{' '}
+                    <Typography variant="pi" textColor="neutral800" fontFamily="mono">
+                      {ct.uid}{' '}
                       <Typography variant="pi" textColor="neutral600" tag="span">
                         ({ct.kind})
                       </Typography>
@@ -440,10 +444,18 @@ export const SettingsPage = () => {
           <Table colCount={4} rowCount={(status?.docs.length ?? 0) + 1}>
             <Thead>
               <Tr>
-                <Th><Typography variant="sigma">Document name</Typography></Th>
-                <Th><Typography variant="sigma">Type</Typography></Th>
-                <Th><Typography variant="sigma">EL doc ID</Typography></Th>
-                <Th><Typography variant="sigma">Synced</Typography></Th>
+                <Th>
+                  <Typography variant="sigma" textColor="neutral800">Document name</Typography>
+                </Th>
+                <Th>
+                  <Typography variant="sigma" textColor="neutral800">Type</Typography>
+                </Th>
+                <Th>
+                  <Typography variant="sigma" textColor="neutral800">EL doc ID</Typography>
+                </Th>
+                <Th>
+                  <Typography variant="sigma" textColor="neutral800">Synced</Typography>
+                </Th>
               </Tr>
             </Thead>
             <Tbody>
@@ -458,10 +470,24 @@ export const SettingsPage = () => {
               )}
               {status?.docs.map((d) => (
                 <Tr key={d.id}>
-                  <Td><Typography variant="pi"><code>{d.documentName}</code></Typography></Td>
-                  <Td><Typography variant="pi">{d.elDocType}</Typography></Td>
-                  <Td><Typography variant="pi" textColor="neutral600"><code>{d.elDocumentId}</code></Typography></Td>
-                  <Td><Typography variant="pi">{new Date(d.syncedAt).toLocaleString()}</Typography></Td>
+                  <Td>
+                    <Typography variant="pi" textColor="neutral800" fontFamily="mono">
+                      {d.documentName}
+                    </Typography>
+                  </Td>
+                  <Td>
+                    <Typography variant="pi" textColor="neutral800">{d.elDocType}</Typography>
+                  </Td>
+                  <Td>
+                    <Typography variant="pi" textColor="neutral600" fontFamily="mono">
+                      {d.elDocumentId}
+                    </Typography>
+                  </Td>
+                  <Td>
+                    <Typography variant="pi" textColor="neutral800">
+                      {new Date(d.syncedAt).toLocaleString()}
+                    </Typography>
+                  </Td>
                 </Tr>
               ))}
             </Tbody>

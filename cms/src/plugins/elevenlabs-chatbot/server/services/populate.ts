@@ -43,13 +43,18 @@ function walkAttributes(strapi: Strapi, attrs: Record<string, AttrDef>, depth: n
         break;
       }
       case 'dynamiczone': {
-        const populates: Record<string, unknown> = {};
+        // Strapi v5 forbids field-targeted populate inside polymorphic
+        // structures — it requires either `populate: '*'` (one level only)
+        // or the fragment API `on: { '<component>': { populate: ... } }`.
+        // The fragment API gives us per-component deep populate, which we
+        // need because dynamic-zone blocks have their own nested components.
+        const on: Record<string, unknown> = {};
         for (const ref of attr.components ?? []) {
           const comp = strapi.components[ref] as SchemaLike | undefined;
           if (!comp) continue;
-          Object.assign(populates, walkAttributes(strapi, comp.attributes, depth + 1));
+          on[ref] = { populate: walkAttributes(strapi, comp.attributes, depth + 1) };
         }
-        out[name] = { populate: populates };
+        out[name] = { on };
         break;
       }
       case 'relation': {

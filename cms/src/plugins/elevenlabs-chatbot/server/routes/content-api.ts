@@ -19,16 +19,20 @@ const publicAuth = {
   policies: [] as string[],
 };
 
+// Paths here are RELATIVE to the plugin's auto-injected prefix. Strapi mounts
+// content-api plugin routes at /api/<pluginName>/<router.prefix>/<route.path>,
+// and pluginName already supplies `/elevenlabs-chatbot`. So /config below
+// becomes /api/elevenlabs-chatbot/config externally.
 export default {
   type: 'content-api',
   routes: [
-    { method: 'GET', path: '/elevenlabs-chatbot/config', handler: 'public-config.find', config: publicAuth },
+    { method: 'GET', path: '/config', handler: 'public-config.find', config: publicAuth },
 
-    { method: 'POST', path: '/elevenlabs-chatbot/sync-entry', handler: 'sync.syncEntry', config: adminAuth },
-    { method: 'POST', path: '/elevenlabs-chatbot/sync-all',   handler: 'sync.syncAll',   config: adminAuth },
-    { method: 'POST', path: '/elevenlabs-chatbot/clear-all',  handler: 'sync.clearAll',  config: adminAuth },
-    { method: 'GET',  path: '/elevenlabs-chatbot/status',     handler: 'sync.status',    config: adminAuth },
-    { method: 'GET',  path: '/elevenlabs-chatbot/settings',   handler: 'settings.find',  config: adminAuth },
-    { method: 'PUT',  path: '/elevenlabs-chatbot/settings',   handler: 'settings.update', config: adminAuth },
+    { method: 'POST', path: '/sync-entry', handler: 'sync.syncEntry', config: adminAuth },
+    { method: 'POST', path: '/sync-all',   handler: 'sync.syncAll',   config: adminAuth },
+    { method: 'POST', path: '/clear-all',  handler: 'sync.clearAll',  config: adminAuth },
+    { method: 'GET',  path: '/status',     handler: 'sync.status',    config: adminAuth },
+    { method: 'GET',  path: '/settings',   handler: 'settings.find',  config: adminAuth },
+    { method: 'PUT',  path: '/settings',   handler: 'settings.update', config: adminAuth },
   ],
 };
