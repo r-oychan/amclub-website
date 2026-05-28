@@ -22,6 +22,12 @@ RUN apk add --no-cache libc6-compat python3 make g++
 WORKDIR /build
 COPY cms/package*.json ./
 RUN npm ci
+# CMS_BUILD_NONCE busts the buildx layer cache when the value changes
+# (set per-deploy in infra/index.ts to the current commit SHA). Needed
+# because we saw the buildcache reuse a pre-refactor cms-builder layer
+# even though `cms/` source had clearly changed.
+ARG CMS_BUILD_NONCE=fallback
+RUN echo "CMS_BUILD_NONCE=$CMS_BUILD_NONCE"
 COPY cms/ ./
 RUN NODE_ENV=production npm run build
 

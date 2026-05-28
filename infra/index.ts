@@ -240,12 +240,22 @@ new azure.app.ManagedEnvironmentsStorage(`${projectName}-env-storage`, {
 // cms-builder, runtime) so unchanged deps skip rebuild.
 const buildCacheRef = pulumi.interpolate`${registry.loginServer}/${projectName}-app:buildcache`;
 
+// CMS_BUILD_NONCE feeds a per-deploy unique value into the cms-builder
+// stage so the layer cache for `COPY cms/ ./` + `RUN npm run build` is
+// guaranteed to miss when the upstream commit changes. The registry-backed
+// buildcache was observed reusing a pre-refactor cms-builder layer even
+// when the cms/ source had changed, which silently shipped stale code.
+const cmsBuildNonce = process.env.GITHUB_SHA ?? process.env.GIT_SHA ?? new Date().toISOString();
+
 const appImage = new dockerBuild.Image(`${projectName}-app-image`, {
   tags: [pulumi.interpolate`${registry.loginServer}/${projectName}-app:latest`],
   context: { location: '..' },
   dockerfile: { location: '../Dockerfile' },
   platforms: ['linux/amd64'],
   push: true,
+  buildArgs: {
+    CMS_BUILD_NONCE: cmsBuildNonce,
+  },
   cacheFrom: [{ registry: { ref: buildCacheRef } }],
   cacheTo: [{ registry: { ref: buildCacheRef, mode: 'max' } }],
   registries: [
