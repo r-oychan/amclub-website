@@ -4,8 +4,8 @@
   "info": {
     "singularName": "pilates-instructor",
     "pluralName": "pilates-instructors",
-    "displayName": "Pilates Instructor",
-    "description": "Pilates Instructor entries \u2014 one row per person. Linked from `facility` team grid by section."
+    "displayName": "Fitness: Pilates Instructors",
+    "description": "Pilates Instructor entries — one row per person. Linked from `facility` team grid by section."
   },
   "options": {
     "draftAndPublish": true

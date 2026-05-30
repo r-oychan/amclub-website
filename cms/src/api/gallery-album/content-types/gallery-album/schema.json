@@ -4,18 +4,48 @@
   "info": {
     "singularName": "gallery-album",
     "pluralName": "gallery-albums",
-    "displayName": "Gallery Album",
+    "displayName": "Gallery: Albums",
     "description": "Photo album for past events"
   },
-  "options": { "draftAndPublish": true },
+  "options": {
+    "draftAndPublish": true
+  },
   "attributes": {
-    "title": { "type": "string", "required": true },
-    "slug": { "type": "uid", "targetField": "title", "required": true },
-    "coverImage": { "type": "media", "multiple": false, "allowedTypes": ["images"] },
-    "images": { "type": "media", "multiple": true, "allowedTypes": ["images"] },
-    "date": { "type": "string" },
-    "photoCount": { "type": "integer" },
-    "description": { "type": "text" },
-    "order": { "type": "integer", "default": 0 }
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "title",
+      "required": true
+    },
+    "coverImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "date": {
+      "type": "string"
+    },
+    "photoCount": {
+      "type": "integer"
+    },
+    "description": {
+      "type": "text"
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    }
   }
 }

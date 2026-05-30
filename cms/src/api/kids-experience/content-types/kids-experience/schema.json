@@ -4,27 +4,50 @@
   "info": {
     "singularName": "kids-experience",
     "pluralName": "kids-experiences",
-    "displayName": "Kids Experience",
+    "displayName": "Kids: Experiences",
     "description": "Kids section detail pages — venues (The Quad, The Hangout) and programs (Recreational Classes, Seasonal Camps, Kids Parties). Mirrors the fitness-facility shape with added inline FAQ + quotes + party packages."
   },
   "options": {
     "draftAndPublish": true
   },
   "attributes": {
-    "name": { "type": "string", "required": true },
-    "slug": { "type": "uid", "targetField": "name", "required": true },
-    "description": { "type": "text" },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
     "heroImage": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
-    "heroVideo": { "type": "string" },
-    "parentLabel": { "type": "string" },
-    "parentHref": { "type": "string" },
-    "locationLevel": { "type": "string" },
-    "phone": { "type": "string" },
-    "email": { "type": "email" },
+    "heroVideo": {
+      "type": "string"
+    },
+    "parentLabel": {
+      "type": "string"
+    },
+    "parentHref": {
+      "type": "string"
+    },
+    "locationLevel": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "email"
+    },
     "operatingHoursSections": {
       "type": "component",
       "repeatable": true,
@@ -60,7 +83,9 @@
     "gallery": {
       "type": "media",
       "multiple": true,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "faq": {
       "type": "component",
@@ -77,7 +102,10 @@
       "repeatable": false,
       "component": "blocks.party-packages"
     },
-    "order": { "type": "integer", "default": 0 },
+    "order": {
+      "type": "integer",
+      "default": 0
+    },
     "parent": {
       "type": "relation",
       "relation": "manyToOne",

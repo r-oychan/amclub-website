@@ -4,7 +4,7 @@
   "info": {
     "singularName": "header",
     "pluralName": "headers",
-    "displayName": "Header",
+    "displayName": "Global: Header",
     "description": "Site navigation header"
   },
   "options": {
@@ -14,7 +14,9 @@
     "logo": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "navItems": {
       "type": "component",

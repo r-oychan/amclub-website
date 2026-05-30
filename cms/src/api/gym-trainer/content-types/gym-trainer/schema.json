@@ -4,8 +4,8 @@
   "info": {
     "singularName": "gym-trainer",
     "pluralName": "gym-trainers",
-    "displayName": "Gym Trainer",
-    "description": "Gym Trainer entries \u2014 one row per person. Linked from `facility` team grid by section."
+    "displayName": "Fitness: Gym Trainers",
+    "description": "Gym Trainer entries — one row per person. Linked from `facility` team grid by section."
   },
   "options": {
     "draftAndPublish": true

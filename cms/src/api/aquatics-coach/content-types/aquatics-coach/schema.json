@@ -4,8 +4,8 @@
   "info": {
     "singularName": "aquatics-coach",
     "pluralName": "aquatics-coaches",
-    "displayName": "Aquatics Coach",
-    "description": "Aquatics Coach entries \u2014 one row per person. Linked from `facility` team grid by section."
+    "displayName": "Fitness: Aquatics Coaches",
+    "description": "Aquatics Coach entries — one row per person. Linked from `facility` team grid by section."
   },
   "options": {
     "draftAndPublish": true

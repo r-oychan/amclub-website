@@ -4,7 +4,7 @@
   "info": {
     "singularName": "footer",
     "pluralName": "footers",
-    "displayName": "Footer",
+    "displayName": "Global: Footer",
     "description": "Site footer with contact info and links"
   },
   "options": {
@@ -14,7 +14,9 @@
     "logo": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "address": {
       "type": "text"

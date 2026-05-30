@@ -4,7 +4,7 @@
   "info": {
     "singularName": "event-category",
     "pluralName": "event-categories",
-    "displayName": "Event Category",
+    "displayName": "What's On: Categories",
     "description": "Categories for club events (Dining, Kids, Fitness, etc.)"
   },
   "options": {

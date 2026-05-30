@@ -4,7 +4,7 @@
   "info": {
     "singularName": "faq-category",
     "pluralName": "faq-categories",
-    "displayName": "FAQ Category",
+    "displayName": "FAQ: Categories",
     "description": "Groups for FAQ items (Membership, Facilities, Dining, etc.)"
   },
   "options": {

@@ -4,7 +4,7 @@
   "info": {
     "singularName": "restaurant",
     "pluralName": "restaurants",
-    "displayName": "Restaurant",
+    "displayName": "Dining: Restaurants",
     "description": "Dining venues and retail outlets"
   },
   "options": {
@@ -37,12 +37,16 @@
     "image": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "logo": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "cuisineIconSlug": {
       "type": "string"
@@ -88,7 +92,9 @@
     "gallery": {
       "type": "media",
       "multiple": true,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "bottomCtas": {
       "type": "component",

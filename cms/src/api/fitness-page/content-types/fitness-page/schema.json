@@ -4,7 +4,7 @@
   "info": {
     "singularName": "fitness-page",
     "pluralName": "fitness-pages",
-    "displayName": "Fitness Page",
+    "displayName": "Fitness: Page",
     "description": "Fitness Page content"
   },
   "options": {
@@ -21,17 +21,59 @@
     "pageBackgroundImage": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
-    "hero": { "type": "component", "repeatable": false, "component": "blocks.hero" },
-    "senSpa": { "type": "component", "repeatable": false, "component": "blocks.overlay-section" },
-    "aquatics": { "type": "component", "repeatable": false, "component": "blocks.overlay-section" },
-    "connectDiscover": { "type": "component", "repeatable": false, "component": "blocks.overlay-section" },
-    "gym": { "type": "component", "repeatable": false, "component": "blocks.overlay-section" },
-    "tennis": { "type": "component", "repeatable": false, "component": "blocks.overlay-section" },
-    "moreActivities": { "type": "component", "repeatable": false, "component": "blocks.three-col-grid" },
-    "bowling": { "type": "component", "repeatable": false, "component": "blocks.overlay-section" },
-    "finalCta": { "type": "component", "repeatable": false, "component": "blocks.cta-banner" },
-    "seo": { "type": "component", "repeatable": false, "component": "shared.seo" }
+    "hero": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.hero"
+    },
+    "senSpa": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.overlay-section"
+    },
+    "aquatics": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.overlay-section"
+    },
+    "connectDiscover": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.overlay-section"
+    },
+    "gym": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.overlay-section"
+    },
+    "tennis": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.overlay-section"
+    },
+    "moreActivities": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.three-col-grid"
+    },
+    "bowling": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.overlay-section"
+    },
+    "finalCta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.cta-banner"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
   }
 }

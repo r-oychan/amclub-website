@@ -4,7 +4,7 @@
   "info": {
     "singularName": "testimonial",
     "pluralName": "testimonials",
-    "displayName": "Testimonial",
+    "displayName": "Home: Testimonials",
     "description": "Member testimonials with video"
   },
   "options": {
@@ -27,12 +27,16 @@
     "photo": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "video": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["videos"]
+      "allowedTypes": [
+        "videos"
+      ]
     },
     "videoUrl": {
       "type": "string"

@@ -4,8 +4,8 @@
   "info": {
     "singularName": "tennis-coach",
     "pluralName": "tennis-coaches",
-    "displayName": "Tennis Coach",
-    "description": "Tennis Coach entries \u2014 one row per person. Linked from `facility` team grid by section."
+    "displayName": "Fitness: Tennis Coaches",
+    "description": "Tennis Coach entries — one row per person. Linked from `facility` team grid by section."
   },
   "options": {
     "draftAndPublish": true

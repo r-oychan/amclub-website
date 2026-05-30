@@ -4,7 +4,7 @@
   "info": {
     "singularName": "coach",
     "pluralName": "coaches",
-    "displayName": "Coach",
+    "displayName": "Shared: Coaches (legacy)",
     "description": "Coach detail entries linked from facility team grids"
   },
   "options": {
@@ -26,13 +26,23 @@
     },
     "section": {
       "type": "enumeration",
-      "enum": ["aquatics", "tennis", "squash", "gym", "pilates", "kids", "other"],
+      "enum": [
+        "aquatics",
+        "tennis",
+        "squash",
+        "gym",
+        "pilates",
+        "kids",
+        "other"
+      ],
       "required": true
     },
     "photo": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "bio": {
       "type": "text"

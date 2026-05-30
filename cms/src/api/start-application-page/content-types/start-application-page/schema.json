@@ -4,28 +4,50 @@
   "info": {
     "singularName": "start-application-page",
     "pluralName": "start-application-pages",
-    "displayName": "Start Application Page",
+    "displayName": "Membership: Start Application Page",
     "description": "Content for /membership/start-application — rendered through VenueDetailPage layout"
   },
   "options": {
     "draftAndPublish": true
   },
   "attributes": {
-    "title": { "type": "string" },
-    "parentLabel": { "type": "string" },
-    "parentHref": { "type": "string" },
+    "title": {
+      "type": "string"
+    },
+    "parentLabel": {
+      "type": "string"
+    },
+    "parentHref": {
+      "type": "string"
+    },
     "heroImage": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
-    "label": { "type": "string" },
-    "heading": { "type": "string" },
-    "description": { "type": "text" },
-    "intro": { "type": "text" },
-    "locationLevel": { "type": "string" },
-    "phone": { "type": "string" },
-    "email": { "type": "email" },
+    "label": {
+      "type": "string"
+    },
+    "heading": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "locationLevel": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "email"
+    },
     "operatingHoursSections": {
       "type": "component",
       "repeatable": true,
