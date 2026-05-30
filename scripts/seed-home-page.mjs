@@ -17,7 +17,7 @@
 import { readFileSync, readdirSync, statSync, createReadStream } from 'node:fs';
 import { resolve, dirname, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { initEnv } from './seed-helpers.mjs';
+import { initEnv, uploadFile as helperUploadFile } from './seed-helpers.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
@@ -63,21 +63,10 @@ async function findUploadedByName(name) {
   return Array.isArray(arr) && arr.length ? arr[0] : null;
 }
 
+// Delegates to the shared helper so uploads carry mime + auto-derived
+// path (the helper maps media/home/foo.jpg → blob folder `home`, etc.).
 async function uploadFile(localPath) {
-  const name = basename(localPath);
-  const existing = await findUploadedByName(name);
-  if (existing) return existing;
-  const buf = readFileSync(localPath);
-  const fd = new FormData();
-  const blob = new Blob([buf]);
-  fd.append('files', blob, name);
-  const res = await fetch(`${BASE}/api/upload`, { method: 'POST', headers: auth, body: fd });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`upload ${name} → ${res.status}: ${err}`);
-  }
-  const arr = await res.json();
-  return arr[0];
+  return helperUploadFile({ BASE, auth }, localPath);
 }
 
 // ── Plan ─────────────────────────────────────────────────

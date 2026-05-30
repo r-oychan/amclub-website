@@ -202,7 +202,10 @@ async function main() {
     if (imageUrl && !DRY) {
       try {
         const localPath = await downloadImage(imageUrl, ev.slug);
-        const media = await uploadFile(ctx, localPath);
+        // downloadImage writes to a tmp dir outside media/, so the auto-path
+        // derivation can't kick in; pass the canonical event blob folder
+        // explicitly. Mirrors the IA: whats-on/events/<slug>.
+        const media = await uploadFile(ctx, localPath, { path: `whats-on/events/${ev.slug}` });
         mediaId = media.id;
       } catch (e) {
         console.warn(`  ⚠ image upload failed for ${ev.slug}: ${e.message}`);
