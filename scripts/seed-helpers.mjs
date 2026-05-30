@@ -148,20 +148,59 @@ function mimeForFile(name) {
  * incorrectly-uploaded files (e.g. wrong Content-Type on the underlying blob).
  */
 /**
- * Derive a sub-folder path from a local file's location under `media/`.
- * Files outside `media/` return null (= use provider's defaultPath alone).
- * Example:
- *   <ROOT>/media/dining/restaurants/central.jpeg
- *   →  'dining/restaurants'
- * Combined with the upload-azure-folders provider wrapper, the blob lands
- * at `uploads/dining/restaurants/central_<hash>.jpeg`.
+ * Derive a blob sub-folder path from a local file's location under `media/`.
+ * The blob structure mirrors the SITE PAGE / IA hierarchy, not the local
+ * directory layout (which has grown organically and mixes flat sub-dirs
+ * with a `pages/` prefix). A top-level mapping table normalises the
+ * first segment; everything below is preserved as-is.
+ *
+ * Examples (local → blob path returned):
+ *   media/restaurants/central.jpeg         → dining/restaurants
+ *   media/dining/central/menu.pdf          → dining/central
+ *   media/pages/dining/hero-bg.jpg         → dining
+ *   media/promotions/fathers-day.jpg       → dining/promotions
+ *   media/logos/central.png                → dining/restaurants
+ *   media/services/tac2go.jpeg             → dining/services
+ *   media/branding/logo.webp               → global/branding
+ *   media/social/instagram.png             → global/social
+ *   media/fitness/aquatics/coach-x.jpg     → fitness/aquatics
+ *   media/about/heritage-1966.jpg          → about
+ *
+ * Returning null falls back to the provider's defaultPath alone.
  */
+const TOP_LEVEL_BLOB_MAP = {
+  // strip the legacy `pages/` prefix so `pages/dining/...` → `dining/...`
+  pages: '',
+  // dining-related sub-dirs all live under /dining in blob storage
+  restaurants: 'dining/restaurants',
+  logos: 'dining/restaurants',
+  promotions: 'dining/promotions',
+  services: 'dining/services',
+  marketing: 'dining/marketing',
+  // global / cross-section assets
+  branding: 'global/branding',
+  social: 'global/social',
+  hero: 'global/hero',
+  icons: 'global/icons',
+  'TAC-favicon': 'global/favicon',
+};
+
 function autoPathFromLocal(localPath) {
   const mediaRoot = join(ROOT, 'media') + '/';
   if (!localPath.startsWith(mediaRoot)) return null;
   const rel = localPath.slice(mediaRoot.length);
   const dir = dirname(rel);
-  return dir === '.' || !dir ? null : dir;
+  if (dir === '.' || !dir) return null;
+  const segments = dir.split('/');
+  const first = segments[0];
+  if (first in TOP_LEVEL_BLOB_MAP) {
+    const mapped = TOP_LEVEL_BLOB_MAP[first];
+    const tail = segments.slice(1).join('/');
+    return [mapped, tail].filter(Boolean).join('/');
+  }
+  // Already-canonical top-level dirs (about, dining, event-spaces, fitness,
+  // gallery, home, kids, membership, news) pass through unchanged.
+  return dir;
 }
 
 export async function uploadFile(ctx, localPath, { replace = isReplace(), path } = {}) {
