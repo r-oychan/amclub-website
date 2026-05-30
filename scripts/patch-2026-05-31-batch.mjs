@@ -105,7 +105,7 @@ const EVENT_PATCHES = [
       'Guest: $45 for dad & child\n\n\n' +
       'Additional $10 for Sidekick Lounge Access\n' +
       'Relax with refreshments and a casual lounge space while the little heroes complete their missions.\n\n\n' +
-      'Register here.\n\n\n' +
+      `[Register here](${HEROES_REG_URL}).\n\n\n` +
       'Terms and Conditions:\n' +
       'A 48-hour cancellation policy applies. Members will be charged for the full event fee for no-shows or cancellations made less than 48 hours before the event.',
     ctas: [
@@ -122,11 +122,11 @@ const EVENT_PATCHES = [
       '4-7 years old\n' +
       'Time: 9:00 AM – 3:00 PM\n' +
       'Venue: The American Club & various locations around Singapore\n\n\n' +
-      'Register here\n\n\n' +
+      `[Register here](${CAMP_EAGLE_REG_URL_4_7})\n\n\n` +
       '8 years old and above\n' +
       'Time: 8:30 AM – 3:00 PM\n' +
       'Venue: The American Club & various locations around Singapore\n\n\n' +
-      'Register here',
+      `[Register here](${CAMP_EAGLE_REG_URL_8_PLUS})`,
     ctas: [
       { label: 'Register (4-7 yo)',         href: CAMP_EAGLE_REG_URL_4_7,   isExternal: true, bordered: false, variant: 'primary', icon: 'calendar', caption: null },
       { label: 'Register (8 yo and above)', href: CAMP_EAGLE_REG_URL_8_PLUS, isExternal: true, bordered: false, variant: 'primary', icon: 'calendar', caption: null },
@@ -139,14 +139,16 @@ const EVENT_PATCHES = [
     longDescriptionTransform: (current) => current.replace(/^Sunday,\s*June\s*21,\s*2026\s*\n+/i, ''),
   },
 
-  // ---------------- 10 — Sundays Served Right — add mailto CTA ----------------
+  // ---------------- 10 — Sundays Served Right — inline mailto link in body ----------------
   {
     slug: 'sundays-served-right-the-2nd-floor',
+    longDescription:
+      'Unwind on Sunday with a relaxed semi-buffet lunch at The 2nd Floor. ' +
+      'Enjoy a curated spread of starters, mains, and desserts crafted for a leisurely afternoon with family and friends.\n\n' +
+      'For reservations and enquiries, contact The 2nd Floor at 6739 4329 or [2ndfloor@amclub.org.sg](mailto:2ndfloor@amclub.org.sg).',
     ctas: [
       { label: 'Email The 2nd Floor', href: 'mailto:2ndfloor@amclub.org.sg', isExternal: true, bordered: false, variant: 'primary', icon: 'mail', caption: null },
     ],
-    // longDescription untouched (already starts with "Unwind"); inline email
-    // remains plain text — CTA handles the clickable mailto.
   },
 ];
 
