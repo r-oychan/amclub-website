@@ -21,6 +21,10 @@ FROM node:20-alpine AS cms-builder
 RUN apk add --no-cache libc6-compat python3 make g++
 WORKDIR /build
 COPY cms/package*.json ./
+# Local providers referenced via file: in package.json must exist at the
+# moment npm ci runs — otherwise npm creates a broken symlink in
+# node_modules and Strapi fails to load the upload provider at runtime.
+COPY cms/providers ./providers
 RUN npm ci
 # CMS_BUILD_NONCE busts the buildx layer cache when the value changes
 # (set per-deploy in infra/index.ts to the current commit SHA). Needed
@@ -58,6 +62,11 @@ COPY --from=cms-builder /build/dist/build ./build
 COPY --from=cms-builder /build/package.json ./
 COPY --from=cms-builder /build/dist/config ./config
 COPY --from=cms-builder /build/dist/src ./src
+# Local providers — node_modules/upload-azure-folders is a symlink into
+# /build/providers in the builder stage. The runtime needs the symlink
+# target present at the SAME relative path (../providers from
+# /app/cms/node_modules → /app/cms/providers) or `require()` fails.
+COPY --from=cms-builder /build/providers ./providers
 COPY cms/public ./public
 
 # Copy seed media (used to populate empty volume on first run)
