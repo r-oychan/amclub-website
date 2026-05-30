@@ -30,6 +30,17 @@ function providerForFile(config, file) {
   return upstream.init({ ...config, defaultPath: effectivePath });
 }
 
+// Tolerate "blob already gone" on delete so Strapi can still purge the
+// DB row. Orphaned rows happen when an upload was interrupted (e.g. seed
+// script killed mid-run) — the metadata insert committed but the blob
+// upload never completed. Without this, every retry of the reset script
+// gets a 404 from Azure and the row sticks around forever.
+function isBlobNotFound(err) {
+  if (!err) return false;
+  const m = String(err.message ?? err);
+  return /BlobNotFound|status[^\d]*404|specified blob does not exist/i.test(m);
+}
+
 module.exports = {
   provider: 'azure',
   auth: upstream.auth,
@@ -37,7 +48,13 @@ module.exports = {
     return {
       upload: (file) => providerForFile(config, file).upload(file),
       uploadStream: (file) => providerForFile(config, file).uploadStream(file),
-      delete: (file) => providerForFile(config, file).delete(file),
+      delete: async (file) => {
+        try { return await providerForFile(config, file).delete(file); }
+        catch (err) {
+          if (isBlobNotFound(err)) return; // swallow — metadata row will be deleted
+          throw err;
+        }
+      },
       isPrivate: () => false,
     };
   },
