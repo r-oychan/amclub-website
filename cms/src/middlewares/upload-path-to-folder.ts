@@ -91,6 +91,25 @@ function patchFileInfo(body: any, folderId: number) {
   }
 }
 
+async function attachFolderToCreatedFiles(strapi: any, ctx: Context, folderId: number) {
+  // ctx.response.body is the array of created file rows (single or multi).
+  const folder = (await strapi.db.query('plugin::upload.folder').findOne({
+    where: { id: folderId },
+  })) as Folder | null;
+  if (!folder) return;
+  const responseBody = (ctx.response as any).body;
+  const files: any[] = Array.isArray(responseBody) ? responseBody : responseBody ? [responseBody] : [];
+  for (const f of files) {
+    if (!f || typeof f !== 'object' || !f.id) continue;
+    await strapi.db.query('plugin::upload.file').update({
+      where: { id: f.id },
+      data: { folder: folderId, folderPath: folder.path },
+    });
+    f.folder = folderId;
+    f.folderPath = folder.path;
+  }
+}
+
 export default () => {
   return async (ctx: Context, next: () => Promise<any>) => {
     const isUploadPost =
@@ -98,18 +117,25 @@ export default () => {
     if (!isUploadPost) return next();
     const body: any = (ctx.request as any).body;
     const pathStr = body?.path;
-    strapi.log.info(
-      `[upload-path-to-folder] hit method=${ctx.method} path=${ctx.path} hasBody=${!!body} pathField=${JSON.stringify(pathStr)} bodyKeys=${body ? Object.keys(body).join(',') : ''}`,
-    );
+    let folderId: number | null = null;
     if (typeof pathStr === 'string' && pathStr.length > 0) {
       try {
-        const folderId = await ensureFolder(strapi, pathStr);
-        strapi.log.info(`[upload-path-to-folder] ensureFolder('${pathStr}') → ${folderId}`);
-        if (folderId) patchFileInfo(body, folderId);
+        folderId = await ensureFolder(strapi, pathStr);
       } catch (e) {
-        strapi.log.warn(`[upload-path-to-folder] ${(e as Error).message}`);
+        strapi.log.warn(`[upload-path-to-folder] ensureFolder('${pathStr}'): ${(e as Error).message}`);
       }
     }
     await next();
+    // Content-API's yup schema strips `folder` from fileInfo (admin-only key),
+    // so we patch the row AFTER the upload controller commits it. ctx.response
+    // .body holds the rows the admin/seed will see — update both DB + body so
+    // the caller's immediate read shows the folder too.
+    if (folderId && ctx.status >= 200 && ctx.status < 300) {
+      try {
+        await attachFolderToCreatedFiles(strapi, ctx, folderId);
+      } catch (e) {
+        strapi.log.warn(`[upload-path-to-folder] post-attach: ${(e as Error).message}`);
+      }
+    }
   };
 };
