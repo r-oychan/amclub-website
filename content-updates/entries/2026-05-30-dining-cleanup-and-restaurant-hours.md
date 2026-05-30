@@ -23,6 +23,7 @@ Applied 2026-05-30 via `scripts/patch-2026-05-30-batch.mjs` (six ops, env-aware 
 | 4 | Grillhouse & Tiki Bar — replace operatingHoursSections | ✓ updated (2 sections, 3 rows) | ✓ updated |
 | 5 | Create 2 club-wide dining-promotions (June Monthly, Celebrate Dad) | ✓ both created | ✓ both created (after script fix) |
 | 6 | Union Bar — idempotent verify Sports Screening + operating hours | = already correct (no-op) | = already correct (no-op) |
+| 7 | Delete club-wide May Monthly Promotions | ✓ deleted | ✓ deleted |
 
 ## Fields touched — detail
 
@@ -94,6 +95,10 @@ Schema-aware payload (see below). Both promotions created and published.
 **Schema split**: prod and dev have diverged for `dining-promotion`. The patch script feature-detects which shape to send.
 - Prod: `restaurantTag: 'club-wide'` (enum)
 - Dev: `isClubWide: true` (boolean) + `restaurant: null` (relation kept null for club-wide). Reflects dev commit `5f3f18b feat(dining): dining-promotion enum → restaurant relation`.
+
+### Op 7 — Delete club-wide May Monthly Promotions
+
+Hard DELETE on `dining-promotions/club-wide-may-monthly-promo`. Prod documentId `kbbu433a80igj8reydkmz28y`, dev documentId `da00xccur1vjv3gg0u3cp4eu`. Added after the rest of the batch when the user followed up to remove the now-outdated May club-wide promo (June Monthly Promotions takes its place).
 
 ### Op 6 — Union Bar idempotent verify
 Both envs already had the correct Sports Screening Schedule CTA (Google Slides URL) and the 2-row operating hours from the 2026-05-25 batch. Script logged `= already correct — skip` on both runs.

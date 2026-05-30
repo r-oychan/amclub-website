@@ -201,6 +201,16 @@ const OPS = {
     }
   },
 
+  // ---------------- 7 — Delete club-wide May Monthly Promotions ----------------
+  7: async () => {
+    console.log('\n[7] Delete club-wide-may-monthly-promo');
+    const existing = await findOneBySlug(ctx, 'dining-promotions', 'club-wide-may-monthly-promo');
+    if (!existing) { console.log('  = not present — skip'); return; }
+    if (DRY) { console.log(`  [dry] DELETE ${existing.documentId}`); return; }
+    await api(ctx, `/dining-promotions/${existing.documentId}`, { method: 'DELETE' });
+    console.log(`  ✓ deleted  ${existing.documentId}  ${existing.title}`);
+  },
+
   // ---------------- 6 — Union Bar idempotent verify ----------------
   6: async () => {
     console.log('\n[6] Union Bar — idempotent verify (Sports Screening + operating hours)');
