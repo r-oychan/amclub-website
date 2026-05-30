@@ -52,11 +52,17 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
     },
   };
 
-  // Upload — Azure Blob provider (only when STORAGE_ACCOUNT is set)
+  // Upload — Azure Blob provider, wrapped so per-upload `file.path` routes
+  // into a subfolder under `defaultPath`. Seed scripts set `path` in the
+  // upload form data (e.g. `dining/restaurants/central`) → blob lands at
+  // `uploads/dining/restaurants/central/<hash>.<ext>`. Without the wrapper,
+  // every blob lands in flat `uploads/` regardless of intent. Provider only
+  // engages when STORAGE_ACCOUNT is set (deployed envs); local dev uses the
+  // default filesystem provider.
   if (env('STORAGE_ACCOUNT')) {
     plugins.upload = {
       config: {
-        provider: 'strapi-provider-upload-azure-storage',
+        provider: './src/providers/upload-azure-folders',
         providerOptions: {
           authType: 'default',
           account: env('STORAGE_ACCOUNT'),

@@ -147,7 +147,24 @@ function mimeForFile(name) {
  * to PUT-replace the existing file with the local one — useful for fixing
  * incorrectly-uploaded files (e.g. wrong Content-Type on the underlying blob).
  */
-export async function uploadFile(ctx, localPath, { replace = isReplace() } = {}) {
+/**
+ * Derive a sub-folder path from a local file's location under `media/`.
+ * Files outside `media/` return null (= use provider's defaultPath alone).
+ * Example:
+ *   <ROOT>/media/dining/restaurants/central.jpeg
+ *   →  'dining/restaurants'
+ * Combined with the upload-azure-folders provider wrapper, the blob lands
+ * at `uploads/dining/restaurants/central_<hash>.jpeg`.
+ */
+function autoPathFromLocal(localPath) {
+  const mediaRoot = join(ROOT, 'media') + '/';
+  if (!localPath.startsWith(mediaRoot)) return null;
+  const rel = localPath.slice(mediaRoot.length);
+  const dir = dirname(rel);
+  return dir === '.' || !dir ? null : dir;
+}
+
+export async function uploadFile(ctx, localPath, { replace = isReplace(), path } = {}) {
   const name = basename(localPath);
   const existing = await findUploadedByName(ctx, name);
   if (existing && !replace) return existing;
@@ -156,6 +173,13 @@ export async function uploadFile(ctx, localPath, { replace = isReplace() } = {})
   const fd = new FormData();
   const blob = new Blob([buf], { type: mime });
   fd.append('files', blob, name);
+  // Effective folder path: explicit `path` arg wins, else auto-derive from
+  // the file's location under `media/`. Anything that lands in metas.path
+  // → entity.path → our wrapper provider appends it to defaultPath. Mirrors
+  // the seed-script `media/<section>/<page>/...` convention into the blob
+  // hierarchy without per-script changes.
+  const effectivePath = path !== undefined ? path : autoPathFromLocal(localPath);
+  if (effectivePath) fd.append('path', effectivePath);
   let url;
   let method;
   if (existing && replace) {
@@ -179,19 +203,19 @@ export async function uploadFile(ctx, localPath, { replace = isReplace() } = {})
  * Upload every file in `names` from `dir`. Returns a map of name → media object.
  * Logs progress; honors dry-run.
  */
-export async function uploadAll(ctx, dir, names, { dry = false, replace = isReplace() } = {}) {
+export async function uploadAll(ctx, dir, names, { dry = false, replace = isReplace(), path: folderPath } = {}) {
   const map = {};
   for (const name of names) {
-    const path = join(dir, name);
-    statSync(path); // throws if missing
+    const fullLocal = join(dir, name);
+    statSync(fullLocal); // throws if missing
     if (dry) {
       map[name] = { id: 0, name };
-      console.log(`  [dry] upload ${name}`);
+      console.log(`  [dry] upload ${name}${folderPath ? ` → ${folderPath}/` : ''}`);
       continue;
     }
-    const m = await uploadFile(ctx, path, { replace });
+    const m = await uploadFile(ctx, fullLocal, { replace, path: folderPath });
     map[name] = m;
-    console.log(`  ✓ ${name.padEnd(40)} → id=${m.id}`);
+    console.log(`  ✓ ${name.padEnd(40)} → id=${m.id}${folderPath ? ` (${folderPath})` : ''}`);
   }
   return map;
 }
