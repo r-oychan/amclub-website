@@ -81,6 +81,8 @@ Changes vs previous state:
 
 Format note: user wrote `11:00AM – 9:00PM` (no space before marker), matching their input verbatim. Other restaurants (e.g. Union Bar) use `12:00 PM – 11:00 PM` with spaces — kept both styles to match what was provided.
 
+**Fallback fix (follow-up):** the live `/dining/grillhouse` page kept showing old hours after the Strapi update because `frontend/src/data/subpages.ts:358` had **both** an `operatingHoursSections` fallback AND a `hours:` string fallback with the old values. The merge in `VenueDetailPage.tsx` is `{ ...fallback, ...api }` — `api` doesn't carry a `hours` string field (the CMS restaurant schema doesn't define one), so the old fallback string stayed. Updated both fallbacks on main + dev to match the new Strapi state (same 2 sections, same `11:00AM – 9:00PM` formatting). After next frontend deploy the page renders consistently regardless of which field a component reads.
+
 ### Op 5 — 2 new club-wide dining-promotions
 
 Schema-aware payload (see below). Both promotions created and published.

@@ -1,18 +1,3 @@
-/**
- * LEGACY FALLBACK — transitioning out.
- *
- * Every entry here is being migrated to its section-specific Strapi
- * collection (see Phase A schemas: fitness-facility, kids-experience,
- * event-space) or to a per-page singleton (reciprocal-clubs-page,
- * start-application-page, niche-group-membership-page,
- * advertise-with-us-page). Until each section is fully seeded in CMS,
- * `VenueDetailPage.staticFallback` reads from this file when the API
- * returns no entry — that's why this module still exists.
- *
- * Once a section is seeded end-to-end (skeleton fields + body
- * dynamiczone), delete its array from this file in the same commit.
- * Final removal will land in Phase D once all sections are migrated.
- */
 export interface SubpageData {
   slug: string;
   name: string;
@@ -279,6 +264,7 @@ export const diningSubpages: SubpageData[] = [
     parentHref: '/dining',
     ctas: [
       { label: 'View Menu', href: '/menus/central-menu.pdf', isExternal: true },
+      { label: 'Promotions', href: '/dining/dining-promotion#promo-central' },
     ],
   },
   {
@@ -312,6 +298,7 @@ export const diningSubpages: SubpageData[] = [
     ctas: [
       { label: 'View Menu', href: '/menus/the-2nd-floor-menu.pdf', isExternal: true },
       { label: 'Reserve a Table', href: 'mailto:2ndfloor@amclub.org.sg', isExternal: true },
+      { label: 'Promotions', href: '/dining/dining-promotion#promo-the-2nd-floor' },
     ],
     extraSections: [
       {
@@ -357,6 +344,7 @@ export const diningSubpages: SubpageData[] = [
     parentHref: '/dining',
     ctas: [
       { label: 'View Menu', href: '/menus/tradewinds-menu.pdf', isExternal: true },
+      { label: 'Promotions', href: '/dining/dining-promotion#promo-tradewinds' },
     ],
     extraSections: [
       {
@@ -373,21 +361,19 @@ export const diningSubpages: SubpageData[] = [
     description:
       'Welcome to a casual poolside dining restaurant – perfect for families with children and swimmers looking to have a delicious meal.\n\nDevour authentic American cuisine featuring Texas-style BBQ, mouth-watering burgers, delicious pizzas and salads with ice-cold American beer and special Grillhouse shakes.',
     hours:
-      'Grillhouse\nSunday to Thursday: 11:00 AM – 9:00 PM (Last order at 8:30 PM)\nFriday and Saturday: 11:00 AM – 9:30 PM (Last order at 9:00 PM)\n\nTiki Bar\nFridays & Saturdays: 11:30 AM – 12:00 AM (Last order at 11:30 PM)\nSundays: 11:30 AM – 11:00 PM (Last order at 10:30 PM)',
+      'Grillhouse\nSunday to Thursday: 11:00AM – 9:00PM (Last order 8:30PM)\nFriday & Saturday: 11:00AM – 9:30PM (Last order 9:00PM)\n\nTiki Bar\nFriday to Sunday: 11:30AM – 10:00PM (Last order 9:30PM)',
     operatingHoursSections: [
       {
         title: 'Grillhouse Operating Hours',
         rows: [
-          { dayRange: 'Sunday to Thursday', time: '11:00 AM - 9:00 PM', lastOrder: 'Last order at 8:30 PM' },
-          { dayRange: 'Friday',             time: '11:00 AM - 9:30 PM', lastOrder: 'Last order at 9:00 PM' },
-          { dayRange: 'Saturday',           time: '8:30 AM - 9:30 PM',  lastOrder: 'Last order at 9:00 PM' },
+          { dayRange: 'Sunday to Thursday', time: '11:00AM – 9:00PM', lastOrder: 'Last order 8:30PM' },
+          { dayRange: 'Friday & Saturday',  time: '11:00AM – 9:30PM', lastOrder: 'Last order 9:00PM' },
         ],
       },
       {
         title: 'Tiki Bar Operating Hours',
         rows: [
-          { dayRange: 'Friday & Saturday', time: '11:30 AM - 12:00 AM', lastOrder: 'Last order at 11:30 PM' },
-          { dayRange: 'Sunday',            time: '11:30 AM - 11:00 PM', lastOrder: 'Last order at 10:30 PM' },
+          { dayRange: 'Friday to Sunday',   time: '11:30AM – 10:00PM', lastOrder: 'Last order 9:30PM' },
         ],
       },
     ],
@@ -400,6 +386,7 @@ export const diningSubpages: SubpageData[] = [
     parentHref: '/dining',
     ctas: [
       { label: 'View Menu', href: '/menus/grillhouse-menu.pdf', isExternal: true },
+      { label: 'Promotions', href: '/dining/dining-promotion#promo-grillhouse' },
     ],
   },
   {
@@ -429,6 +416,7 @@ export const diningSubpages: SubpageData[] = [
     ctas: [
       { label: 'View Menu', href: '/menus/union-bar-menu.pdf', isExternal: true },
       { label: 'Sports Screening Schedule', href: 'https://docs.google.com/presentation/d/1Ruk_oS8bijGO1Osuuuc4cL3aGc7DknzVmMRqsyN7gZ8/edit?slide=id.g36c0dd5bddb_0_2#slide=id.g36c0dd5bddb_0_2', isExternal: true },
+      { label: 'Promotions', href: '/dining/dining-promotion#promo-union-bar' },
     ],
     extraSections: [
       {
@@ -486,7 +474,7 @@ export const diningSubpages: SubpageData[] = [
           title: 'UNCORKED',
           subtitle: 'An exclusive world for wine lovers.',
           image:
-            '/subpages/dining-uncorked.jpg',
+            'https://framerusercontent.com/images/e85HYNka8NYlE7SuZFJQ6qajxg.jpg',
           cta: { label: 'Learn More', href: '/dining/uncorked' },
         },
         {
@@ -494,7 +482,7 @@ export const diningSubpages: SubpageData[] = [
           subtitle:
             'Bringing the Club\'s cellar to your home with a curated range of premium wines.',
           image:
-            '/subpages/dining-bottles2go.jpg',
+            'https://framerusercontent.com/images/aGxaO43vaHmXI1ULbrj1nuKNM74.jpg',
           cta: { label: 'Order Now', href: 'https://amclub.jotform.com/252638314015956' },
         },
       ],
@@ -995,7 +983,7 @@ export const fitnessSubpages: SubpageData[] = [
     phone: '6739 4312',
     email: 'sportscenter@amclub.org.sg',
     image:
-      '/subpages/fitness-squash.jpeg',
+      'https://framerusercontent.com/images/V7hzkQOjUbyX5TwmyMot6sabVk.jpeg',
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [
@@ -1122,7 +1110,7 @@ export const fitnessSubpages: SubpageData[] = [
     phone: '6739-4392',
     email: 'youth@amclub.org.sg',
     image:
-      '/subpages/fitness-pilates.png',
+      'https://framerusercontent.com/images/FlYhqxJitkFU5PkKTbhHD4Lho.png',
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [{ label: 'Bowling Rates', href: '#' }],
@@ -1671,7 +1659,7 @@ export const eventSpacesSubpages: SubpageData[] = [
     description:
       'From large-scale conferences to focused strategy sessions and team-building experiences, the Club offers a versatile portfolio of venues designed to elevate every corporate occasion.',
     image:
-      '/subpages/eventspaces-galbraith.jpg',
+      'https://framerusercontent.com/images/rA4tJSoJzyWMv0VxMzxueeloOKI.jpg',
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
@@ -1718,7 +1706,7 @@ export const eventSpacesSubpages: SubpageData[] = [
     description:
       'Bring your celebrations to life in The Galbraith Ballroom – an inviting space perfect for birthdays, anniversaries, festive gatherings, or any reason to come together. With flexible layouts, delicious culinary options, and a team dedicated to making every detail shine, your party becomes an experience that your guests will remember long after the last toast.',
     image:
-      '/subpages/eventspaces-parties.jpg',
+      'https://framerusercontent.com/images/ccM8q1j1oULvaFRDjnPhBdnPRho.jpg',
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
@@ -1737,7 +1725,7 @@ export const eventSpacesSubpages: SubpageData[] = [
     description:
       'With over 3,400 square feet of versatile, pillar-less space, The Galbraith Ballroom is the perfect venue to host your next event or meeting.',
     image:
-      '/subpages/eventspaces-galbraith.jpg',
+      'https://framerusercontent.com/images/rA4tJSoJzyWMv0VxMzxueeloOKI.jpg',
     capacity: '200+ pax',
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
@@ -1758,7 +1746,7 @@ export const eventSpacesSubpages: SubpageData[] = [
     email: 'meetings@amclub.org.sg',
     capacity: 'Max. 40 Pax',
     image:
-      '/subpages/eventspaces-thinkspace.jpg',
+      'https://framerusercontent.com/images/mVJDWpQ45XvCKY8vEOKrFiKZta0.jpg',
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
@@ -1780,7 +1768,7 @@ export const eventSpacesSubpages: SubpageData[] = [
     phone: '6739 4444/4413',
     email: 'youth@amclub.org.sg',
     image:
-      '/subpages/fitness-pilates.png',
+      'https://framerusercontent.com/images/FlYhqxJitkFU5PkKTbhHD4Lho.png',
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
@@ -1841,7 +1829,7 @@ export const membershipSubpages: SubpageData[] = [
     description:
       'Your journey to becoming a Member at The American Club starts here.\n\nGet to know the requirements to start your application.\n\nAll the items outlined in the Application Checklist must be submitted. Incomplete applications will not be accepted.',
     image:
-      '/subpages/membership-start-application.jpeg',
+      'https://framerusercontent.com/images/ALiDWPH3U3VnmiEzcoEet6lPIk.jpeg',
     parentSection: 'Membership',
     parentHref: '/membership',
     ctas: [
@@ -1886,7 +1874,7 @@ export const membershipSubpages: SubpageData[] = [
     description:
       'Five distinct membership types designed for different eligibility criteria. All fees are inclusive of prevailing GST.',
     image:
-      '/subpages/membership-joining-fees.jpg',
+      'https://framerusercontent.com/images/uA8oZioX84LwYdHwDPogQJhk13I.jpg',
     parentSection: 'Membership',
     parentHref: '/membership',
     ctas: [
@@ -1918,7 +1906,7 @@ export const membershipSubpages: SubpageData[] = [
     phone: '6739-4331',
     email: 'membership@amclub.org.sg',
     image:
-      '/subpages/membership-referal.jpg',
+      'https://framerusercontent.com/images/9Wx98RDzkCICF2QMOXQadZLRTH4.jpg',
     parentSection: 'Membership',
     parentHref: '/membership',
     tierCards: {
@@ -2000,7 +1988,7 @@ export const membershipSubpages: SubpageData[] = [
     description:
       'As a Member of The American Club, enjoy privileged access to over 150 distinguished clubs worldwide, extending the comfort of membership wherever you travel.',
     image:
-      '/subpages/membership-reciprocal-clubs.jpg',
+      'https://framerusercontent.com/images/bdz4bVfeQtZyQC6ebpW09r3ujU.jpg',
     parentSection: 'Membership',
     parentHref: '/membership',
     ctas: [
@@ -2011,10 +1999,20 @@ export const membershipSubpages: SubpageData[] = [
 ];
 
 export const homeSubpages: SubpageData[] = [
-  // `contact-us`, `news`, `gallery` removed in PR-4 — those routes hit
-  // dedicated page components (ContactUsPage / NewsPage / GalleryPage), so the
-  // VenueDetailPage fallback never reads them. Re-add only if /home-sub/<slug>
-  // routes through VenueDetailPage for that slug again.
+  {
+    slug: 'contact-us',
+    name: 'Contact Us',
+    type: 'Contact',
+    description:
+      '10 Claymore Hill, Singapore 229573. Sunday to Thursday: 6:00 AM - 11:00 PM Friday, Saturday & Eve of PH: 6:00 AM - 12:00 AM',
+    phone: '+65 6737-3411',
+    email: 'info@amclub.org.sg',
+    image:
+      'https://framerusercontent.com/images/YCNFJanBoXdJFKJlpWh9tMfwrQ.jpg',
+    parentSection: 'The American Club',
+    parentHref: '/home',
+    ctas: [{ label: 'Tell Us What You Think', href: 'https://amclub.jotform.com/252152095231953', isExternal: true }],
+  },
   {
     slug: 'advertise-with-us',
     name: 'Advertise with Us',
@@ -2039,6 +2037,24 @@ export const homeSubpages: SubpageData[] = [
         ],
       },
     ],
+  },
+  {
+    slug: 'news',
+    name: 'Club News',
+    type: 'News',
+    description:
+      'Stay up to date with the latest happenings and announcements at The American Club.',
+    parentSection: 'The American Club',
+    parentHref: '/home',
+  },
+  {
+    slug: 'gallery',
+    name: 'Gallery',
+    type: 'Photo Gallery',
+    description:
+      'Browse photos from recent events and celebrations at The American Club.',
+    parentSection: 'The American Club',
+    parentHref: '/home',
   },
 ];
 
