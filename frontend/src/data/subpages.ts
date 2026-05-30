@@ -1565,7 +1565,7 @@ export const eventSpacesSubpages: SubpageData[] = [
     type: 'Weddings',
     description:
       'Celebrate your love story in a setting as meaningful as the moment itself. From grand receptions to intimate gatherings, the Club offers timeless venues, thoughtful service, and bespoke culinary experiences.',
-    image: '/uploads/package_wedding_1fc9c3830f.jpg',
+    image: '/images/event-spaces/package-wedding.jpg',
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
@@ -1576,7 +1576,7 @@ export const eventSpacesSubpages: SubpageData[] = [
       cards: [
         {
           heading: 'The Galbraith Ballroom',
-          capacity: 'Up to 40 pax',
+          capacity: 'Up to 230 pax',
           description:
             'A grand, pillar-less ballroom created for unforgettable "I do" moments. With elegant layouts, seamless audiovisual support, and dedicated event coordination, the space transforms effortlessly from a heartfelt ceremony to an evening of dining and dancing – an enchanting setting for celebrating your love story in style.',
           image:
@@ -1671,7 +1671,7 @@ export const eventSpacesSubpages: SubpageData[] = [
       cards: [
         {
           heading: 'The Galbraith Ballroom',
-          capacity: 'Up to 40 pax',
+          capacity: 'Up to 230 pax',
           description:
             "An elegant, pillar-less ballroom ideal for conferences, large-scale meetings, awards nights, and corporate celebrations. Flexible layouts, professional audiovisual support, and a refined setting make it the Club's premier venue for high-profile events.",
           image:
@@ -1689,7 +1689,7 @@ export const eventSpacesSubpages: SubpageData[] = [
         },
         {
           heading: 'The Bowling Alley',
-          capacity: 'Up to 28 pax',
+          capacity: '30 pax',
           description:
             'A refreshing option for team-building, client entertainment, and informal corporate socials, The Bowling Alley offers a lively setting that blends friendly competition with curated food and beverage experiences.',
           image:
