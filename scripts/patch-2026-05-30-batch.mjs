@@ -201,6 +201,57 @@ const OPS = {
     }
   },
 
+  // ---------------- 8 — event-spaces-page distinctiveSpaces capacities ----------------
+  // Galbraith Ballroom: 3400 sqm → "3,400 Square Feet"
+  // The Bowling Alley:  "Up to 50 pax" → "30 pax"
+  8: async () => {
+    console.log('\n[8] event-spaces-page — distinctiveSpaces capacity updates');
+    const r = await api(ctx, '/event-spaces-page?populate=deep');
+    const ds = r.data?.distinctiveSpaces;
+    if (!ds) { console.log('  ✗ distinctiveSpaces not found'); return; }
+
+    const overrides = {
+      'The Galbraith Ballroom': ['3,400 Square Feet'],
+      'The Bowling Alley':      ['30 pax'],
+    };
+
+    let touched = false;
+    const newItems = (ds.items || []).map((it) => {
+      const want = overrides[it.name];
+      if (!want) {
+        // Preserve unchanged items
+        return {
+          name: it.name,
+          capacity: it.capacity,
+          description: it.description,
+          ...(it.image?.id ? { image: it.image.id } : {}),
+        };
+      }
+      const same = Array.isArray(it.capacity) && it.capacity.length === want.length && it.capacity.every((c, i) => c === want[i]);
+      if (!same) touched = true;
+      return {
+        name: it.name,
+        capacity: want,
+        description: it.description,
+        ...(it.image?.id ? { image: it.image.id } : {}),
+      };
+    });
+
+    if (!touched) { console.log('  = already up-to-date — skip'); return; }
+    if (DRY) {
+      console.log('  [dry] PUT distinctiveSpaces with updated capacities for Galbraith + Bowling Alley');
+      return;
+    }
+    const dsPayload = {
+      heading: ds.heading,
+      subheading: ds.subheading ?? null,
+      panelBgColor: ds.panelBgColor,
+      items: newItems,
+    };
+    await api(ctx, '/event-spaces-page', { method: 'PUT', body: { data: { distinctiveSpaces: dsPayload } } });
+    console.log(`  ✓ updated  items=${newItems.length}`);
+  },
+
   // ---------------- 7 — Delete club-wide May Monthly Promotions ----------------
   7: async () => {
     console.log('\n[7] Delete club-wide-may-monthly-promo');
