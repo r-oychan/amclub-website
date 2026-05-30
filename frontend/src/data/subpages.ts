@@ -361,21 +361,19 @@ export const diningSubpages: SubpageData[] = [
     description:
       'Welcome to a casual poolside dining restaurant – perfect for families with children and swimmers looking to have a delicious meal.\n\nDevour authentic American cuisine featuring Texas-style BBQ, mouth-watering burgers, delicious pizzas and salads with ice-cold American beer and special Grillhouse shakes.',
     hours:
-      'Grillhouse\nSunday to Thursday: 11:00 AM – 9:00 PM (Last order at 8:30 PM)\nFriday and Saturday: 11:00 AM – 9:30 PM (Last order at 9:00 PM)\n\nTiki Bar\nFridays & Saturdays: 11:30 AM – 12:00 AM (Last order at 11:30 PM)\nSundays: 11:30 AM – 11:00 PM (Last order at 10:30 PM)',
+      'Grillhouse\nSunday to Thursday: 11:00AM – 9:00PM (Last order 8:30PM)\nFriday & Saturday: 11:00AM – 9:30PM (Last order 9:00PM)\n\nTiki Bar\nFriday to Sunday: 11:30AM – 10:00PM (Last order 9:30PM)',
     operatingHoursSections: [
       {
         title: 'Grillhouse Operating Hours',
         rows: [
-          { dayRange: 'Sunday to Thursday', time: '11:00 AM - 9:00 PM', lastOrder: 'Last order at 8:30 PM' },
-          { dayRange: 'Friday',             time: '11:00 AM - 9:30 PM', lastOrder: 'Last order at 9:00 PM' },
-          { dayRange: 'Saturday',           time: '8:30 AM - 9:30 PM',  lastOrder: 'Last order at 9:00 PM' },
+          { dayRange: 'Sunday to Thursday', time: '11:00AM – 9:00PM', lastOrder: 'Last order 8:30PM' },
+          { dayRange: 'Friday & Saturday',  time: '11:00AM – 9:30PM', lastOrder: 'Last order 9:00PM' },
         ],
       },
       {
         title: 'Tiki Bar Operating Hours',
         rows: [
-          { dayRange: 'Friday & Saturday', time: '11:30 AM - 12:00 AM', lastOrder: 'Last order at 11:30 PM' },
-          { dayRange: 'Sunday',            time: '11:30 AM - 11:00 PM', lastOrder: 'Last order at 10:30 PM' },
+          { dayRange: 'Friday to Sunday',   time: '11:30AM – 10:00PM', lastOrder: 'Last order 9:30PM' },
         ],
       },
     ],
