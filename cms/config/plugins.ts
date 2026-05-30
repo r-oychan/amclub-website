@@ -70,7 +70,7 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
   if (env('STORAGE_ACCOUNT')) {
     plugins.upload = {
       config: {
-        provider: './src/providers/upload-azure-folders',
+        provider: 'upload-azure-folders',
         providerOptions: {
           authType: 'default',
           account: env('STORAGE_ACCOUNT'),

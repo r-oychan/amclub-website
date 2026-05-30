@@ -25,7 +25,8 @@
     "react-router-dom": "^6.0.0",
     "strapi-plugin-sso": "^1.0.8",
     "strapi-provider-upload-azure-storage": "^3.5.0",
-    "styled-components": "^6.0.0"
+    "styled-components": "^6.0.0",
+    "upload-azure-folders": "file:providers/upload-azure-folders"
   },
   "devDependencies": {
     "@types/node": "^20",
