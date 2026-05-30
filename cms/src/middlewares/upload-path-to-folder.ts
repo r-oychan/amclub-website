@@ -98,9 +98,13 @@ export default () => {
     if (!isUploadPost) return next();
     const body: any = (ctx.request as any).body;
     const pathStr = body?.path;
+    strapi.log.info(
+      `[upload-path-to-folder] hit method=${ctx.method} path=${ctx.path} hasBody=${!!body} pathField=${JSON.stringify(pathStr)} bodyKeys=${body ? Object.keys(body).join(',') : ''}`,
+    );
     if (typeof pathStr === 'string' && pathStr.length > 0) {
       try {
         const folderId = await ensureFolder(strapi, pathStr);
+        strapi.log.info(`[upload-path-to-folder] ensureFolder('${pathStr}') → ${folderId}`);
         if (folderId) patchFileInfo(body, folderId);
       } catch (e) {
         strapi.log.warn(`[upload-path-to-folder] ${(e as Error).message}`);
