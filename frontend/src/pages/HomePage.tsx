@@ -110,6 +110,7 @@ interface StrapiEvent {
   date: string;
   image?: StrapiMedia;
   category?: { name: string } | null;
+  featuredOnHomepage?: boolean;
 }
 
 const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
@@ -148,16 +149,31 @@ export default function HomePage() {
     let cancelled = false;
     (async () => {
       const today = new Date().toISOString().slice(0, 10);
-      const [home, evs] = await Promise.all([
+      const eventParams = {
+        'sort[0]': 'date:asc',
+        'populate[image]': 'true',
+        'populate[category]': 'true',
+      };
+      const [home, curated] = await Promise.all([
         fetchAPI<StrapiHomePage>('/home-page'),
+        // Curators pick which events surface here via the "Featured On Homepage"
+        // flag on each Event entry.
         fetchAPI<StrapiEvent[]>('/events', {
+          ...eventParams,
+          'filters[featuredOnHomepage][$eq]': 'true',
           'filters[date][$gte]': today,
-          'pagination[limit]': '9',
-          'sort[0]': 'date:asc',
-          'populate[image]': 'true',
-          'populate[category]': 'true',
         }),
       ]);
+      // If nothing has been curated yet (or the CMS predates the flag), fall
+      // back to the next upcoming events so the section never silently vanishes.
+      let evs = curated;
+      if (!evs || evs.length === 0) {
+        evs = await fetchAPI<StrapiEvent[]>('/events', {
+          ...eventParams,
+          'filters[date][$gte]': today,
+          'pagination[limit]': '9',
+        });
+      }
       if (cancelled) return;
       setData(home);
       setEvents(evs ?? []);

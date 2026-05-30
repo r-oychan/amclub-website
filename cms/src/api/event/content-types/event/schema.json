@@ -65,6 +65,10 @@
       "type": "boolean",
       "default": false
     },
+    "featuredOnHomepage": {
+      "type": "boolean",
+      "default": false
+    },
     "ctas": {
       "type": "component",
       "repeatable": true,
