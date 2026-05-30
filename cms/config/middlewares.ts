@@ -69,6 +69,12 @@ const config: Core.Config.Middlewares = [
   },
   'strapi::favicon',
   'strapi::public',
+  // Converts `path` on POST /api/upload into a real Media Library folder
+  // (Strapi v5's upload_folder table). Without this, files uploaded with
+  // a blob path still show flat under "API Uploads" in the admin UI even
+  // though the blob itself lives at uploads/<section>/<page>/...
+  // See cms/src/middlewares/upload-path-to-folder.ts.
+  { name: 'global::upload-path-to-folder' },
 ];
 
 export default config;
