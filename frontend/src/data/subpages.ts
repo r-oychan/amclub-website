@@ -1356,12 +1356,17 @@ export const kidsSubpages: SubpageData[] = [
     name: 'Recreational Classes',
     type: 'Recreational Programs',
     description:
-      'Our Recreational Classes support your child\'s holistic development through enriching experiences that spark curiosity and build confidence. With thoughtfully curated programs led by trusted instructors and partners, kids can enjoy a wide range of on-site and off-site classes – from arts and movement to sports and STEM.',
+      'Our Recreational Classes support your child\'s holistic development through enriching experiences that spark curiosity and build confidence. With thoughtfully curated programs led by trusted instructors and partners, kids can enjoy a wide range of on-site and off-site classes – from arts and movement to sports and STEM.\n\nPlease approach The Quad or The Quad Poolside or email [youth@amclub.org.sg](mailto:youth@amclub.org.sg) to register.\n\nPlease note that a 3% surcharge applies for all payments via credit card.',
     image: '/images/kids/learning/recreational-classes.jpg',
     parentSection: 'Kids',
     parentHref: '/kids',
     ctas: [
       { label: 'View Classes', href: '/documents/kids/recreational-classes.pdf', isExternal: true },
+      {
+        label: 'Cancellation/Temporary Suspension Form',
+        href: 'https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=tNI3gQWbQ0ue5Ad0V1MxKuJw7vNhg0ZDpudyy49zdq5UM1dIOVFXOUtLODZNR1gzRkI1SzY4OU5WOS4u',
+        isExternal: true,
+      },
     ],
   },
   {
@@ -1962,7 +1967,7 @@ export const membershipSubpages: SubpageData[] = [
         {
           name: '15K Membership',
           description:
-            'A minimum of $20,000 cumulative calendar year spending, excluding monthly dues.',
+            'A minimum of $15,000 cumulative calendar year spending, excluding monthly dues.',
           gradientFrom: 'rgb(53, 173, 242)',
           gradientTo: 'rgb(30, 86, 156)',
           benefits: [

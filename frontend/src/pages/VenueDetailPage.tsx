@@ -1,5 +1,6 @@
 import { useParams, useLocation, Link } from 'react-router';
 import { useEffect, useState, type ReactNode } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { fetchAPI } from '../lib/api';
 import { getSubpage } from '../data/subpages';
 import { Button } from '../components/shared/Button';
@@ -575,17 +576,35 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                 </div>
               )}
 
-              {/* Description — Lato 19.2px / 400, line-height 26.88px */}
+              {/* Description — Lato 19.2px / 400, line-height 26.88px. Markdown for inline [text](url) links (mailto, http, relative). */}
               <div className="flex flex-col" style={{ gap: '20px' }}>
-                {venue.description.split('\n\n').map((p, i) => (
-                  <p
-                    key={i}
-                    className="text-text-dark"
-                    style={{ fontSize: '19.2px', fontWeight: 400, lineHeight: '26.88px' }}
-                  >
-                    {p}
-                  </p>
-                ))}
+                <ReactMarkdown
+                  components={{
+                    p: ({ children }) => (
+                      <p
+                        className="text-text-dark"
+                        style={{ fontSize: '19.2px', fontWeight: 400, lineHeight: '26.88px' }}
+                      >
+                        {children}
+                      </p>
+                    ),
+                    a: ({ href, children }) => {
+                      const external = href?.startsWith('http');
+                      return (
+                        <a
+                          href={href}
+                          target={external ? '_blank' : undefined}
+                          rel={external ? 'noopener noreferrer' : undefined}
+                          className="text-accent underline underline-offset-2 hover:no-underline"
+                        >
+                          {children}
+                        </a>
+                      );
+                    },
+                  }}
+                >
+                  {venue.description}
+                </ReactMarkdown>
               </div>
 
               {/* ── Operating Hours ──
