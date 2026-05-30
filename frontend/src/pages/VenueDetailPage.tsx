@@ -1,5 +1,6 @@
 import { useParams, useLocation, Link } from 'react-router';
 import { useEffect, useState, type ReactNode } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { fetchAPI } from '../lib/api';
 import { getSubpage } from '../data/subpages';
 import { Button } from '../components/shared/Button';
@@ -11,9 +12,7 @@ import { FaqAccordion } from '../components/blocks/FaqAccordion';
 import { MarqueeGallery } from '../components/detail/MarqueeGallery';
 import { KidsPartyPackages } from '../components/kids/KidsPartyPackages';
 import { Testimonials } from '../components/blocks/Testimonials';
-import { BlockRenderer } from '../components/blocks/BlockRenderer';
 import { CtaIcon, type CtaIconName } from '../components/shared/CtaIcon';
-import type { DetailBody } from '../lib/blocks';
 
 interface ScheduleRow {
   dayRange: string;
@@ -184,102 +183,15 @@ interface VenueData {
       image?: string;
     }[];
   };
-  /** Strapi dynamiczone — new in Phase A. Rendered after legacy sections by `<BlockRenderer>`. */
-  body?: DetailBody;
 }
 
-// Singleton overrides — specific (section, slug) tuples that are backed by
-// a dedicated single-type in Strapi rather than a collection. The frontend
-// renders them through the same VenueDetailPage layout so authors get a
-// tailored admin form (one entry per page) without any visual divergence.
-const SINGLETON_OVERRIDES: Record<string, string> = {
-  'membership/start-application': '/start-application-page',
-  'membership/niche-group-membership': '/niche-group-membership-page',
-  // Pages with bespoke layouts use dedicated React components (see App.tsx):
-  //   /membership/reciprocal-clubs → ReciprocalClubsPage (two-block layout)
-  //   /home-sub/advertise-with-us → AdvertiseWithUsPage (single block with
-  //     inline Sponsorship sub-section in the right column)
-  // The generic VenueDetailPage shape (one hero column + flat sections
-  // underneath) can't represent these without distorting the others.
-};
-
-/** Raw shape returned by the membership / advertise-with-us singletons. */
-interface SingletonResponse {
-  title?: string;
-  label?: string;
-  heading?: string;
-  description?: string;
-  intro?: string;
-  parentLabel?: string;
-  parentHref?: string;
-  heroImage?: { url: string; alternativeText?: string };
-  locationLevel?: string;
-  phone?: string;
-  email?: string;
-  locationContact?: LocationContact | null;
-  operatingHoursSections?: OperatingHoursSection[];
-  downloads?: { heading?: string; items?: { label?: string; href?: string; isExternal?: boolean }[] };
-  ctas?: { label?: string; href?: string; isExternal?: boolean; icon?: CtaIconName | null }[];
-  bottomCtas?: { label?: string; href?: string; isExternal?: boolean }[];
-  body?: unknown[];
-}
-
-/** Adapt a singleton response into the VenueData shape the page renders. */
-function adaptSingleton(s: SingletonResponse, slug: string): VenueData {
-  const filterCtas = <T extends { label?: string; href?: string }>(arr?: T[]): { label: string; href: string }[] | undefined => {
-    if (!arr?.length) return undefined;
-    const filtered = arr
-      .filter((c) => c.label && c.href)
-      .map((c) => ({ ...c, label: c.label!, href: c.href! }));
-    return filtered.length ? filtered : undefined;
-  };
-  const ctas = filterCtas(s.ctas) as VenueData['ctas'];
-  const bottomCtas = filterCtas(s.bottomCtas);
-  const downloads =
-    s.downloads && s.downloads.items?.length
-      ? {
-          heading: s.downloads.heading,
-          items: s.downloads.items
-            .filter((i) => i.label && i.href)
-            .map((i) => ({ label: i.label!, href: i.href!, isExternal: i.isExternal })),
-        }
-      : undefined;
-  return {
-    name: s.heading || s.title || '',
-    slug,
-    description: s.description ?? s.intro ?? '',
-    parentSection: s.parentLabel,
-    parentHref: s.parentHref,
-    image: s.heroImage,
-    cuisineType: s.label,
-    locationLevel: s.locationLevel,
-    phone: s.phone,
-    email: s.email,
-    locationContact: s.locationContact ?? null,
-    operatingHoursSections: s.operatingHoursSections,
-    downloads,
-    ctas,
-    bottomCtas,
-    body: s.body as VenueData['body'],
-  };
-}
-
-// `apiPath` is optional — when omitted, the section renders entirely from
-// the subpages.ts static fallback. The legacy `facility` collection was
-// dropped in Section 2; only the fitness section has a CMS-backed
-// collection right now. kids / event-spaces / membership / home-sub will
-// get their own per-section collections in future audits.
-const SECTION_MAP: Record<string, { apiPath?: string; parentLabel: string; parentHref: string }> = {
+const SECTION_MAP: Record<string, { apiPath: string; parentLabel: string; parentHref: string }> = {
   dining: { apiPath: '/restaurants', parentLabel: 'Dining & Retail', parentHref: '/dining' },
-  fitness: {
-    apiPath: '/fitness-facilities',
-    parentLabel: 'Fitness & Wellness',
-    parentHref: '/fitness',
-  },
-  kids: { apiPath: '/kids-experiences', parentLabel: 'Kids', parentHref: '/kids' },
-  'event-spaces': { apiPath: '/event-spaces', parentLabel: 'Private Events & Catering', parentHref: '/event-spaces' },
-  membership: { parentLabel: 'Membership', parentHref: '/membership' },
-  'home-sub': { parentLabel: 'The American Club', parentHref: '/home' },
+  fitness: { apiPath: '/facilities', parentLabel: 'Fitness & Wellness', parentHref: '/fitness' },
+  kids: { apiPath: '/facilities', parentLabel: 'Kids', parentHref: '/kids' },
+  'event-spaces': { apiPath: '/facilities', parentLabel: 'Private Events & Catering', parentHref: '/event-spaces' },
+  membership: { apiPath: '/facilities', parentLabel: 'Membership', parentHref: '/membership' },
+  'home-sub': { apiPath: '/facilities', parentLabel: 'The American Club', parentHref: '/home' },
 };
 
 function staticFallback(section: string, slug: string): VenueData | null {
@@ -401,121 +313,22 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
     if (!config || !lookupSlug || !section) return;
     const load = async () => {
       setLoading(true);
-      // Singleton override: certain (section, slug) tuples are backed by a
-      // dedicated single-type in Strapi. We fetch that instead of the
-      // collection and adapt the response into VenueData shape.
-      const singletonEndpoint = SINGLETON_OVERRIDES[`${section}/${lookupSlug}`];
-      let items: VenueData[] | null = null;
-      if (singletonEndpoint) {
-        const s = await fetchAPI<SingletonResponse>(singletonEndpoint);
-        if (s) items = [adaptSingleton(s, lookupSlug)];
-      } else if (config.apiPath) {
-        // Each collection's custom controller supplies its own POPULATE map
-        // server-side. Strapi 5.46's stricter populate-validator rejects
-        // `=*` on leaf fields and unknown keys, so we keep populate out of
-        // the request. Sections without an apiPath (kids, event-spaces,
-        // membership, home-sub) skip the CMS hit and render entirely from
-        // the subpages.ts static fallback below.
-        items = await fetchAPI<VenueData[]>(config.apiPath, {
-          'filters[slug][$eq]': lookupSlug,
-        });
-      }
+      // Strapi v5's `populate=*` only goes one level deep, which leaves
+      // operatingHoursSections.rows empty. List each relation explicitly and
+      // deep-populate the nested rows.
+      const params: Record<string, string> = {
+        'filters[slug][$eq]': lookupSlug,
+        'populate[image]': 'true',
+        'populate[ctas]': 'true',
+        'populate[locationContact]': 'true',
+        'populate[operatingHoursSections][populate]': '*',
+        'populate[teamMembers][populate]': '*',
+        'populate[downloads][populate]': '*',
+      };
+      const items = await fetchAPI<VenueData[]>(config.apiPath, params);
       const fallback = staticFallback(section, lookupSlug);
-
-      // For dining venues, check if any dining-promotions reference this
-      // restaurant. If so, inject a "Promotions" CTA pointing at the matching
-      // #promo-<slug> anchor on /dining/dining-promotion. Replaces the
-      // hardcoded CTAs previously kept in subpages.ts.
-      let promotionsCta: { label: string; href: string; isExternal?: boolean } | null = null;
-      if (section === 'dining' && lookupSlug) {
-        const promos = await fetchAPI<{ slug: string }[]>('/dining-promotions', {
-          'filters[restaurant][slug][$eq]': lookupSlug,
-          'pagination[pageSize]': '1',
-          'fields[0]': 'slug',
-        });
-        if (promos && promos.length > 0) {
-          promotionsCta = {
-            label: 'Promotions',
-            href: `/dining/dining-promotion#promo-${lookupSlug}`,
-          };
-        }
-      }
-      const injectPromotionsCta = <T extends { label: string; href: string; isExternal?: boolean }>(
-        ctas?: T[] | null,
-      ): T[] | undefined => {
-        if (!promotionsCta) return ctas ?? undefined;
-        const list = ctas ? [...ctas] : [];
-        if (list.some((c) => c.label === 'Promotions')) return list;
-        return [...list, promotionsCta as unknown as T];
-      };
-
-      // For fitness facilities, the per-discipline coach collection is the
-      // single source of truth for "Meet Our Team" (Section 2). Map facility
-      // slug → collection plural; if the collection has rows, they override
-      // any inline teamMembers component. Falls back to the inline component
-      // when the collection is empty.
-      const COACH_COLLECTIONS: Record<string, string> = {
-        aquatics: 'aquatics-coaches',
-        tennis: 'tennis-coaches',
-        pilates: 'pilates-instructors',
-        gym: 'gym-trainers',
-      };
-      let coachTeam: VenueData['teamMembers'] | undefined;
-      if (section === 'fitness' && lookupSlug && COACH_COLLECTIONS[lookupSlug]) {
-        type ApiCoach = {
-          slug: string;
-          name: string;
-          role: string;
-          order?: number;
-          photo?: { url?: string } | null;
-          bioImage?: { url?: string } | null;
-          bioDocument?: { url?: string } | null;
-          bioHtml?: string | null;
-          imageOffsetX?: number;
-          imageOffsetY?: number;
-          imageZoom?: number;
-        };
-        const list = await fetchAPI<ApiCoach[]>(`/${COACH_COLLECTIONS[lookupSlug]}`, {
-          'sort[0]': 'order:asc',
-          'pagination[pageSize]': '100',
-        });
-        if (list && list.length > 0) {
-          coachTeam = list.map((c) => ({
-            name: c.name,
-            role: c.role,
-            image: c.photo?.url,
-            bioImage: c.bioImage?.url,
-            imageOffsetX: c.imageOffsetX,
-            imageOffsetY: c.imageOffsetY,
-            imageZoom: c.imageZoom,
-            // Detail-page link only if the entry actually has detail content.
-            coachLink:
-              c.bioImage?.url || c.bioDocument?.url || c.bioHtml
-                ? `/coaches/${lookupSlug}/${c.slug}`
-                : undefined,
-          }));
-        }
-      }
-
       if (items && items.length > 0) {
-        const rawApi = items[0] as VenueData & {
-          heroImage?: { url?: string; alternativeText?: string } | string;
-          parentLabel?: string;
-        };
-        // The new `fitness-facility` schema uses `heroImage` + `parentLabel`
-        // (Phase A naming) where VenueData expects `image` + `parentSection`.
-        // Coerce here so the rest of the merge logic stays uniform.
-        const api: VenueData = {
-          ...rawApi,
-          image:
-            rawApi.image ??
-            (rawApi.heroImage
-              ? typeof rawApi.heroImage === 'string'
-                ? { url: rawApi.heroImage }
-                : { url: rawApi.heroImage.url ?? '', alternativeText: rawApi.heroImage.alternativeText }
-              : undefined),
-          parentSection: rawApi.parentSection ?? rawApi.parentLabel,
-        };
+        const api = items[0];
         // Strapi v5 returns media as `{ url, alternativeText, ... }`; the team
         // grid renders `image`/`bioImage` as plain string paths, so flatten.
         const apiTeam = api.teamMembers?.map((m) => ({
@@ -532,10 +345,10 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           ...api,
           image: api.image ?? fallback?.image,
           video: api.video ?? fallback?.video,
-          ctas: injectPromotionsCta(api.ctas?.length ? api.ctas : fallback?.ctas),
+          ctas: api.ctas?.length ? api.ctas : fallback?.ctas,
           extraSections: api.extraSections?.length ? api.extraSections : fallback?.extraSections,
           promoCards: api.promoCards ?? fallback?.promoCards,
-          teamMembers: coachTeam?.length ? coachTeam : (apiTeam?.length ? apiTeam : fallback?.teamMembers),
+          teamMembers: apiTeam?.length ? apiTeam : fallback?.teamMembers,
           teamHeading: api.teamHeading ?? fallback?.teamHeading,
           bottomCtas: api.bottomCtas?.length ? api.bottomCtas : fallback?.bottomCtas,
           imagePanels: api.imagePanels?.length ? api.imagePanels : fallback?.imagePanels,
@@ -549,14 +362,8 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           venueCards: api.venueCards ?? fallback?.venueCards,
           packageCards: api.packageCards ?? fallback?.packageCards,
         });
-      } else if (fallback) {
-        setVenue({
-          ...fallback,
-          ctas: injectPromotionsCta(fallback.ctas),
-          teamMembers: coachTeam?.length ? coachTeam : fallback.teamMembers,
-        });
       } else {
-        setVenue(null);
+        setVenue(fallback);
       }
       setLoading(false);
     };
@@ -769,17 +576,35 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                 </div>
               )}
 
-              {/* Description — Lato 19.2px / 400, line-height 26.88px */}
+              {/* Description — Lato 19.2px / 400, line-height 26.88px. Markdown for inline [text](url) links (mailto, http, relative). */}
               <div className="flex flex-col" style={{ gap: '20px' }}>
-                {venue.description.split('\n\n').map((p, i) => (
-                  <p
-                    key={i}
-                    className="text-text-dark"
-                    style={{ fontSize: '19.2px', fontWeight: 400, lineHeight: '26.88px' }}
-                  >
-                    {p}
-                  </p>
-                ))}
+                <ReactMarkdown
+                  components={{
+                    p: ({ children }) => (
+                      <p
+                        className="text-text-dark"
+                        style={{ fontSize: '19.2px', fontWeight: 400, lineHeight: '26.88px' }}
+                      >
+                        {children}
+                      </p>
+                    ),
+                    a: ({ href, children }) => {
+                      const external = href?.startsWith('http');
+                      return (
+                        <a
+                          href={href}
+                          target={external ? '_blank' : undefined}
+                          rel={external ? 'noopener noreferrer' : undefined}
+                          className="text-accent underline underline-offset-2 hover:no-underline"
+                        >
+                          {children}
+                        </a>
+                      );
+                    },
+                  }}
+                >
+                  {venue.description}
+                </ReactMarkdown>
               </div>
 
               {/* ── Operating Hours ──
@@ -2073,11 +1898,6 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           items={venue.faq}
         />
       )}
-
-      {/* ── CMS dynamiczone body (Phase A). Renders any blocks the entry
-            has authored before the back link so the page flow reads
-            top-to-bottom; falls through silently if no body. ── */}
-      <BlockRenderer blocks={venue?.body} />
 
       {/* ── Back link ── */}
       <section className="py-10 bg-bg">
