@@ -128,6 +128,29 @@ async function refreshAgentKnowledgeBase(strapi: Strapi): Promise<void> {
 
 // ── Single-entry sync ────────────────────────────────────────────────
 
+/**
+ * Remove an entry from the ElevenLabs KB by uid + slug. Used by the
+ * content-expiry cron (cms/src/index.ts) when an event/promotion passes
+ * its date — Strapi still holds the entry (URL stays alive) but the KB
+ * should drop it so the chatbot stops referencing expired info.
+ * Idempotent: no-op when no log row exists for the doc name.
+ */
+export async function unsyncEntryBySlug(
+  strapi: Strapi,
+  uid: string,
+  slug: string,
+): Promise<SyncResult> {
+  const docName = buildDocName(strapi, uid, { slug, id: 0 } as unknown as Record<string, unknown>);
+  const existingRow = await getLogRowByName(strapi, docName);
+  if (!existingRow) return { documentName: docName, status: 'skipped' };
+
+  try { await client.deleteDoc(strapi as never, existingRow.elDocumentId); }
+  catch (err) { strapi.log.warn(`[${PLUGIN_ID}] failed to delete remote doc ${existingRow.elDocumentId}: ${(err as Error).message}`); }
+  await deleteLogRow(strapi, existingRow.id);
+  await refreshAgentKnowledgeBase(strapi);
+  return { documentName: docName, status: 'deleted' };
+}
+
 export async function syncEntry(strapi: Strapi, uid: string, documentId?: string): Promise<SyncResult> {
   const allow = await getEffectiveAllowList(strapi as never);
   if (!allow.includes(uid)) {

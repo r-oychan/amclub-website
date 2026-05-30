@@ -1,4 +1,5 @@
 import { factories } from '@strapi/strapi';
+import { withExpiryFilter } from '../../../utils/expiry-filter';
 
 // Explicit populate map — Strapi 5.46 rejects `populate=*` on leaf seo
 // component fields. Including the `restaurant` relation with just the
@@ -13,10 +14,15 @@ const POPULATE = {
   restaurant: { fields: ['slug', 'name', 'menuUrl', 'order'] },
 };
 
+// Listing endpoints (no slug/documentId filter) drop promotions whose
+// validTo has passed. Detail-by-slug queries bypass the filter so the
+// /dining/dining-promotion#promo-<slug> anchors and any saved direct
+// link to an expired promo still resolve.
 export default factories.createCoreController(
   'api::dining-promotion.dining-promotion',
   () => ({
     async find(ctx) {
+      ctx.query = withExpiryFilter(ctx.query, 'validTo');
       ctx.query = { ...ctx.query, populate: POPULATE };
       return await super.find(ctx);
     },

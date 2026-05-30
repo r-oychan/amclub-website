@@ -130,6 +130,54 @@ async function backfillUploadMimes(strapi: any) {
   strapi.log.info(`[bootstrap] backfilled mime on ${fixed}/${stale.length} upload row(s)`);
 }
 
+// Expiry-driven KB cleanup. Listing endpoints already hide past entries
+// (see cms/src/utils/expiry-filter.ts), but the ElevenLabs chatbot KB
+// holds an independent snapshot per entry. This cron iterates the two
+// expiry-aware collections, finds rows whose date passed since the last
+// tick, and asks the elevenlabs-chatbot plugin to drop them from the KB.
+// Strapi keeps the entry rows themselves (URL stays alive).
+//
+// Hourly cadence is enough — KB hygiene doesn't need minute precision,
+// and listing-side filtering already gives instant user-facing effect.
+async function sweepExpiredKbDocs(strapi: any) {
+  const today = new Date().toISOString().slice(0, 10);
+  const targets: { uid: string; field: string }[] = [
+    { uid: 'api::event.event', field: 'date' },
+    { uid: 'api::dining-promotion.dining-promotion', field: 'validTo' },
+  ];
+  let dropped = 0;
+  const unsync = strapi.plugin('elevenlabs-chatbot')?.service('sync')?.unsyncEntryBySlug;
+  if (typeof unsync !== 'function') {
+    strapi.log.warn('[expiry-cron] elevenlabs-chatbot.sync.unsyncEntryBySlug not available');
+    return;
+  }
+  for (const { uid, field } of targets) {
+    let rows: { slug?: string }[] = [];
+    try {
+      rows = await strapi.db.query(uid).findMany({
+        where: { [field]: { $lt: today } },
+        select: ['slug'],
+        limit: 500,
+      });
+    } catch (e) {
+      strapi.log.warn(`[expiry-cron] failed to query ${uid}: ${(e as Error).message}`);
+      continue;
+    }
+    for (const r of rows) {
+      if (!r.slug) continue;
+      try {
+        const res = await unsync(strapi, uid, r.slug);
+        if (res?.status === 'deleted') dropped += 1;
+      } catch (e) {
+        strapi.log.warn(`[expiry-cron] ${uid}/${r.slug}: ${(e as Error).message}`);
+      }
+    }
+  }
+  if (dropped > 0) {
+    strapi.log.info(`[expiry-cron] removed ${dropped} expired entr(ies) from ElevenLabs KB`);
+  }
+}
+
 export default {
   register() {},
   async bootstrap({ strapi }: { strapi: any }) {
@@ -142,6 +190,18 @@ export default {
       await backfillUploadMimes(strapi);
     } catch (e) {
       strapi.log.error('[bootstrap] failed to backfill upload mimes', e);
+    }
+    // Hourly content-expiry KB sweep. config/server.ts enables cron.
+    try {
+      strapi.cron.add({
+        expiryKbSweep: {
+          task: () => sweepExpiredKbDocs(strapi),
+          options: { rule: '0 * * * *' },
+        },
+      });
+      strapi.log.info('[bootstrap] registered hourly expiry KB sweep');
+    } catch (e) {
+      strapi.log.error('[bootstrap] failed to register expiry cron', e);
     }
   },
 };

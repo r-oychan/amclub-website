@@ -6,6 +6,9 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Server =>
   app: {
     keys: env.array('APP_KEYS'),
   },
+  // Cron tasks are registered in cms/src/index.ts via strapi.cron.add(...).
+  // The flag must be enabled here for the runtime to actually fire them.
+  cron: { enabled: env.bool('CRON_ENABLED', true) },
   // We sit behind nginx (in the all-in-one Azure Container App image), which
   // terminates TLS at the Azure ingress and forwards to Strapi over HTTP on
   // 127.0.0.1:1337. Without `proxy: true`, Koa sees req.secure === false and
