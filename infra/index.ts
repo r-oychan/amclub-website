@@ -169,6 +169,28 @@ const mediaContainer = new azure.storage.BlobContainer(`${projectName}-media`, {
   publicAccess: azure.storage.PublicAccess.Blob,
 });
 
+// CORS on the blob service so Strapi admin's media-library can render
+// thumbnails (its <img> tags carry crossorigin="anonymous"). Blobs are
+// already publicly readable; this just teaches Azure to emit the CORS
+// headers the browser requires for cross-origin <img> loads, canvas, and
+// fetch. Wildcard origin is safe here — there is no auth on these blobs.
+new azure.storage.BlobServiceProperties(`${projectName}-blob-cors`, {
+  accountName: storage.name,
+  resourceGroupName: rg.name,
+  blobServicesName: 'default',
+  cors: {
+    corsRules: [
+      {
+        allowedOrigins: ['*'],
+        allowedMethods: ['GET', 'HEAD', 'OPTIONS'],
+        allowedHeaders: ['*'],
+        exposedHeaders: ['*'],
+        maxAgeInSeconds: 3600,
+      },
+    ],
+  },
+});
+
 const storageKey = pulumi
   .all([rg.name, storage.name])
   .apply(([rgName, accountName]) =>
