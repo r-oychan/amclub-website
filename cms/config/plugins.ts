@@ -34,6 +34,14 @@ const DEFAULT_ELEVENLABS_CONTENT_TYPES = [
 const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin => {
   const plugins: Core.Config.Plugin = {};
 
+  // Clone-entry — local plugin. Adds a "Clone entry" button on every
+  // collection-type edit view; copies the source entry into a new draft
+  // with slug -copy[-N] and title (copy). Media + relations referenced.
+  plugins['clone-entry'] = {
+    enabled: true,
+    resolve: './src/plugins/clone-entry',
+  };
+
   // ElevenLabs chatbot — local plugin. KB sync (publish-time + bulk),
   // admin settings page, and the public-config endpoint consumed by the
   // on-site widget all live in cms/src/plugins/elevenlabs-chatbot.
