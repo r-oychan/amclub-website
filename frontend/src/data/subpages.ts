@@ -1726,7 +1726,7 @@ export const eventSpacesSubpages: SubpageData[] = [
       'With over 3,400 square feet of versatile, pillar-less space, The Galbraith Ballroom is the perfect venue to host your next event or meeting.',
     image:
       'https://framerusercontent.com/images/rA4tJSoJzyWMv0VxMzxueeloOKI.jpg',
-    capacity: '200+ pax',
+    capacity: '230 pax',
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
@@ -1763,7 +1763,18 @@ export const eventSpacesSubpages: SubpageData[] = [
     type: 'Entertainment Venue',
     description:
       'The Bowling Alley delivers top-notch, anytime fun for all skill levels. Also ideal for birthday celebrations, corporate gatherings, and small group get-togethers.',
-    hours: 'Mon-Thu 12pm-7pm, Fri 12pm-8pm, Sat 10:30am-8pm, Sun 9:30am-7pm',
+    capacity: '30 pax',
+    operatingHoursSections: [
+      {
+        title: 'Opening Hours',
+        rows: [
+          { dayRange: 'Monday to Thursday', time: '12:00PM – 7:00PM' },
+          { dayRange: 'Friday',             time: '12:00PM – 8:00PM' },
+          { dayRange: 'Saturday',           time: '10:30AM – 8:00PM' },
+          { dayRange: 'Sunday',             time: '9:30AM – 7:00PM' },
+        ],
+      },
+    ],
     level: 'Basement 2',
     phone: '6739 4444/4413',
     email: 'youth@amclub.org.sg',
