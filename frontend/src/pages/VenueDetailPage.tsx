@@ -1,6 +1,7 @@
 import { useParams, useLocation, Link } from 'react-router';
 import { useEffect, useState, type ReactNode } from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkBreaks from 'remark-breaks';
 import { fetchAPI } from '../lib/api';
 import { getSubpage } from '../data/subpages';
 import { Button } from '../components/shared/Button';
@@ -579,6 +580,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
               {/* Description — Lato 19.2px / 400, line-height 26.88px. Markdown for inline [text](url) links (mailto, http, relative). */}
               <div className="flex flex-col" style={{ gap: '20px' }}>
                 <ReactMarkdown
+                  remarkPlugins={[remarkBreaks]}
                   components={{
                     p: ({ children }) => (
                       <p

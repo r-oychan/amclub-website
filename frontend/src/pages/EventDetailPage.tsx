@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router';
 import ReactMarkdown from 'react-markdown';
+import remarkBreaks from 'remark-breaks';
 import { fetchAPI, STRAPI_URL } from '../lib/api';
 import { EVENT_PLACEHOLDER_IMAGE, normalizeAmPm } from '../lib/events';
 import { PageFade } from '../components/shared/PageFade';
@@ -243,6 +244,7 @@ export default function EventDetailPage() {
               {descriptionParas.length > 0 && (
                 <div className="flex flex-col" style={{ gap: '20px' }}>
                   <ReactMarkdown
+                    remarkPlugins={[remarkBreaks]}
                     components={{
                       p: ({ children }) => (
                         <p
