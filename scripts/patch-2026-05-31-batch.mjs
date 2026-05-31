@@ -117,16 +117,17 @@ const EVENT_PATCHES = [
   {
     slug: 'camp-eagle-explorers-summer-2026',
     longDescription:
+      // Note: the inline "[Register here](…)" lines that lived here were
+      // removed on 2026-06-01 — CTAs already cover the action and the user
+      // didn't want them duplicated in the body.
       'Members: $140 per day | $700 per week\n' +
       'Guests: $160 per day | $800 per week\n\n\n' +
       '4-7 years old\n' +
       'Time: 9:00 AM – 3:00 PM\n' +
       'Venue: The American Club & various locations around Singapore\n\n\n' +
-      `[Register here](${CAMP_EAGLE_REG_URL_4_7})\n\n\n` +
       '8 years old and above\n' +
       'Time: 8:30 AM – 3:00 PM\n' +
-      'Venue: The American Club & various locations around Singapore\n\n\n' +
-      `[Register here](${CAMP_EAGLE_REG_URL_8_PLUS})`,
+      'Venue: The American Club & various locations around Singapore',
     ctas: [
       { label: 'Register (4-7 yo)',         href: CAMP_EAGLE_REG_URL_4_7,   isExternal: true, bordered: false, variant: 'primary', icon: 'calendar', caption: null },
       { label: 'Register (8 yo and above)', href: CAMP_EAGLE_REG_URL_8_PLUS, isExternal: true, bordered: false, variant: 'primary', icon: 'calendar', caption: null },
@@ -182,18 +183,23 @@ const OPS = {
     }
   },
 
-  // ---------------- 2 — Upload + attach camp-eagle hero image ----------------
+  // ---------------- 2 — Upload + attach 4th of July hero image ----------------
+  // Note: the original 2026-05-31 batch attached this image to Camp Eagle by
+  // mistake. The 06-01 follow-up (patch-2026-06-01-image-and-body-fix.mjs)
+  // detached it from Camp Eagle and re-attached it to its real owner: the
+  // 4th of July Celebration. This op now reflects the correct target, so a
+  // fresh replay against any env attaches the image to the right event.
   2: async () => {
-    console.log('\n[2] Camp Eagle Explorers — upload + attach hero image');
-    const SLUG = 'camp-eagle-explorers-summer-2026';
+    console.log('\n[2] 4th of July Celebration — upload + attach hero image');
+    const SLUG = 'fourth-of-july-celebration-2026';
     const r = await api(ctx, `/events?filters[slug][$eq]=${SLUG}&populate=*&publicationState=preview&pagination[limit]=1`);
     const e = r?.data?.[0];
     if (!e) { console.log('  ✗ event not found — skip'); return; }
-    if (e.image?.name === 'event-camp-eagle-explorers-summer-2026.jpg') {
+    if (e.image?.name === 'event-fourth-of-july-celebration-2026.jpg') {
       console.log('  = image already attached — skip');
       return;
     }
-    const localPath = join(ROOT, 'media/events/event-camp-eagle-explorers-summer-2026.jpg');
+    const localPath = join(ROOT, 'media/events/event-fourth-of-july-celebration-2026.jpg');
     if (DRY) { console.log(`  [dry] upload ${localPath} + PUT image`); return; }
     const uploaded = await uploadFile(ctx, localPath);
     await api(ctx, `/events/${e.documentId}`, { method: 'PUT', body: { data: { image: uploaded.id } } });
