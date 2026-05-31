@@ -33,17 +33,18 @@ const EVENT_PATCHES = [
       'Coconut Lime Cooler $6',
   },
 
-  // 3) Camp Eagle — extra blank line between the two age-group blocks. The
-  //    inline `<br />` after the time gives the visible line gap the user
-  //    asked for ("add new line here") even with markdown's whitespace-
-  //    collapsing rules.
+  // 3) Camp Eagle — paragraph break between the two age-group blocks. The
+  //    original 2026-06-01 attempt used an inline `<br />` for extra spacing
+  //    but react-markdown doesn't parse inline HTML without rehype-raw, so
+  //    the tag rendered as literal text. Patched to plain `\n\n` on the same
+  //    day; this constant reflects the final state so future replays match.
   {
     slug: 'camp-eagle-explorers-summer-2026',
     longDescription:
       'Members: $140 per day | $700 per week\n' +
       'Guests: $160 per day | $800 per week\n\n' +
       '4-7 years old\n' +
-      'Time: 9:00 AM – 3:00 PM\n<br />\n\n' +
+      'Time: 9:00 AM – 3:00 PM\n\n' +
       '8 years old and above\n' +
       'Time: 8:30 AM – 3:00 PM',
   },
