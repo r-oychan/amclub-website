@@ -98,8 +98,9 @@ const EVENT_PATCHES = [
   {
     slug: 'heroes-and-sidekicks-fathers-day-2026',
     longDescription:
-      'Session 1: 1:00 PM – 2:30 PM\n' +
-      'Session 2: 3:00 PM – 4:30 PM\n' +
+      // Sessions combined onto one line (2026-06-01 trim) so the block
+      // renders as 2 lines: sessions / venue.
+      'Session 1: 1:00 PM – 2:30 PM · Session 2: 3:00 PM – 4:30 PM\n' +
       'The Quad Studios\n\n\n' +
       "Step inside the Hero Training Grounds for a playful Father's Day adventure filled with creative crafts, fun challenges, and superhero moments. Kids will create personalized gifts, complete hero missions, and celebrate the everyday heroes they call Dad.\n\n\n" +
       'Member: $40 for dad & child\n' +
@@ -119,17 +120,18 @@ const EVENT_PATCHES = [
   {
     slug: 'camp-eagle-explorers-summer-2026',
     longDescription:
-      // Note: the inline "[Register here](…)" lines that lived here were
-      // removed on 2026-06-01 — CTAs already cover the action and the user
-      // didn't want them duplicated in the body.
+      // Notes:
+      //  - the inline "[Register here](…)" lines were removed on 2026-06-01
+      //    (CTAs already cover the action).
+      //  - the duplicated "Venue: The American Club & various locations
+      //    around Singapore" line was removed on 2026-06-01 (no body benefit
+      //    over event.location).
       'Members: $140 per day | $700 per week\n' +
       'Guests: $160 per day | $800 per week\n\n\n' +
       '4-7 years old\n' +
-      'Time: 9:00 AM – 3:00 PM\n' +
-      'Venue: The American Club & various locations around Singapore\n\n\n' +
+      'Time: 9:00 AM – 3:00 PM\n\n\n' +
       '8 years old and above\n' +
-      'Time: 8:30 AM – 3:00 PM\n' +
-      'Venue: The American Club & various locations around Singapore',
+      'Time: 8:30 AM – 3:00 PM',
     ctas: [
       { label: 'Register (4-7 yo)',         href: CAMP_EAGLE_REG_URL_4_7,   isExternal: true, bordered: false, variant: 'primary', icon: 'calendar', caption: null },
       { label: 'Register (8 yo and above)', href: CAMP_EAGLE_REG_URL_8_PLUS, isExternal: true, bordered: false, variant: 'primary', icon: 'calendar', caption: null },

@@ -130,8 +130,7 @@ export default function KidsPage() {
     items: [
       {
         name: 'The Quad Studio Party Package',
-        image:
-          'https://amclubdata28a57492.blob.core.windows.net/media/uploads/quadstudio_a820344edb.jpeg',
+        image: '/images/kids/kids-parties/quad-studio.jpeg',
         imageAlt: 'The Quad Studio Party Package',
         cta: {
           label: 'Download Brochure',
@@ -141,8 +140,7 @@ export default function KidsPage() {
       },
       {
         name: 'The Bowling Alley Party Package',
-        image:
-          'https://amclubdata28a57492.blob.core.windows.net/media/uploads/bowling_alley_256914ebd6.jpeg',
+        image: '/images/kids/kids-parties/bowling-alley.jpeg',
         imageAlt: 'The Bowling Alley Party Package',
         cta: {
           label: 'Download Brochure',
@@ -152,7 +150,7 @@ export default function KidsPage() {
       },
       {
         name: 'Union Bar x The Bowling Alley',
-        image: `${STRAPI_URL}/uploads/union_bar_4a8862c1e3.jpeg`,
+        image: '/images/kids/kids-parties/union-bar.jpeg',
         imageAlt: 'Union Bar x The Bowling Alley',
         cta: {
           label: 'View Menu',
