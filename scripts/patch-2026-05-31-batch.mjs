@@ -39,11 +39,12 @@ const CAMP_EAGLE_REG_URL_8_PLUS =
 
 const EVENT_PATCHES = [
   // ---------------- 1 — Basketball Finals ----------------
+  // "View the schedule here." trailing line was removed on 2026-06-01 —
+  // the "View Schedule" CTA already covers the action.
   {
     slug: 'basketball-finals-live-screening-union-bar-2026',
     longDescription:
-      'Catch the Basketball Finals 2026 live at Union Bar and enjoy the excitement of the game with fellow fans, great food, and drinks.\n\n' +
-      'View the schedule here.',
+      'Catch the Basketball Finals 2026 live at Union Bar and enjoy the excitement of the game with fellow fans, great food, and drinks.',
   },
 
   // ---------------- 2 — Football Fever ----------------
@@ -105,7 +106,8 @@ const EVENT_PATCHES = [
       'Guest: $45 for dad & child\n\n\n' +
       'Additional $10 for Sidekick Lounge Access\n' +
       'Relax with refreshments and a casual lounge space while the little heroes complete their missions.\n\n\n' +
-      `[Register here](${HEROES_REG_URL}).\n\n\n` +
+      // The inline "[Register here](…)." paragraph was removed on 2026-06-01
+      // — the Register CTA already covers the action.
       'Terms and Conditions:\n' +
       'A 48-hour cancellation policy applies. Members will be charged for the full event fee for no-shows or cancellations made less than 48 hours before the event.',
     ctas: [
