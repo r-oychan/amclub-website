@@ -1373,7 +1373,8 @@ export const kidsSubpages: SubpageData[] = [
     slug: 'camps',
     name: 'Seasonal Kids\' Camps',
     type: 'Programs',
-    description: 'Check out the various camps available in the video.',
+    description:
+      'Seasonal camps are a great way for kids to have fun and keep them occupied when school is out. The camps offer a full day of activities around sports, art and science in a safe and fun environment. Think Hands-on fun at the Club with culinary, STEM, sports and arts and craft activities.\n\nCheck out the various camps available in the video below.',
     video: { url: 'https://youtu.be/d7oyA6sLGVw', title: 'Seasonal Kids\' Camps at The American Club' },
     parentSection: 'Kids',
     parentHref: '/kids',
@@ -1694,7 +1695,7 @@ export const eventSpacesSubpages: SubpageData[] = [
         },
         {
           heading: 'The Bowling Alley',
-          capacity: '30 pax',
+          capacity: 'Up to 30 pax',
           description:
             'A refreshing option for team-building, client entertainment, and informal corporate socials, The Bowling Alley offers a lively setting that blends friendly competition with curated food and beverage experiences.',
           image:
@@ -1768,7 +1769,7 @@ export const eventSpacesSubpages: SubpageData[] = [
     type: 'Entertainment Venue',
     description:
       'The Bowling Alley delivers top-notch, anytime fun for all skill levels. Also ideal for birthday celebrations, corporate gatherings, and small group get-togethers.',
-    capacity: '30 pax',
+    capacity: 'Up to 30 pax',
     operatingHoursSections: [
       {
         title: 'Opening Hours',
@@ -1880,6 +1881,7 @@ export const membershipSubpages: SubpageData[] = [
         { label: 'PDPA Acknowledgement Form',          href: '/documents/membership/forms/pdpa-acknowledgement-form.pdf',          isExternal: true },
         { label: 'GIRO Payment Form',                  href: '/documents/membership/forms/giro-payment-form.pdf',                  isExternal: true },
         { label: 'Car Registration Form',              href: 'https://amclub.jotform.com/250688995352877',                          isExternal: true },
+        { label: 'Visiting Membership Application Form', href: 'https://amclub.jotform.com/260038799703970',                        isExternal: true },
       ],
     },
   },
