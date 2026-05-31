@@ -2,6 +2,7 @@ import { useParams, useLocation, Link } from 'react-router';
 import { useEffect, useState, type ReactNode } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkBreaks from 'remark-breaks';
+import rehypeRaw from 'rehype-raw';
 import { fetchAPI } from '../lib/api';
 import { getSubpage } from '../data/subpages';
 import { Button } from '../components/shared/Button';
@@ -581,6 +582,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
               <div className="flex flex-col" style={{ gap: '20px' }}>
                 <ReactMarkdown
                   remarkPlugins={[remarkBreaks]}
+                  rehypePlugins={[rehypeRaw]}
                   components={{
                     p: ({ children }) => (
                       <p
