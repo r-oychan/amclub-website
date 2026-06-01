@@ -4,17 +4,36 @@
   "info": {
     "singularName": "whats-on-page",
     "pluralName": "whats-on-pages",
-    "displayName": "Whats On Page",
+    "displayName": "What's On: Page",
     "description": "Whats On Page content"
   },
   "options": {
     "draftAndPublish": true
   },
   "attributes": {
-    "title": { "type": "string", "required": true },
-    "hero": { "type": "component", "repeatable": false, "component": "blocks.hero" },
-    "eventsSection": { "type": "component", "repeatable": false, "component": "blocks.event-listing" },
-    "finalCta": { "type": "component", "repeatable": false, "component": "blocks.cta-banner" },
-    "seo": { "type": "component", "repeatable": false, "component": "shared.seo" }
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "hero": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.hero"
+    },
+    "eventsSection": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.event-listing"
+    },
+    "finalCta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.cta-banner"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
   }
 }

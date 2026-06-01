@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_blocks_venue_card_grids",
+  "info": {
+    "displayName": "Venue Card Grid",
+    "icon": "grid",
+    "description": "Grid of venue cards (event-spaces package pages list of available venues)."
+  },
+  "attributes": {
+    "heading": { "type": "string" },
+    "subheading": { "type": "text" },
+    "columns": {
+      "type": "integer",
+      "default": 3,
+      "min": 1,
+      "max": 4
+    },
+    "cards": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.venue-card"
+    }
+  }
+}

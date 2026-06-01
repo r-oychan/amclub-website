@@ -4,11 +4,11 @@
   "info": {
     "singularName": "faq-item",
     "pluralName": "faq-items",
-    "displayName": "FAQ Item",
+    "displayName": "FAQ: Items",
     "description": "Frequently asked questions"
   },
   "options": {
-    "draftAndPublish": false
+    "draftAndPublish": true
   },
   "attributes": {
     "question": {
@@ -25,7 +25,14 @@
     },
     "category": {
       "type": "enumeration",
-      "enum": ["membership", "facilities", "dining", "events", "kids", "general"],
+      "enum": [
+        "membership",
+        "facilities",
+        "dining",
+        "events",
+        "kids",
+        "general"
+      ],
       "default": "general"
     },
     "faqCategory": {

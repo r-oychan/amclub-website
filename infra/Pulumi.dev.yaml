@@ -1,3 +1,15 @@
 config:
   azure-native:location: southeastasia
+  # Custom domain bound to the Container App. Without this declared in
+  # stack config, every `pulumi up` strips the domain because the resource
+  # body Pulumi PUTs to Azure replaces customDomains with empty (Azure
+  # Container Apps uses PUT semantics, not PATCH — see commit history of
+  # infra/index.ts for the prior failed `ignoreChanges` attempt).
+  #
+  # certName is the managed certificate resource name in the Container Apps
+  # Environment. Look up via Azure Portal → Container Apps Environment →
+  # Certificates, or `az containerapp env certificate list -g <rg> -n <env>`.
+  amclub-website:customDomains:
+    - name: dev.amclub.org.sg
+      certName: dev.amclub.org.sg-amclub-d-260519023012
 encryptionsalt: v1:HHRft+wXaUQ=:v1:n9nI1xWzf1OcFPd0:skebq/7OuJqdwdeRSwZGs6MDKqo7oQ==

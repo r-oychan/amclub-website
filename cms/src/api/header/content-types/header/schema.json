@@ -4,17 +4,19 @@
   "info": {
     "singularName": "header",
     "pluralName": "headers",
-    "displayName": "Header",
+    "displayName": "Global: Header",
     "description": "Site navigation header"
   },
   "options": {
-    "draftAndPublish": false
+    "draftAndPublish": true
   },
   "attributes": {
     "logo": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "navItems": {
       "type": "component",

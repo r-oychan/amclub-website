@@ -51,9 +51,30 @@ const config: Core.Config.Middlewares = [
   'strapi::poweredBy',
   'strapi::query',
   'strapi::body',
-  'strapi::session',
+  // Override default `secure: process.env.NODE_ENV === 'production'`. The
+  // strapi-plugin-sso OAuth flow writes to ctx.session (codeVerifier, state)
+  // and then triggers a session cookie flush. Koa refuses to set Secure-flag
+  // cookies when ctx.secure is false, and ctx.secure depends on the
+  // X-Forwarded-Proto chain (Azure ingress → nginx → Strapi) being trusted
+  // end-to-end. Forcing secure: false bypasses the chain — the cookie is
+  // still httpOnly + signed, and HTTPS is enforced by Azure at the public
+  // edge for amclub.org.sg / dev.amclub.org.sg / uat.amclub.org.sg
+  // regardless.
+  {
+    name: 'strapi::session',
+    config: {
+      secure: false,
+      sameSite: 'lax',
+    },
+  },
   'strapi::favicon',
   'strapi::public',
+  // Converts `path` on POST /api/upload into a real Media Library folder
+  // (Strapi v5's upload_folder table). Without this, files uploaded with
+  // a blob path still show flat under "API Uploads" in the admin UI even
+  // though the blob itself lives at uploads/<section>/<page>/...
+  // See cms/src/middlewares/upload-path-to-folder.ts.
+  { name: 'global::upload-path-to-folder' },
 ];
 
 export default config;

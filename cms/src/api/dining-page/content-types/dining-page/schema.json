@@ -4,7 +4,7 @@
   "info": {
     "singularName": "dining-page",
     "pluralName": "dining-pages",
-    "displayName": "Dining Page",
+    "displayName": "Dining: Page",
     "description": "Dining Page content"
   },
   "options": {
@@ -15,10 +15,30 @@
       "type": "string",
       "required": true
     },
-    "hero": { "type": "component", "repeatable": false, "component": "blocks.hero" },
-    "clubFavorites": { "type": "component", "repeatable": false, "component": "blocks.card-grid" },
-    "essentials": { "type": "component", "repeatable": false, "component": "blocks.overlay-section" },
-    "finalCta": { "type": "component", "repeatable": false, "component": "blocks.cta-banner" },
-    "seo": { "type": "component", "repeatable": false, "component": "shared.seo" }
+    "hero": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.hero"
+    },
+    "clubFavorites": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.card-grid"
+    },
+    "essentials": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.overlay-section"
+    },
+    "finalCta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.cta-banner"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
   }
 }

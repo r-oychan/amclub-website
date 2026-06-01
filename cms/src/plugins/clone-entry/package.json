@@ -1,0 +1,25 @@
+{
+  "name": "clone-entry",
+  "version": "0.1.0",
+  "private": true,
+  "description": "One-click duplicate of any collection entry from the Content Manager edit view",
+  "license": "UNLICENSED",
+  "strapi": {
+    "name": "clone-entry",
+    "displayName": "Clone Entry",
+    "description": "Adds a Clone button on the edit view of every collection type with draftAndPublish, so editors can fork an entry into a new draft without retyping.",
+    "kind": "plugin"
+  },
+  "exports": {
+    "./strapi-server": {
+      "source": "./strapi-server.ts",
+      "default": "./strapi-server.js"
+    },
+    "./strapi-admin": {
+      "source": "./strapi-admin.ts",
+      "import": "./strapi-admin.ts",
+      "default": "./strapi-admin.ts"
+    },
+    "./package.json": "./package.json"
+  }
+}

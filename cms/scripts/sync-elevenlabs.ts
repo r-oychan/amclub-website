@@ -7,16 +7,30 @@
  *   npm run sync:elevenlabs -- --type=api::home-page.home-page
  *   npm run sync:elevenlabs -- --type=api::restaurant.restaurant --doc-id=abc123
  *
- * Boots Strapi programmatically, runs the sync service, prints a summary.
+ * Boots Strapi programmatically, runs the elevenlabs-chatbot plugin's sync
+ * service, prints a summary.
  */
 
 import { createStrapi } from '@strapi/strapi';
-import * as syncService from '../src/services/elevenlabs-sync';
 
 interface CliArgs {
   mode: 'delta' | 'full' | 'one' | 'clear';
   type?: string;
   docId?: string;
+}
+
+interface SyncResult {
+  documentName: string;
+  status: 'created' | 'updated' | 'skipped' | 'deleted' | 'error';
+  documentId?: string;
+  error?: string;
+}
+
+interface SyncService {
+  syncEntry: (strapi: unknown, uid: string, documentId?: string) => Promise<SyncResult>;
+  syncAllDelta: (strapi: unknown) => Promise<SyncResult[]>;
+  syncAllFull: (strapi: unknown) => Promise<SyncResult[]>;
+  clearAll: (strapi: unknown) => Promise<{ deleted: number }>;
 }
 
 function parseArgs(argv: string[]): CliArgs {
@@ -38,20 +52,22 @@ async function main(): Promise<void> {
   console.log(`[sync-elevenlabs] starting with`, args);
 
   const strapi = await createStrapi().load();
+  const sync = strapi.plugin('elevenlabs-chatbot').service('sync') as SyncService;
+
   try {
     if (args.mode === 'clear') {
-      const r = await syncService.clearAll(strapi as never);
+      const r = await sync.clearAll(strapi);
       console.log(`[sync-elevenlabs] cleared ${r.deleted} remote doc(s)`);
       return;
     }
     if (args.mode === 'one') {
       if (!args.type) throw new Error('--type required for single sync');
-      const r = await syncService.syncEntry(strapi as never, args.type, args.docId);
+      const r = await sync.syncEntry(strapi, args.type, args.docId);
       console.log(`[sync-elevenlabs] ${r.status}: ${r.documentName}${r.documentId ? ' (' + r.documentId + ')' : ''}${r.error ? ' — ' + r.error : ''}`);
       return;
     }
-    const fn = args.mode === 'full' ? syncService.syncAllFull : syncService.syncAllDelta;
-    const results = await fn(strapi as never);
+    const fn = args.mode === 'full' ? sync.syncAllFull : sync.syncAllDelta;
+    const results = await fn(strapi);
     const counts = results.reduce<Record<string, number>>((acc, r) => {
       acc[r.status] = (acc[r.status] ?? 0) + 1;
       return acc;

@@ -1,0 +1,248 @@
+{
+  "start-application": {
+    "slug": "start-application",
+    "name": "Start an Application",
+    "type": "Application",
+    "description": "Your journey to becoming a Member at The American Club starts here.\n\nGet to know the requirements to start your application.\n\nAll the items outlined in the Application Checklist must be submitted. Incomplete applications will not be accepted.",
+    "image": "/subpages/membership-start-application.jpeg",
+    "parentSection": "Membership",
+    "parentHref": "/membership",
+    "ctas": [
+      {
+        "label": "Application Checklist",
+        "href": "/documents/membership/forms/application-checklist.pdf",
+        "isExternal": true
+      }
+    ],
+    "operatingHoursSections": [
+      {
+        "title": "Membership Office Operating Hours",
+        "rows": [
+          {
+            "dayRange": "Monday to Friday",
+            "time": "9:00 AM – 7:00 PM"
+          },
+          {
+            "dayRange": "Saturday",
+            "time": "10:00 AM – 6:00 PM"
+          },
+          {
+            "dayRange": "",
+            "time": "Closed on Sunday"
+          }
+        ]
+      }
+    ],
+    "locationContact": {
+      "locationLevel": "Level 1 Lobby (Opposite Tradewinds)",
+      "phone": "6737 3411",
+      "email": "membership@amclub.org.sg"
+    },
+    "downloads": {
+      "heading": "Forms You'll Need",
+      "items": [
+        {
+          "label": "Application Checklist",
+          "href": "/documents/membership/forms/application-checklist.pdf",
+          "isExternal": true
+        },
+        {
+          "label": "Application Form",
+          "href": "/documents/membership/forms/membership-application-form.pdf",
+          "isExternal": true
+        },
+        {
+          "label": "Endorsement Form",
+          "href": "/documents/membership/forms/endorsement-form.pdf",
+          "isExternal": true
+        },
+        {
+          "label": "Junior Membership Application Form",
+          "href": "https://amclub.jotform.com/253623954879979",
+          "isExternal": true
+        },
+        {
+          "label": "PDPA Acknowledgement Form",
+          "href": "/documents/membership/forms/pdpa-acknowledgement-form.pdf",
+          "isExternal": true
+        },
+        {
+          "label": "GIRO Payment Form",
+          "href": "/documents/membership/forms/giro-payment-form.pdf",
+          "isExternal": true
+        },
+        {
+          "label": "Car Registration Form",
+          "href": "https://amclub.jotform.com/250688995352877",
+          "isExternal": true
+        }
+      ]
+    }
+  },
+  "joining-fees": {
+    "slug": "joining-fees",
+    "name": "Membership Types & Joining Fees",
+    "type": "Pricing",
+    "description": "Five distinct membership types designed for different eligibility criteria. All fees are inclusive of prevailing GST.",
+    "image": "/subpages/membership-joining-fees.jpg",
+    "parentSection": "Membership",
+    "parentHref": "/membership",
+    "ctas": [
+      {
+        "label": "Start an Application",
+        "href": "/membership/start-application"
+      },
+      {
+        "label": "View Payment Plans",
+        "href": "#"
+      }
+    ]
+  },
+  "referal": {
+    "slug": "referal",
+    "name": "Refer a Friend",
+    "type": "Referral Program",
+    "description": "Introduce a friend to become a Member of The American Club and get rewarded with Club dining vouchers.",
+    "parentSection": "Membership",
+    "parentHref": "/membership",
+    "ctas": [
+      {
+        "label": "Make a Referral",
+        "href": "https://amclub.jotform.com/250639099479878"
+      }
+    ]
+  },
+  "niche-group-membership": {
+    "slug": "niche-group-membership",
+    "name": "Niche Group Membership",
+    "type": "Loyalty",
+    "description": "The American Club Niche Group Membership rewards Members for their membership tenure or spending. VIP Gold, 10K, 15K & Elite are the four tiers.",
+    "phone": "6739-4331",
+    "email": "membership@amclub.org.sg",
+    "image": "/subpages/membership-referal.jpg",
+    "parentSection": "Membership",
+    "parentHref": "/membership",
+    "tierCards": {
+      "heading": "The Niche Group Membership Tiers",
+      "subheading": "From your first tier to the highest level, each level brings added benefits created to enrich your time at your Club.",
+      "cards": [
+        {
+          "name": "Elite Membership",
+          "description": "A minimum of $20,000 cumulative calendar year spending, excluding monthly dues.",
+          "gradientFrom": "rgb(158, 158, 158)",
+          "gradientTo": "rgb(9, 18, 51)",
+          "benefits": [
+            "Welcome dining voucher worth $250 and $150 sên Spa voucher.",
+            "Annual welcome gift.",
+            "Wedding Anniversary Privilege.",
+            "Exclusive privileges during birthday month",
+            "Annual Elite party invites.",
+            "Up to 25% dining discounts.",
+            "Up to 20% off treatments at sên Spa.",
+            "Membership card replacement fee waiver ($10 for the first card replacement, $50 for subsequent replacements).",
+            "Ad-hoc discounts for products, events etc.",
+            "Free parking for two cars (fee waiver will be applied at the next annual billing cycle in July)."
+          ]
+        },
+        {
+          "name": "VIP Gold",
+          "description": "Members are accorded this status based on a minimum tenure of 25 years of active membership.",
+          "gradientFrom": "rgb(255, 231, 158)",
+          "gradientTo": "rgb(150, 121, 59)",
+          "benefits": [
+            "A welcome dining voucher worth $200.",
+            "Exclusive privileges during birthday month",
+            "Annual VIP party invites.",
+            "Up to 20% dining discounts.",
+            "Up to 20% off treatments at sên Spa.",
+            "Ad-hoc discounts for products, events etc."
+          ]
+        },
+        {
+          "name": "15K Membership",
+          "description": "A minimum of $20,000 cumulative calendar year spending, excluding monthly dues.",
+          "gradientFrom": "rgb(53, 173, 242)",
+          "gradientTo": "rgb(30, 86, 156)",
+          "benefits": [
+            "A welcome dining voucher worth $200.",
+            "Exclusive privileges during birthday month",
+            "Up to 20% dining discounts.",
+            "Up to 15% off treatments at sên Spa.",
+            "Membership card replacement fee waiver ($10 for the first card replacement, $50 for subsequent replacements).",
+            "Ad-hoc discounts for products, events etc.",
+            "Free parking for one car (fee waiver will be applied at the next annual billing cycle in July)."
+          ]
+        },
+        {
+          "name": "10K Membership",
+          "description": "A minimum of $10,000 cumulative calendar year spending, excluding monthly dues.",
+          "gradientFrom": "rgb(129, 97, 255)",
+          "gradientTo": "rgb(56, 38, 128)",
+          "benefits": [
+            "Exclusive privileges during birthday month",
+            "Up to 15% dining discounts.",
+            "Up to 15% off treatments at sên Spa.",
+            "Membership card replacement fee waiver ($10 for the first card replacement, $50 for subsequent replacements).",
+            "Ad-hoc discounts for products, events etc."
+          ]
+        }
+      ]
+    }
+  },
+  "reciprocal-clubs": {
+    "slug": "reciprocal-clubs",
+    "name": "Reciprocal Clubs",
+    "type": "Partner Clubs",
+    "description": "As a Member of The American Club, enjoy privileged access to over 150 distinguished clubs worldwide, extending the comfort of membership wherever you travel.",
+    "image": "/subpages/membership-reciprocal-clubs.jpg",
+    "parentSection": "Membership",
+    "parentHref": "/membership",
+    "ctas": [
+      {
+        "label": "List of Reciprocal Clubs",
+        "href": "#"
+      },
+      {
+        "label": "Letter of Introduction",
+        "href": "#"
+      }
+    ]
+  },
+  "advertise-with-us": {
+    "slug": "advertise-with-us",
+    "name": "Advertise with Us",
+    "type": "",
+    "description": "Reach a community of over 11,000 engaged Members at The American Club.\n\nWith a suite of targeted communication channels, we provide advertising opportunities that connect your message with our Member community in a thoughtful and purposeful way.",
+    "image": "/marketing/advertise-with-us.jpg",
+    "parentSection": "The American Club",
+    "parentHref": "/home",
+    "ctas": [
+      {
+        "label": "View Advertising Rate Card",
+        "href": "/documents/ad-rate-card.pdf",
+        "isExternal": true
+      },
+      {
+        "label": "Enquire Now",
+        "href": "mailto:marketing@amclub.org.sg",
+        "isExternal": true
+      }
+    ],
+    "extraSections": [
+      {
+        "title": "Sponsorship",
+        "content": "Access a Premium Network of Affluent, International Members\n\nOur sponsors and strategic partners gain prominent brand exposure and meaningful engagement opportunities within our Club community. Reach out to schedule a discussion on the best channels to showcase your brand.",
+        "contactRows": [
+          {
+            "label": "Phone",
+            "value": "6739-4388"
+          },
+          {
+            "label": "Email",
+            "value": "marketing@amclub.org.sg"
+          }
+        ]
+      }
+    ]
+  }
+}

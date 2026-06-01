@@ -4,7 +4,7 @@
   "info": {
     "singularName": "membership-page",
     "pluralName": "membership-pages",
-    "displayName": "Membership Page",
+    "displayName": "Membership: Page",
     "description": "Membership Page content"
   },
   "options": {
@@ -63,17 +63,23 @@
     "joinCommunityImages": {
       "type": "media",
       "multiple": true,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "findMembershipImage": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "benefitIcons": {
       "type": "media",
       "multiple": true,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     }
   }
 }

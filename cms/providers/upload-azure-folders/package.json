@@ -1,0 +1,11 @@
+{
+  "name": "upload-azure-folders",
+  "version": "0.1.0",
+  "private": true,
+  "main": "index.js",
+  "description": "Wraps strapi-provider-upload-azure-storage so per-upload file.path routes blobs into a subfolder under defaultPath.",
+  "license": "UNLICENSED",
+  "peerDependencies": {
+    "strapi-provider-upload-azure-storage": "*"
+  }
+}

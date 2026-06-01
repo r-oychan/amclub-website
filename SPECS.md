@@ -37,7 +37,9 @@
 | `DetailHeroBanner` | 🟡 — Local `/branding/detail-hero-fallback.jpg` is used when a detail item has no image. Strict-CMS goal: add `site-settings.detailHeroFallback` media field, populate via seed, drop local fallback. |
 | `Header.tsx` `menu-icon` | 🟡 — Static reference to `/branding/menu-icon.png` (the burger-pattern overlay; not part of `header.logo`). Strict-CMS goal: add `header.menuIcon` media field (note: this is a "newly-added media field" and may hit the documented Strapi REST PUT persistence bug — see `cms/CLAUDE.md` notes). |
 | Strapi DB media-relations persistence bug | 🟡 — Newly-added `media` attributes on existing singletype/component schemas don't persist via REST PUT. Blocks adding new media fields (`header.menuIcon`, `site-settings.detailHeroFallback`, kid-quad-venue, child-safety-feature). Resolve via Knex migration or `strapi.documents().update()` script. |
-| `frontend/src/data/subpages.ts` | 🟡 — PR-4: dropped 3 dead `homeSubpages` entries (news/gallery/contact-us — those routes hit dedicated page components and never reach VenueDetailPage). All 11 unique Framer URLs replaced with local `/subpages/*.{jpg,png,jpeg}` paths (assets downloaded to `frontend/public/subpages/`). Remaining work: every section's subpage data (~43 entries spanning fitness/kids/event-spaces/membership) still lives here as the fallback for VenueDetailPage. Full strict-CMS goal: extend `restaurant` / `facility` schemas with the long-tail fields (`extraSections`, `promoCards`, `imagePanels`, `tierCards`, `venueCards`, `packageCards`, `cardSections`, `partyPackages`, `quotes`, `downloads`, etc.), then seed every subpage. Tracked as a separate multi-PR effort. |
+| `frontend/src/data/subpages.ts` | 🟡 — **Phase A/B/C landed (2026-05-21).** Schemas + per-section types + BlockRenderer + skeleton seeds are live on dev. 31 entries seeded across the 4 new types (`fitness-facility`, `kids-experience`, `event-space`, + 4 membership singletons). Remaining work: **per-entry rich content migration** — operating hours, contact details, body dynamiczone blocks (party packages, priced cards, image slideshows, FAQs, etc.). Once each section's entries are fully fleshed out via richer seed scripts, delete that section's array from `subpages.ts` in the same commit. Final removal is Phase D. |
+| Phase A schemas + Phase B BlockRenderer | ✅ — Adds 3 new collection types (`fitness-facility`, `kids-experience`, `event-space` — each with a `body` dynamiczone of 14 reusable blocks) + 4 membership singletons + 3 new block components (`image-panel-slideshow`, `priced-card-grid`, `quotes-block`). Frontend BlockRenderer dispatches `__component` to existing React components; new `MembershipSingletonPage` wraps any singleton with a body dynamiczone. VenueDetailPage dispatches per-section to the new endpoints with `/facilities` fallback during cutover. |
+| Phase C skeleton seeds | ✅ — `scripts/seed-detail-skeletons.mjs` creates 31 entries with name/slug/parent/short-description/contact/intro. Rich body migration is per-section follow-up work. |
 
 ### Local `media/` directory inventory
 
@@ -115,13 +117,35 @@ Each row lists, for one route: the React page file, the React components it comp
 | `event` | HomePage (upcoming events block), WhatsOnPage (full listing), EventDetailPage | title, slug, date, time, location, image, category, ctas, longDescription |
 | `event-category` | WhatsOnPage (filter bar) | name, slug, displayOrder |
 | `committee-member` | AboutPage | name, role, image, bio, memberType (general-committee / management), order |
-| `coach` | CoachDetailPage, optionally referenced from facility detail `teamMembers` | name, slug, section, bio, image |
+| `coach` _(legacy, to be removed after Section 2 cleanup)_ | Superseded by per-discipline collections below | name, slug, section, bio, image |
+| `aquatics-coach` _(Section 2)_ | `/coaches/aquatics/:slug` + fitness/aquatics team grid | name, slug, role, order, photo, shortBio, **bioImage**, **bioDocument** (PDF), **bioHtml** (rich text), qualifications, expertise, imageOffsetX/Y, imageZoom, seo. Modal opens only if bioImage / bioDocument / bioHtml is set. |
+| `tennis-coach` _(Section 2)_ | `/coaches/tennis/:slug` + fitness/tennis team grid | same shape as aquatics-coach |
+| `pilates-instructor` _(Section 2)_ | `/coaches/pilates/:slug` + fitness/pilates team grid | same shape as aquatics-coach |
+| `gym-trainer` _(Section 2)_ | `/coaches/gym/:slug` + fitness/gym team grid | same shape as aquatics-coach |
 | `testimonial` | HomePage (moments slider via `home-page.moments.testimonials`) | memberName, quote, photo, video, ctaLabel, ctaUrl |
 | `faq-item` | FaqPage, HomePage faq accordion | question, slug, answer (blocks), category (legacy enum) + faqCategory (→ faq-category), order |
 | `faq-category` | FaqPage | name, slug, displayOrder |
-| `restaurant` | DiningPage (grid), VenueDetailPage (dining detail) | name, slug, cuisineType, description, image, logo, dressCode, smartCasual, ctas, order |
-| `facility` | FitnessPage / KidsPage / EventSpacesPage / MembershipPage (subpages), VenueDetailPage for those sections | name, slug, description, image, category (fitness / kids / event-space / membership), ctas, teamMembers, downloads, operatingHoursSections, locationContact, gallery |
-| `venue` | (defined but not currently routed) | name, slug, description, image, gallery, capacity, contact, ctas |
+| `restaurant` | DiningPage (grid), VenueDetailPage (dining detail) | name, slug, cuisineType, description, image, logo, dressCode, smartCasual, ctas, **bottomCtas, body (dynamiczone)**, order |
+| `fitness-facility` _(new in Phase A — replaces `facility` for `/fitness/*`)_ | FitnessPage, VenueDetailPage (fitness detail) | name, slug, shortDescription, heroImage, heroVideo, parentLabel/Href, locationLevel, phone, email, dressCode, teamHeading/Members, downloads, operatingHoursSections, locationContact, ctas, bottomCtas, **body (dynamiczone)**, order, **parent (self-relation for nested programs)**, children, coaches (m2m), seo |
+| `kids-experience` _(new in Phase A — replaces `facility` for `/kids/*`)_ | KidsPage, VenueDetailPage (kids detail) | name, slug, shortDescription, heroImage, heroVideo, parentLabel/Href, ageRange, programType, locationLevel, phone, email, operatingHoursSections, locationContact, ctas, bottomCtas, **body (dynamiczone)**, order, seo |
+| `event-space` _(new in Phase A — replaces `venue` for `/event-spaces/*`)_ | EventSpacesPage, VenueDetailPage (event-spaces detail) | name, slug, shortDescription, heroImage, heroVideo, parentLabel/Href, capacity, floorPlanPdf, setupOptions, locationLevel, phone, email, operatingHoursSections, locationContact, ctas, bottomCtas, **body (dynamiczone)**, order, seo |
+| `fitness-facility` _(Section 2 — replaces legacy `facility`)_ | `/fitness/:slug` and `/fitness/:slug/:subSlug` via `VenueDetailPage` | name, slug, shortDescription, heroImage, heroVideo, parentLabel/Href, locationLevel, phone, email, dressCode, operatingHoursSections (repeatable), locationContact, ctas, bottomCtas, downloads, gallery, body (dynamiczone), order, **parent (self-relation for nested programs like aquatics-swimamerica)**, seo. **Team grid** is sourced from the per-discipline coach collections by slug (no inline `teamMembers` component). Kids / event-spaces / membership / home-sub render from `subpages.ts` static fallback until they get their own section collections. |
+| `venue` _(legacy — to be removed in Phase D)_ | (defined but not currently routed; superseded by `event-space`) | name, slug, description, image, gallery, capacity, contact, ctas |
+
+### Singletons added in Phase A (membership)
+
+| Single type | Used by | Key fields |
+|---|---|---|
+| `reciprocal-clubs-page` | `/membership/reciprocal-clubs` | title, hero, heading/intro, ctas, bottomCtas, **body (dynamiczone)**, seo |
+| `start-application-page` | `/membership/start-application` _(new route)_ | same skeleton |
+| `niche-group-membership-page` | `/membership/niche-group-membership` | same skeleton |
+| `advertise-with-us-page` | `/membership/advertise-with-us` _(currently routed under `/home-sub`; consolidated to `/membership`)_ | same skeleton |
+
+### Detail-page `body` dynamiczone — allowed blocks
+
+All four detail-page collection types + the membership singletons share one dynamiczone of blocks. POPULATE map centralised in `cms/src/lib/detail-page-populate.ts`.
+
+`blocks.text-block` · `blocks.card-grid` · `blocks.feature-grid` · `blocks.three-col-grid` · `blocks.cta-banner` · `blocks.faq-section` · `blocks.downloads-section` · `blocks.tabs-section` · `blocks.party-packages` · `blocks.team-grid` · **`blocks.image-panel-slideshow`** _(new)_ · **`blocks.priced-card-grid`** _(new)_ · **`blocks.quotes-block`** _(new)_ · `blocks.collage-gallery` · `blocks.operating-hours-section` _(reciprocal only)_ · `blocks.location-contact` _(reciprocal only)_
 | `gallery-album` | GalleryPage | title, slug, coverImage, images[], date, photoCount, description, order |
 | `news-article` | NewsPage (list), NewsArticlePage (detail) | title, slug, date, excerpt, image, category, htmlBody (shared.html-block), body (blocks), order |
 | `dining-promotion` | DiningPromotionsPage | (per promo: title, image, description, ctas, dates) |
@@ -216,7 +240,8 @@ Each row lists, for one route: the React page file, the React components it comp
 ### Collections (multiple records)
 | Name | API ID | Key Fields |
 |---|---|---|
-| restaurant | `restaurant` | name, slug, description, image, gallery, contact, category, ctas |
+| restaurant | `restaurant` | name, slug, cuisineType, dressCode, smartCasual, description, image, logo, cuisineIconSlug, **menuUrl** (single source of truth for the per-restaurant menu PDF — read by both `/dining/:slug` and the dining-promotion CTAs), gallery, contact, ctas, order |
+| dining-promotion | `dining-promotion` | title, slug, summary, **`restaurant`** (relation manyToOne → `restaurant`, replaces the old hardcoded enum), **`isClubWide`** (boolean — true when the promo applies club-wide, no restaurant relation needed), validFrom, validTo, image, images (multi-page), ctas, order, seo. The promotions page derives anchor (`#promo-<slug>`), sidebar label, and "View Menu" link from the populated relation — `MENU_URLS` constant on the frontend was removed. |
 | venue | `venue` | name, slug, description, image, gallery, capacity, contact, ctas |
 | facility | `facility` | name, slug, description, image, gallery, section (fitness/kids/event), ctas |
 | event | `event` | title, slug, date, time, location, dressCode, reservation, description, longDescription, image, category (→ event-category), featured, ctas (shared.link[]) |

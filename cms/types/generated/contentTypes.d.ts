@@ -26,6 +26,11 @@ export interface AdminApiToken extends Struct.CollectionTypeSchema {
       Schema.Attribute.SetMinMaxLength<{
         minLength: 1;
       }>;
+    adminPermissions: Schema.Attribute.Relation<
+      'oneToMany',
+      'admin::permission'
+    >;
+    adminUserOwner: Schema.Attribute.Relation<'manyToOne', 'admin::user'>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -39,6 +44,9 @@ export interface AdminApiToken extends Struct.CollectionTypeSchema {
         minLength: 1;
       }>;
     expiresAt: Schema.Attribute.DateTime;
+    kind: Schema.Attribute.Enumeration<['content-api', 'admin']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'content-api'>;
     lastUsedAt: Schema.Attribute.DateTime;
     lifespan: Schema.Attribute.BigInteger;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -56,7 +64,6 @@ export interface AdminApiToken extends Struct.CollectionTypeSchema {
     >;
     publishedAt: Schema.Attribute.DateTime;
     type: Schema.Attribute.Enumeration<['read-only', 'full-access', 'custom']> &
-      Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'read-only'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -134,6 +141,7 @@ export interface AdminPermission extends Struct.CollectionTypeSchema {
         minLength: 1;
       }>;
     actionParameters: Schema.Attribute.JSON & Schema.Attribute.DefaultTo<{}>;
+    apiToken: Schema.Attribute.Relation<'manyToOne', 'admin::api-token'>;
     conditions: Schema.Attribute.JSON & Schema.Attribute.DefaultTo<[]>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -385,6 +393,8 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
     };
   };
   attributes: {
+    apiTokens: Schema.Attribute.Relation<'oneToMany', 'admin::api-token'> &
+      Schema.Attribute.Private;
     blocked: Schema.Attribute.Boolean &
       Schema.Attribute.Private &
       Schema.Attribute.DefaultTo<false>;
@@ -472,6 +482,155 @@ export interface ApiAboutPageAboutPage extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiAdvertiseWithUsPageAdvertiseWithUsPage
+  extends Struct.SingleTypeSchema {
+  collectionName: 'advertise_with_us_pages';
+  info: {
+    description: 'Content for /home-sub/advertise-with-us \u2014 rendered through VenueDetailPage layout';
+    displayName: 'Advertise With Us Page';
+    pluralName: 'advertise-with-us-pages';
+    singularName: 'advertise-with-us-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    body: Schema.Attribute.DynamicZone<
+      [
+        'blocks.text-block',
+        'blocks.card-grid',
+        'blocks.feature-grid',
+        'blocks.three-col-grid',
+        'blocks.cta-banner',
+        'blocks.faq-section',
+        'blocks.downloads-section',
+        'blocks.tabs-section',
+        'blocks.team-grid',
+        'blocks.image-panel-slideshow',
+        'blocks.priced-card-grid',
+        'blocks.quotes-block',
+        'blocks.collage-gallery',
+      ]
+    >;
+    bottomCtas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+        },
+        number
+      >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    ctas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+        },
+        number
+      >;
+    description: Schema.Attribute.Text;
+    downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
+    email: Schema.Attribute.Email;
+    heading: Schema.Attribute.String;
+    heroImage: Schema.Attribute.Media<'images'>;
+    intro: Schema.Attribute.Text;
+    label: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::advertise-with-us-page.advertise-with-us-page'
+    > &
+      Schema.Attribute.Private;
+    locationContact: Schema.Attribute.Component<
+      'blocks.location-contact',
+      false
+    >;
+    locationLevel: Schema.Attribute.String;
+    operatingHoursSections: Schema.Attribute.Component<
+      'blocks.operating-hours-section',
+      true
+    >;
+    parentHref: Schema.Attribute.String;
+    parentLabel: Schema.Attribute.String;
+    phone: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiAquaticsCoachAquaticsCoach
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'aquatics_coaches';
+  info: {
+    description: 'Aquatics Coach entries \u2014 one row per person. Linked from `facility` team grid by section.';
+    displayName: 'Aquatics Coach';
+    pluralName: 'aquatics-coaches';
+    singularName: 'aquatics-coach';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    bioDocument: Schema.Attribute.Media<'files'>;
+    bioHtml: Schema.Attribute.RichText;
+    bioImage: Schema.Attribute.Media<'images'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    expertise: Schema.Attribute.Text;
+    imageOffsetX: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<50>;
+    imageOffsetY: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<50>;
+    imageZoom: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+          min: 0.5;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<1>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::aquatics-coach.aquatics-coach'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    photo: Schema.Attribute.Media<'images'>;
+    publishedAt: Schema.Attribute.DateTime;
+    qualifications: Schema.Attribute.Text;
+    role: Schema.Attribute.String & Schema.Attribute.Required;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    shortBio: Schema.Attribute.Text;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiCoachCoach extends Struct.CollectionTypeSchema {
   collectionName: 'coaches';
   info: {
@@ -520,7 +679,7 @@ export interface ApiCommitteeMemberCommitteeMember
     singularName: 'committee-member';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     bio: Schema.Attribute.Text;
@@ -646,6 +805,7 @@ export interface ApiDiningPromotionDiningPromotion
       >;
     image: Schema.Attribute.Media<'images'>;
     images: Schema.Attribute.Media<'images', true>;
+    isClubWide: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -654,19 +814,10 @@ export interface ApiDiningPromotionDiningPromotion
       Schema.Attribute.Private;
     order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     publishedAt: Schema.Attribute.DateTime;
-    restaurantTag: Schema.Attribute.Enumeration<
-      [
-        'club-wide',
-        'central',
-        'grillhouse',
-        'the-2nd-floor',
-        'tradewinds',
-        'union-bar',
-        'the-gourmet-pantry',
-      ]
-    > &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<'club-wide'>;
+    restaurant: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::restaurant.restaurant'
+    >;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     slug: Schema.Attribute.UID<'title'> & Schema.Attribute.Required;
     summary: Schema.Attribute.Text;
@@ -716,58 +867,6 @@ export interface ApiDiningPromotionsPageDiningPromotionsPage
   };
 }
 
-export interface ApiElevenlabsDocElevenlabsDoc
-  extends Struct.CollectionTypeSchema {
-  collectionName: 'elevenlabs_docs';
-  info: {
-    description: 'Tracks documents pushed to the ElevenLabs ConvAI knowledge base. Internal \u2014 not edited by content authors.';
-    displayName: 'ElevenLabs Sync Log';
-    pluralName: 'elevenlabs-docs';
-    singularName: 'elevenlabs-doc';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  pluginOptions: {
-    'content-manager': {
-      visible: true;
-    };
-    'content-type-builder': {
-      visible: false;
-    };
-  };
-  attributes: {
-    contentHash: Schema.Attribute.String;
-    contentType: Schema.Attribute.String;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    documentName: Schema.Attribute.String & Schema.Attribute.Required;
-    elDocType: Schema.Attribute.Enumeration<['text', 'file']> &
-      Schema.Attribute.Required;
-    elDocumentId: Schema.Attribute.String &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
-    entryId: Schema.Attribute.Integer;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::elevenlabs-doc.elevenlabs-doc'
-    > &
-      Schema.Attribute.Private;
-    mediaFileId: Schema.Attribute.Integer;
-    ownerContentType: Schema.Attribute.String;
-    ownerEntryId: Schema.Attribute.Integer;
-    publishedAt: Schema.Attribute.DateTime;
-    sourceKind: Schema.Attribute.Enumeration<['page-entry', 'media-file']> &
-      Schema.Attribute.Required;
-    syncedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
 export interface ApiEventCategoryEventCategory
   extends Struct.CollectionTypeSchema {
   collectionName: 'event_categories';
@@ -778,7 +877,7 @@ export interface ApiEventCategoryEventCategory
     singularName: 'event-category';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;
@@ -800,6 +899,74 @@ export interface ApiEventCategoryEventCategory
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiEventSpaceEventSpace extends Struct.CollectionTypeSchema {
+  collectionName: 'event_spaces';
+  info: {
+    description: 'Event-spaces detail pages \u2014 venues (Galbraith Ballroom, Thinkspace, Bowling Alley, Library, Meeting Rooms) and package pages (Wedding Celebrations, Corporate Functions, Parties).';
+    displayName: 'Event Space';
+    pluralName: 'event-spaces';
+    singularName: 'event-space';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    bottomCtas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+        },
+        number
+      >;
+    capacity: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    ctas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+        },
+        number
+      >;
+    description: Schema.Attribute.Text;
+    downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
+    email: Schema.Attribute.Email;
+    extraSections: Schema.Attribute.Component<'blocks.extra-section', true>;
+    gallery: Schema.Attribute.Media<'images', true>;
+    heroImage: Schema.Attribute.Media<'images'>;
+    heroVideo: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::event-space.event-space'
+    > &
+      Schema.Attribute.Private;
+    locationContact: Schema.Attribute.Component<
+      'blocks.location-contact',
+      false
+    >;
+    locationLevel: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    operatingHoursSections: Schema.Attribute.Component<
+      'blocks.operating-hours-section',
+      true
+    >;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    packageCards: Schema.Attribute.Component<'blocks.package-card-grid', false>;
+    parentHref: Schema.Attribute.String;
+    parentLabel: Schema.Attribute.String;
+    phone: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    venueCards: Schema.Attribute.Component<'blocks.venue-card-grid', false>;
   };
 }
 
@@ -967,7 +1134,7 @@ export interface ApiFaqCategoryFaqCategory extends Struct.CollectionTypeSchema {
     singularName: 'faq-category';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;
@@ -1002,7 +1169,7 @@ export interface ApiFaqItemFaqItem extends Struct.CollectionTypeSchema {
     singularName: 'faq-item';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     answer: Schema.Attribute.Blocks;
@@ -1066,6 +1233,97 @@ export interface ApiFaqPageFaqPage extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiFitnessFacilityFitnessFacility
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'fitness_facilities';
+  info: {
+    description: 'Fitness section detail pages: gym, aquatics, tennis, squash, pilates, s\u00EAn Spa, etc. Self-relation `parent` lets nested programs (e.g. aquatics \u2192 swimamerica) live as child entries. Team grid is sourced from the per-discipline coach collections (aquatics-coach, tennis-coach, pilates-instructor, gym-trainer) \u2014 not a relation here, looked up by slug at render time.';
+    displayName: 'Fitness Facility';
+    pluralName: 'fitness-facilities';
+    singularName: 'fitness-facility';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    body: Schema.Attribute.DynamicZone<
+      [
+        'blocks.text-block',
+        'blocks.card-grid',
+        'blocks.feature-grid',
+        'blocks.three-col-grid',
+        'blocks.cta-banner',
+        'blocks.faq-section',
+        'blocks.downloads-section',
+        'blocks.tabs-section',
+        'blocks.image-panel-slideshow',
+        'blocks.priced-card-grid',
+        'blocks.quotes-block',
+        'blocks.collage-gallery',
+      ]
+    >;
+    bottomCtas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+        },
+        number
+      >;
+    children: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::fitness-facility.fitness-facility'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    ctas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+        },
+        number
+      >;
+    description: Schema.Attribute.Text;
+    downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
+    dressCode: Schema.Attribute.String;
+    email: Schema.Attribute.Email;
+    extraSections: Schema.Attribute.Component<'blocks.extra-section', true>;
+    gallery: Schema.Attribute.Media<'images', true>;
+    heroImage: Schema.Attribute.Media<'images'>;
+    heroVideo: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::fitness-facility.fitness-facility'
+    > &
+      Schema.Attribute.Private;
+    locationContact: Schema.Attribute.Component<
+      'blocks.location-contact',
+      false
+    >;
+    locationLevel: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    operatingHoursSections: Schema.Attribute.Component<
+      'blocks.operating-hours-section',
+      true
+    >;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    parent: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::fitness-facility.fitness-facility'
+    >;
+    parentHref: Schema.Attribute.String;
+    parentLabel: Schema.Attribute.String;
+    phone: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiFitnessPageFitnessPage extends Struct.SingleTypeSchema {
   collectionName: 'fitness_pages';
   info: {
@@ -1119,7 +1377,7 @@ export interface ApiFooterFooter extends Struct.SingleTypeSchema {
     singularName: 'footer';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     address: Schema.Attribute.Text;
@@ -1214,6 +1472,73 @@ export interface ApiGalleryPageGalleryPage extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiGymTrainerGymTrainer extends Struct.CollectionTypeSchema {
+  collectionName: 'gym_trainers';
+  info: {
+    description: 'Gym Trainer entries \u2014 one row per person. Linked from `facility` team grid by section.';
+    displayName: 'Gym Trainer';
+    pluralName: 'gym-trainers';
+    singularName: 'gym-trainer';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    bioDocument: Schema.Attribute.Media<'files'>;
+    bioHtml: Schema.Attribute.RichText;
+    bioImage: Schema.Attribute.Media<'images'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    expertise: Schema.Attribute.Text;
+    imageOffsetX: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<50>;
+    imageOffsetY: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<50>;
+    imageZoom: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+          min: 0.5;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<1>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::gym-trainer.gym-trainer'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    photo: Schema.Attribute.Media<'images'>;
+    publishedAt: Schema.Attribute.DateTime;
+    qualifications: Schema.Attribute.Text;
+    role: Schema.Attribute.String & Schema.Attribute.Required;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    shortBio: Schema.Attribute.Text;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiHeaderHeader extends Struct.SingleTypeSchema {
   collectionName: 'headers';
   info: {
@@ -1223,7 +1548,7 @@ export interface ApiHeaderHeader extends Struct.SingleTypeSchema {
     singularName: 'header';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
     createdAt: Schema.Attribute.DateTime;
@@ -1337,6 +1662,83 @@ export interface ApiJoiningFeesPageJoiningFeesPage
     refundHeading: Schema.Attribute.String;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiKidsExperienceKidsExperience
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'kids_experiences';
+  info: {
+    description: 'Kids section detail pages \u2014 venues (The Quad, The Hangout) and programs (Recreational Classes, Seasonal Camps, Kids Parties). Mirrors the fitness-facility shape with added inline FAQ + quotes + party packages.';
+    displayName: 'Kids Experience';
+    pluralName: 'kids-experiences';
+    singularName: 'kids-experience';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    bottomCtas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+        },
+        number
+      >;
+    children: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::kids-experience.kids-experience'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    ctas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+        },
+        number
+      >;
+    description: Schema.Attribute.Text;
+    downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
+    email: Schema.Attribute.Email;
+    extraSections: Schema.Attribute.Component<'blocks.extra-section', true>;
+    faq: Schema.Attribute.Component<'shared.faq-pair', true>;
+    gallery: Schema.Attribute.Media<'images', true>;
+    heroImage: Schema.Attribute.Media<'images'>;
+    heroVideo: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::kids-experience.kids-experience'
+    > &
+      Schema.Attribute.Private;
+    locationContact: Schema.Attribute.Component<
+      'blocks.location-contact',
+      false
+    >;
+    locationLevel: Schema.Attribute.String;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    operatingHoursSections: Schema.Attribute.Component<
+      'blocks.operating-hours-section',
+      true
+    >;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    parent: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::kids-experience.kids-experience'
+    >;
+    parentHref: Schema.Attribute.String;
+    parentLabel: Schema.Attribute.String;
+    partyPackages: Schema.Attribute.Component<'blocks.party-packages', false>;
+    phone: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    quotes: Schema.Attribute.Component<'blocks.quotes-block', false>;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1492,6 +1894,246 @@ export interface ApiNewsPageNewsPage extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiNicheGroupMembershipPageNicheGroupMembershipPage
+  extends Struct.SingleTypeSchema {
+  collectionName: 'niche_group_membership_pages';
+  info: {
+    description: 'Content for /membership/niche-group-membership \u2014 rendered through VenueDetailPage layout';
+    displayName: 'Niche Group Membership Page';
+    pluralName: 'niche-group-membership-pages';
+    singularName: 'niche-group-membership-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    body: Schema.Attribute.DynamicZone<
+      [
+        'blocks.text-block',
+        'blocks.card-grid',
+        'blocks.feature-grid',
+        'blocks.three-col-grid',
+        'blocks.cta-banner',
+        'blocks.faq-section',
+        'blocks.downloads-section',
+        'blocks.tabs-section',
+        'blocks.team-grid',
+        'blocks.image-panel-slideshow',
+        'blocks.priced-card-grid',
+        'blocks.quotes-block',
+        'blocks.collage-gallery',
+      ]
+    >;
+    bottomCtas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+        },
+        number
+      >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    ctas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+        },
+        number
+      >;
+    description: Schema.Attribute.Text;
+    downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
+    email: Schema.Attribute.Email;
+    heading: Schema.Attribute.String;
+    heroImage: Schema.Attribute.Media<'images'>;
+    intro: Schema.Attribute.Text;
+    label: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::niche-group-membership-page.niche-group-membership-page'
+    > &
+      Schema.Attribute.Private;
+    locationContact: Schema.Attribute.Component<
+      'blocks.location-contact',
+      false
+    >;
+    locationLevel: Schema.Attribute.String;
+    operatingHoursSections: Schema.Attribute.Component<
+      'blocks.operating-hours-section',
+      true
+    >;
+    parentHref: Schema.Attribute.String;
+    parentLabel: Schema.Attribute.String;
+    phone: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiPilatesInstructorPilatesInstructor
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'pilates_instructors';
+  info: {
+    description: 'Pilates Instructor entries \u2014 one row per person. Linked from `facility` team grid by section.';
+    displayName: 'Pilates Instructor';
+    pluralName: 'pilates-instructors';
+    singularName: 'pilates-instructor';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    bioDocument: Schema.Attribute.Media<'files'>;
+    bioHtml: Schema.Attribute.RichText;
+    bioImage: Schema.Attribute.Media<'images'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    expertise: Schema.Attribute.Text;
+    imageOffsetX: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<50>;
+    imageOffsetY: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<50>;
+    imageZoom: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+          min: 0.5;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<1>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::pilates-instructor.pilates-instructor'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    photo: Schema.Attribute.Media<'images'>;
+    publishedAt: Schema.Attribute.DateTime;
+    qualifications: Schema.Attribute.Text;
+    role: Schema.Attribute.String & Schema.Attribute.Required;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    shortBio: Schema.Attribute.Text;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiReciprocalClubsPageReciprocalClubsPage
+  extends Struct.SingleTypeSchema {
+  collectionName: 'reciprocal_clubs_pages';
+  info: {
+    description: 'Content for /membership/reciprocal-clubs \u2014 rendered through VenueDetailPage layout';
+    displayName: 'Reciprocal Clubs Page';
+    pluralName: 'reciprocal-clubs-pages';
+    singularName: 'reciprocal-clubs-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    body: Schema.Attribute.DynamicZone<
+      [
+        'blocks.text-block',
+        'blocks.card-grid',
+        'blocks.feature-grid',
+        'blocks.three-col-grid',
+        'blocks.cta-banner',
+        'blocks.faq-section',
+        'blocks.downloads-section',
+        'blocks.tabs-section',
+        'blocks.team-grid',
+        'blocks.image-panel-slideshow',
+        'blocks.priced-card-grid',
+        'blocks.quotes-block',
+        'blocks.collage-gallery',
+        'blocks.operating-hours-section',
+        'blocks.location-contact',
+      ]
+    >;
+    bottomCtas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+        },
+        number
+      >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    ctas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+        },
+        number
+      >;
+    description: Schema.Attribute.Text;
+    downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
+    email: Schema.Attribute.Email;
+    heading: Schema.Attribute.String;
+    heroImage: Schema.Attribute.Media<'images'>;
+    intro: Schema.Attribute.Text;
+    label: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::reciprocal-clubs-page.reciprocal-clubs-page'
+    > &
+      Schema.Attribute.Private;
+    locationContact: Schema.Attribute.Component<
+      'blocks.location-contact',
+      false
+    >;
+    locationLevel: Schema.Attribute.String;
+    notes: Schema.Attribute.Text;
+    notesHeading: Schema.Attribute.String;
+    operatingHoursSections: Schema.Attribute.Component<
+      'blocks.operating-hours-section',
+      true
+    >;
+    parentHref: Schema.Attribute.String;
+    parentLabel: Schema.Attribute.String;
+    phone: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    secondaryBody: Schema.Attribute.Text;
+    secondaryCta: Schema.Attribute.Component<'shared.link', false>;
+    secondaryHeading: Schema.Attribute.String;
+    secondaryImage: Schema.Attribute.Media<'images'>;
+    secondaryImageCaption: Schema.Attribute.String;
+    secondaryImageSubCaption: Schema.Attribute.String;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiReferralPageReferralPage extends Struct.SingleTypeSchema {
   collectionName: 'referral_pages';
   info: {
@@ -1545,6 +2187,30 @@ export interface ApiRestaurantRestaurant extends Struct.CollectionTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    body: Schema.Attribute.DynamicZone<
+      [
+        'blocks.text-block',
+        'blocks.card-grid',
+        'blocks.feature-grid',
+        'blocks.three-col-grid',
+        'blocks.cta-banner',
+        'blocks.faq-section',
+        'blocks.downloads-section',
+        'blocks.tabs-section',
+        'blocks.team-grid',
+        'blocks.image-panel-slideshow',
+        'blocks.priced-card-grid',
+        'blocks.quotes-block',
+        'blocks.collage-gallery',
+      ]
+    >;
+    bottomCtas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+        },
+        number
+      >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1561,6 +2227,7 @@ export interface ApiRestaurantRestaurant extends Struct.CollectionTypeSchema {
     detailedDescription: Schema.Attribute.Blocks;
     dressCode: Schema.Attribute.String;
     email: Schema.Attribute.Email;
+    extraSections: Schema.Attribute.Component<'blocks.extra-section', true>;
     gallery: Schema.Attribute.Media<'images', true>;
     image: Schema.Attribute.Media<'images'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -1594,31 +2261,148 @@ export interface ApiRestaurantRestaurant extends Struct.CollectionTypeSchema {
   };
 }
 
-export interface ApiSiteSettingsSiteSettings extends Struct.SingleTypeSchema {
-  collectionName: 'site_settings';
+export interface ApiStartApplicationPageStartApplicationPage
+  extends Struct.SingleTypeSchema {
+  collectionName: 'start_application_pages';
   info: {
-    description: 'Global site-wide feature flags and toggles';
-    displayName: 'Site Settings';
-    pluralName: 'site-settings-plural';
-    singularName: 'site-settings';
+    description: 'Content for /membership/start-application \u2014 rendered through VenueDetailPage layout';
+    displayName: 'Start Application Page';
+    pluralName: 'start-application-pages';
+    singularName: 'start-application-page';
   };
   options: {
-    draftAndPublish: false;
+    draftAndPublish: true;
   };
   attributes: {
-    chatbotEnabled: Schema.Attribute.Boolean &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<true>;
+    body: Schema.Attribute.DynamicZone<
+      [
+        'blocks.text-block',
+        'blocks.card-grid',
+        'blocks.feature-grid',
+        'blocks.three-col-grid',
+        'blocks.cta-banner',
+        'blocks.faq-section',
+        'blocks.downloads-section',
+        'blocks.tabs-section',
+        'blocks.team-grid',
+        'blocks.image-panel-slideshow',
+        'blocks.priced-card-grid',
+        'blocks.quotes-block',
+        'blocks.collage-gallery',
+      ]
+    >;
+    bottomCtas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+        },
+        number
+      >;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    ctas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+        },
+        number
+      >;
+    description: Schema.Attribute.Text;
+    downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
+    email: Schema.Attribute.Email;
+    heading: Schema.Attribute.String;
+    heroImage: Schema.Attribute.Media<'images'>;
+    intro: Schema.Attribute.Text;
+    label: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
-      'api::site-settings.site-settings'
+      'api::start-application-page.start-application-page'
     > &
       Schema.Attribute.Private;
+    locationContact: Schema.Attribute.Component<
+      'blocks.location-contact',
+      false
+    >;
+    locationLevel: Schema.Attribute.String;
+    operatingHoursSections: Schema.Attribute.Component<
+      'blocks.operating-hours-section',
+      true
+    >;
+    parentHref: Schema.Attribute.String;
+    parentLabel: Schema.Attribute.String;
+    phone: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiTennisCoachTennisCoach extends Struct.CollectionTypeSchema {
+  collectionName: 'tennis_coaches';
+  info: {
+    description: 'Tennis Coach entries \u2014 one row per person. Linked from `facility` team grid by section.';
+    displayName: 'Tennis Coach';
+    pluralName: 'tennis-coaches';
+    singularName: 'tennis-coach';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    bioDocument: Schema.Attribute.Media<'files'>;
+    bioHtml: Schema.Attribute.RichText;
+    bioImage: Schema.Attribute.Media<'images'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    expertise: Schema.Attribute.Text;
+    imageOffsetX: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<50>;
+    imageOffsetY: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<50>;
+    imageZoom: Schema.Attribute.Decimal &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 4;
+          min: 0.5;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<1>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::tennis-coach.tennis-coach'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    photo: Schema.Attribute.Media<'images'>;
+    publishedAt: Schema.Attribute.DateTime;
+    qualifications: Schema.Attribute.Text;
+    role: Schema.Attribute.String & Schema.Attribute.Required;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    shortBio: Schema.Attribute.Text;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1965,6 +2749,87 @@ export interface PluginReviewWorkflowsWorkflowStage
   };
 }
 
+export interface PluginStrapiPluginSsoRoles
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'strapi-plugin-sso_roles';
+  info: {
+    collectionName: 'sso-roles';
+    description: '';
+    displayName: 'sso-role';
+    pluralName: 'sso-roles';
+    singularName: 'roles';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  pluginOptions: {
+    'content-manager': {
+      visible: false;
+    };
+    'content-type-builder': {
+      visible: false;
+    };
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'plugin::strapi-plugin-sso.roles'
+    > &
+      Schema.Attribute.Private;
+    oauth_type: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    roles: Schema.Attribute.JSON;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface PluginStrapiPluginSsoWhitelists
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'strapi-plugin-sso_whitelists';
+  info: {
+    collectionName: 'whitelists';
+    description: '';
+    displayName: 'whitelist';
+    pluralName: 'whitelists';
+    singularName: 'whitelists';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  pluginOptions: {
+    'content-manager': {
+      visible: false;
+    };
+    'content-type-builder': {
+      visible: false;
+    };
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    email: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'plugin::strapi-plugin-sso.whitelists'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface PluginUploadFile extends Struct.CollectionTypeSchema {
   collectionName: 'files';
   info: {
@@ -2240,34 +3105,43 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::about-page.about-page': ApiAboutPageAboutPage;
+      'api::advertise-with-us-page.advertise-with-us-page': ApiAdvertiseWithUsPageAdvertiseWithUsPage;
+      'api::aquatics-coach.aquatics-coach': ApiAquaticsCoachAquaticsCoach;
       'api::coach.coach': ApiCoachCoach;
       'api::committee-member.committee-member': ApiCommitteeMemberCommitteeMember;
       'api::contact-us-page.contact-us-page': ApiContactUsPageContactUsPage;
       'api::dining-page.dining-page': ApiDiningPageDiningPage;
       'api::dining-promotion.dining-promotion': ApiDiningPromotionDiningPromotion;
       'api::dining-promotions-page.dining-promotions-page': ApiDiningPromotionsPageDiningPromotionsPage;
-      'api::elevenlabs-doc.elevenlabs-doc': ApiElevenlabsDocElevenlabsDoc;
       'api::event-category.event-category': ApiEventCategoryEventCategory;
+      'api::event-space.event-space': ApiEventSpaceEventSpace;
       'api::event-spaces-page.event-spaces-page': ApiEventSpacesPageEventSpacesPage;
       'api::event.event': ApiEventEvent;
       'api::facility.facility': ApiFacilityFacility;
       'api::faq-category.faq-category': ApiFaqCategoryFaqCategory;
       'api::faq-item.faq-item': ApiFaqItemFaqItem;
       'api::faq-page.faq-page': ApiFaqPageFaqPage;
+      'api::fitness-facility.fitness-facility': ApiFitnessFacilityFitnessFacility;
       'api::fitness-page.fitness-page': ApiFitnessPageFitnessPage;
       'api::footer.footer': ApiFooterFooter;
       'api::gallery-album.gallery-album': ApiGalleryAlbumGalleryAlbum;
       'api::gallery-page.gallery-page': ApiGalleryPageGalleryPage;
+      'api::gym-trainer.gym-trainer': ApiGymTrainerGymTrainer;
       'api::header.header': ApiHeaderHeader;
       'api::home-page.home-page': ApiHomePageHomePage;
       'api::joining-fees-page.joining-fees-page': ApiJoiningFeesPageJoiningFeesPage;
+      'api::kids-experience.kids-experience': ApiKidsExperienceKidsExperience;
       'api::kids-page.kids-page': ApiKidsPageKidsPage;
       'api::membership-page.membership-page': ApiMembershipPageMembershipPage;
       'api::news-article.news-article': ApiNewsArticleNewsArticle;
       'api::news-page.news-page': ApiNewsPageNewsPage;
+      'api::niche-group-membership-page.niche-group-membership-page': ApiNicheGroupMembershipPageNicheGroupMembershipPage;
+      'api::pilates-instructor.pilates-instructor': ApiPilatesInstructorPilatesInstructor;
+      'api::reciprocal-clubs-page.reciprocal-clubs-page': ApiReciprocalClubsPageReciprocalClubsPage;
       'api::referral-page.referral-page': ApiReferralPageReferralPage;
       'api::restaurant.restaurant': ApiRestaurantRestaurant;
-      'api::site-settings.site-settings': ApiSiteSettingsSiteSettings;
+      'api::start-application-page.start-application-page': ApiStartApplicationPageStartApplicationPage;
+      'api::tennis-coach.tennis-coach': ApiTennisCoachTennisCoach;
       'api::testimonial.testimonial': ApiTestimonialTestimonial;
       'api::venue.venue': ApiVenueVenue;
       'api::whats-on-page.whats-on-page': ApiWhatsOnPageWhatsOnPage;
@@ -2276,6 +3150,8 @@ declare module '@strapi/strapi' {
       'plugin::i18n.locale': PluginI18NLocale;
       'plugin::review-workflows.workflow': PluginReviewWorkflowsWorkflow;
       'plugin::review-workflows.workflow-stage': PluginReviewWorkflowsWorkflowStage;
+      'plugin::strapi-plugin-sso.roles': PluginStrapiPluginSsoRoles;
+      'plugin::strapi-plugin-sso.whitelists': PluginStrapiPluginSsoWhitelists;
       'plugin::upload.file': PluginUploadFile;
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;

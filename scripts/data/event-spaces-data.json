@@ -1,0 +1,260 @@
+{
+  "wedding-celebration": {
+    "slug": "wedding-celebration",
+    "name": "Wedding Celebrations",
+    "type": "Weddings",
+    "description": "Celebrate your love story in a setting as meaningful as the moment itself. From grand receptions to intimate gatherings, the Club offers timeless venues, thoughtful service, and bespoke culinary experiences.",
+    "image": "/uploads/package_wedding_1fc9c3830f.jpg",
+    "parentSection": "Private Events & Catering",
+    "parentHref": "/event-spaces",
+    "ctas": [
+      {
+        "label": "Enquire Now",
+        "href": "mailto:catering@amclub.org.sg",
+        "isExternal": true
+      }
+    ],
+    "venueCards": {
+      "columns": 2,
+      "cards": [
+        {
+          "heading": "The Galbraith Ballroom",
+          "capacity": "Up to 40 pax",
+          "description": "A grand, pillar-less ballroom created for unforgettable \"I do\" moments. With elegant layouts, seamless audiovisual support, and dedicated event coordination, the space transforms effortlessly from a heartfelt ceremony to an evening of dining and dancing – an enchanting setting for celebrating your love story in style.",
+          "image": "https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_galbraith_wedding_db3a81af1f.jpg",
+          "imageAlt": "The Galbraith Ballroom"
+        },
+        {
+          "heading": "The 2nd Floor",
+          "capacity": "Up to 40 pax",
+          "description": "An intimate and refined setting for smaller weddings and cocktail receptions, The 2nd Floor offers couples a beautifully curated space for a celebration that feels personal, elegant, and effortlessly memorable.",
+          "image": "https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_2nd_floor_wedding_75f86eb499.jpg",
+          "imageAlt": "The 2nd Floor"
+        }
+      ]
+    },
+    "packageCards": {
+      "heading": "Packages",
+      "columns": 3,
+      "cards": [
+        {
+          "heading": "The Classic Collection",
+          "tagline": "Ideal for intimate weddings and couples seeking a refined yet simple celebration",
+          "image": "https://amclubdata28a57492.blob.core.windows.net/media/uploads/wedding_package_classic_3f7ac22fc3.jpg",
+          "benefits": [
+            "Exclusive use of The Galbraith Ballroom for up to 4 hours",
+            "Elegant round table setup with your choice of linen",
+            "Complimentary use of stage and projection system for speeches and visual displays",
+            "Fresh floral centerpiece for each table",
+            "Complimentary parking for the bridal car",
+            "One bottle of wine per table (red or white)",
+            "Champagne toast for the couple",
+            "Ambient background music to set the perfect mood"
+          ]
+        },
+        {
+          "heading": "The Signature Collection",
+          "tagline": "For mid-sized weddings with personalized touches and elevated flair",
+          "image": "https://amclubdata28a57492.blob.core.windows.net/media/uploads/wedding_package_signature_6d772ce68d.jpg",
+          "benefits": [
+            "Exclusive use of The Galbraith Ballroom for up to 4 hours",
+            "Elegant round table setup with your choice of linen",
+            "Complimentary use of stage and projection system for speeches and visual displays",
+            "Fresh floral centerpiece for each table & enhanced floral centerpiece for the VIP table",
+            "Complimentary parking for 5 vehicles",
+            "20-liter barrel of beer for your guests to enjoy",
+            "Champagne toast for the couple",
+            "Curated background music playlist tailored to your celebration"
+          ]
+        },
+        {
+          "heading": "The Prestige Collection",
+          "tagline": "Our most comprehensive package, designed for a truly premium wedding experience",
+          "image": "https://amclubdata28a57492.blob.core.windows.net/media/uploads/wedding_package_prestige_e7474f1a37.jpg",
+          "benefits": [
+            "Exclusive use of The Galbraith Ballroom for up to 4 hours",
+            "Elegant round table setup with your choice of linen",
+            "Complimentary use of stage and projection system for speeches and visual displays",
+            "Fresh floral centerpiece for each table & enhanced floral centerpiece for the VIP table",
+            "Complimentary parking for 5 vehicles",
+            "Professional photographer included for 2 hours",
+            "Champagne toast for the couple",
+            "One bottle of wine per table (red or white)",
+            "20-liter barrel of beer for your guests to enjoy",
+            "Curated background music playlist tailored to your celebration",
+            "Exclusive door gifts for your guests"
+          ]
+        }
+      ]
+    }
+  },
+  "corporate-functions": {
+    "slug": "corporate-functions",
+    "name": "Corporate Functions & Meetings",
+    "type": "Corporate",
+    "description": "From large-scale conferences to focused strategy sessions and team-building experiences, the Club offers a versatile portfolio of venues designed to elevate every corporate occasion.",
+    "image": "/subpages/eventspaces-galbraith.jpg",
+    "parentSection": "Private Events & Catering",
+    "parentHref": "/event-spaces",
+    "ctas": [
+      {
+        "label": "View Capacity Chart",
+        "href": "/documents/event-spaces/capacity-chart.pdf",
+        "isExternal": true
+      },
+      {
+        "label": "Enquire Now",
+        "href": "mailto:catering@amclub.org.sg",
+        "isExternal": true
+      }
+    ],
+    "venueCards": {
+      "columns": 3,
+      "cards": [
+        {
+          "heading": "The Galbraith Ballroom",
+          "capacity": "Up to 40 pax",
+          "description": "An elegant, pillar-less ballroom ideal for conferences, large-scale meetings, awards nights, and corporate celebrations. Flexible layouts, professional audiovisual support, and a refined setting make it the Club's premier venue for high-profile events.",
+          "image": "https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_galbraith_wedding_db3a81af1f.jpg",
+          "imageAlt": "The Galbraith Ballroom"
+        },
+        {
+          "heading": "Thinkspace Meeting Rooms",
+          "capacity": "Up to 40 pax",
+          "description": "Purpose-built for focus and collaboration, our Thinkspace Meeting Rooms offer contemporary spaces for board meetings, workshops, training sessions, and breakouts – featuring presentation technology and flexible seating in a professional, comfortable setting.",
+          "image": "https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_thinkspace_adult_library_e682b190f4.jpg",
+          "imageAlt": "Thinkspace Meeting Rooms"
+        },
+        {
+          "heading": "The Bowling Alley",
+          "capacity": "Up to 28 pax",
+          "description": "A refreshing option for team-building, client entertainment, and informal corporate socials, The Bowling Alley offers a lively setting that blends friendly competition with curated food and beverage experiences.",
+          "image": "https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_bowling_4120_1c684f909e.jpg",
+          "imageAlt": "The Bowling Alley"
+        }
+      ]
+    }
+  },
+  "parties": {
+    "slug": "parties",
+    "name": "Parties",
+    "type": "Social Events",
+    "description": "Bring your celebrations to life in The Galbraith Ballroom – an inviting space perfect for birthdays, anniversaries, festive gatherings, or any reason to come together. With flexible layouts, delicious culinary options, and a team dedicated to making every detail shine, your party becomes an experience that your guests will remember long after the last toast.",
+    "image": "/subpages/eventspaces-parties.jpg",
+    "parentSection": "Private Events & Catering",
+    "parentHref": "/event-spaces",
+    "ctas": [
+      {
+        "label": "View Capacity Chart",
+        "href": "https://amclubdata28a57492.blob.core.windows.net/media/uploads/capacity_chart_72e78149a2.pdf",
+        "isExternal": true
+      },
+      {
+        "label": "Enquire Now",
+        "href": "mailto:catering@amclub.org.sg",
+        "isExternal": true
+      }
+    ]
+  },
+  "the-gallbrainth-ballroom": {
+    "slug": "the-gallbrainth-ballroom",
+    "name": "The Galbraith Ballroom",
+    "type": "Venue",
+    "description": "With over 3,400 square feet of versatile, pillar-less space, The Galbraith Ballroom is the perfect venue to host your next event or meeting.",
+    "image": "/subpages/eventspaces-galbraith.jpg",
+    "capacity": "200+ pax",
+    "parentSection": "Private Events & Catering",
+    "parentHref": "/event-spaces",
+    "ctas": [
+      {
+        "label": "View Capacity Chart",
+        "href": "#"
+      },
+      {
+        "label": "Enquire Now",
+        "href": "#"
+      }
+    ]
+  },
+  "thinkspace": {
+    "slug": "thinkspace",
+    "name": "Thinkspace",
+    "type": "Meeting & Co-working",
+    "description": "A dedicated workspace designed for Members who need more than just a workspace. It houses the Business Center as well as the Adult and Children's Libraries.",
+    "hours": "Daily 8:00 AM – 10:00 PM",
+    "level": "Level 3",
+    "phone": "6739 4478",
+    "email": "meetings@amclub.org.sg",
+    "capacity": "Max. 40 Pax",
+    "image": "/subpages/eventspaces-thinkspace.jpg",
+    "parentSection": "Private Events & Catering",
+    "parentHref": "/event-spaces",
+    "ctas": [
+      {
+        "label": "Services & Rates",
+        "href": "https://amclubdata28a57492.blob.core.windows.net/media/uploads/thinkspace_services_flyer_9a83799195.jpg",
+        "isExternal": true
+      }
+    ]
+  },
+  "bowling-alley": {
+    "slug": "bowling-alley",
+    "name": "The Bowling Alley",
+    "type": "Entertainment Venue",
+    "description": "The Bowling Alley delivers top-notch, anytime fun for all skill levels. Also ideal for birthday celebrations, corporate gatherings, and small group get-togethers.",
+    "hours": "Mon-Thu 12pm-7pm, Fri 12pm-8pm, Sat 10:30am-8pm, Sun 9:30am-7pm",
+    "level": "Basement 2",
+    "phone": "6739 4444/4413",
+    "email": "youth@amclub.org.sg",
+    "image": "/subpages/fitness-pilates.png",
+    "parentSection": "Private Events & Catering",
+    "parentHref": "/event-spaces",
+    "ctas": [
+      {
+        "label": "Rates",
+        "href": "https://amclubdata28a57492.blob.core.windows.net/media/uploads/bowling_alley_rates_95e27a91a0.jpg",
+        "isExternal": true
+      },
+      {
+        "label": "Party Packages",
+        "href": "https://amclubdata28a57492.blob.core.windows.net/media/uploads/bowling_alley_party_package_13a9e56910.pdf",
+        "isExternal": true
+      },
+      {
+        "label": "Book A Lane",
+        "href": "mailto:youth@amclub.org.sg",
+        "isExternal": true
+      }
+    ]
+  },
+  "library": {
+    "slug": "library",
+    "name": "Library",
+    "type": "Resources",
+    "description": "The Club's library has over 20,000 books, 1,000 DVDs, 800 audio-books and 37 different magazines.",
+    "level": "Level 3",
+    "phone": "6739-4380",
+    "email": "library@amclub.org.sg",
+    "image": "https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_thinkspace_adult_library_e682b190f4.jpg",
+    "parentSection": "Private Events & Catering",
+    "parentHref": "/event-spaces"
+  },
+  "meeting-rooms": {
+    "slug": "meeting-rooms",
+    "name": "Meeting Rooms & Business Center",
+    "type": "Workspace",
+    "description": "Thinkspace offers a dedicated hub for Members seeking a professional yet inviting environment to work, meet, or collaborate.",
+    "hours": "Daily 9:00 AM – 7:00 PM",
+    "level": "Level 3",
+    "image": "https://amclubdata28a57492.blob.core.windows.net/media/uploads/boardroom_7f09a0e833.jpg",
+    "parentSection": "Private Events & Catering",
+    "parentHref": "/event-spaces",
+    "ctas": [
+      {
+        "label": "Service & Rates",
+        "href": "https://amclubdata28a57492.blob.core.windows.net/media/uploads/thinkspace_services_flyer_9a83799195.jpg",
+        "isExternal": true
+      }
+    ]
+  }
+}

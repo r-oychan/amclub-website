@@ -53,13 +53,22 @@ export default function CoachDetailPage() {
     async function load() {
       setLoading(true);
       const fallback = getCoach(section, slug);
+      // Section 2: each fitness discipline has its own coach collection.
+      // Map the URL `section` param to the corresponding API plural.
+      const COACH_COLLECTIONS: Record<string, string> = {
+        aquatics: 'aquatics-coaches',
+        tennis: 'tennis-coaches',
+        pilates: 'pilates-instructors',
+        gym: 'gym-trainers',
+      };
+      const endpoint = COACH_COLLECTIONS[section] ?? 'coaches';
       const params = {
         'filters[slug][$eq]': slug,
-        'filters[section][$eq]': section,
+        ...(endpoint === 'coaches' ? { 'filters[section][$eq]': section } : {}),
         'populate[photo]': 'true',
       };
       try {
-        const items = await fetchAPI<CoachApi[]>('/coaches', params);
+        const items = await fetchAPI<CoachApi[]>(`/${endpoint}`, params);
         if (cancelled) return;
         if (items && items.length > 0) {
           const api = items[0];
@@ -68,7 +77,7 @@ export default function CoachDetailPage() {
             shortName: fallback?.shortName ?? api.name.split(' ')[0],
             name: api.name,
             role: api.role,
-            section: api.section,
+            section: api.section ?? section,
             photo: photoUrl(api.photo) ?? fallback?.photo,
             bio: api.bio ?? fallback?.bio ?? '',
             expertise: toLines(api.expertise).length

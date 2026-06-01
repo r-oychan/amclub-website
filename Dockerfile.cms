@@ -5,7 +5,10 @@ WORKDIR /app
 
 # Install dependencies
 FROM base AS deps
+# Copy package files + local providers (referenced via file: in package.json
+# — npm ci would otherwise fail to resolve `upload-azure-folders`).
 COPY cms/package.json cms/package-lock.json* ./
+COPY cms/providers ./providers
 RUN npm ci
 
 # Development (used by docker-compose.dev.yml)
@@ -35,6 +38,10 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/config ./config
 COPY --from=builder /app/database ./database
 COPY --from=builder /app/src ./src
+# Local providers (referenced via file: in package.json) — node_modules
+# contains a symlink to ../providers/upload-azure-folders, so the target
+# must be present at runtime too.
+COPY --from=builder /app/providers ./providers
 
 # Uploads should be mounted externally (e.g., -v uploads:/app/public/uploads)
 VOLUME /app/public/uploads

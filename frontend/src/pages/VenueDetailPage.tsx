@@ -1,5 +1,8 @@
 import { useParams, useLocation, Link } from 'react-router';
 import { useEffect, useState, type ReactNode } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkBreaks from 'remark-breaks';
+import rehypeRaw from 'rehype-raw';
 import { fetchAPI } from '../lib/api';
 import { getSubpage } from '../data/subpages';
 import { Button } from '../components/shared/Button';
@@ -312,14 +315,19 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
     if (!config || !lookupSlug || !section) return;
     const load = async () => {
       setLoading(true);
-      // Each collection's custom controller (cms/src/api/{restaurant,venue,
-      // facility}/controllers/) supplies its own POPULATE map server-side.
-      // Strapi 5.46's stricter populate-validator rejects `=*` on leaf fields
-      // and unknown keys (e.g. `teamMembers` doesn't exist on restaurant),
-      // so we keep populate out of the request entirely.
-      const items = await fetchAPI<VenueData[]>(config.apiPath, {
+      // Strapi v5's `populate=*` only goes one level deep, which leaves
+      // operatingHoursSections.rows empty. List each relation explicitly and
+      // deep-populate the nested rows.
+      const params: Record<string, string> = {
         'filters[slug][$eq]': lookupSlug,
-      });
+        'populate[image]': 'true',
+        'populate[ctas]': 'true',
+        'populate[locationContact]': 'true',
+        'populate[operatingHoursSections][populate]': '*',
+        'populate[teamMembers][populate]': '*',
+        'populate[downloads][populate]': '*',
+      };
+      const items = await fetchAPI<VenueData[]>(config.apiPath, params);
       const fallback = staticFallback(section, lookupSlug);
       if (items && items.length > 0) {
         const api = items[0];
@@ -570,17 +578,37 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                 </div>
               )}
 
-              {/* Description — Lato 19.2px / 400, line-height 26.88px */}
+              {/* Description — Lato 19.2px / 400, line-height 26.88px. Markdown for inline [text](url) links (mailto, http, relative). */}
               <div className="flex flex-col" style={{ gap: '20px' }}>
-                {venue.description.split('\n\n').map((p, i) => (
-                  <p
-                    key={i}
-                    className="text-text-dark"
-                    style={{ fontSize: '19.2px', fontWeight: 400, lineHeight: '26.88px' }}
-                  >
-                    {p}
-                  </p>
-                ))}
+                <ReactMarkdown
+                  remarkPlugins={[remarkBreaks]}
+                  rehypePlugins={[rehypeRaw]}
+                  components={{
+                    p: ({ children }) => (
+                      <p
+                        className="text-text-dark"
+                        style={{ fontSize: '19.2px', fontWeight: 400, lineHeight: '26.88px' }}
+                      >
+                        {children}
+                      </p>
+                    ),
+                    a: ({ href, children }) => {
+                      const external = href?.startsWith('http');
+                      return (
+                        <a
+                          href={href}
+                          target={external ? '_blank' : undefined}
+                          rel={external ? 'noopener noreferrer' : undefined}
+                          className="text-accent underline underline-offset-2 hover:no-underline"
+                        >
+                          {children}
+                        </a>
+                      );
+                    },
+                  }}
+                >
+                  {venue.description}
+                </ReactMarkdown>
               </div>
 
               {/* ── Operating Hours ──

@@ -4,7 +4,7 @@
   "info": {
     "singularName": "restaurant",
     "pluralName": "restaurants",
-    "displayName": "Restaurant",
+    "displayName": "Dining: Restaurants",
     "description": "Dining venues and retail outlets"
   },
   "options": {
@@ -37,12 +37,16 @@
     "image": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "logo": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "cuisineIconSlug": {
       "type": "string"
@@ -88,7 +92,38 @@
     "gallery": {
       "type": "media",
       "multiple": true,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "bottomCtas": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link",
+      "max": 4
+    },
+    "body": {
+      "type": "dynamiczone",
+      "components": [
+        "blocks.text-block",
+        "blocks.card-grid",
+        "blocks.feature-grid",
+        "blocks.three-col-grid",
+        "blocks.cta-banner",
+        "blocks.faq-section",
+        "blocks.downloads-section",
+        "blocks.tabs-section",
+        "blocks.team-grid",
+        "blocks.image-panel-slideshow",
+        "blocks.priced-card-grid",
+        "blocks.quotes-block",
+        "blocks.collage-gallery"
+      ]
+    },
+    "extraSections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.extra-section"
     },
     "seo": {
       "type": "component",

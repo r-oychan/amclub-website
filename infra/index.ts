@@ -17,6 +17,20 @@ if (!elevenlabsApiKeyRaw) throw new Error('Missing env var ELEVENLABS_API_KEY (a
 if (!elevenlabsAgentId) throw new Error('Missing env var ELEVENLABS_AGENT_ID (set in deploy.yml)');
 const elevenlabsApiKey = pulumi.secret(elevenlabsApiKeyRaw);
 
+// ── Microsoft Entra ID SSO config (env-var driven) ────────────────
+// Consumed by strapi-plugin-sso at the CMS layer. All four values are
+// OPTIONAL — if AZUREAD_OAUTH_CLIENT_ID is empty, the plugin won't be able
+// to start its OAuth flow and the admin falls back to local password login
+// (intended graceful degradation while the GitHub secrets are being staged).
+// Set the secrets per environment under GitHub Settings → Environments →
+// {dev, uat, prod} → Secrets.
+const azureadTenantId = process.env.AZUREAD_TENANT_ID ?? '';
+const azureadClientId = process.env.AZUREAD_OAUTH_CLIENT_ID ?? '';
+const azureadClientSecretRaw = process.env.AZUREAD_OAUTH_CLIENT_SECRET ?? '';
+const azureadScope = process.env.AZUREAD_SCOPE || 'user.read';
+const azureadClientSecret = pulumi.secret(azureadClientSecretRaw);
+const ssoEnabled = Boolean(azureadTenantId && azureadClientId && azureadClientSecretRaw);
+
 // ── Auto-generated secrets ───────────────────────────────────
 const dbPassword = new random.RandomPassword(`${projectName}-db-pw`, {
   length: 24,
@@ -155,6 +169,28 @@ const mediaContainer = new azure.storage.BlobContainer(`${projectName}-media`, {
   publicAccess: azure.storage.PublicAccess.Blob,
 });
 
+// CORS on the blob service so Strapi admin's media-library can render
+// thumbnails (its <img> tags carry crossorigin="anonymous"). Blobs are
+// already publicly readable; this just teaches Azure to emit the CORS
+// headers the browser requires for cross-origin <img> loads, canvas, and
+// fetch. Wildcard origin is safe here — there is no auth on these blobs.
+new azure.storage.BlobServiceProperties(`${projectName}-blob-cors`, {
+  accountName: storage.name,
+  resourceGroupName: rg.name,
+  blobServicesName: 'default',
+  cors: {
+    corsRules: [
+      {
+        allowedOrigins: ['*'],
+        allowedMethods: ['GET', 'HEAD', 'OPTIONS'],
+        allowedHeaders: ['*'],
+        exposedHeaders: ['*'],
+        maxAgeInSeconds: 3600,
+      },
+    ],
+  },
+});
+
 const storageKey = pulumi
   .all([rg.name, storage.name])
   .apply(([rgName, accountName]) =>
@@ -226,14 +262,29 @@ new azure.app.ManagedEnvironmentsStorage(`${projectName}-env-storage`, {
 // cms-builder, runtime) so unchanged deps skip rebuild.
 const buildCacheRef = pulumi.interpolate`${registry.loginServer}/${projectName}-app:buildcache`;
 
+// CMS_BUILD_NONCE feeds a per-deploy unique value into the cms-builder
+// stage so the layer cache for `COPY cms/ ./` + `RUN npm run build` is
+// guaranteed to miss when the upstream commit changes. The registry-backed
+// buildcache was observed reusing a pre-refactor cms-builder layer even
+// when the cms/ source had changed, which silently shipped stale code.
+const cmsBuildNonce = process.env.GITHUB_SHA ?? process.env.GIT_SHA ?? new Date().toISOString();
+
+// TEMPORARY: buildx cache disabled — the registry buildcache kept
+// re-using a pre-refactor cms-builder layer set even after multiple
+// cache-busting attempts (build-arg nonce, on-disk nonce file), so
+// every deploy shipped a frozen May-24 admin bundle. Force a clean
+// rebuild on every deploy until we identify exactly what cache key is
+// matching. Re-enable cacheFrom/cacheTo once root-cause is clear.
 const appImage = new dockerBuild.Image(`${projectName}-app-image`, {
   tags: [pulumi.interpolate`${registry.loginServer}/${projectName}-app:latest`],
   context: { location: '..' },
   dockerfile: { location: '../Dockerfile' },
   platforms: ['linux/amd64'],
   push: true,
-  cacheFrom: [{ registry: { ref: buildCacheRef } }],
-  cacheTo: [{ registry: { ref: buildCacheRef, mode: 'max' } }],
+  noCache: true,
+  buildArgs: {
+    CMS_BUILD_NONCE: cmsBuildNonce,
+  },
   registries: [
     {
       address: registry.loginServer,
@@ -242,6 +293,9 @@ const appImage = new dockerBuild.Image(`${projectName}-app-image`, {
     },
   ],
 });
+
+// Reference kept for future re-enable.
+void buildCacheRef;
 
 // ── Container App (Nginx + Strapi) ───────────────────────────
 const appKeys = pulumi.interpolate`${appKey1.result},${appKey2.result}`;
@@ -314,6 +368,11 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
       { name: 'jwt-secret', value: jwtSecret.result },
       { name: 'storage-account-key', value: storageKey },
       { name: 'elevenlabs-api-key', value: elevenlabsApiKey },
+      // SSO client secret — only added when the GitHub secret is set for this
+      // environment; the env block below references it conditionally to avoid
+      // a Container App "missing secretRef" error on stacks where SSO isn't
+      // configured yet.
+      ...(ssoEnabled ? [{ name: 'azuread-client-secret', value: azureadClientSecret }] : []),
     ],
   },
   template: {
@@ -347,6 +406,20 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
           { name: 'ELEVENLABS_API_KEY', secretRef: 'elevenlabs-api-key' },
           { name: 'ELEVENLABS_AGENT_ID', value: elevenlabsAgentId },
           { name: 'PUBLIC_SITE_URL', value: publicSiteUrl },
+          // Microsoft Entra ID SSO — consumed by strapi-plugin-sso. If
+          // ssoEnabled is false (any of the 3 GitHub secrets unset on this
+          // env), we still inject empty values so the plugin gracefully
+          // disables itself rather than crashing on missing env vars.
+          { name: 'AZUREAD_TENANT_ID', value: azureadTenantId },
+          { name: 'AZUREAD_OAUTH_CLIENT_ID', value: azureadClientId },
+          ...(ssoEnabled
+            ? [{ name: 'AZUREAD_OAUTH_CLIENT_SECRET', secretRef: 'azuread-client-secret' }]
+            : [{ name: 'AZUREAD_OAUTH_CLIENT_SECRET', value: '' }]),
+          { name: 'AZUREAD_SCOPE', value: azureadScope },
+          // Redirect URI is derived from the public site URL so we don't
+          // need a separate GitHub secret per env. The Entra app registration
+          // must include this URL in its "Redirect URIs" allow-list.
+          { name: 'AZUREAD_OAUTH_REDIRECT_URI', value: `${publicSiteUrl}/strapi-plugin-sso/azuread/callback` },
         ],
         volumeMounts: [
           {

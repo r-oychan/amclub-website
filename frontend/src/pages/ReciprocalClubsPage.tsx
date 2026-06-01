@@ -1,264 +1,272 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
+import { fetchAPI } from '../lib/api';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
 import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
 import { DetailSection } from '../components/detail/DetailSection';
-import { CtaIcon } from '../components/shared/CtaIcon';
-import { ImagePanelSlideshow, type SlideshowSlide } from '../components/blocks/ImagePanelSlideshow';
+import { Button } from '../components/shared/Button';
+import { CtaIcon, type CtaIconName } from '../components/shared/CtaIcon';
 
-const RECIPROCAL_LIST_URL = '/documents/membership/reciprocal-club-list.pdf';
-const LETTER_OF_INTRODUCTION_URL = 'https://amclub.jotform.com/form/tac-reciprocal-club-LOI';
-const TOWER_CLUB_URL = 'https://www.tower-club.com.sg/';
-
-const HERO_IMAGE = 'https://framerusercontent.com/images/bdz4bVfeQtZyQC6ebpW09r3ujU.jpg';
-
-const TOWER_CLUB_SLIDES: SlideshowSlide[] = [
-  {
-    src: 'https://framerusercontent.com/images/xpKPh1BXgtlMvXSIOldtsW7Lhog.jpg',
-    caption: 'Atlantic Dining Room',
-    subCaption: 'Tower Club Singapore',
-  },
-];
-
-const HOURS_BLOCKS: { title: string; rows: { day: string; lines: string[] }[] }[] = [
-  {
-    title: 'Tower Club Operating Hours',
-    rows: [
-      { day: 'Mondays to Fridays', lines: ['7:30 AM – 11:00 PM'] },
-      { day: 'Saturdays', lines: ['9:00 AM – 11:00 PM'] },
-    ],
-  },
-  {
-    title: 'Atlantic Dining Room (Level 62)',
-    rows: [
-      {
-        day: 'Mondays to Fridays',
-        lines: [
-          'Breakfast: 7:30 AM – 10:30 AM',
-          'Lunch: 11:30 AM – 2:30 PM',
-          'Dinner: 6:30 PM – 11:00 PM',
-        ],
-      },
-      { day: 'Saturdays', lines: ['Dinner: 6:30 PM – 11:00 PM'] },
-    ],
-  },
-  {
-    title: 'Ba Xian Dining Room (Level 63)',
-    rows: [
-      {
-        day: 'Mondays to Saturdays',
-        lines: ['Lunch: 11:30 AM – 2:30 PM', 'Dinner: 6:30 PM – 11:00 PM'],
-      },
-    ],
-  },
-  {
-    title: 'Straits Bar (Level 64)',
-    rows: [
-      { day: 'Mondays to Saturdays', lines: ['All day dining from 11:30 AM – 11:00 PM'] },
-    ],
-  },
-];
-
-const NOTES = [
-  'The dress code is Business Attire',
-  'Dining reservations must be made directly to Tower Club in advance. Please mention your child’s age, if any, when making your dining reservation.',
-  'The American Club membership card must be presented upon arrival at Tower Club',
-  'The American Club Members are subject to 10% Surcharge and 10% Service Charge in addition to the prevailing GST',
-  'No restrictions on the number of guests but they must be accompanied by an American Club Member at all times',
-  'Children aged 12 years and above, accompanied by a Member, may only dine in the Private Dining Rooms during lunch',
-  'In the evenings, children aged 6 years and above, accompanied by a Member, are welcome to dine in the Atlantic, Ba Xian and any of the Private Dining Rooms',
-  'Parents are requested to ensure the good behavior of their children so as not to disturb other members',
-  'Carpark charges would be “as charged” and based on the Republic Plaza Building Management’s prevailing carpark rates',
-  'Strictly no access to the Fitness Centre',
-  'All charges must be settled at Tower Club; no inter-club billing allowed',
-];
-
-const PILL_CLASS =
-  'inline-flex items-center gap-2 bg-white rounded-full text-primary uppercase hover:shadow-md transition-shadow border border-primary/10';
-const PILL_STYLE = {
-  padding: '12px 16px 12px 24px',
-  fontSize: '13.6px',
-  fontWeight: 700,
-  letterSpacing: '0.04em',
-  boxShadow: 'rgba(32, 99, 171, 0.07) 0px 20px 19px -12px',
-} as const;
-
-function Pill({ href, label, external }: { href: string; label: string; external?: boolean }) {
-  const inner = (
-    <>
-      {label}
-      <CtaIcon name="arrow" size={20} className="text-accent" />
-    </>
-  );
-  return external ? (
-    <a href={href} target="_blank" rel="noopener noreferrer" className={PILL_CLASS} style={PILL_STYLE}>
-      {inner}
-    </a>
-  ) : (
-    <Link to={href} className={PILL_CLASS} style={PILL_STYLE}>
-      {inner}
-    </Link>
-  );
+interface StrapiLink {
+  label?: string;
+  href?: string;
+  isExternal?: boolean;
+  icon?: CtaIconName | null;
 }
 
+interface OperatingHoursRow {
+  dayRange?: string;
+  time?: string;
+}
+
+interface OperatingHoursSection {
+  title?: string;
+  rows?: OperatingHoursRow[];
+}
+
+interface ReciprocalData {
+  title?: string;
+  label?: string;
+  heading?: string;
+  description?: string;
+  heroImage?: { url?: string; alternativeText?: string };
+  ctas?: StrapiLink[];
+  secondaryImage?: { url?: string; alternativeText?: string };
+  secondaryImageCaption?: string;
+  secondaryImageSubCaption?: string;
+  secondaryHeading?: string;
+  secondaryBody?: string;
+  secondaryCta?: StrapiLink;
+  operatingHoursSections?: OperatingHoursSection[];
+  notesHeading?: string;
+  notes?: string;
+  parentLabel?: string;
+  parentHref?: string;
+}
+
+const BLOCK_GAP = '60px';
+const RIGHT_COL_GAP = '32px';
+
+/**
+ * Dedicated layout for /membership/reciprocal-clubs.
+ *
+ * Production has TWO stacked "image-left + content-right" hero blocks
+ * which doesn't fit the generic VenueDetailPage layout (single hero
+ * column, sections rendered full-width underneath). This component
+ * fetches the `reciprocal-clubs-page` singleton from Strapi and renders
+ * the two-block layout faithfully:
+ *
+ *   Block 1 — hero image (left, sticky) | heading + label + CTAs + description (right)
+ *   Block 2 — secondary image (left)    | secondary heading + CTA + body + operating hours sub-sections + notes (right)
+ */
 export default function ReciprocalClubsPage() {
+  const [data, setData] = useState<ReciprocalData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const d = await fetchAPI<ReciprocalData>('/reciprocal-clubs-page');
+      if (cancelled) return;
+      setData(d);
+      setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center text-text-dark/60">
+        Loading…
+      </div>
+    );
+  }
+  if (!data) {
+    return (
+      <div className="min-h-[60vh] flex items-center justify-center text-text-dark/60">
+        This page hasn't been published yet.
+      </div>
+    );
+  }
+
+  const ctas = (data.ctas ?? []).filter((c) => c.label && c.href);
+  const parentLabel = data.parentLabel ?? 'Membership';
+  const parentHref = data.parentHref ?? '/membership';
+  const secondaryCta =
+    data.secondaryCta?.label && data.secondaryCta.href ? data.secondaryCta : undefined;
+
   return (
     <>
-      <DetailHeroBanner />
+      <DetailHeroBanner imageUrl={data.heroImage?.url} />
       <DetailBreadcrumb
-        parentLabel="Membership"
-        parentHref="/membership"
-        currentName="Reciprocal Clubs"
+        parentLabel={parentLabel}
+        parentHref={parentHref}
+        currentName={data.heading ?? data.title ?? ''}
       />
 
-      {/* ── Panel 1: Membership Without Borders ── */}
-      <section className="bg-bg pb-[80px]">
-        <div className="max-w-7xl mx-auto px-10">
-          <div className="flex flex-col lg:flex-row items-start" style={{ gap: '60px' }}>
+      {/* ── Block 1 — primary hero ── */}
+      <section className="bg-bg">
+        <div className="max-w-7xl mx-auto px-10 pt-12 pb-16">
+          <div className="flex flex-col lg:flex-row" style={{ gap: BLOCK_GAP }}>
             <div className="lg:w-[52%] shrink-0">
-              <div className="overflow-hidden">
-                <img
-                  src={HERO_IMAGE}
-                  alt="Reciprocal Clubs"
-                  className="w-full h-auto object-cover"
-                />
-              </div>
+              {data.heroImage?.url && (
+                <div className="lg:sticky lg:top-[120px] overflow-hidden">
+                  <img
+                    src={data.heroImage.url}
+                    alt={data.heroImage.alternativeText ?? data.heading ?? ''}
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+              )}
             </div>
-            <div className="flex flex-col" style={{ gap: '24px' }}>
+            <div className="flex flex-col" style={{ gap: RIGHT_COL_GAP }}>
               <h1
                 className="font-heading text-primary"
-                style={{
-                  fontSize: '38.4px',
-                  fontWeight: 300,
-                  fontStyle: 'italic',
-                  letterSpacing: '-1.152px',
-                  lineHeight: '42.24px',
-                }}
+                style={{ fontSize: '38.4px', fontWeight: 300, fontStyle: 'italic', lineHeight: 1.1 }}
               >
-                Membership Without Borders
+                {data.heading ?? data.title}
               </h1>
-              <div className="flex flex-wrap gap-3">
-                <Pill href={RECIPROCAL_LIST_URL} label="List of Reciprocal Clubs" external />
-                <Pill href={LETTER_OF_INTRODUCTION_URL} label="Letter of Introduction Application" external />
-              </div>
-              <p
-                className="text-text-dark"
-                style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
-              >
-                As a Member of The American Club, enjoy privileged access to over 150 distinguished
-                clubs worldwide, extending the comfort of membership wherever you travel.
-              </p>
-              <p
-                className="text-text-dark"
-                style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
-              >
-                Simply present a Letter of Introduction to visit your destination club, with all
-                payments conveniently made on-site via major credit cards or cash where accepted.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Panel 2: Local Reciprocity (with slideshow image) ── */}
-      <section className="bg-bg pb-[120px]">
-        <div className="max-w-7xl mx-auto px-10">
-          <div className="flex flex-col lg:flex-row items-start" style={{ gap: '60px' }}>
-            <div className="lg:w-[52%] shrink-0">
-              <div className="lg:sticky lg:top-[120px]">
-                <ImagePanelSlideshow
-                  slides={TOWER_CLUB_SLIDES}
-                  className="h-[420px] sm:h-[480px] lg:h-[520px]"
-                />
-              </div>
-            </div>
-            <div className="flex flex-col" style={{ gap: '32px' }}>
-              <h2
-                className="font-heading text-primary"
-                style={{
-                  fontSize: '38.4px',
-                  fontWeight: 300,
-                  fontStyle: 'italic',
-                  letterSpacing: '-1.152px',
-                  lineHeight: '42.24px',
-                }}
-              >
-                Local Reciprocity
-              </h2>
-              <div className="flex flex-wrap gap-3">
-                <Pill href={TOWER_CLUB_URL} label="Learn More About Tower Club" external />
-              </div>
-              <p
-                className="text-text-dark"
-                style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
-              >
-                The American Club maintains a reciprocal partnership with Tower Club, extending
-                exclusive privileges to our Members and their guests. Enjoy complimentary access to
-                Singapore’s only premier private business club located in the heart of the Central
-                Business District.
-              </p>
-
-              {HOURS_BLOCKS.map((block) => (
-                <DetailSection key={block.title} icon="clock" title={block.title}>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
-                    {block.rows.map((row) => (
-                      <div key={row.day} className="flex flex-col gap-1">
-                        <p
-                          className="text-text-dark"
-                          style={{ fontSize: '17.6px', fontWeight: 700, lineHeight: '24.64px' }}
-                        >
-                          {row.day}
-                        </p>
-                        {row.lines.map((line) => (
-                          <p
-                            key={line}
-                            className="text-text-dark"
-                            style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
-                          >
-                            {line}
-                          </p>
-                        ))}
-                      </div>
-                    ))}
-                  </div>
-                </DetailSection>
-              ))}
-
-              <DetailSection icon="reservation" title="Important things to note">
-                <ul className="list-disc pl-6 flex flex-col" style={{ gap: '8px' }}>
-                  {NOTES.map((note) => (
-                    <li
-                      key={note}
-                      className="text-text-dark"
-                      style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
-                    >
-                      {note}
-                    </li>
+              {data.label && (
+                <p
+                  className="font-body uppercase text-primary/70"
+                  style={{ fontSize: '12.5px', letterSpacing: '0.2em' }}
+                >
+                  {data.label}
+                </p>
+              )}
+              {ctas.length > 0 && (
+                <div className="flex flex-wrap gap-4">
+                  {ctas.map((c, i) => (
+                    <Button
+                      key={i}
+                      label={c.label!}
+                      href={c.href!}
+                      iconRight={c.icon ? <CtaIcon name={c.icon} /> : null}
+                      variant={i === 0 ? 'primary' : 'secondary'}
+                    />
                   ))}
-                </ul>
-              </DetailSection>
+                </div>
+              )}
+              {data.description && (
+                <div className="font-body text-text-dark/85 whitespace-pre-line" style={{ fontSize: '17px', lineHeight: 1.55 }}>
+                  {data.description}
+                </div>
+              )}
             </div>
           </div>
         </div>
       </section>
+
+      {/* ── Block 2 — secondary image + Tower Club partnership content ── */}
+      {(data.secondaryImage?.url || data.secondaryHeading) && (
+        <section className="bg-bg">
+          <div className="max-w-7xl mx-auto px-10 pb-[120px]">
+            <div className="flex flex-col lg:flex-row" style={{ gap: BLOCK_GAP }}>
+              <div className="lg:w-[52%] shrink-0">
+                {data.secondaryImage?.url && (
+                  <div className="lg:sticky lg:top-[120px] flex flex-col" style={{ gap: '12px' }}>
+                    <img
+                      src={data.secondaryImage.url}
+                      alt={data.secondaryImage.alternativeText ?? data.secondaryImageCaption ?? ''}
+                      className="w-full h-auto object-cover"
+                    />
+                    {(data.secondaryImageCaption || data.secondaryImageSubCaption) && (
+                      <div>
+                        {data.secondaryImageCaption && (
+                          <h3 className="font-heading text-primary" style={{ fontSize: '20px', fontWeight: 400 }}>
+                            {data.secondaryImageCaption}
+                          </h3>
+                        )}
+                        {data.secondaryImageSubCaption && (
+                          <p className="font-body text-text-dark/70" style={{ fontSize: '14px' }}>
+                            {data.secondaryImageSubCaption}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-col" style={{ gap: RIGHT_COL_GAP }}>
+                {data.secondaryHeading && (
+                  <h2
+                    className="font-heading text-primary"
+                    style={{ fontSize: '32px', fontWeight: 300, fontStyle: 'italic', lineHeight: 1.1 }}
+                  >
+                    {data.secondaryHeading}
+                  </h2>
+                )}
+                {secondaryCta && (
+                  <div>
+                    <Button
+                      label={secondaryCta.label!}
+                      href={secondaryCta.href!}
+                      iconRight={secondaryCta.icon ? <CtaIcon name={secondaryCta.icon} /> : null}
+                      variant="primary"
+                    />
+                  </div>
+                )}
+                {data.secondaryBody && (
+                  <div className="font-body text-text-dark/85 whitespace-pre-line" style={{ fontSize: '17px', lineHeight: 1.55 }}>
+                    {data.secondaryBody}
+                  </div>
+                )}
+                {(data.operatingHoursSections ?? []).map((section, idx) => (
+                  <DetailSection key={idx} icon="clock" title={section.title ?? ''}>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+                      {(section.rows ?? []).map((row, j) => (
+                        <div key={j} className="flex flex-col gap-1">
+                          {row.dayRange && (
+                            <div className="font-body font-semibold text-primary" style={{ fontSize: '14px' }}>
+                              {row.dayRange}
+                            </div>
+                          )}
+                          {row.time && (
+                            <div className="font-body text-text-dark/85 whitespace-pre-line" style={{ fontSize: '14px' }}>
+                              {row.time}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </DetailSection>
+                ))}
+                {data.notes && (
+                  <DetailSection icon="reservation" title={data.notesHeading ?? 'Important things to note'}>
+                    <ul className="flex flex-col gap-3 font-body text-text-dark/85" style={{ fontSize: '15px', lineHeight: 1.55 }}>
+                      {data.notes
+                        .split('\n')
+                        .map((line) => line.replace(/^•\s*/, '').trim())
+                        .filter(Boolean)
+                        .map((line, i) => (
+                          <li key={i} className="flex gap-2">
+                            <span className="text-accent">•</span>
+                            <span>{line}</span>
+                          </li>
+                        ))}
+                    </ul>
+                  </DetailSection>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── Back link ── */}
       <section className="py-10 bg-bg">
         <div className="max-w-7xl mx-auto px-10">
           <Link
-            to="/membership"
+            to={parentHref}
             className="inline-flex items-center gap-2.5 font-bold uppercase text-primary hover:text-accent transition-colors"
             style={{ fontSize: '14.4px', letterSpacing: '0.576px' }}
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M15 18L9 12L15 6"
-                stroke="#DF4661"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
+              <path d="M15 18L9 12L15 6" stroke="#DF4661" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            Back to Membership
+            Back to {parentLabel}
           </Link>
         </div>
       </section>

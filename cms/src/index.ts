@@ -1,5 +1,6 @@
 // import type { Core } from '@strapi/strapi';
-import { registerLifecycleHooks } from './services/elevenlabs-sync/lifecycle';
+// Lifecycle hooks for ElevenLabs KB sync now live in the elevenlabs-chatbot plugin
+// (cms/src/plugins/elevenlabs-chatbot). It registers its own bootstrap.
 
 const PUBLIC_FIND_TYPES = [
   'api::home-page.home-page',
@@ -20,10 +21,14 @@ const PUBLIC_FIND_TYPES = [
   'api::faq-item.faq-item',
   'api::faq-category.faq-category',
   'api::faq-page.faq-page',
-  'api::venue.venue',
   'api::restaurant.restaurant',
-  'api::facility.facility',
   'api::coach.coach',
+  // Section 2 (Fitness) — per-discipline coach collections. Legacy `coach`
+  // collection above will be dropped once data migration is verified.
+  'api::aquatics-coach.aquatics-coach',
+  'api::tennis-coach.tennis-coach',
+  'api::pilates-instructor.pilates-instructor',
+  'api::gym-trainer.gym-trainer',
   'api::committee-member.committee-member',
   'api::gallery-album.gallery-album',
   'api::gallery-page.gallery-page',
@@ -32,7 +37,16 @@ const PUBLIC_FIND_TYPES = [
   'api::contact-us-page.contact-us-page',
   'api::dining-promotion.dining-promotion',
   'api::dining-promotions-page.dining-promotions-page',
-  'api::site-settings.site-settings',
+  // Section 2 — replaces legacy `facility` for fitness venues. Other
+  // sections (kids / event-spaces / membership / home-sub) currently
+  // render from subpages.ts static fallback and will get their own
+  // per-section collections later.
+  'api::fitness-facility.fitness-facility',
+  // Section 3 — replaces legacy `facility` rows for /kids/:slug.
+  'api::kids-experience.kids-experience',
+  // Section 4 — replaces legacy `venue` (deleted) + `facility` rows for
+  // /event-spaces/:slug.
+  'api::event-space.event-space',
 ];
 
 async function grantPublicReadAccess(strapi: any) {
@@ -96,19 +110,6 @@ function mimeFromFilename(filename: string): string | null {
   return MIME_BY_EXT[ext] ?? null;
 }
 
-// Strapi v5 singleTypes 404 on `find` until a row exists. site-settings is
-// a global feature-flag store that the frontend hits on every page load, so
-// create a sensible default row on first boot if one isn't already there.
-async function ensureSiteSettings(strapi: any) {
-  const existing = await strapi.documents('api::site-settings.site-settings').findFirst();
-  if (existing) return;
-  await strapi.documents('api::site-settings.site-settings').create({
-    data: { chatbotEnabled: true },
-    status: 'published',
-  });
-  strapi.log.info('[bootstrap] created default site-settings entry');
-}
-
 async function backfillUploadMimes(strapi: any) {
   const stale = await strapi.db.query('plugin::upload.file').findMany({
     where: { mime: 'application/octet-stream' },
@@ -129,6 +130,54 @@ async function backfillUploadMimes(strapi: any) {
   strapi.log.info(`[bootstrap] backfilled mime on ${fixed}/${stale.length} upload row(s)`);
 }
 
+// Expiry-driven KB cleanup. Listing endpoints already hide past entries
+// (see cms/src/utils/expiry-filter.ts), but the ElevenLabs chatbot KB
+// holds an independent snapshot per entry. This cron iterates the two
+// expiry-aware collections, finds rows whose date passed since the last
+// tick, and asks the elevenlabs-chatbot plugin to drop them from the KB.
+// Strapi keeps the entry rows themselves (URL stays alive).
+//
+// Hourly cadence is enough — KB hygiene doesn't need minute precision,
+// and listing-side filtering already gives instant user-facing effect.
+async function sweepExpiredKbDocs(strapi: any) {
+  const today = new Date().toISOString().slice(0, 10);
+  const targets: { uid: string; field: string }[] = [
+    { uid: 'api::event.event', field: 'date' },
+    { uid: 'api::dining-promotion.dining-promotion', field: 'validTo' },
+  ];
+  let dropped = 0;
+  const unsync = strapi.plugin('elevenlabs-chatbot')?.service('sync')?.unsyncEntryBySlug;
+  if (typeof unsync !== 'function') {
+    strapi.log.warn('[expiry-cron] elevenlabs-chatbot.sync.unsyncEntryBySlug not available');
+    return;
+  }
+  for (const { uid, field } of targets) {
+    let rows: { slug?: string }[] = [];
+    try {
+      rows = await strapi.db.query(uid).findMany({
+        where: { [field]: { $lt: today } },
+        select: ['slug'],
+        limit: 500,
+      });
+    } catch (e) {
+      strapi.log.warn(`[expiry-cron] failed to query ${uid}: ${(e as Error).message}`);
+      continue;
+    }
+    for (const r of rows) {
+      if (!r.slug) continue;
+      try {
+        const res = await unsync(strapi, uid, r.slug);
+        if (res?.status === 'deleted') dropped += 1;
+      } catch (e) {
+        strapi.log.warn(`[expiry-cron] ${uid}/${r.slug}: ${(e as Error).message}`);
+      }
+    }
+  }
+  if (dropped > 0) {
+    strapi.log.info(`[expiry-cron] removed ${dropped} expired entr(ies) from ElevenLabs KB`);
+  }
+}
+
 export default {
   register() {},
   async bootstrap({ strapi }: { strapi: any }) {
@@ -138,19 +187,21 @@ export default {
       strapi.log.error('[bootstrap] failed to grant public read access', e);
     }
     try {
-      await ensureSiteSettings(strapi);
-    } catch (e) {
-      strapi.log.error('[bootstrap] failed to ensure site-settings entry', e);
-    }
-    try {
       await backfillUploadMimes(strapi);
     } catch (e) {
       strapi.log.error('[bootstrap] failed to backfill upload mimes', e);
     }
+    // Hourly content-expiry KB sweep. config/server.ts enables cron.
     try {
-      registerLifecycleHooks(strapi);
+      strapi.cron.add({
+        expiryKbSweep: {
+          task: () => sweepExpiredKbDocs(strapi),
+          options: { rule: '0 * * * *' },
+        },
+      });
+      strapi.log.info('[bootstrap] registered hourly expiry KB sweep');
     } catch (e) {
-      strapi.log.error('[bootstrap] failed to register elevenlabs sync hooks', e);
+      strapi.log.error('[bootstrap] failed to register expiry cron', e);
     }
   },
 };

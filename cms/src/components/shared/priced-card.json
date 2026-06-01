@@ -3,12 +3,18 @@
   "info": {
     "displayName": "Priced Card",
     "icon": "tag",
-    "description": "Individual membership pricing card (joining-fees page)"
+    "description": "Versatile card used inside Priced Card Grid blocks. Fields are optional so the same component can render tier cards (membership), package cards (events), and venue cards (event spaces). React side picks visual variant from the parent grid block."
   },
   "options": {},
   "attributes": {
     "name": { "type": "string", "required": true },
+    "subheading": { "type": "string" },
     "description": { "type": "text" },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
     "feeLabel": { "type": "string" },
     "feeAmount": { "type": "string" },
     "breakdown": { "type": "text" },
@@ -17,6 +23,21 @@
       "type": "enumeration",
       "enum": ["positive", "negative"],
       "default": "positive"
+    },
+    "bullets": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.text-line"
+    },
+    "cta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.link"
+    },
+    "secondaryCta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.link"
     }
   }
 }

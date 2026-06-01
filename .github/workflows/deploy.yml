@@ -68,6 +68,15 @@ jobs:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
           ELEVENLABS_AGENT_ID: ${{ vars.ELEVENLABS_AGENT_ID }}
           PUBLIC_SITE_URL: ${{ github.ref_name == 'main' && 'https://amclub.org.sg' || github.ref_name == 'uat' && 'https://uat.amclub.org.sg' || 'https://dev.amclub.org.sg' }}
+          # Microsoft Entra ID SSO for the Strapi admin (via strapi-plugin-sso).
+          # All four are optional — if AZUREAD_OAUTH_CLIENT_ID is unset, the
+          # plugin will simply not be reachable and password login still works.
+          # The redirect URI is derived inside infra/index.ts from the
+          # Container App's own FQDN, so it doesn't need a GH secret.
+          AZUREAD_TENANT_ID: ${{ secrets.AZUREAD_TENANT_ID }}
+          AZUREAD_OAUTH_CLIENT_ID: ${{ secrets.AZUREAD_OAUTH_CLIENT_ID }}
+          AZUREAD_OAUTH_CLIENT_SECRET: ${{ secrets.AZUREAD_OAUTH_CLIENT_SECRET }}
+          AZUREAD_SCOPE: ${{ vars.AZUREAD_SCOPE || 'user.read' }}
 
       - name: Show deployment URL
         if: success()

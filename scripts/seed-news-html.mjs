@@ -160,7 +160,9 @@ async function rehostImages(html) {
   for (const url of urls) {
     try {
       const { path } = await downloadImage(url);
-      const uploaded = DRY ? { url: '/uploads/dryrun.jpg' } : await uploadFile(ctx, path);
+      // Rehosted images from prod news articles — temp file is outside
+      // media/, so pass explicit path to land them under news/rehosted/.
+      const uploaded = DRY ? { url: '/uploads/dryrun.jpg' } : await uploadFile(ctx, path, { path: 'news/rehosted' });
       const newUrl = uploaded.url.startsWith('http')
         ? uploaded.url
         : `${ctx.BASE}${uploaded.url}`;

@@ -361,21 +361,19 @@ export const diningSubpages: SubpageData[] = [
     description:
       'Welcome to a casual poolside dining restaurant – perfect for families with children and swimmers looking to have a delicious meal.\n\nDevour authentic American cuisine featuring Texas-style BBQ, mouth-watering burgers, delicious pizzas and salads with ice-cold American beer and special Grillhouse shakes.',
     hours:
-      'Grillhouse\nSunday to Thursday: 11:00 AM – 9:00 PM (Last order at 8:30 PM)\nFriday and Saturday: 11:00 AM – 9:30 PM (Last order at 9:00 PM)\n\nTiki Bar\nFridays & Saturdays: 11:30 AM – 12:00 AM (Last order at 11:30 PM)\nSundays: 11:30 AM – 11:00 PM (Last order at 10:30 PM)',
+      'Grillhouse\nSunday to Thursday: 11:00AM – 9:00PM (Last order 8:30PM)\nFriday & Saturday: 11:00AM – 9:30PM (Last order 9:00PM)\n\nTiki Bar\nFriday to Sunday: 11:30AM – 10:00PM (Last order 9:30PM)',
     operatingHoursSections: [
       {
         title: 'Grillhouse Operating Hours',
         rows: [
-          { dayRange: 'Sunday to Thursday', time: '11:00 AM - 9:00 PM', lastOrder: 'Last order at 8:30 PM' },
-          { dayRange: 'Friday',             time: '11:00 AM - 9:30 PM', lastOrder: 'Last order at 9:00 PM' },
-          { dayRange: 'Saturday',           time: '8:30 AM - 9:30 PM',  lastOrder: 'Last order at 9:00 PM' },
+          { dayRange: 'Sunday to Thursday', time: '11:00AM – 9:00PM', lastOrder: 'Last order 8:30PM' },
+          { dayRange: 'Friday & Saturday',  time: '11:00AM – 9:30PM', lastOrder: 'Last order 9:00PM' },
         ],
       },
       {
         title: 'Tiki Bar Operating Hours',
         rows: [
-          { dayRange: 'Friday & Saturday', time: '11:30 AM - 12:00 AM', lastOrder: 'Last order at 11:30 PM' },
-          { dayRange: 'Sunday',            time: '11:30 AM - 11:00 PM', lastOrder: 'Last order at 10:30 PM' },
+          { dayRange: 'Friday to Sunday',   time: '11:30AM – 10:00PM', lastOrder: 'Last order 9:30PM' },
         ],
       },
     ],
@@ -451,7 +449,7 @@ export const diningSubpages: SubpageData[] = [
       },
     ],
     level: 'Level 1',
-    phone: '6739 4340',
+    phone: '6739 4407',
     email: 'gourmetpantry@amclub.org.sg',
     image:
       '/uploads/restaurants/the-gourmet-pantry.jpeg',
@@ -476,7 +474,7 @@ export const diningSubpages: SubpageData[] = [
           title: 'UNCORKED',
           subtitle: 'An exclusive world for wine lovers.',
           image:
-            '/subpages/dining-uncorked.jpg',
+            'https://framerusercontent.com/images/e85HYNka8NYlE7SuZFJQ6qajxg.jpg',
           cta: { label: 'Learn More', href: '/dining/uncorked' },
         },
         {
@@ -484,7 +482,7 @@ export const diningSubpages: SubpageData[] = [
           subtitle:
             'Bringing the Club\'s cellar to your home with a curated range of premium wines.',
           image:
-            '/subpages/dining-bottles2go.jpg',
+            'https://framerusercontent.com/images/aGxaO43vaHmXI1ULbrj1nuKNM74.jpg',
           cta: { label: 'Order Now', href: 'https://amclub.jotform.com/252638314015956' },
         },
       ],
@@ -840,7 +838,7 @@ export const fitnessSubpages: SubpageData[] = [
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [
-      { label: 'Personal Training & Group Fitness Classes', href: '/documents/fitness/personal-training-group-fitness-class.pdf', isExternal: true },
+      { label: 'Personal Training & Group Fitness Rates 2026', href: '/documents/fitness/personal-training-group-fitness-rates-2026.pdf', isExternal: true },
       { label: 'Group Fitness Class Schedule', href: '/documents/fitness/group-fitness-class-schedule.jpg', isExternal: true },
     ],
     extraSections: [
@@ -866,7 +864,7 @@ export const fitnessSubpages: SubpageData[] = [
             imageAlt: 'Personal trainer guiding a member through a dumbbell row',
             cta: {
               label: 'Explore',
-              href: '/documents/fitness/personal-training-group-fitness-class.pdf',
+              href: '/documents/fitness/personal-training-group-fitness-rates-2026.pdf',
               isExternal: true,
             },
           },
@@ -905,8 +903,6 @@ export const fitnessSubpages: SubpageData[] = [
       { name: 'Vanan',    role: 'Personal Trainer', image: '/images/fitness/team-pt/vanan.jpg',    bioImage: '/images/fitness/team-pt/vanan-bio.png' },
       { name: 'Ghazali',  role: 'Personal Trainer', image: '/images/fitness/team-pt/ghazali.jpg',  bioImage: '/images/fitness/team-pt/ghazali-bio.png' },
       { name: 'Andyn',    role: 'Personal Trainer', image: '/images/fitness/team-pt/andyn.jpg',    bioImage: '/images/fitness/team-pt/andyn-bio.png' },
-      { name: 'Zack',     role: 'Personal Trainer',                                                bioImage: '/images/fitness/team-pt/zack-bio.png' },
-      { name: 'Desmond',  role: 'Personal Trainer',                                                bioImage: '/images/fitness/team-pt/desmond-bio.png' },
     ],
   },
   {
@@ -987,7 +983,7 @@ export const fitnessSubpages: SubpageData[] = [
     phone: '6739 4312',
     email: 'sportscenter@amclub.org.sg',
     image:
-      '/subpages/fitness-squash.jpeg',
+      'https://framerusercontent.com/images/V7hzkQOjUbyX5TwmyMot6sabVk.jpeg',
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [
@@ -1114,7 +1110,7 @@ export const fitnessSubpages: SubpageData[] = [
     phone: '6739-4392',
     email: 'youth@amclub.org.sg',
     image:
-      '/subpages/fitness-pilates.png',
+      'https://framerusercontent.com/images/FlYhqxJitkFU5PkKTbhHD4Lho.png',
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [{ label: 'Bowling Rates', href: '#' }],
@@ -1360,19 +1356,25 @@ export const kidsSubpages: SubpageData[] = [
     name: 'Recreational Classes',
     type: 'Recreational Programs',
     description:
-      'Our Recreational Classes support your child\'s holistic development through enriching experiences that spark curiosity and build confidence. With thoughtfully curated programs led by trusted instructors and partners, kids can enjoy a wide range of on-site and off-site classes – from arts and movement to sports and STEM.',
+      'Our Recreational Classes support your child\'s holistic development through enriching experiences that spark curiosity and build confidence. With thoughtfully curated programs led by trusted instructors and partners, kids can enjoy a wide range of on-site and off-site classes – from arts and movement to sports and STEM.\n\nPlease approach The Quad or The Quad Poolside or email [youth@amclub.org.sg](mailto:youth@amclub.org.sg) to register.\n\nPlease note that a 3% surcharge applies for all payments via credit card.',
     image: '/images/kids/learning/recreational-classes.jpg',
     parentSection: 'Kids',
     parentHref: '/kids',
     ctas: [
       { label: 'View Classes', href: '/documents/kids/recreational-classes.pdf', isExternal: true },
+      {
+        label: 'Cancellation/Temporary Suspension Form',
+        href: 'https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=tNI3gQWbQ0ue5Ad0V1MxKuJw7vNhg0ZDpudyy49zdq5UM1dIOVFXOUtLODZNR1gzRkI1SzY4OU5WOS4u',
+        isExternal: true,
+      },
     ],
   },
   {
     slug: 'camps',
     name: 'Seasonal Kids\' Camps',
     type: 'Programs',
-    description: 'Check out the various camps available in the video.',
+    description:
+      'Seasonal camps are a great way for kids to have fun and keep them occupied when school is out. The camps offer a full day of activities around sports, art and science in a safe and fun environment. Think Hands-on fun at the Club with culinary, STEM, sports and arts and craft activities.\n\nCheck out the various camps available in the video below.',
     video: { url: 'https://youtu.be/d7oyA6sLGVw', title: 'Seasonal Kids\' Camps at The American Club' },
     parentSection: 'Kids',
     parentHref: '/kids',
@@ -1569,7 +1571,7 @@ export const eventSpacesSubpages: SubpageData[] = [
     type: 'Weddings',
     description:
       'Celebrate your love story in a setting as meaningful as the moment itself. From grand receptions to intimate gatherings, the Club offers timeless venues, thoughtful service, and bespoke culinary experiences.',
-    image: '/uploads/package_wedding_1fc9c3830f.jpg',
+    image: '/images/event-spaces/package-wedding.jpg',
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
@@ -1580,11 +1582,11 @@ export const eventSpacesSubpages: SubpageData[] = [
       cards: [
         {
           heading: 'The Galbraith Ballroom',
-          capacity: 'Up to 40 pax',
+          capacity: 'Up to 230 pax',
           description:
             'A grand, pillar-less ballroom created for unforgettable "I do" moments. With elegant layouts, seamless audiovisual support, and dedicated event coordination, the space transforms effortlessly from a heartfelt ceremony to an evening of dining and dancing – an enchanting setting for celebrating your love story in style.',
           image:
-            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_galbraith_wedding_db3a81af1f.jpg',
+            '/images/event-spaces/venue-galbraith-wedding.jpg',
           imageAlt: 'The Galbraith Ballroom',
         },
         {
@@ -1593,7 +1595,7 @@ export const eventSpacesSubpages: SubpageData[] = [
           description:
             'An intimate and refined setting for smaller weddings and cocktail receptions, The 2nd Floor offers couples a beautifully curated space for a celebration that feels personal, elegant, and effortlessly memorable.',
           image:
-            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_2nd_floor_wedding_75f86eb499.jpg',
+            '/images/event-spaces/venue-2nd-floor-wedding.jpg',
           imageAlt: 'The 2nd Floor',
         },
       ],
@@ -1606,7 +1608,7 @@ export const eventSpacesSubpages: SubpageData[] = [
           heading: 'The Classic Collection',
           tagline: 'Ideal for intimate weddings and couples seeking a refined yet simple celebration',
           image:
-            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/wedding_package_classic_3f7ac22fc3.jpg',
+            '/images/event-spaces/wedding/wedding-package-classic.jpg',
           benefits: [
             'Exclusive use of The Galbraith Ballroom for up to 4 hours',
             'Elegant round table setup with your choice of linen',
@@ -1622,7 +1624,7 @@ export const eventSpacesSubpages: SubpageData[] = [
           heading: 'The Signature Collection',
           tagline: 'For mid-sized weddings with personalized touches and elevated flair',
           image:
-            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/wedding_package_signature_6d772ce68d.jpg',
+            '/images/event-spaces/wedding/wedding-package-signature.jpg',
           benefits: [
             'Exclusive use of The Galbraith Ballroom for up to 4 hours',
             'Elegant round table setup with your choice of linen',
@@ -1638,7 +1640,7 @@ export const eventSpacesSubpages: SubpageData[] = [
           heading: 'The Prestige Collection',
           tagline: 'Our most comprehensive package, designed for a truly premium wedding experience',
           image:
-            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/wedding_package_prestige_e7474f1a37.jpg',
+            '/images/event-spaces/wedding/wedding-package-prestige.jpg',
           benefits: [
             'Exclusive use of The Galbraith Ballroom for up to 4 hours',
             'Elegant round table setup with your choice of linen',
@@ -1663,7 +1665,7 @@ export const eventSpacesSubpages: SubpageData[] = [
     description:
       'From large-scale conferences to focused strategy sessions and team-building experiences, the Club offers a versatile portfolio of venues designed to elevate every corporate occasion.',
     image:
-      '/subpages/eventspaces-galbraith.jpg',
+      'https://framerusercontent.com/images/rA4tJSoJzyWMv0VxMzxueeloOKI.jpg',
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
@@ -1675,11 +1677,11 @@ export const eventSpacesSubpages: SubpageData[] = [
       cards: [
         {
           heading: 'The Galbraith Ballroom',
-          capacity: 'Up to 40 pax',
+          capacity: 'Up to 230 pax',
           description:
             "An elegant, pillar-less ballroom ideal for conferences, large-scale meetings, awards nights, and corporate celebrations. Flexible layouts, professional audiovisual support, and a refined setting make it the Club's premier venue for high-profile events.",
           image:
-            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_galbraith_wedding_db3a81af1f.jpg',
+            '/images/event-spaces/venue-galbraith-wedding.jpg',
           imageAlt: 'The Galbraith Ballroom',
         },
         {
@@ -1688,16 +1690,16 @@ export const eventSpacesSubpages: SubpageData[] = [
           description:
             'Purpose-built for focus and collaboration, our Thinkspace Meeting Rooms offer contemporary spaces for board meetings, workshops, training sessions, and breakouts – featuring presentation technology and flexible seating in a professional, comfortable setting.',
           image:
-            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_thinkspace_adult_library_e682b190f4.jpg',
+            '/images/event-spaces/venue-thinkspace-adult-library.jpg',
           imageAlt: 'Thinkspace Meeting Rooms',
         },
         {
           heading: 'The Bowling Alley',
-          capacity: 'Up to 28 pax',
+          capacity: 'Up to 30 pax',
           description:
             'A refreshing option for team-building, client entertainment, and informal corporate socials, The Bowling Alley offers a lively setting that blends friendly competition with curated food and beverage experiences.',
           image:
-            'https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_bowling_4120_1c684f909e.jpg',
+            '/images/event-spaces/venue-bowling-4120.jpg',
           imageAlt: 'The Bowling Alley',
         },
       ],
@@ -1710,13 +1712,13 @@ export const eventSpacesSubpages: SubpageData[] = [
     description:
       'Bring your celebrations to life in The Galbraith Ballroom – an inviting space perfect for birthdays, anniversaries, festive gatherings, or any reason to come together. With flexible layouts, delicious culinary options, and a team dedicated to making every detail shine, your party becomes an experience that your guests will remember long after the last toast.',
     image:
-      '/subpages/eventspaces-parties.jpg',
+      'https://framerusercontent.com/images/ccM8q1j1oULvaFRDjnPhBdnPRho.jpg',
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
       {
         label: 'View Capacity Chart',
-        href: 'https://amclubdata28a57492.blob.core.windows.net/media/uploads/capacity_chart_72e78149a2.pdf',
+        href: '/documents/event-spaces/capacity-chart.pdf',
         isExternal: true,
       },
       { label: 'Enquire Now', href: 'mailto:catering@amclub.org.sg', isExternal: true },
@@ -1729,13 +1731,13 @@ export const eventSpacesSubpages: SubpageData[] = [
     description:
       'With over 3,400 square feet of versatile, pillar-less space, The Galbraith Ballroom is the perfect venue to host your next event or meeting.',
     image:
-      '/subpages/eventspaces-galbraith.jpg',
-    capacity: '200+ pax',
+      'https://framerusercontent.com/images/rA4tJSoJzyWMv0VxMzxueeloOKI.jpg',
+    capacity: '230 pax',
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
-      { label: 'View Capacity Chart', href: '#' },
-      { label: 'Enquire Now', href: '#' },
+      { label: 'View Capacity Chart', href: '/documents/event-spaces/capacity-chart.pdf', isExternal: true },
+      { label: 'Enquire Now', href: 'mailto:catering@amclub.org.sg', isExternal: true },
     ],
   },
   {
@@ -1750,13 +1752,13 @@ export const eventSpacesSubpages: SubpageData[] = [
     email: 'meetings@amclub.org.sg',
     capacity: 'Max. 40 Pax',
     image:
-      '/subpages/eventspaces-thinkspace.jpg',
+      'https://framerusercontent.com/images/mVJDWpQ45XvCKY8vEOKrFiKZta0.jpg',
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
       {
         label: 'Services & Rates',
-        href: 'https://amclubdata28a57492.blob.core.windows.net/media/uploads/thinkspace_services_flyer_9a83799195.jpg',
+        href: '/images/event-spaces/thinkspace-services-flyer.jpg',
         isExternal: true,
       },
     ],
@@ -1767,23 +1769,34 @@ export const eventSpacesSubpages: SubpageData[] = [
     type: 'Entertainment Venue',
     description:
       'The Bowling Alley delivers top-notch, anytime fun for all skill levels. Also ideal for birthday celebrations, corporate gatherings, and small group get-togethers.',
-    hours: 'Mon-Thu 12pm-7pm, Fri 12pm-8pm, Sat 10:30am-8pm, Sun 9:30am-7pm',
+    capacity: 'Up to 30 pax',
+    operatingHoursSections: [
+      {
+        title: 'Opening Hours',
+        rows: [
+          { dayRange: 'Monday to Thursday', time: '12:00PM – 7:00PM' },
+          { dayRange: 'Friday',             time: '12:00PM – 8:00PM' },
+          { dayRange: 'Saturday',           time: '10:30AM – 8:00PM' },
+          { dayRange: 'Sunday',             time: '9:30AM – 7:00PM' },
+        ],
+      },
+    ],
     level: 'Basement 2',
     phone: '6739 4444/4413',
     email: 'youth@amclub.org.sg',
     image:
-      '/subpages/fitness-pilates.png',
+      'https://framerusercontent.com/images/FlYhqxJitkFU5PkKTbhHD4Lho.png',
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
       {
         label: 'Rates',
-        href: 'https://amclubdata28a57492.blob.core.windows.net/media/uploads/bowling_alley_rates_95e27a91a0.jpg',
+        href: '/documents/event-spaces/bowling-alley-rates.jpg',
         isExternal: true,
       },
       {
         label: 'Party Packages',
-        href: 'https://amclubdata28a57492.blob.core.windows.net/media/uploads/bowling_alley_party_package_13a9e56910.pdf',
+        href: '/documents/event-spaces/bowling-alley-party-package.pdf',
         isExternal: true,
       },
       { label: 'Book A Lane', href: 'mailto:youth@amclub.org.sg', isExternal: true },
@@ -1799,7 +1812,7 @@ export const eventSpacesSubpages: SubpageData[] = [
     phone: '6739-4380',
     email: 'library@amclub.org.sg',
     image:
-      'https://amclubdata28a57492.blob.core.windows.net/media/uploads/venue_thinkspace_adult_library_e682b190f4.jpg',
+      '/images/event-spaces/venue-thinkspace-adult-library.jpg',
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
   },
@@ -1812,13 +1825,13 @@ export const eventSpacesSubpages: SubpageData[] = [
     hours: 'Daily 9:00 AM – 7:00 PM',
     level: 'Level 3',
     image:
-      'https://amclubdata28a57492.blob.core.windows.net/media/uploads/boardroom_7f09a0e833.jpg',
+      '/images/event-spaces/boardroom.jpg',
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
       {
         label: 'Service & Rates',
-        href: 'https://amclubdata28a57492.blob.core.windows.net/media/uploads/thinkspace_services_flyer_9a83799195.jpg',
+        href: '/images/event-spaces/thinkspace-services-flyer.jpg',
         isExternal: true,
       },
     ],
@@ -1833,7 +1846,7 @@ export const membershipSubpages: SubpageData[] = [
     description:
       'Your journey to becoming a Member at The American Club starts here.\n\nGet to know the requirements to start your application.\n\nAll the items outlined in the Application Checklist must be submitted. Incomplete applications will not be accepted.',
     image:
-      '/subpages/membership-start-application.jpeg',
+      'https://framerusercontent.com/images/ALiDWPH3U3VnmiEzcoEet6lPIk.jpeg',
     parentSection: 'Membership',
     parentHref: '/membership',
     ctas: [
@@ -1868,6 +1881,7 @@ export const membershipSubpages: SubpageData[] = [
         { label: 'PDPA Acknowledgement Form',          href: '/documents/membership/forms/pdpa-acknowledgement-form.pdf',          isExternal: true },
         { label: 'GIRO Payment Form',                  href: '/documents/membership/forms/giro-payment-form.pdf',                  isExternal: true },
         { label: 'Car Registration Form',              href: 'https://amclub.jotform.com/250688995352877',                          isExternal: true },
+        { label: 'Visiting Membership Application Form', href: 'https://amclub.jotform.com/260038799703970',                        isExternal: true },
       ],
     },
   },
@@ -1878,7 +1892,7 @@ export const membershipSubpages: SubpageData[] = [
     description:
       'Five distinct membership types designed for different eligibility criteria. All fees are inclusive of prevailing GST.',
     image:
-      '/subpages/membership-joining-fees.jpg',
+      'https://framerusercontent.com/images/uA8oZioX84LwYdHwDPogQJhk13I.jpg',
     parentSection: 'Membership',
     parentHref: '/membership',
     ctas: [
@@ -1910,7 +1924,7 @@ export const membershipSubpages: SubpageData[] = [
     phone: '6739-4331',
     email: 'membership@amclub.org.sg',
     image:
-      '/subpages/membership-referal.jpg',
+      'https://framerusercontent.com/images/9Wx98RDzkCICF2QMOXQadZLRTH4.jpg',
     parentSection: 'Membership',
     parentHref: '/membership',
     tierCards: {
@@ -1955,7 +1969,7 @@ export const membershipSubpages: SubpageData[] = [
         {
           name: '15K Membership',
           description:
-            'A minimum of $20,000 cumulative calendar year spending, excluding monthly dues.',
+            'A minimum of $15,000 cumulative calendar year spending, excluding monthly dues.',
           gradientFrom: 'rgb(53, 173, 242)',
           gradientTo: 'rgb(30, 86, 156)',
           benefits: [
@@ -1992,7 +2006,7 @@ export const membershipSubpages: SubpageData[] = [
     description:
       'As a Member of The American Club, enjoy privileged access to over 150 distinguished clubs worldwide, extending the comfort of membership wherever you travel.',
     image:
-      '/subpages/membership-reciprocal-clubs.jpg',
+      'https://framerusercontent.com/images/bdz4bVfeQtZyQC6ebpW09r3ujU.jpg',
     parentSection: 'Membership',
     parentHref: '/membership',
     ctas: [
@@ -2003,10 +2017,20 @@ export const membershipSubpages: SubpageData[] = [
 ];
 
 export const homeSubpages: SubpageData[] = [
-  // `contact-us`, `news`, `gallery` removed in PR-4 — those routes hit
-  // dedicated page components (ContactUsPage / NewsPage / GalleryPage), so the
-  // VenueDetailPage fallback never reads them. Re-add only if /home-sub/<slug>
-  // routes through VenueDetailPage for that slug again.
+  {
+    slug: 'contact-us',
+    name: 'Contact Us',
+    type: 'Contact',
+    description:
+      '10 Claymore Hill, Singapore 229573. Sunday to Thursday: 6:00 AM - 11:00 PM Friday, Saturday & Eve of PH: 6:00 AM - 12:00 AM',
+    phone: '+65 6737-3411',
+    email: 'info@amclub.org.sg',
+    image:
+      'https://framerusercontent.com/images/YCNFJanBoXdJFKJlpWh9tMfwrQ.jpg',
+    parentSection: 'The American Club',
+    parentHref: '/home',
+    ctas: [{ label: 'Tell Us What You Think', href: 'https://amclub.jotform.com/252152095231953', isExternal: true }],
+  },
   {
     slug: 'advertise-with-us',
     name: 'Advertise with Us',
@@ -2031,6 +2055,24 @@ export const homeSubpages: SubpageData[] = [
         ],
       },
     ],
+  },
+  {
+    slug: 'news',
+    name: 'Club News',
+    type: 'News',
+    description:
+      'Stay up to date with the latest happenings and announcements at The American Club.',
+    parentSection: 'The American Club',
+    parentHref: '/home',
+  },
+  {
+    slug: 'gallery',
+    name: 'Gallery',
+    type: 'Photo Gallery',
+    description:
+      'Browse photos from recent events and celebrations at The American Club.',
+    parentSection: 'The American Club',
+    parentHref: '/home',
   },
 ];
 
