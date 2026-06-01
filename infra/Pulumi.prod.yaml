@@ -9,11 +9,10 @@ config:
   #   az containerapp env certificate list -g amclub-prod-rg -n amclub-prod-env
   # or Azure Portal → Container Apps Environment → Certificates.
   #
-  # TODO: fill in the real cert names from the prod environment. The
-  # apex and www subdomain each have their own managed cert.
-  # amclub-website:customDomains:
-  #   - name: amclub.org.sg
-  #     certName: amclub.org.sg-amclub-p-<timestamp>
-  #   - name: www.amclub.org.sg
-  #     certName: www.amclub.org.sg-amclub-p-<timestamp>
+  # The apex and www subdomain each have their own managed cert.
+  amclub-website:customDomains:
+    - name: amclub.org.sg
+      certName: amclub.org.sg-amclub-p-260518090805
+    - name: www.amclub.org.sg
+      certName: www.amclub.org.sg-amclub-p-260519065509
 encryptionsalt: v1:rsnTxNeI/Ts=:v1:Mc/rkckmlR6G9hbz:NDm1YmrmI+JpAW1gjJMu1ErjpRWVAw==

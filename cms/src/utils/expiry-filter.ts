@@ -1,16 +1,37 @@
-// Build a "not-yet-expired" filter for `find()` controllers. The entry is
-// listed when the date field is null OR still in the future (or today).
-// Used by event.find and dining-promotion.find to drop past entries from
-// listings; detail-by-slug queries bypass via shouldApplyExpiryFilter so
-// /events/<expired-slug> still resolves.
-export function buildExpiryFilter(field: string) {
-  // 'YYYY-MM-DD' — both event.date and dining-promotion.validTo are stored
-  // as date (no time), so this matches Postgres date comparison semantics.
+// Build a "not-yet-expired" filter for `find()` controllers. Entries are
+// listed when:
+//   - `expiredAt` (the explicit editor override) is in the future, OR
+//   - `expiredAt` is null AND the natural date field is null or in the
+//     future
+//
+// Editors get fine-grained control: set `expiredAt` to keep an old event
+// visible (recurring annual), or set it to a past date to hide a future
+// event early. With no `expiredAt` set, the natural date drives expiry
+// — preserving the original implicit behaviour.
+//
+// Used by event.find (`fallbackField: 'date'`) and dining-promotion.find
+// (`fallbackField: 'validTo'`). Detail-by-slug queries bypass via
+// shouldApplyExpiryFilter so /events/<expired-slug> still resolves.
+export function buildExpiryFilter(fallbackField: string) {
+  // 'YYYY-MM-DD' — date fields are stored as plain dates (no time), so
+  // this matches Postgres date comparison semantics.
   const today = new Date().toISOString().slice(0, 10);
   return {
     $or: [
-      { [field]: { $null: true } },
-      { [field]: { $gte: today } },
+      // explicit override: editor set expiredAt → respect it
+      { expiredAt: { $gte: today } },
+      // no override: fall back to the natural date field
+      {
+        $and: [
+          { expiredAt: { $null: true } },
+          {
+            $or: [
+              { [fallbackField]: { $null: true } },
+              { [fallbackField]: { $gte: today } },
+            ],
+          },
+        ],
+      },
     ],
   };
 }
