@@ -38,6 +38,9 @@
     "validTo": {
       "type": "date"
     },
+    "expiredAt": {
+      "type": "date"
+    },
     "image": {
       "type": "media",
       "multiple": false,
