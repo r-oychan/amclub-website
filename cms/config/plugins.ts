@@ -92,12 +92,6 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
     enabled: true,
     config: {
       REMEMBER_ME: false,
-      // Restrict SSO logins to emails on the plugin's whitelist table
-      // (manage via /admin/settings/strapi-plugin-sso → "Whitelist" tab).
-      // Without this, any Entra ID user who lands on the callback gets
-      // auto-provisioned as an admin. Password login is unaffected, so
-      // the local admin account remains a recovery path.
-      USE_WHITELIST: true,
       AZUREAD_TENANT_ID: env('AZUREAD_TENANT_ID', ''),
       AZUREAD_OAUTH_CLIENT_ID: env('AZUREAD_OAUTH_CLIENT_ID', ''),
       AZUREAD_OAUTH_CLIENT_SECRET: env('AZUREAD_OAUTH_CLIENT_SECRET', ''),
