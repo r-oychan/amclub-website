@@ -1,0 +1,287 @@
+# Strapi v5 Patterns
+
+Repeatable patterns for building features on this project. Each section describes the problem, the approach we chose, and the gotchas baked into Strapi v5 that drove the design.
+
+## 1. Custom upload provider (file-system folder routing)
+
+**Goal:** route each upload to a per-section/page sub-folder in blob storage based on a `path` form-data field.
+
+**Constraints discovered:**
+- The upstream Azure provider (`strapi-provider-upload-azure-storage`) hardcodes `config.defaultPath` and ignores `file.path`.
+- Strapi's provider loader is `require(modulePath)` from inside `node_modules/@strapi/upload/dist/server/register.js` — **relative paths in the plugin config resolve against that file's directory, not the project root**. `provider: './src/providers/foo'` fails with `MODULE_NOT_FOUND`.
+- npm `file:` deps create a symlink in `node_modules` whose target must exist at both **install time** (so `npm ci` doesn't dangle) and **runtime** (so Node can follow the link).
+
+**Pattern (the one in `cms/providers/upload-azure-folders/`):**
+
+1. Put the provider at `cms/providers/<name>/` with its own `package.json` (`name: <name>`, `main: index.js`).
+2. Add a `file:` link in `cms/package.json`:
+   ```json
+   "upload-azure-folders": "file:providers/upload-azure-folders"
+   ```
+3. Reference by NPM-style name in `cms/config/plugins.ts`:
+   ```ts
+   provider: 'upload-azure-folders'
+   ```
+4. Dockerfile must `COPY cms/providers ./providers` **before `npm ci`** in the builder stage, and **after** `node_modules` in the runtime stage (the symlink target needs to be present at the same relative path).
+
+The wrapper itself re-inits the upstream provider per call with an adjusted config — Azure SDK's `BlobServiceClient` is just an object until used, so this is cheap and concurrency-safe:
+
+```js
+function providerForFile(config, file) {
+  const effectivePath = file.path ? joinPath(config.defaultPath, file.path) : config.defaultPath;
+  return upstream.init({ ...config, defaultPath: effectivePath });
+}
+```
+
+## 2. Bridge "path" form field to Media Library folder
+
+**Problem:** even with the blob path routed correctly, files show flat under "API Uploads" in the admin because Media Library folder organisation is a separate concept (`upload_folders` table).
+
+**Why setting `fileInfo.folder` doesn't work for content-API uploads:**
+
+```js
+// @strapi/upload/dist/server/controllers/validation/content-api/upload.js
+const fileInfoSchema = utils.yup.object({
+  name: ..., alternativeText: ..., caption: ..., focalPoint: ...
+}).noUnknown();   // ← strips `folder` before the controller sees it
+```
+
+Admin uploads have a separate schema that allows `folder`; content-API doesn't.
+
+**Pattern (the one in `cms/src/middlewares/upload-path-to-folder.ts`):**
+
+1. Registered as `{ name: 'global::upload-path-to-folder' }` in `cms/config/middlewares.ts` **after** `strapi::body` (so multipart fields are parsed).
+2. On `POST /api/upload`:
+   - Read `body.path`.
+   - Walk the segments, find-or-create rows in `plugin::upload.folder` for each, memoising in-process.
+3. **After** `await next()`:
+   - Update each created file row with `folder` + `folderPath` via `strapi.db.query('plugin::upload.file').update(...)`.
+   - Also mutate `ctx.response.body` so the caller's immediate read shows the linkage.
+
+`folder` and `folderPath` are `private: true` on the file schema, so subsequent `GET /api/upload/files` responses don't include them — that's correct, not a bug. The admin uses authenticated endpoints that include private fields.
+
+## 3. Hide-from-listings expiry filter (URL alive)
+
+**Goal:** when an event/promo passes its natural end date, drop it from listing endpoints but keep `/whats-on/<slug>` resolving so bookmarks survive. Editors can override per-entry.
+
+**Constraints:**
+- Strapi v5's query engine has no `COALESCE`. The "use explicit `expiredAt` if set, else fall back to `date`" rule has to be expressed in `$or`/`$and`.
+- The same controller serves both list (`GET /api/events`) and slug-by-filter (`GET /api/events?filters[slug][$eq]=...`). The slug-by-filter path is what `/whats-on/<slug>` uses — it must NOT be filtered.
+
+**Pattern (in `cms/src/utils/expiry-filter.ts`):**
+
+Skip the filter when the consumer already targets a single entry:
+
+```ts
+export function shouldApplyExpiryFilter(query: any): boolean {
+  const f = query?.filters;
+  if (!f) return true;
+  if ('slug' in f || 'documentId' in f || 'id' in f) return false;
+  return true;
+}
+```
+
+Build the filter as "either explicit override is in the future, or override is null and fallback date is in the future":
+
+```ts
+export function buildExpiryFilter(fallbackField: string) {
+  const today = new Date().toISOString().slice(0, 10);  // 'YYYY-MM-DD'
+  return {
+    $or: [
+      { expiredAt: { $gte: today } },                   // editor said keep
+      {
+        $and: [
+          { expiredAt: { $null: true } },               // no override
+          { $or: [
+              { [fallbackField]: { $null: true } },
+              { [fallbackField]: { $gte: today } },
+          ]},
+        ],
+      },
+    ],
+  };
+}
+```
+
+Apply in the type's controller:
+
+```ts
+async find(ctx) {
+  ctx.query = withExpiryFilter(ctx.query, 'date');   // or 'validTo' for promos
+  return await super.find(ctx);
+}
+```
+
+Editor experience:
+- Leave `expiredAt` null → fall back to `event.date` / `validTo`.
+- Set `expiredAt = past` → hide now even if the natural date is upcoming.
+- Set `expiredAt = future` → keep listed past the natural date (recurring/annual).
+
+## 4. Hourly KB-cleanup cron
+
+**Goal:** when an entry drops off the listing (via the expiry filter), also drop it from the ElevenLabs chatbot knowledge base. Don't depend on an editor save — time alone should trigger cleanup.
+
+**Pattern (in `cms/src/index.ts`):**
+
+1. `cms/config/server.ts` enables cron: `cron: { enabled: env.bool('CRON_ENABLED', true) }`.
+2. Bootstrap registers a single hourly task:
+   ```ts
+   strapi.cron.add({
+     expiryKbSweep: {
+       task: () => sweepExpiredKbDocs(strapi),
+       options: { rule: '0 * * * *' },
+     },
+   });
+   ```
+3. `sweepExpiredKbDocs` queries each expiry-aware UID (`event`, `dining-promotion`) for rows past their natural date, calls `elevenlabs-chatbot.sync.unsyncEntryBySlug` per row. Idempotent — already-removed rows no-op.
+
+Hourly cadence is deliberate: listing-side hiding is instant (driven by request-time SQL filter), so KB freshness doesn't need minute precision.
+
+## 5. Display naming `<Section>: <Thing>`
+
+**Goal:** make the admin sidebar scannable. Default Strapi sorts content types alphabetically by `displayName`, so a section prefix → adjacent grouping for free.
+
+**Pattern:**
+
+- Touch ONLY `info.displayName` in each `schema.json`. Never `singularName` / `pluralName` — those drive `/api/<plural>` routes that the frontend, seed scripts, and infra all reference.
+- Convention: `<Section>: <Thing>` with title case and one space after the colon.
+  - Singletons → `<Section>: Page` (e.g. `Dining: Page`, `Membership: Joining Fees Page`).
+  - Collections → `<Section>: <Plural Entity>` (e.g. `Dining: Restaurants`, `Fitness: Aquatics Coaches`).
+  - Globals → `Global: <Thing>` (`Global: Header`, `Global: Footer`).
+  - Shared/unscoped → `Shared: …`.
+- Internal-only types (e.g. `elevenlabs-doc` sync log) → set:
+  ```json
+  "pluginOptions": {
+    "content-manager":      { "visible": false },
+    "content-type-builder": { "visible": false }
+  }
+  ```
+  rather than rename.
+
+A bulk rename script lives at `/tmp/rename-displayname.mjs` (one-shot — not committed). Future renames can crib from it.
+
+## 6. Local plugins (server + admin side panels)
+
+**Goal:** add cross-cutting admin actions (Clone Entry, ElevenLabs Sync) as in-tree plugins that look first-class, not as ad-hoc patches.
+
+**Pattern (mirrors `cms/src/plugins/elevenlabs-chatbot` and `cms/src/plugins/clone-entry`):**
+
+Directory layout:
+```
+cms/src/plugins/<name>/
+  package.json          (kind: "plugin", exports: strapi-server + strapi-admin)
+  strapi-server.ts      → re-exports ./server
+  strapi-admin.ts       → re-exports ./admin/src
+  server/
+    index.ts            → { register, bootstrap, controllers, routes, services, policies }
+    routes/content-api.ts
+    controllers/...
+    services/...
+    policies/is-admin.ts
+  admin/src/
+    index.tsx           → registers content-manager.addEditViewSidePanel
+    pages/<Panel>.tsx
+```
+
+Register in `cms/config/plugins.ts`:
+```ts
+plugins['clone-entry'] = { enabled: true, resolve: './src/plugins/clone-entry' };
+```
+
+### Admin-session auth on a content-API route
+
+`/api/*` route pool doesn't include the `admin` strategy. We bypass with `auth: false` + a policy that manually validates the admin bearer token via `strapi.sessionManager('admin')`:
+
+```ts
+// server/policies/is-admin.ts
+export default async function isAdminPolicy(ctx) {
+  const token = ctx.request.header.authorization?.split(/\s+/)[1];
+  if (!token) return false;
+  const sm = strapi.sessionManager('admin');
+  const { isValid, payload } = sm.validateAccessToken(token);
+  if (!isValid || !(await sm.isSessionActive(payload.sessionId))) return false;
+  const user = await strapi.db.query('admin::user').findOne({ where: { id: payload.userId } });
+  if (!user?.isActive) return false;
+  ctx.state.user = user;
+  return true;
+}
+```
+
+Route config: `{ auth: false, policies: ['plugin::<name>.is-admin'] }`.
+
+### Side panel (content-manager edit view)
+
+```ts
+// admin/src/index.tsx
+export default {
+  register() {},
+  bootstrap(app) {
+    app.getPlugin('content-manager').apis.addEditViewSidePanel([SidePanel]);
+  },
+};
+```
+
+Panel signature: `(ctx: PanelContext) => { title, content } | null`. Hooks are allowed inside.
+
+### Deep-copy / identity-strip for "Clone"
+
+Components and dynamiczone items carry per-row IDs that need stripping recursively or Strapi tries to attach to existing rows on save and bails:
+
+```ts
+const IDENTITY_FIELDS = new Set(['id', 'documentId', 'createdAt', 'updatedAt', 'publishedAt', 'createdBy', 'updatedBy', 'locale', 'localizations']);
+
+function stripIdentity(node) {
+  if (Array.isArray(node)) return node.map(stripIdentity);
+  if (!isPlainObject(node)) return node;
+  return Object.fromEntries(
+    Object.entries(node)
+      .filter(([k]) => !IDENTITY_FIELDS.has(k))
+      .map(([k, v]) => [k, stripIdentity(v)])
+  );
+}
+```
+
+Media + relations stay referenced (linked by ID, not deep-cloned).
+
+## 7. Resetting media on a non-prod env
+
+Operational pattern for nuking + reseeding a dev/uat environment safely.
+
+```bash
+# 1. Delete every upload row (and its blob) via REST. The wrapper provider
+#    tolerates BlobNotFound, so orphans from interrupted seeds purge cleanly.
+node /tmp/reset-uploads.mjs    # uses cms/.env.seed.dev token
+
+# 2. Empty stray blobs that lost their DB row.
+az storage blob delete-batch -s media --pattern 'uploads/*' --account-name amclubdevdata
+
+# 3. Truncate content tables via REST DELETE on each collection.
+node /tmp/wipe-content.mjs     # iterates collection plurals, DELETEs each row
+
+# 4. Re-run every seed. Helpful order: singletons → collections → derived.
+bash /tmp/run-seeds.sh
+```
+
+Templates for `reset-uploads.mjs` / `wipe-content.mjs` / `run-seeds.sh` are in `scripts/` history; reuse them rather than re-deriving. Auth tables (`admin::user`, `up_users`) are untouched — only `/api/*` is hit, so admin login survives.
+
+## 8. Environment branching
+
+Three long-lived branches, one per environment:
+
+```
+dev  → development (commit + push here first; auto-deploys)
+uat  → staging     (PR from dev; auto-deploys)
+main → production  (PR from uat; auto-deploys)
+```
+
+Never push directly to `uat` or `main`. Promotion is always a PR. Hotfixes still go to `dev` first, then race up.
+
+To check what's queued for promotion:
+
+```bash
+git fetch origin
+git log --oneline origin/uat..origin/dev    # dev ahead of uat
+git log --oneline origin/main..origin/uat   # uat ahead of main
+```
+
+Environment-specific config lives in `infra/Pulumi.<env>.yaml`. Strapi env-specific settings come from Container App env vars + plugin config that reads `env(...)`. **Never hardcode an env URL in source.**

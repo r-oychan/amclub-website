@@ -190,3 +190,17 @@ cd frontend && npm run typecheck && npm run lint && npm run build
 cd cms && npm run build
 cd infra && npx tsc --noEmit
 ```
+
+---
+
+## Documentation
+
+| File | Covers |
+|---|---|
+| [`DESIGN.md`](./DESIGN.md) | Visual design tokens (colors, type, spacing) — single source of truth. |
+| [`SPECS.md`](./SPECS.md) | Page-by-page CMS bindings, component inventory, infra resources. |
+| [`docs/media-storage.md`](./docs/media-storage.md) | How uploads flow from admin/seeds → wrapper provider → blob storage → Media Library folders. |
+| [`docs/strapi-patterns.md`](./docs/strapi-patterns.md) | Reusable patterns: custom upload providers, path→folder middleware, expiry filter, KB cron, displayName naming, local plugins, env promotion. |
+| [`docs/troubleshooting.md`](./docs/troubleshooting.md) | Symptom→cause→fix recipes (broken thumbnails, locked-out SSO, stale revisions, provider load failures, etc.). |
+| [`CMS-MIGRATION.md`](./CMS-MIGRATION.md) | How content moves between environments. |
+| [`infra/README.md`](./infra/README.md) | Pulumi stack bootstrap + deploy walkthroughs. |

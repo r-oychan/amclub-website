@@ -198,6 +198,13 @@ Track progress in `SPECS.md` — mark each page as `cms-wired: true` once it mee
 - **Read `SPECS.md` at the start of any feature or fix** to understand the current structure before touching code.
 - **Update `SPECS.md`** whenever you add, rename, or remove a page, component, content type, Strapi component, or infra resource. Keep it in sync with the code.
 
+## Project Docs (read before extending CMS infra)
+The `docs/` directory captures reusable patterns + debugging recipes built up through real incidents. Skim before touching upload/storage code, expiry filters, or local plugins:
+- [`docs/media-storage.md`](../docs/media-storage.md) — upload flow, wrapper provider, blob/folder mirroring, CORS, mime fix.
+- [`docs/strapi-patterns.md`](../docs/strapi-patterns.md) — custom upload providers (file: link gotcha), path→folder middleware, expiry filter with explicit override, hourly KB cron, displayName naming, local plugin layout, env promotion, reset-on-non-prod template.
+- [`docs/troubleshooting.md`](../docs/troubleshooting.md) — symptom→cause→fix for thumbnails, "API Uploads" flat files, locked-out SSO, stale Container Apps revisions, provider load failures, seed `fetch failed`, Pulumi state NXDOMAIN.
+**Update these docs** whenever you discover a new gotcha or land a new pattern. The next session will save hours by reading them.
+
 ## Documentation Policy
 - **Always consult official online docs** when you are stuck on a bug, hit an unexpected error, or the user asks for a fix — do not guess from memory alone.
 - Priority order for doc lookups: official library/framework docs first, then GitHub issues, then community sources.
