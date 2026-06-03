@@ -250,6 +250,18 @@ function IndividualCardView({ card }: { card: PricedCard }) {
 }
 
 function SupplementaryCardView({ card }: { card: SupplementaryCard }) {
+  // Inline-pill style for `[Register here](url)` and similar links inside
+  // the card description. Mirrors PILL_BASE/PILL_STYLE_BASE but scaled
+  // smaller so it fits comfortably between paragraphs.
+  const INLINE_PILL_CLASS = `${PILL_BASE} bg-accent text-white border border-accent`;
+  const INLINE_PILL_STYLE = {
+    padding: '8px 14px 8px 18px',
+    fontSize: '12px',
+    fontWeight: 700,
+    letterSpacing: '0.04em',
+    boxShadow: 'rgba(32, 99, 171, 0.07) 0px 20px 19px -12px',
+  } as const;
+
   return (
     <div
       className="relative bg-white flex flex-col overflow-hidden"
@@ -282,9 +294,11 @@ function SupplementaryCardView({ card }: { card: SupplementaryCard }) {
                     href={href}
                     target={external ? '_blank' : undefined}
                     rel={external ? 'noopener noreferrer' : undefined}
-                    className="text-accent underline underline-offset-2 hover:no-underline"
+                    className={INLINE_PILL_CLASS}
+                    style={INLINE_PILL_STYLE}
                   >
                     {children}
+                    <CtaIcon name="arrow" size={16} className="text-white" />
                   </a>
                 );
               },
@@ -295,7 +309,7 @@ function SupplementaryCardView({ card }: { card: SupplementaryCard }) {
         </div>
       )}
       {(card.cta || card.secondaryCta) && (
-        <div className="flex flex-col mt-auto" style={{ gap: '10px' }}>
+        <div className="flex flex-col items-start" style={{ gap: '10px' }}>
           {card.cta && <CtaPill link={card.cta} />}
           {card.secondaryCta && <CtaPill link={card.secondaryCta} />}
         </div>

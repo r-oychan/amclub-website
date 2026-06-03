@@ -34,11 +34,11 @@ const CARDS = [
       'Please register your children under your family membership here, if you have not.',
     cta: {
       label: 'APPLY NOW', href: JUNIOR_APPLY_URL, caption: null,
-      isExternal: true, bordered: false, variant: 'primary', icon: 'arrow',
+      isExternal: true, bordered: false, variant: 'accent', icon: 'arrow',
     },
     secondaryCta: {
       label: 'REGISTER HERE', href: TBD, caption: null,
-      isExternal: false, bordered: false, variant: 'primary', icon: 'arrow',
+      isExternal: false, bordered: false, variant: 'accent', icon: 'arrow',
     },
   },
 
@@ -90,7 +90,7 @@ const CARDS = [
       '_Terms and conditions apply._',
     cta: {
       label: 'REGISTER HERE', href: TBD, caption: null,
-      isExternal: false, bordered: false, variant: 'primary', icon: 'arrow',
+      isExternal: false, bordered: false, variant: 'accent', icon: 'arrow',
     },
   },
 
@@ -110,11 +110,11 @@ const CARDS = [
       'prevailing fee.',
     cta: {
       label: 'Absent Status Application Form', href: TBD, caption: null,
-      isExternal: false, bordered: false, variant: 'primary', icon: 'arrow',
+      isExternal: false, bordered: false, variant: 'accent', icon: 'arrow',
     },
     secondaryCta: {
       label: 'Resignation Advisory Form', href: TBD, caption: null,
-      isExternal: false, bordered: false, variant: 'primary', icon: 'arrow',
+      isExternal: false, bordered: false, variant: 'accent', icon: 'arrow',
     },
   },
 ];

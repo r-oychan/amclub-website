@@ -180,8 +180,8 @@ export const JOINING_FEES_FALLBACK: JoiningFeesData = {
         "Junior Membership is open to Members' children who are aged between 12 and 24 years old. Monthly fees apply.\n\n" +
         '**Registration of Children Under the Age of 12**\n' +
         'Children under 12 must be accompanied by their parents at all times. Please register your children under your family membership here, if you have not.',
-      cta: { label: 'APPLY NOW', href: 'https://amclub.jotform.com/253623954879979', isExternal: true, variant: 'primary' },
-      secondaryCta: { label: 'REGISTER HERE', href: '#', isExternal: false, variant: 'primary' },
+      cta: { label: 'APPLY NOW', href: 'https://amclub.jotform.com/253623954879979', isExternal: true, variant: 'accent' },
+      secondaryCta: { label: 'REGISTER HERE', href: '#', isExternal: false, variant: 'accent' },
     },
     {
       name: 'Visiting Membership',
@@ -213,15 +213,15 @@ export const JOINING_FEES_FALLBACK: JoiningFeesData = {
         '**Restrictions:**\n' +
         "Membership and fees are subject to the General Committee's (GC) approval; Dependents may not vote at General Meetings and not go on Absent Status. An annual and monthly usage fee apply. All charges will be linked to the main Membership account.\n\n" +
         '_Terms and conditions apply._',
-      cta: { label: 'REGISTER HERE', href: '#', isExternal: false, variant: 'primary' },
+      cta: { label: 'REGISTER HERE', href: '#', isExternal: false, variant: 'accent' },
     },
     {
       name: 'Absent and Resignation Status',
       description:
         "If you're preparing to move away from Singapore and resign, please contact the membership office for information on Absentee Status.\n\n" +
         'Our fully paid Ordinary, Service, and Associate Members have the option of going on Absentee Status. Absentee Status is a wonderful privilege, which is available for $1,170 (family) or $945 (single) for a five year period. As an Absentee Member, after you have left Singapore for a minimum of six months, you may come back and use the Club three times a year for up to ninety days for a nominal fee. If you return to Singapore within five years, we will refund you the prorated difference of your $1,170 (or $945) fee and you can restart your membership for only $110. Absent status is extendable on a five-year period at the prevailing fee.',
-      cta: { label: 'Absent Status Application Form', href: '#', isExternal: false, variant: 'primary' },
-      secondaryCta: { label: 'Resignation Advisory Form', href: '#', isExternal: false, variant: 'primary' },
+      cta: { label: 'Absent Status Application Form', href: '#', isExternal: false, variant: 'accent' },
+      secondaryCta: { label: 'Resignation Advisory Form', href: '#', isExternal: false, variant: 'accent' },
     },
   ],
   refundHeading: 'Refund Policy',
