@@ -165,12 +165,65 @@ export const JOINING_FEES_FALLBACK: JoiningFeesData = {
   nominationFeeHeading: 'Nominee Application / Re-nomination Fee',
   nominationFeeBody:
     'Each nomination or re-nomination requires a company letter or email and a payment of $8,310 ($2,725 Transfer Fee and a $5,585 Operations Surcharge, GST included). If a corporate place is left vacant, the prevailing Single Dues will apply.',
-  // Empty fallback — Supplementary Membership Categories is dev-only content
-  // populated via the CMS (patch-2026-06-03-joining-fees-supplementary.mjs).
-  // The section renders only when supplementaryCards has at least one entry.
-  supplementaryHeading: '',
+  // Supplementary Membership Categories — dev-only section. Lives here as
+  // the canonical source for now (CMS PUTs for the supplementaryCards
+  // component field are silently dropped on dev's running Strapi until the
+  // component-link table sync resolves). When/if the CMS surfaces the
+  // populated cards, the JoiningFeesPage data picker will switch over
+  // automatically via `normalizeSupplementaryCards`.
+  supplementaryHeading: 'Supplementary Membership Categories',
   supplementarySubheading: '',
-  supplementaryCards: [],
+  supplementaryCards: [
+    {
+      name: 'Junior Membership',
+      description:
+        "Junior Membership is open to Members' children who are aged between 12 and 24 years old. Monthly fees apply.\n\n" +
+        '**Registration of Children Under the Age of 12**\n' +
+        'Children under 12 must be accompanied by their parents at all times. Please register your children under your family membership here, if you have not.',
+      cta: { label: 'APPLY NOW', href: 'https://amclub.jotform.com/253623954879979', isExternal: true, variant: 'primary' },
+      secondaryCta: { label: 'REGISTER HERE', href: '#', isExternal: false, variant: 'primary' },
+    },
+    {
+      name: 'Visiting Membership',
+      description:
+        'Visiting Memberships are designed to accommodate visitors for up to 90 days (can be split into three applications) in a calendar year. The following are eligible to apply for Visiting Membership, upon the nomination of any active Member.\n\n' +
+        '**Type A**\n' +
+        'Children of current Members, between 21 and 24 years old, who are full-time students of any recognized educational institution outside of Singapore and non-Singapore residents. Documentary proof is required.\n\n' +
+        '**Fees:** S$210 per month or S$52.50 per week or part thereof per person.\n\n' +
+        '[Register here](#)\n\n' +
+        '**Type B**\n' +
+        'Visiting relatives (no age requirement) or children of Members who are 25 years old and above and non-Singapore residents.\n\n' +
+        '**Fees:** S$248.20 per month or S$62.05 per week or part thereof per person.\n\n' +
+        '[Register here](#)\n\n' +
+        '**Type C**\n' +
+        'Any person or family of good standing, on social visit to Singapore.\n\n' +
+        '**Fees:** S$615.80 per month or S$153.95 per week or part thereof.\n\n' +
+        '[Register here](#)\n\n' +
+        '**Type D**\n' +
+        'Any Member who is on Absent Status.\n\n' +
+        '**Fees:**\n' +
+        'Family Membership: S$226.72 per month or S$65 per week or part thereof\n' +
+        'Single Membership: S$183.12 per month or S$52.50 per week or part thereof\n\n' +
+        '[Register here](#)',
+    },
+    {
+      name: 'Dependent Senior Citizen Restricted Membership',
+      description:
+        'Members with parents aged 65 years old and above and reside permanently in the same household may apply for a Dependent Senior Citizen Restricted Membership.\n\n' +
+        '**Restrictions:**\n' +
+        "Membership and fees are subject to the General Committee's (GC) approval; Dependents may not vote at General Meetings and not go on Absent Status. An annual and monthly usage fee apply. All charges will be linked to the main Membership account.\n\n" +
+        '_Terms and conditions apply._',
+      cta: { label: 'REGISTER HERE', href: '#', isExternal: false, variant: 'primary' },
+    },
+    {
+      name: 'Absent and Resignation Status',
+      description:
+        "If you're preparing to move away from Singapore and resign, please contact the membership office for information on Absentee Status.\n\n" +
+        'Our fully paid Ordinary, Service, and Associate Members have the option of going on Absentee Status. Absentee Status is a wonderful privilege, which is available for $1,170 (family) or $945 (single) for a five year period. As an Absentee Member, after you have left Singapore for a minimum of six months, you may come back and use the Club three times a year for up to ninety days for a nominal fee. If you return to Singapore within five years, we will refund you the prorated difference of your $1,170 (or $945) fee and you can restart your membership for only $110. Absent status is extendable on a five-year period at the prevailing fee.',
+      cta: { label: 'Absent Status Application Form', href: '#', isExternal: false, variant: 'primary' },
+      secondaryCta: { label: 'Resignation Advisory Form', href: '#', isExternal: false, variant: 'primary' },
+    },
+  ],
   refundHeading: 'Refund Policy',
   refundBody:
     'All fees paid are non-refundable with the exception below.\n\nAny Ordinary Member who resigns from the Club, by written notice within twelve (12) months, from date of issuance of temporary Membership card may apply for one half (1/2) of the one-time entrance fee which he or she has paid per 15(b) of The Constitution. This policy does not apply to payment plan applications.\n\nGrant of any such refund shall be at the discretion of the General Committee.',
