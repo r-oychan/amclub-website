@@ -23,6 +23,20 @@ export interface PricedCard {
   badgeTone?: 'positive' | 'negative';
 }
 
+/**
+ * Card shape used for the Supplementary Membership Categories section.
+ * Same `shared.priced-card` Strapi component as the pricing tiers (so
+ * the admin uses one familiar editor), but the supplementary section
+ * renders only `name`, `description` (markdown-aware), `cta`, and
+ * `secondaryCta`. Pricing fields go unused here.
+ */
+export interface SupplementaryCard {
+  name: string;
+  description: string;
+  cta?: JoiningFeesLink;
+  secondaryCta?: JoiningFeesLink;
+}
+
 export interface CorporateClassCard {
   className: string;
   nominees: string;
@@ -43,6 +57,9 @@ export interface JoiningFeesData {
   corporateCards: CorporateClassCard[];
   nominationFeeHeading: string;
   nominationFeeBody: string;
+  supplementaryHeading: string;
+  supplementarySubheading: string;
+  supplementaryCards: SupplementaryCard[];
   refundHeading: string;
   refundBody: string;
   additionalNotesHeading: string;
@@ -148,6 +165,12 @@ export const JOINING_FEES_FALLBACK: JoiningFeesData = {
   nominationFeeHeading: 'Nominee Application / Re-nomination Fee',
   nominationFeeBody:
     'Each nomination or re-nomination requires a company letter or email and a payment of $8,310 ($2,725 Transfer Fee and a $5,585 Operations Surcharge, GST included). If a corporate place is left vacant, the prevailing Single Dues will apply.',
+  // Empty fallback — Supplementary Membership Categories is dev-only content
+  // populated via the CMS (patch-2026-06-03-joining-fees-supplementary.mjs).
+  // The section renders only when supplementaryCards has at least one entry.
+  supplementaryHeading: '',
+  supplementarySubheading: '',
+  supplementaryCards: [],
   refundHeading: 'Refund Policy',
   refundBody:
     'All fees paid are non-refundable with the exception below.\n\nAny Ordinary Member who resigns from the Club, by written notice within twelve (12) months, from date of issuance of temporary Membership card may apply for one half (1/2) of the one-time entrance fee which he or she has paid per 15(b) of The Constitution. This policy does not apply to payment plan applications.\n\nGrant of any such refund shall be at the discretion of the General Committee.',

@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
+import ReactMarkdown from 'react-markdown';
+import remarkBreaks from 'remark-breaks';
+import rehypeRaw from 'rehype-raw';
 import { fetchAPI } from '../lib/api';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
 import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
@@ -10,6 +13,7 @@ import {
   type PricedCard,
   type CorporateClassCard,
   type JoiningFeesLink,
+  type SupplementaryCard,
 } from '../data/joiningFees';
 
 type StrapiLink = {
@@ -25,6 +29,16 @@ type StrapiLink = {
 // the boundary instead of crashing inside IndividualCardView.map().
 type StrapiPricedCard = Omit<PricedCard, 'breakdown'> & { breakdown?: string | string[] };
 
+// Strapi sends shared.priced-card components for both `individualCards`
+// and `supplementaryCards`. The supplementary section ignores pricing
+// fields; only name/description/cta/secondaryCta are read at render.
+type StrapiSupplementaryCard = {
+  name?: string;
+  description?: string;
+  cta?: StrapiLink | null;
+  secondaryCta?: StrapiLink | null;
+};
+
 interface StrapiJoiningFeesPage {
   title?: string;
   individualHeading?: string;
@@ -38,6 +52,9 @@ interface StrapiJoiningFeesPage {
   corporateCards?: CorporateClassCard[];
   nominationFeeHeading?: string;
   nominationFeeBody?: string;
+  supplementaryHeading?: string;
+  supplementarySubheading?: string;
+  supplementaryCards?: StrapiSupplementaryCard[];
   refundHeading?: string;
   refundBody?: string;
   additionalNotesHeading?: string;
@@ -232,6 +249,61 @@ function IndividualCardView({ card }: { card: PricedCard }) {
   );
 }
 
+function SupplementaryCardView({ card }: { card: SupplementaryCard }) {
+  return (
+    <div
+      className="relative bg-white flex flex-col overflow-hidden"
+      style={{ padding: '32px 24px', gap: '20px', borderRadius: '4px' }}
+    >
+      <h3
+        className="font-heading text-primary"
+        style={{
+          fontSize: '24px',
+          fontWeight: 300,
+          fontStyle: 'italic',
+          letterSpacing: '-0.72px',
+          lineHeight: '28.8px',
+        }}
+      >
+        {card.name}
+      </h3>
+      {card.description && (
+        <div className="text-text-dark flex flex-col" style={{ fontSize: '14.4px', lineHeight: '21.6px', gap: '12px' }}>
+          <ReactMarkdown
+            remarkPlugins={[remarkBreaks]}
+            rehypePlugins={[rehypeRaw]}
+            components={{
+              p: ({ children }) => <p>{children}</p>,
+              strong: ({ children }) => <strong className="text-primary">{children}</strong>,
+              a: ({ href, children }) => {
+                const external = href?.startsWith('http');
+                return (
+                  <a
+                    href={href}
+                    target={external ? '_blank' : undefined}
+                    rel={external ? 'noopener noreferrer' : undefined}
+                    className="text-accent underline underline-offset-2 hover:no-underline"
+                  >
+                    {children}
+                  </a>
+                );
+              },
+            }}
+          >
+            {card.description}
+          </ReactMarkdown>
+        </div>
+      )}
+      {(card.cta || card.secondaryCta) && (
+        <div className="flex flex-col mt-auto" style={{ gap: '10px' }}>
+          {card.cta && <CtaPill link={card.cta} />}
+          {card.secondaryCta && <CtaPill link={card.secondaryCta} />}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function CorporateCardView({ card }: { card: CorporateClassCard }) {
   return (
     <div
@@ -307,6 +379,19 @@ function pickArr<T>(api: T[] | undefined, fallback: T[]): T[] {
 function pickStr(api: string | undefined, fallback: string): string {
   return api && api.trim() ? api : fallback;
 }
+function normalizeSupplementaryCards(
+  api: StrapiSupplementaryCard[] | undefined,
+  fallback: SupplementaryCard[],
+): SupplementaryCard[] {
+  if (!api || api.length === 0) return fallback;
+  return api.map((c) => ({
+    name: c.name ?? '',
+    description: c.description ?? '',
+    cta: c.cta ? { label: c.cta.label, href: c.cta.href ?? '#', isExternal: c.cta.isExternal, variant: c.cta.variant } : undefined,
+    secondaryCta: c.secondaryCta ? { label: c.secondaryCta.label, href: c.secondaryCta.href ?? '#', isExternal: c.secondaryCta.isExternal, variant: c.secondaryCta.variant } : undefined,
+  }));
+}
+
 function normalizeLinks(api: StrapiLink[] | undefined, fallback: JoiningFeesLink[]): JoiningFeesLink[] {
   if (!api || api.length === 0) return fallback;
   return api.map((l, i) => ({
@@ -430,6 +515,41 @@ export function JoiningFeesView({ data }: { data: JoiningFeesData }) {
         </div>
       </section>
 
+      {/* ── Supplementary Membership Categories ── */}
+      {data.supplementaryCards.length > 0 && (
+        <section className="bg-bg pb-[80px]">
+          <div className="max-w-7xl mx-auto px-10 flex flex-col" style={{ gap: '40px' }}>
+            <div className="text-center flex flex-col" style={{ gap: '16px' }}>
+              <h2
+                className="font-heading text-primary"
+                style={{
+                  fontSize: '38.4px',
+                  fontWeight: 300,
+                  fontStyle: 'italic',
+                  letterSpacing: '-1.152px',
+                  lineHeight: '42.24px',
+                }}
+              >
+                {data.supplementaryHeading}
+              </h2>
+              {data.supplementarySubheading && (
+                <p
+                  className="text-text-dark/70 max-w-2xl mx-auto"
+                  style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
+                >
+                  {data.supplementarySubheading}
+                </p>
+              )}
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {data.supplementaryCards.map((c) => (
+                <SupplementaryCardView key={c.name} card={c} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* ── Refund Policy / Additional Notes ── */}
       <section className="bg-bg pb-[80px]">
         <div className="max-w-7xl mx-auto px-10 grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -527,6 +647,9 @@ export default function JoiningFeesPage() {
         corporateCards: pickArr(api.corporateCards, fb.corporateCards),
         nominationFeeHeading: pickStr(api.nominationFeeHeading, fb.nominationFeeHeading),
         nominationFeeBody: pickStr(api.nominationFeeBody, fb.nominationFeeBody),
+        supplementaryHeading: pickStr(api.supplementaryHeading, fb.supplementaryHeading),
+        supplementarySubheading: pickStr(api.supplementarySubheading, fb.supplementarySubheading),
+        supplementaryCards: normalizeSupplementaryCards(api.supplementaryCards, fb.supplementaryCards),
         refundHeading: pickStr(api.refundHeading, fb.refundHeading),
         refundBody: pickStr(api.refundBody, fb.refundBody),
         additionalNotesHeading: pickStr(api.additionalNotesHeading, fb.additionalNotesHeading),

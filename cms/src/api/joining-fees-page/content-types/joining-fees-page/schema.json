@@ -57,6 +57,17 @@
     "nominationFeeBody": {
       "type": "text"
     },
+    "supplementaryHeading": {
+      "type": "string"
+    },
+    "supplementarySubheading": {
+      "type": "text"
+    },
+    "supplementaryCards": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.priced-card"
+    },
     "refundHeading": {
       "type": "string"
     },
