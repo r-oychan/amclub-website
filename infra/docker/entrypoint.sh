@@ -43,6 +43,18 @@ until wget -qO /dev/null http://127.0.0.1:1337/_health 2>/dev/null; do
 done
 echo "==> Strapi ready."
 
+# ── Render nginx config ───────────────────────────────────────
+# Substitute ONLY the storage vars into the /uploads reverse-proxy block,
+# leaving nginx's own $-variables ($host, $request_uri, $blob_host, …) intact.
+# Defaults keep nginx bootable in a no-Azure context (the /uploads block just
+# won't resolve a real blob host then).
+export STORAGE_ACCOUNT="${STORAGE_ACCOUNT:-unset}"
+export STORAGE_CONTAINER_NAME="${STORAGE_CONTAINER_NAME:-media}"
+envsubst '${STORAGE_ACCOUNT} ${STORAGE_CONTAINER_NAME}' \
+    < /etc/nginx/http.d/default.conf.template \
+    > /etc/nginx/http.d/default.conf
+echo "==> Rendered nginx config (blob host: ${STORAGE_ACCOUNT}.blob.core.windows.net, container: ${STORAGE_CONTAINER_NAME})"
+
 # ── Start Nginx ───────────────────────────────────────────────
 echo "==> Starting Nginx..."
 nginx -g 'daemon off;' &

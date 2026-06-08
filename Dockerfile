@@ -43,13 +43,17 @@ RUN NODE_ENV=production npm run build
 # ── Stage 3: Production runtime ──────────────────────────────
 FROM node:20-alpine
 
-RUN apk add --no-cache nginx wget
+# gettext provides `envsubst`, used at startup to template the storage
+# account name into the nginx config (see entrypoint.sh).
+RUN apk add --no-cache nginx wget gettext
 
 # Nginx directories
 RUN mkdir -p /run/nginx /data
 
-# Copy Nginx config
-COPY infra/docker/nginx.conf /etc/nginx/http.d/default.conf
+# Copy Nginx config as a TEMPLATE — entrypoint.sh renders the final config,
+# substituting ${STORAGE_ACCOUNT}/${STORAGE_CONTAINER_NAME} into the /uploads
+# reverse-proxy block so media is served from this origin.
+COPY infra/docker/nginx.conf /etc/nginx/http.d/default.conf.template
 
 # Copy frontend build
 COPY --from=frontend-builder /build/dist /app/frontend

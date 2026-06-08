@@ -95,8 +95,8 @@ Registered in `cms/config/middlewares.ts` as `{ name: 'global::upload-path-to-fo
 | `STORAGE_ACCOUNT` | `storage.name` | Azure account name |
 | `STORAGE_ACCOUNT_KEY` | secret `storage-account-key` | Shared-key auth |
 | `STORAGE_URL` | `https://<account>.blob.core.windows.net` | Service base URL |
-| `STORAGE_CONTAINER_NAME` | `mediaContainer.name` (= `media`) | Target container |
-| `STORAGE_CDN_URL` | unset | Optional — CDN front |
+| `STORAGE_CONTAINER_NAME` | `mediaContainer.name` (= `media`) | Target container (also templated into the nginx `/uploads` proxy) |
+| `STORAGE_CDN_URL` | `publicSiteUrl` (= `PUBLIC_SITE_URL`) | Front media on the site origin → `file.url` becomes `<site>/uploads/...`; nginx proxies it to the blob. See "What public URLs look like". |
 
 ### 6. Dockerfile (`Dockerfile` — used by Pulumi)
 
@@ -118,11 +118,36 @@ Without the runtime copy the symlink dangles and Strapi boots with `Cannot find 
 
 ## What public URLs look like
 
+Media is served from the **site's own origin**, not the raw blob host:
+
 ```
-https://amclub<env>data.blob.core.windows.net/media/uploads/<section>/<page>/<hash>.<ext>
+https://<env-site>/uploads/<section>/<page>/<hash>.<ext>
+# e.g. https://uat.amclub.org.sg/uploads/dining/restaurants/central.jpeg
 ```
 
-The frontend doesn't need to know about the folder structure — every media field on the API returns the full URL string.
+This matches how the static documents under `frontend/public/` are served, so the
+whole site stays on one domain and the storage-account name is never exposed.
+
+How it works (two cooperating pieces):
+
+1. **Provider rewrite.** `STORAGE_CDN_URL` is set to the env's public site origin
+   (`PUBLIC_SITE_URL`). The Azure provider (`strapi-provider-upload-azure-storage`)
+   replaces the blob host with `cdnBaseURL` **and strips the container segment**, so
+   `…blob.core.windows.net/media/uploads/x.jpg` → `<site>/uploads/x.jpg`. This is
+   stamped into `file.url` (and every responsive `formats[*].url`) at upload time.
+2. **nginx reverse-proxy.** `location /uploads/` proxies to
+   `https://<account>.blob.core.windows.net/<container>/uploads/...`. The account +
+   container are templated into the config at container start by `entrypoint.sh`
+   (`envsubst '${STORAGE_ACCOUNT} ${STORAGE_CONTAINER_NAME}'` against
+   `default.conf.template`). A `resolver` + variable `proxy_pass` forces runtime DNS
+   resolution. The `media` container has public blob read, so no auth is forwarded.
+
+The frontend doesn't need to know about the folder structure — every media field on
+the API returns the full URL string.
+
+**Existing rows** uploaded before `STORAGE_CDN_URL` was set keep the old blob-host URL
+until rewritten. Run `scripts/sql/rewrite-media-urls-to-origin.sql` once per env
+(via Cloud Shell, **after** deploying the nginx change) to migrate `url` + `formats`.
 
 ## Why this layout
 

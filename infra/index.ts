@@ -403,6 +403,10 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
           { name: 'STORAGE_ACCOUNT_KEY', secretRef: 'storage-account-key' },
           { name: 'STORAGE_URL', value: storageBlobUrl },
           { name: 'STORAGE_CONTAINER_NAME', value: mediaContainer.name },
+          // Serve media from this env's own origin instead of the raw blob
+          // host: the upload provider rewrites file.url to <site>/uploads/...
+          // and nginx reverse-proxies /uploads/ to the blob container.
+          { name: 'STORAGE_CDN_URL', value: publicSiteUrl },
           { name: 'ELEVENLABS_API_KEY', secretRef: 'elevenlabs-api-key' },
           { name: 'ELEVENLABS_AGENT_ID', value: elevenlabsAgentId },
           { name: 'PUBLIC_SITE_URL', value: publicSiteUrl },
