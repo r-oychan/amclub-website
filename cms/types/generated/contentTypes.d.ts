@@ -444,7 +444,7 @@ export interface ApiAboutPageAboutPage extends Struct.SingleTypeSchema {
   collectionName: 'about_pages';
   info: {
     description: 'About Page content';
-    displayName: 'About Page';
+    displayName: 'About: Page';
     pluralName: 'about-pages';
     singularName: 'about-page';
   };
@@ -487,7 +487,7 @@ export interface ApiAdvertiseWithUsPageAdvertiseWithUsPage
   collectionName: 'advertise_with_us_pages';
   info: {
     description: 'Content for /home-sub/advertise-with-us \u2014 rendered through VenueDetailPage layout';
-    displayName: 'Advertise With Us Page';
+    displayName: 'About: Advertise With Us Page';
     pluralName: 'advertise-with-us-pages';
     singularName: 'advertise-with-us-page';
   };
@@ -568,7 +568,7 @@ export interface ApiAquaticsCoachAquaticsCoach
   collectionName: 'aquatics_coaches';
   info: {
     description: 'Aquatics Coach entries \u2014 one row per person. Linked from `facility` team grid by section.';
-    displayName: 'Aquatics Coach';
+    displayName: 'Fitness: Aquatics Coaches';
     pluralName: 'aquatics-coaches';
     singularName: 'aquatics-coach';
   };
@@ -635,7 +635,7 @@ export interface ApiCoachCoach extends Struct.CollectionTypeSchema {
   collectionName: 'coaches';
   info: {
     description: 'Coach detail entries linked from facility team grids';
-    displayName: 'Coach';
+    displayName: 'Shared: Coaches (legacy)';
     pluralName: 'coaches';
     singularName: 'coach';
   };
@@ -674,7 +674,7 @@ export interface ApiCommitteeMemberCommitteeMember
   collectionName: 'committee_members';
   info: {
     description: 'Club committee and management members';
-    displayName: 'Committee Member';
+    displayName: 'About: Committee Members';
     pluralName: 'committee-members';
     singularName: 'committee-member';
   };
@@ -712,7 +712,7 @@ export interface ApiContactUsPageContactUsPage extends Struct.SingleTypeSchema {
   collectionName: 'contact_us_pages';
   info: {
     description: 'Contact Us landing page (address, hours, outlet schedules)';
-    displayName: 'Contact Us Page';
+    displayName: 'Contact: Page';
     pluralName: 'contact-us-pages';
     singularName: 'contact-us-page';
   };
@@ -750,7 +750,7 @@ export interface ApiDiningPageDiningPage extends Struct.SingleTypeSchema {
   collectionName: 'dining_pages';
   info: {
     description: 'Dining Page content';
-    displayName: 'Dining Page';
+    displayName: 'Dining: Page';
     pluralName: 'dining-pages';
     singularName: 'dining-page';
   };
@@ -785,7 +785,7 @@ export interface ApiDiningPromotionDiningPromotion
   collectionName: 'dining_promotions';
   info: {
     description: 'A monthly dining promotion flyer shown on /dining/dining-promotion';
-    displayName: 'Dining Promotion';
+    displayName: 'Dining: Promotions';
     pluralName: 'dining-promotions';
     singularName: 'dining-promotion';
   };
@@ -803,6 +803,7 @@ export interface ApiDiningPromotionDiningPromotion
         },
         number
       >;
+    expiredAt: Schema.Attribute.Date;
     image: Schema.Attribute.Media<'images'>;
     images: Schema.Attribute.Media<'images', true>;
     isClubWide: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
@@ -835,7 +836,7 @@ export interface ApiDiningPromotionsPageDiningPromotionsPage
   collectionName: 'dining_promotions_pages';
   info: {
     description: 'Landing page for /dining/dining-promotion \u2014 hero, intro, restaurant filter tabs';
-    displayName: 'Dining Promotions Page';
+    displayName: 'Dining: Promotions Page';
     pluralName: 'dining-promotions-pages';
     singularName: 'dining-promotions-page';
   };
@@ -867,12 +868,64 @@ export interface ApiDiningPromotionsPageDiningPromotionsPage
   };
 }
 
+export interface ApiElevenlabsDocElevenlabsDoc
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'elevenlabs_docs';
+  info: {
+    description: 'Tracks documents pushed to the ElevenLabs ConvAI knowledge base. Internal \u2014 not edited by content authors.';
+    displayName: 'ElevenLabs Sync Log';
+    pluralName: 'elevenlabs-docs';
+    singularName: 'elevenlabs-doc';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  pluginOptions: {
+    'content-manager': {
+      visible: true;
+    };
+    'content-type-builder': {
+      visible: false;
+    };
+  };
+  attributes: {
+    contentHash: Schema.Attribute.String;
+    contentType: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    documentName: Schema.Attribute.String & Schema.Attribute.Required;
+    elDocType: Schema.Attribute.Enumeration<['text', 'file']> &
+      Schema.Attribute.Required;
+    elDocumentId: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    entryId: Schema.Attribute.Integer;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::elevenlabs-doc.elevenlabs-doc'
+    > &
+      Schema.Attribute.Private;
+    mediaFileId: Schema.Attribute.Integer;
+    ownerContentType: Schema.Attribute.String;
+    ownerEntryId: Schema.Attribute.Integer;
+    publishedAt: Schema.Attribute.DateTime;
+    sourceKind: Schema.Attribute.Enumeration<['page-entry', 'media-file']> &
+      Schema.Attribute.Required;
+    syncedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiEventCategoryEventCategory
   extends Struct.CollectionTypeSchema {
   collectionName: 'event_categories';
   info: {
     description: 'Categories for club events (Dining, Kids, Fitness, etc.)';
-    displayName: 'Event Category';
+    displayName: "What's On: Categories";
     pluralName: 'event-categories';
     singularName: 'event-category';
   };
@@ -906,7 +959,7 @@ export interface ApiEventSpaceEventSpace extends Struct.CollectionTypeSchema {
   collectionName: 'event_spaces';
   info: {
     description: 'Event-spaces detail pages \u2014 venues (Galbraith Ballroom, Thinkspace, Bowling Alley, Library, Meeting Rooms) and package pages (Wedding Celebrations, Corporate Functions, Parties).';
-    displayName: 'Event Space';
+    displayName: 'Event Spaces: Venues';
     pluralName: 'event-spaces';
     singularName: 'event-space';
   };
@@ -975,7 +1028,7 @@ export interface ApiEventSpacesPageEventSpacesPage
   collectionName: 'event_spaces_pages';
   info: {
     description: 'Event Spaces Page content';
-    displayName: 'Event Spaces Page';
+    displayName: 'Event Spaces: Page';
     pluralName: 'event-spaces-pages';
     singularName: 'event-spaces-page';
   };
@@ -1019,7 +1072,7 @@ export interface ApiEventEvent extends Struct.CollectionTypeSchema {
   collectionName: 'events';
   info: {
     description: 'Club events and activities';
-    displayName: 'Event';
+    displayName: "What's On: Events";
     pluralName: 'events';
     singularName: 'event';
   };
@@ -1038,7 +1091,9 @@ export interface ApiEventEvent extends Struct.CollectionTypeSchema {
     date: Schema.Attribute.Date & Schema.Attribute.Required;
     description: Schema.Attribute.Text;
     dressCode: Schema.Attribute.String;
-    featured: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    expiredAt: Schema.Attribute.Date;
+    featuredOnHomepage: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
     image: Schema.Attribute.Media<'images'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::event.event'> &
@@ -1129,7 +1184,7 @@ export interface ApiFaqCategoryFaqCategory extends Struct.CollectionTypeSchema {
   collectionName: 'faq_categories';
   info: {
     description: 'Groups for FAQ items (Membership, Facilities, Dining, etc.)';
-    displayName: 'FAQ Category';
+    displayName: 'FAQ: Categories';
     pluralName: 'faq-categories';
     singularName: 'faq-category';
   };
@@ -1164,7 +1219,7 @@ export interface ApiFaqItemFaqItem extends Struct.CollectionTypeSchema {
   collectionName: 'faq_items';
   info: {
     description: 'Frequently asked questions';
-    displayName: 'FAQ Item';
+    displayName: 'FAQ: Items';
     pluralName: 'faq-items';
     singularName: 'faq-item';
   };
@@ -1204,7 +1259,7 @@ export interface ApiFaqPageFaqPage extends Struct.SingleTypeSchema {
   collectionName: 'faq_pages';
   info: {
     description: 'Frequently asked questions landing page';
-    displayName: 'FAQ Page';
+    displayName: 'FAQ: Page';
     pluralName: 'faq-pages';
     singularName: 'faq-page';
   };
@@ -1238,7 +1293,7 @@ export interface ApiFitnessFacilityFitnessFacility
   collectionName: 'fitness_facilities';
   info: {
     description: 'Fitness section detail pages: gym, aquatics, tennis, squash, pilates, s\u00EAn Spa, etc. Self-relation `parent` lets nested programs (e.g. aquatics \u2192 swimamerica) live as child entries. Team grid is sourced from the per-discipline coach collections (aquatics-coach, tennis-coach, pilates-instructor, gym-trainer) \u2014 not a relation here, looked up by slug at render time.';
-    displayName: 'Fitness Facility';
+    displayName: 'Fitness: Facilities';
     pluralName: 'fitness-facilities';
     singularName: 'fitness-facility';
   };
@@ -1328,7 +1383,7 @@ export interface ApiFitnessPageFitnessPage extends Struct.SingleTypeSchema {
   collectionName: 'fitness_pages';
   info: {
     description: 'Fitness Page content';
-    displayName: 'Fitness Page';
+    displayName: 'Fitness: Page';
     pluralName: 'fitness-pages';
     singularName: 'fitness-page';
   };
@@ -1372,7 +1427,7 @@ export interface ApiFooterFooter extends Struct.SingleTypeSchema {
   collectionName: 'footers';
   info: {
     description: 'Site footer with contact info and links';
-    displayName: 'Footer';
+    displayName: 'Global: Footer';
     pluralName: 'footers';
     singularName: 'footer';
   };
@@ -1387,6 +1442,7 @@ export interface ApiFooterFooter extends Struct.SingleTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     email: Schema.Attribute.Email;
+    legalLinks: Schema.Attribute.Component<'shared.link', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1396,6 +1452,7 @@ export interface ApiFooterFooter extends Struct.SingleTypeSchema {
     logo: Schema.Attribute.Media<'images'>;
     phone: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
+    socials: Schema.Attribute.Component<'shared.social-link', true>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1407,7 +1464,7 @@ export interface ApiGalleryAlbumGalleryAlbum
   collectionName: 'gallery_albums';
   info: {
     description: 'Photo album for past events';
-    displayName: 'Gallery Album';
+    displayName: 'Gallery: Albums';
     pluralName: 'gallery-albums';
     singularName: 'gallery-album';
   };
@@ -1443,7 +1500,7 @@ export interface ApiGalleryPageGalleryPage extends Struct.SingleTypeSchema {
   collectionName: 'gallery_pages';
   info: {
     description: 'Gallery landing page';
-    displayName: 'Gallery Page';
+    displayName: 'Gallery: Page';
     pluralName: 'gallery-pages';
     singularName: 'gallery-page';
   };
@@ -1476,7 +1533,7 @@ export interface ApiGymTrainerGymTrainer extends Struct.CollectionTypeSchema {
   collectionName: 'gym_trainers';
   info: {
     description: 'Gym Trainer entries \u2014 one row per person. Linked from `facility` team grid by section.';
-    displayName: 'Gym Trainer';
+    displayName: 'Fitness: Gym Trainers';
     pluralName: 'gym-trainers';
     singularName: 'gym-trainer';
   };
@@ -1543,7 +1600,7 @@ export interface ApiHeaderHeader extends Struct.SingleTypeSchema {
   collectionName: 'headers';
   info: {
     description: 'Site navigation header';
-    displayName: 'Header';
+    displayName: 'Global: Header';
     pluralName: 'headers';
     singularName: 'header';
   };
@@ -1574,7 +1631,7 @@ export interface ApiHomePageHomePage extends Struct.SingleTypeSchema {
   collectionName: 'home_pages';
   info: {
     description: 'Home Page content';
-    displayName: 'Home Page';
+    displayName: 'Home: Page';
     pluralName: 'home-pages';
     singularName: 'home-page';
   };
@@ -1612,7 +1669,7 @@ export interface ApiJoiningFeesPageJoiningFeesPage
   collectionName: 'joining_fees_pages';
   info: {
     description: 'Membership joining-fees page content';
-    displayName: 'Joining Fees Page';
+    displayName: 'Membership: Joining Fees Page';
     pluralName: 'joining-fees-pages';
     singularName: 'joining-fees-page';
   };
@@ -1661,6 +1718,9 @@ export interface ApiJoiningFeesPageJoiningFeesPage
     refundBody: Schema.Attribute.Text;
     refundHeading: Schema.Attribute.String;
     seo: Schema.Attribute.Component<'shared.seo', false>;
+    supplementaryCards: Schema.Attribute.Component<'shared.priced-card', true>;
+    supplementaryHeading: Schema.Attribute.String;
+    supplementarySubheading: Schema.Attribute.Text;
     title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1673,7 +1733,7 @@ export interface ApiKidsExperienceKidsExperience
   collectionName: 'kids_experiences';
   info: {
     description: 'Kids section detail pages \u2014 venues (The Quad, The Hangout) and programs (Recreational Classes, Seasonal Camps, Kids Parties). Mirrors the fitness-facility shape with added inline FAQ + quotes + party packages.';
-    displayName: 'Kids Experience';
+    displayName: 'Kids: Experiences';
     pluralName: 'kids-experiences';
     singularName: 'kids-experience';
   };
@@ -1749,7 +1809,7 @@ export interface ApiKidsPageKidsPage extends Struct.SingleTypeSchema {
   collectionName: 'kids_pages';
   info: {
     description: 'Kids Page content';
-    displayName: 'Kids Page';
+    displayName: 'Kids: Page';
     pluralName: 'kids-pages';
     singularName: 'kids-page';
   };
@@ -1787,7 +1847,7 @@ export interface ApiMembershipPageMembershipPage
   collectionName: 'membership_pages';
   info: {
     description: 'Membership Page content';
-    displayName: 'Membership Page';
+    displayName: 'Membership: Page';
     pluralName: 'membership-pages';
     singularName: 'membership-page';
   };
@@ -1828,7 +1888,7 @@ export interface ApiNewsArticleNewsArticle extends Struct.CollectionTypeSchema {
   collectionName: 'news_articles';
   info: {
     description: 'Club news article';
-    displayName: 'News Article';
+    displayName: 'News: Articles';
     pluralName: 'news-articles';
     singularName: 'news-article';
   };
@@ -1865,7 +1925,7 @@ export interface ApiNewsPageNewsPage extends Struct.SingleTypeSchema {
   collectionName: 'news_pages';
   info: {
     description: 'Club news landing page';
-    displayName: 'News Page';
+    displayName: 'News: Page';
     pluralName: 'news-pages';
     singularName: 'news-page';
   };
@@ -1899,7 +1959,7 @@ export interface ApiNicheGroupMembershipPageNicheGroupMembershipPage
   collectionName: 'niche_group_membership_pages';
   info: {
     description: 'Content for /membership/niche-group-membership \u2014 rendered through VenueDetailPage layout';
-    displayName: 'Niche Group Membership Page';
+    displayName: 'Membership: Niche Group Page';
     pluralName: 'niche-group-membership-pages';
     singularName: 'niche-group-membership-page';
   };
@@ -1980,7 +2040,7 @@ export interface ApiPilatesInstructorPilatesInstructor
   collectionName: 'pilates_instructors';
   info: {
     description: 'Pilates Instructor entries \u2014 one row per person. Linked from `facility` team grid by section.';
-    displayName: 'Pilates Instructor';
+    displayName: 'Fitness: Pilates Instructors';
     pluralName: 'pilates-instructors';
     singularName: 'pilates-instructor';
   };
@@ -2048,7 +2108,7 @@ export interface ApiReciprocalClubsPageReciprocalClubsPage
   collectionName: 'reciprocal_clubs_pages';
   info: {
     description: 'Content for /membership/reciprocal-clubs \u2014 rendered through VenueDetailPage layout';
-    displayName: 'Reciprocal Clubs Page';
+    displayName: 'Membership: Reciprocal Clubs Page';
     pluralName: 'reciprocal-clubs-pages';
     singularName: 'reciprocal-clubs-page';
   };
@@ -2138,7 +2198,7 @@ export interface ApiReferralPageReferralPage extends Struct.SingleTypeSchema {
   collectionName: 'referral_pages';
   info: {
     description: 'Membership referral page content';
-    displayName: 'Referral Page';
+    displayName: 'Membership: Referral Page';
     pluralName: 'referral-pages';
     singularName: 'referral-page';
   };
@@ -2179,7 +2239,7 @@ export interface ApiRestaurantRestaurant extends Struct.CollectionTypeSchema {
   collectionName: 'restaurants';
   info: {
     description: 'Dining venues and retail outlets';
-    displayName: 'Restaurant';
+    displayName: 'Dining: Restaurants';
     pluralName: 'restaurants';
     singularName: 'restaurant';
   };
@@ -2261,12 +2321,72 @@ export interface ApiRestaurantRestaurant extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiSiteConfigSiteConfig extends Struct.SingleTypeSchema {
+  collectionName: 'site_configs';
+  info: {
+    description: 'Site-wide settings such as analytics / tag IDs';
+    displayName: 'Global: Site Configuration';
+    pluralName: 'site-configs';
+    singularName: 'site-config';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    googleAnalyticsId: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::site-config.site-config'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSiteSettingsSiteSettings extends Struct.SingleTypeSchema {
+  collectionName: 'site_settings';
+  info: {
+    description: 'Global site-wide feature flags and toggles';
+    displayName: 'Site Settings';
+    pluralName: 'site-settings-plural';
+    singularName: 'site-settings';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    chatbotEnabled: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<true>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::site-settings.site-settings'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiStartApplicationPageStartApplicationPage
   extends Struct.SingleTypeSchema {
   collectionName: 'start_application_pages';
   info: {
     description: 'Content for /membership/start-application \u2014 rendered through VenueDetailPage layout';
-    displayName: 'Start Application Page';
+    displayName: 'Membership: Start Application Page';
     pluralName: 'start-application-pages';
     singularName: 'start-application-page';
   };
@@ -2346,7 +2466,7 @@ export interface ApiTennisCoachTennisCoach extends Struct.CollectionTypeSchema {
   collectionName: 'tennis_coaches';
   info: {
     description: 'Tennis Coach entries \u2014 one row per person. Linked from `facility` team grid by section.';
-    displayName: 'Tennis Coach';
+    displayName: 'Fitness: Tennis Coaches';
     pluralName: 'tennis-coaches';
     singularName: 'tennis-coach';
   };
@@ -2413,7 +2533,7 @@ export interface ApiTestimonialTestimonial extends Struct.CollectionTypeSchema {
   collectionName: 'testimonials';
   info: {
     description: 'Member testimonials with video';
-    displayName: 'Testimonial';
+    displayName: 'Home: Testimonials';
     pluralName: 'testimonials';
     singularName: 'testimonial';
   };
@@ -2483,7 +2603,7 @@ export interface ApiWhatsOnPageWhatsOnPage extends Struct.SingleTypeSchema {
   collectionName: 'whats_on_pages';
   info: {
     description: 'Whats On Page content';
-    displayName: 'Whats On Page';
+    displayName: "What's On: Page";
     pluralName: 'whats-on-pages';
     singularName: 'whats-on-page';
   };
@@ -3113,6 +3233,7 @@ declare module '@strapi/strapi' {
       'api::dining-page.dining-page': ApiDiningPageDiningPage;
       'api::dining-promotion.dining-promotion': ApiDiningPromotionDiningPromotion;
       'api::dining-promotions-page.dining-promotions-page': ApiDiningPromotionsPageDiningPromotionsPage;
+      'api::elevenlabs-doc.elevenlabs-doc': ApiElevenlabsDocElevenlabsDoc;
       'api::event-category.event-category': ApiEventCategoryEventCategory;
       'api::event-space.event-space': ApiEventSpaceEventSpace;
       'api::event-spaces-page.event-spaces-page': ApiEventSpacesPageEventSpacesPage;
@@ -3140,6 +3261,8 @@ declare module '@strapi/strapi' {
       'api::reciprocal-clubs-page.reciprocal-clubs-page': ApiReciprocalClubsPageReciprocalClubsPage;
       'api::referral-page.referral-page': ApiReferralPageReferralPage;
       'api::restaurant.restaurant': ApiRestaurantRestaurant;
+      'api::site-config.site-config': ApiSiteConfigSiteConfig;
+      'api::site-settings.site-settings': ApiSiteSettingsSiteSettings;
       'api::start-application-page.start-application-page': ApiStartApplicationPageStartApplicationPage;
       'api::tennis-coach.tennis-coach': ApiTennisCoachTennisCoach;
       'api::testimonial.testimonial': ApiTestimonialTestimonial;

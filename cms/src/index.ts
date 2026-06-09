@@ -17,6 +17,7 @@ const PUBLIC_FIND_TYPES = [
   'api::whats-on-page.whats-on-page',
   'api::header.header',
   'api::footer.footer',
+  'api::site-config.site-config',
   'api::event.event',
   'api::event-category.event-category',
   'api::testimonial.testimonial',
@@ -24,9 +25,8 @@ const PUBLIC_FIND_TYPES = [
   'api::faq-category.faq-category',
   'api::faq-page.faq-page',
   'api::restaurant.restaurant',
-  'api::coach.coach',
-  // Section 2 (Fitness) — per-discipline coach collections. Legacy `coach`
-  // collection above will be dropped once data migration is verified.
+  // Section 2 (Fitness) — per-discipline coach collections (replaced the
+  // legacy `coach` collection, now removed).
   'api::aquatics-coach.aquatics-coach',
   'api::tennis-coach.tennis-coach',
   'api::pilates-instructor.pilates-instructor',

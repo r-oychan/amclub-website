@@ -151,7 +151,6 @@ async function upsertEvent(ev, categoryId, mediaId) {
     locationHref: ev.locationHref || undefined,
     dressCode: ev.dressCode || undefined,
     reservation: ev.reservation || undefined,
-    featured: !!ev.featured,
     featuredOnHomepage: !!ev.featuredOnHomepage,
     ...(categoryId ? { category: categoryId } : {}),
     ...(mediaId ? { image: mediaId } : {}),

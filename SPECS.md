@@ -236,6 +236,7 @@ All four detail-page collection types + the membership singletons share one dyna
 | faq-page | `faq-page` | title, introHeading, introBody, heroImage, seo |
 | header | `header` | logo, navItems (nav-item[]), cta (shared.link) |
 | footer | `footer` | contact (address, phone, email), columns (footer-column[]), logo |
+| site-config | `site-config` | **googleAnalyticsId** (GA4 Measurement ID `G-XXXX`, editable in CMS). Read site-wide by `frontend/src/components/shared/Analytics.tsx`, which injects gtag.js on every route and emits SPA `page_view` events. Empty = analytics disabled. Optional `VITE_GA_ID` build-time fallback. Seeded blank by `scripts/seed-site-config.mjs`. |
 
 ### Collections (multiple records)
 | Name | API ID | Key Fields |
@@ -244,7 +245,7 @@ All four detail-page collection types + the membership singletons share one dyna
 | dining-promotion | `dining-promotion` | title, slug, summary, **`restaurant`** (relation manyToOne → `restaurant`, replaces the old hardcoded enum), **`isClubWide`** (boolean — true when the promo applies club-wide, no restaurant relation needed), validFrom, validTo, image, images (multi-page), ctas, order, seo. The promotions page derives anchor (`#promo-<slug>`), sidebar label, and "View Menu" link from the populated relation — `MENU_URLS` constant on the frontend was removed. |
 | venue | `venue` | name, slug, description, image, gallery, capacity, contact, ctas |
 | facility | `facility` | name, slug, description, image, gallery, section (fitness/kids/event), ctas |
-| event | `event` | title, slug, date, time, location, dressCode, reservation, description, longDescription, image, category (→ event-category), featured, ctas (shared.link[]) |
+| event | `event` | title, slug, date, **expiredAt** (optional listing-expiry override, sits next to `date` in the edit view), time, location, dressCode, reservation, description, longDescription, image, category (→ event-category), **featuredOnHomepage** (boolean, default false — drives the homepage events carousel; the unused `featured` field was removed), ctas (shared.link[]), seo |
 | event-category | `event-category` | name, slug, displayOrder |
 | testimonial | `testimonial` | quote, author, role, image |
 | committee-member | `committee-member` | name, role, image, bio, order |
