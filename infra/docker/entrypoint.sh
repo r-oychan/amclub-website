@@ -50,17 +50,10 @@ echo "==> Strapi ready."
 # block just won't resolve a real blob host then).
 export STORAGE_ACCOUNT="${STORAGE_ACCOUNT:-unset}"
 export STORAGE_CONTAINER_NAME="${STORAGE_CONTAINER_NAME:-media}"
-# nginx needs a `resolver` to resolve the blob host for a variable proxy_pass.
-# Use the CONTAINER'S OWN nameserver (the one Strapi/Node already uses to reach
-# the blob successfully) rather than a hardcoded Azure DNS VIP, which isn't
-# always reachable from a Container App and yields 502s. Fall back to the Azure
-# wireserver IP if /etc/resolv.conf has none.
-export NGINX_RESOLVER="$(awk '/^nameserver/ {print $2; exit}' /etc/resolv.conf 2>/dev/null)"
-export NGINX_RESOLVER="${NGINX_RESOLVER:-168.63.129.16}"
-envsubst '${STORAGE_ACCOUNT} ${STORAGE_CONTAINER_NAME} ${NGINX_RESOLVER}' \
+envsubst '${STORAGE_ACCOUNT} ${STORAGE_CONTAINER_NAME}' \
     < /etc/nginx/http.d/default.conf.template \
     > /etc/nginx/http.d/default.conf
-echo "==> Rendered nginx config (blob host: ${STORAGE_ACCOUNT}.blob.core.windows.net, container: ${STORAGE_CONTAINER_NAME}, resolver: ${NGINX_RESOLVER})"
+echo "==> Rendered nginx config (blob host: ${STORAGE_ACCOUNT}.blob.core.windows.net, container: ${STORAGE_CONTAINER_NAME})"
 
 # ── Start Nginx ───────────────────────────────────────────────
 echo "==> Starting Nginx..."
