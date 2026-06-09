@@ -17,7 +17,7 @@ React 19 + Strapi v5 CMS website with Azure infrastructure.
 
 ### Prerequisites
 
-- [Node.js 20+](https://nodejs.org/)
+- [Node.js 22 LTS](https://nodejs.org/)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
 ### 1. Install dependencies
