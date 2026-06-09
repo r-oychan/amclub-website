@@ -64,6 +64,13 @@ const jwtSecret = new random.RandomPassword(`${projectName}-jwt`, {
   length: 32,
   special: false,
 });
+// Read-only API token used by the frontend draft Preview. Bootstrap upserts an
+// `admin::api-token` row whose key is this value (cms/src/index.ts), and the
+// preview handler hands it to the SPA via the preview URL.
+const previewToken = new random.RandomPassword(`${projectName}-preview-token`, {
+  length: 40,
+  special: false,
+});
 
 // ── Resource Group ───────────────────────────────────────────
 const rg = new azure.resources.ResourceGroup(`${projectName}-${stack}-rg`, {
@@ -366,6 +373,7 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
       { name: 'transfer-token-salt', value: transferTokenSalt.result },
       { name: 'encryption-key', value: encryptionKey.result },
       { name: 'jwt-secret', value: jwtSecret.result },
+      { name: 'preview-token', value: previewToken.result },
       { name: 'storage-account-key', value: storageKey },
       { name: 'elevenlabs-api-key', value: elevenlabsApiKey },
       // SSO client secret — only added when the GitHub secret is set for this
@@ -399,6 +407,7 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
           { name: 'TRANSFER_TOKEN_SALT', secretRef: 'transfer-token-salt' },
           { name: 'ENCRYPTION_KEY', secretRef: 'encryption-key' },
           { name: 'JWT_SECRET', secretRef: 'jwt-secret' },
+          { name: 'PREVIEW_TOKEN', secretRef: 'preview-token' },
           { name: 'STORAGE_ACCOUNT', value: storage.name },
           { name: 'STORAGE_ACCOUNT_KEY', secretRef: 'storage-account-key' },
           { name: 'STORAGE_URL', value: storageBlobUrl },
