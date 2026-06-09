@@ -19,6 +19,7 @@ export default factories.createCoreController('api::header.header', ({ strapi })
   async find() {
     const entity = await strapi.documents('api::header.header').findFirst({
       populate: POPULATE,
+      status: 'published',
     });
     return { data: entity, meta: {} };
   },

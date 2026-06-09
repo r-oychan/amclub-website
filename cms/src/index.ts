@@ -233,10 +233,15 @@ function registerPreviewStatusMiddleware(strapi: any) {
   strapi.documents.use((ctx: any, next: any) => {
     if (READ_ACTIONS.has(ctx.action)) {
       const req = strapi.requestContext?.get?.();
-      const wantsDraft = req?.query?.status === 'draft';
-      const hasAuth = Boolean(req?.request?.header?.authorization);
-      if (wantsDraft && hasAuth) {
-        ctx.params = { ...ctx.params, status: 'draft' };
+      // Only act on real HTTP requests that explicitly ask for drafts. Internal
+      // calls (cron, bootstrap, the preview handler's own lookup) have no
+      // request context and keep whatever status they passed.
+      if (req && req.query?.status === 'draft') {
+        const hasAuth = Boolean(req.request?.header?.authorization);
+        // Authenticated (valid token — invalid ones are rejected upstream) →
+        // serve drafts for Preview. Unauthenticated → force published, so a
+        // public caller can never read drafts via ?status=draft.
+        ctx.params = { ...ctx.params, status: hasAuth ? 'draft' : 'published' };
       }
     }
     return next();
