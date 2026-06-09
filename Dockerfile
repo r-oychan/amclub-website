@@ -4,7 +4,7 @@
 # ============================================================
 
 # ── Stage 1: Build frontend ──────────────────────────────────
-FROM node:22-alpine AS frontend-builder
+FROM node:24-alpine AS frontend-builder
 RUN apk add --no-cache libc6-compat
 WORKDIR /build
 COPY frontend/package*.json ./
@@ -17,7 +17,7 @@ ENV VITE_ELEVENLABS_AGENT_ID=$VITE_ELEVENLABS_AGENT_ID
 RUN npm run build
 
 # ── Stage 2: Build CMS ───────────────────────────────────────
-FROM node:22-alpine AS cms-builder
+FROM node:24-alpine AS cms-builder
 RUN apk add --no-cache libc6-compat python3 make g++
 WORKDIR /build
 COPY cms/package*.json ./
@@ -41,7 +41,7 @@ COPY cms/ ./
 RUN NODE_ENV=production npm run build
 
 # ── Stage 3: Production runtime ──────────────────────────────
-FROM node:22-alpine
+FROM node:24-alpine
 
 # gettext provides `envsubst`, used at startup to template the storage
 # account name into the nginx config (see entrypoint.sh).
