@@ -81,8 +81,37 @@ export function initEnv() {
   return { BASE, TOKEN, auth: { Authorization: `Bearer ${TOKEN}` }, ROOT };
 }
 
+// Document URL manifest (old static href → blob /uploads path), produced by
+// seed-documents.mjs and regenerated per environment. Loaded lazily so every
+// seed automatically gets its PDF hrefs rewritten to the CMS/blob copies via
+// api() below — no per-seed change, and no env-specific hash baked into code.
+let _docMap = null;
+function docMap() {
+  if (_docMap) return _docMap;
+  try { _docMap = JSON.parse(readFileSync(join(__dirname, 'data', 'document-urls.json'), 'utf8')); }
+  catch { _docMap = {}; }
+  return _docMap;
+}
+
+// Deep-replace any string value that exactly matches a manifest key (an old
+// /documents/… or /menus/… href) with its mapped /uploads/… blob path.
+function rewriteDocHrefs(value, map) {
+  if (typeof value === 'string') return map[value] ?? value;
+  if (Array.isArray(value)) return value.map((v) => rewriteDocHrefs(v, map));
+  if (value && typeof value === 'object') {
+    const out = {};
+    for (const [k, v] of Object.entries(value)) out[k] = rewriteDocHrefs(v, map);
+    return out;
+  }
+  return value;
+}
+
 export async function api({ BASE, auth }, path, opts = {}) {
   const url = `${BASE}/api${path}`;
+  const map = docMap();
+  const body = opts.body && typeof opts.body !== 'string' && Object.keys(map).length
+    ? rewriteDocHrefs(opts.body, map)
+    : opts.body;
   const res = await fetch(url, {
     ...opts,
     headers: {
@@ -90,7 +119,7 @@ export async function api({ BASE, auth }, path, opts = {}) {
       ...auth,
       ...(opts.headers || {}),
     },
-    body: opts.body ? (typeof opts.body === 'string' ? opts.body : JSON.stringify(opts.body)) : undefined,
+    body: body ? (typeof body === 'string' ? body : JSON.stringify(body)) : undefined,
   });
   const text = await res.text();
   let json;

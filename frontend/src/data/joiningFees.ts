@@ -67,12 +67,12 @@ export interface JoiningFeesData {
 }
 
 const START_APPLICATION_URL = '/membership/start-application';
-const PAYMENT_PLANS_URL = '/documents/membership/membership-joining-fees-payment-plans.pdf';
-const MONTHLY_DUES_URL = '/documents/membership/monthly-dues.pdf';
+const PAYMENT_PLANS_URL = '/uploads/documents/membership/membership_joining_fees_payment_plans_11e5bebd02.pdf';
+const MONTHLY_DUES_URL = '/uploads/documents/membership/monthly_dues_900b17e9af.pdf';
 const CORPORATE_APPLICATION_URL =
-  '/documents/membership/csv-mo-08-application-form-corporate-membership.pdf';
+  '/uploads/documents/membership/csv_mo_08_application_form_corporate_membership_82be2aeda2.pdf';
 const CORPORATE_4_YEAR_PLAN_URL =
-  '/documents/membership/corporate-membership-4-year-payment-plan.jpg';
+  '/uploads/documents/membership/corporate_membership_4_year_payment_plan_46a429db10.jpg';
 
 export const JOINING_FEES_FALLBACK: JoiningFeesData = {
   individualHeading: 'Individual Membership Categories',

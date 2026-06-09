@@ -263,7 +263,7 @@ export const diningSubpages: SubpageData[] = [
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
     ctas: [
-      { label: 'View Menu', href: '/menus/central-menu.pdf', isExternal: true },
+      { label: 'View Menu', href: '/uploads/dining/central/central_menu_fdc416a3a3.pdf', isExternal: true },
       { label: 'Promotions', href: '/dining/dining-promotion#promo-central' },
     ],
   },
@@ -296,7 +296,7 @@ export const diningSubpages: SubpageData[] = [
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
     ctas: [
-      { label: 'View Menu', href: '/menus/the-2nd-floor-menu.pdf', isExternal: true },
+      { label: 'View Menu', href: '/uploads/dining/the-2nd-floor/the_2nd_floor_menu_891723c020.pdf', isExternal: true },
       { label: 'Reserve a Table', href: 'mailto:2ndfloor@amclub.org.sg', isExternal: true },
       { label: 'Promotions', href: '/dining/dining-promotion#promo-the-2nd-floor' },
     ],
@@ -343,7 +343,7 @@ export const diningSubpages: SubpageData[] = [
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
     ctas: [
-      { label: 'View Menu', href: '/menus/tradewinds-menu.pdf', isExternal: true },
+      { label: 'View Menu', href: '/uploads/dining/tradewinds/tradewinds_menu_485da67741.pdf', isExternal: true },
       { label: 'Promotions', href: '/dining/dining-promotion#promo-tradewinds' },
     ],
     extraSections: [
@@ -385,7 +385,7 @@ export const diningSubpages: SubpageData[] = [
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
     ctas: [
-      { label: 'View Menu', href: '/menus/grillhouse-menu.pdf', isExternal: true },
+      { label: 'View Menu', href: '/uploads/dining/grillhouse/grillhouse_menu_f150177347.pdf', isExternal: true },
       { label: 'Promotions', href: '/dining/dining-promotion#promo-grillhouse' },
     ],
   },
@@ -414,7 +414,7 @@ export const diningSubpages: SubpageData[] = [
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
     ctas: [
-      { label: 'View Menu', href: '/menus/union-bar-menu.pdf', isExternal: true },
+      { label: 'View Menu', href: '/uploads/dining/union-bar/union_bar_menu_5484b1c7b8.pdf', isExternal: true },
       { label: 'Sports Screening Schedule', href: 'https://docs.google.com/presentation/d/1Ruk_oS8bijGO1Osuuuc4cL3aGc7DknzVmMRqsyN7gZ8/edit?slide=id.g36c0dd5bddb_0_2#slide=id.g36c0dd5bddb_0_2', isExternal: true },
       { label: 'Promotions', href: '/dining/dining-promotion#promo-union-bar' },
     ],
@@ -456,7 +456,7 @@ export const diningSubpages: SubpageData[] = [
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
     ctas: [
-      { label: 'View Menu', href: '/menus/the-gourmet-pantry-menu.pdf', isExternal: true },
+      { label: 'View Menu', href: '/uploads/dining/the-gourmet-pantry/the_gourmet_pantry_menu_f35709b925.pdf', isExternal: true },
     ],
     extraSections: [
       {
@@ -573,7 +573,7 @@ export const fitnessSubpages: SubpageData[] = [
     email: 'spa@amclub.org.sg',
     image: '/images/fitness/senspa.jpeg',
     ctas: [
-      { label: 'View Menu & Promotions', href: '/documents/fitness/sen-spa-menu.pdf', isExternal: true },
+      { label: 'View Menu & Promotions', href: '/uploads/documents/fitness/sen_spa_menu_adb8777c69.pdf', isExternal: true },
       { label: 'Book an Appointment', href: 'mailto:spa@amclub.org.sg', isExternal: true },
     ],
     extraSections: [
@@ -635,7 +635,7 @@ export const fitnessSubpages: SubpageData[] = [
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [
-      { label: 'Programs Price List', href: '/documents/fitness/aquatics-program-price-list.pdf', isExternal: true },
+      { label: 'Programs Price List', href: '/uploads/documents/fitness/aquatics_program_price_list_6198dab555.pdf', isExternal: true },
       { label: 'Book an Assessment', href: 'mailto:aquatics@amclub.org.sg', isExternal: true },
     ],
     promoCards: {
@@ -688,7 +688,7 @@ export const fitnessSubpages: SubpageData[] = [
       { name: 'Sia',       role: 'Part-time Lifeguard Trainer',                 image: '/images/fitness/team-aquatics/sia.jpg',       imageOffsetX: 50, imageOffsetY: 30, imageZoom: 1.5 },
     ],
     bottomCtas: [
-      { label: 'View Programs Price List', href: '/documents/fitness/aquatics-program-price-list.pdf', isExternal: true },
+      { label: 'View Programs Price List', href: '/uploads/documents/fitness/aquatics_program_price_list_6198dab555.pdf', isExternal: true },
     ],
     faq: [
       {
@@ -747,7 +747,7 @@ export const fitnessSubpages: SubpageData[] = [
     parentSection: 'Aquatics',
     parentHref: '/fitness/aquatics',
     ctas: [
-      { label: 'Programs Price List', href: '/documents/fitness/aquatics-program-price-list.pdf', isExternal: true },
+      { label: 'Programs Price List', href: '/uploads/documents/fitness/aquatics_program_price_list_6198dab555.pdf', isExternal: true },
       { label: 'Enquire', href: 'mailto:aquatics@amclub.org.sg', isExternal: true },
     ],
   },
@@ -765,7 +765,7 @@ export const fitnessSubpages: SubpageData[] = [
     parentSection: 'Aquatics',
     parentHref: '/fitness/aquatics',
     ctas: [
-      { label: 'Programs Price List', href: '/documents/fitness/aquatics-program-price-list.pdf', isExternal: true },
+      { label: 'Programs Price List', href: '/uploads/documents/fitness/aquatics_program_price_list_6198dab555.pdf', isExternal: true },
       { label: 'Enquire', href: 'mailto:aquatics@amclub.org.sg', isExternal: true },
     ],
   },
@@ -783,7 +783,7 @@ export const fitnessSubpages: SubpageData[] = [
     parentSection: 'Aquatics',
     parentHref: '/fitness/aquatics',
     ctas: [
-      { label: 'Programs Price List', href: '/documents/fitness/aquatics-program-price-list.pdf', isExternal: true },
+      { label: 'Programs Price List', href: '/uploads/documents/fitness/aquatics_program_price_list_6198dab555.pdf', isExternal: true },
       { label: 'Enquire', href: 'mailto:aquatics@amclub.org.sg', isExternal: true },
     ],
   },
@@ -801,7 +801,7 @@ export const fitnessSubpages: SubpageData[] = [
     parentSection: 'Aquatics',
     parentHref: '/fitness/aquatics',
     ctas: [
-      { label: 'Programs Price List', href: '/documents/fitness/aquatics-program-price-list.pdf', isExternal: true },
+      { label: 'Programs Price List', href: '/uploads/documents/fitness/aquatics_program_price_list_6198dab555.pdf', isExternal: true },
       { label: 'Enquire', href: 'mailto:aquatics@amclub.org.sg', isExternal: true },
     ],
   },
@@ -819,7 +819,7 @@ export const fitnessSubpages: SubpageData[] = [
     parentSection: 'Aquatics',
     parentHref: '/fitness/aquatics',
     ctas: [
-      { label: 'Programs Price List', href: '/documents/fitness/aquatics-program-price-list.pdf', isExternal: true },
+      { label: 'Programs Price List', href: '/uploads/documents/fitness/aquatics_program_price_list_6198dab555.pdf', isExternal: true },
       { label: 'Enquire', href: 'mailto:aquatics@amclub.org.sg', isExternal: true },
     ],
   },
@@ -838,8 +838,8 @@ export const fitnessSubpages: SubpageData[] = [
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [
-      { label: 'Personal Training & Group Fitness Rates 2026', href: '/documents/fitness/personal-training-group-fitness-rates-2026.pdf', isExternal: true },
-      { label: 'Group Fitness Class Schedule', href: '/documents/fitness/group-fitness-class-schedule.jpg', isExternal: true },
+      { label: 'Personal Training & Group Fitness Rates 2026', href: '/uploads/documents/fitness/personal_training_group_fitness_rates_2026_18663b88d2.pdf', isExternal: true },
+      { label: 'Group Fitness Class Schedule', href: '/uploads/documents/fitness/group_fitness_class_schedule_563e9b5dd4.jpg', isExternal: true },
     ],
     extraSections: [
       {
@@ -864,7 +864,7 @@ export const fitnessSubpages: SubpageData[] = [
             imageAlt: 'Personal trainer guiding a member through a dumbbell row',
             cta: {
               label: 'Explore',
-              href: '/documents/fitness/personal-training-group-fitness-rates-2026.pdf',
+              href: '/uploads/documents/fitness/personal_training_group_fitness_rates_2026_18663b88d2.pdf',
               isExternal: true,
             },
           },
@@ -876,7 +876,7 @@ export const fitnessSubpages: SubpageData[] = [
             imageAlt: 'Members performing a kettlebell squat group fitness class',
             cta: {
               label: 'Explore',
-              href: '/documents/fitness/group-fitness-class-schedule.jpg',
+              href: '/uploads/documents/fitness/group_fitness_class_schedule_563e9b5dd4.jpg',
               isExternal: true,
             },
           },
@@ -921,7 +921,7 @@ export const fitnessSubpages: SubpageData[] = [
     parentHref: '/fitness',
     ctas: [
       { label: 'Book a Court', href: 'mailto:sportscounter@amclub.org.sg', isExternal: true },
-      { label: 'TAC Book App Tutorial', href: '/documents/fitness/tac-book-app-download-tutorial.pdf', isExternal: true },
+      { label: 'TAC Book App Tutorial', href: '/uploads/documents/fitness/tac_book_app_download_tutorial_b9e43429df.pdf', isExternal: true },
     ],
     teamHeading: 'Meet Our Team',
     teamMembers: [
@@ -943,7 +943,7 @@ export const fitnessSubpages: SubpageData[] = [
         heading: 'Tennis Programs',
         cta: {
           label: 'Summer Term 2026 Schedule',
-          href: '/documents/fitness/tennis-summer-term-schedule-2026.pdf',
+          href: '/uploads/documents/fitness/tennis_summer_term_schedule_2026_76e7b54e1f.pdf',
           isExternal: true,
         },
         subheading: 'Tennis Socials',
@@ -987,9 +987,9 @@ export const fitnessSubpages: SubpageData[] = [
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [
-      { label: 'View Rates', href: '/documents/fitness/squash-private-lesson-rates.jpg', isExternal: true },
-      { label: 'Coach Profiles', href: '/documents/fitness/squash-coach-profiles.pdf', isExternal: true },
-      { label: 'Booking Policy', href: '/documents/fitness/squash-courts-booking-policy.pdf', isExternal: true },
+      { label: 'View Rates', href: '/uploads/documents/fitness/squash_private_lesson_rates_0b35285d57.jpg', isExternal: true },
+      { label: 'Coach Profiles', href: '/uploads/documents/fitness/squash_coach_profiles_d41dda6cc8.pdf', isExternal: true },
+      { label: 'Booking Policy', href: '/uploads/documents/fitness/squash_courts_booking_policy_d82c3e5979.pdf', isExternal: true },
     ],
     extraSections: [
       {
@@ -1024,8 +1024,8 @@ export const fitnessSubpages: SubpageData[] = [
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [
-      { label: 'View Price List', href: '/documents/fitness/pilates-price-list.docx', isExternal: true },
-      { label: 'View Class Schedule', href: '/documents/fitness/pilates-group-class-schedule.jpeg', isExternal: true },
+      { label: 'View Price List', href: '/uploads/documents/fitness/pilates_price_list_fd02c50227.docx', isExternal: true },
+      { label: 'View Class Schedule', href: '/uploads/documents/fitness/pilates_group_class_schedule_5355cca41c.jpeg', isExternal: true },
     ],
     cardSections: [
       {
@@ -1038,7 +1038,7 @@ export const fitnessSubpages: SubpageData[] = [
             imageAlt: 'Members in a group Pilates Reformer class',
             cta: {
               label: 'Explore',
-              href: '/documents/fitness/pilates-group-class-schedule.jpeg',
+              href: '/uploads/documents/fitness/pilates_group_class_schedule_5355cca41c.jpeg',
               isExternal: true,
             },
           },
@@ -1050,7 +1050,7 @@ export const fitnessSubpages: SubpageData[] = [
             imageAlt: 'A Pilates Coach guiding a member through a Reformer exercise',
             cta: {
               label: 'Explore',
-              href: '/documents/fitness/pilates-price-list.docx',
+              href: '/uploads/documents/fitness/pilates_price_list_fd02c50227.docx',
               isExternal: true,
             },
           },
@@ -1095,7 +1095,7 @@ export const fitnessSubpages: SubpageData[] = [
       { name: 'Danielle Chue',   role: 'Pilates Coach',      image: '/images/fitness/team-pilates/danielle-chue.jpg',   bioImage: '/images/fitness/team-pilates/danielle-chue-bio.png' },
     ],
     bottomCtas: [
-      { label: 'Download Class Schedule', href: '/documents/fitness/pilates-group-class-schedule.jpeg', isExternal: true },
+      { label: 'Download Class Schedule', href: '/uploads/documents/fitness/pilates_group_class_schedule_5355cca41c.jpeg', isExternal: true },
     ],
   },
   {
@@ -1151,7 +1151,7 @@ export const kidsSubpages: SubpageData[] = [
     parentSection: 'Kids',
     parentHref: '/kids',
     ctas: [
-      { label: 'The Quad Poolside Fees', href: '/documents/kids/the-quad-poolside-fees.pdf', isExternal: true },
+      { label: 'The Quad Poolside Fees', href: '/uploads/documents/kids/the_quad_poolside_fees_0c8e6db973.pdf', isExternal: true },
     ],
     gallery: {
       rows: [
@@ -1232,7 +1232,7 @@ export const kidsSubpages: SubpageData[] = [
     parentSection: 'Kids',
     parentHref: '/kids',
     ctas: [
-      { label: 'The Quad Fees', href: '/documents/kids/the-quad-fees.pdf', isExternal: true },
+      { label: 'The Quad Fees', href: '/uploads/documents/kids/the_quad_fees_bc36121e4b.pdf', isExternal: true },
     ],
     gallery: {
       rows: [
@@ -1314,7 +1314,7 @@ export const kidsSubpages: SubpageData[] = [
     parentHref: '/kids',
     ctas: [
       { label: 'Explore Recreational Classes', href: '/kids/recreational-classes' },
-      { label: "Kids' Party Packages", href: '/documents/kids/the-quad-studios-party-package.pdf', isExternal: true },
+      { label: "Kids' Party Packages", href: '/uploads/documents/kids/the_quad_studios_party_package_a30659c48d.pdf', isExternal: true },
     ],
     gallery: {
       rows: [
@@ -1361,7 +1361,7 @@ export const kidsSubpages: SubpageData[] = [
     parentSection: 'Kids',
     parentHref: '/kids',
     ctas: [
-      { label: 'View Classes', href: '/documents/kids/recreational-classes.pdf', isExternal: true },
+      { label: 'View Classes', href: '/uploads/documents/kids/recreational_classes_c5de4a497f.pdf', isExternal: true },
       {
         label: 'Cancellation/Temporary Suspension Form',
         href: 'https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=tNI3gQWbQ0ue5Ad0V1MxKuJw7vNhg0ZDpudyy49zdq5UM1dIOVFXOUtLODZNR1gzRkI1SzY4OU5WOS4u',
@@ -1379,13 +1379,13 @@ export const kidsSubpages: SubpageData[] = [
     parentSection: 'Kids',
     parentHref: '/kids',
     ctas: [
-      { label: 'Summer Camp 2026', href: '/documents/kids/summer-camp-2026.pdf', isExternal: true },
-      { label: 'Cancellation Policy', href: '/documents/kids/camp-cancellation-policy.pdf', isExternal: true },
+      { label: 'Summer Camp 2026', href: '/uploads/documents/kids/summer_camp_2026_3b8664d380.pdf', isExternal: true },
+      { label: 'Cancellation Policy', href: '/uploads/documents/kids/camp_cancellation_policy_8b69a97769.pdf', isExternal: true },
     ],
     bottomCtas: [
-      { label: '4 – 7 Years Schedule', href: '/documents/kids/4-7-camp-schedule.pdf', isExternal: true },
+      { label: '4 – 7 Years Schedule', href: '/uploads/documents/kids/4_7_camp_schedule_e9fb709433.pdf', isExternal: true },
       { label: '4 – 7 Years Registration', href: 'https://forms.office.com/pages/responsepage.aspx?id=tNI3gQWbQ0ue5Ad0V1MxKig5SVI1jCxHmIfXpkheevZUQVhSUTFDVlY2QzEyREJDTVpVVTg3OE44TSQlQCN0PWcu&route=shorturl', isExternal: true },
-      { label: '8 Years & Above Schedule', href: '/documents/kids/8-12-camp-schedule.pdf', isExternal: true },
+      { label: '8 Years & Above Schedule', href: '/uploads/documents/kids/8_12_camp_schedule_fdefa5d461.pdf', isExternal: true },
       { label: '8 Years & Above Registration', href: 'https://forms.office.com/pages/responsepage.aspx?id=tNI3gQWbQ0ue5Ad0V1MxKig5SVI1jCxHmIfXpkheevZUQVBNREpQRUc1TUdIR1RYUk1IRUFPRDMyUyQlQCN0PWcu&route=shorturl', isExternal: true },
     ],
     extraSections: [
@@ -1535,7 +1535,7 @@ export const kidsSubpages: SubpageData[] = [
           imageAlt: 'The Quad Studio Party Package',
           cta: {
             label: 'Download Brochure',
-            href: '/documents/kids/the-quad-studios-party-package.pdf',
+            href: '/uploads/documents/kids/the_quad_studios_party_package_a30659c48d.pdf',
             isExternal: true,
           },
         },
@@ -1545,7 +1545,7 @@ export const kidsSubpages: SubpageData[] = [
           imageAlt: 'The Bowling Alley Party Package',
           cta: {
             label: 'Download Brochure',
-            href: '/documents/kids/the-bowling-alley-party-package.pdf',
+            href: '/uploads/documents/kids/the_bowling_alley_party_package_a48fe5d6f1.pdf',
             isExternal: true,
           },
         },
@@ -1555,7 +1555,7 @@ export const kidsSubpages: SubpageData[] = [
           imageAlt: 'Union Bar x The Bowling Alley Menu',
           cta: {
             label: 'View Menu',
-            href: '/documents/kids/union-bar-bowling-alley-menu.jpg',
+            href: '/uploads/documents/kids/union_bar_bowling_alley_menu_f4e33ce856.jpg',
             isExternal: true,
           },
         },
@@ -1669,7 +1669,7 @@ export const eventSpacesSubpages: SubpageData[] = [
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
-      { label: 'View Capacity Chart', href: '/documents/event-spaces/capacity-chart.pdf', isExternal: true },
+      { label: 'View Capacity Chart', href: '/uploads/documents/event-spaces/capacity_chart_60e5fdcccd.pdf', isExternal: true },
       { label: 'Enquire Now', href: 'mailto:catering@amclub.org.sg', isExternal: true },
     ],
     venueCards: {
@@ -1718,7 +1718,7 @@ export const eventSpacesSubpages: SubpageData[] = [
     ctas: [
       {
         label: 'View Capacity Chart',
-        href: '/documents/event-spaces/capacity-chart.pdf',
+        href: '/uploads/documents/event-spaces/capacity_chart_60e5fdcccd.pdf',
         isExternal: true,
       },
       { label: 'Enquire Now', href: 'mailto:catering@amclub.org.sg', isExternal: true },
@@ -1736,7 +1736,7 @@ export const eventSpacesSubpages: SubpageData[] = [
     parentSection: 'Private Events & Catering',
     parentHref: '/event-spaces',
     ctas: [
-      { label: 'View Capacity Chart', href: '/documents/event-spaces/capacity-chart.pdf', isExternal: true },
+      { label: 'View Capacity Chart', href: '/uploads/documents/event-spaces/capacity_chart_60e5fdcccd.pdf', isExternal: true },
       { label: 'Enquire Now', href: 'mailto:catering@amclub.org.sg', isExternal: true },
     ],
   },
@@ -1791,12 +1791,12 @@ export const eventSpacesSubpages: SubpageData[] = [
     ctas: [
       {
         label: 'Rates',
-        href: '/documents/event-spaces/bowling-alley-rates.jpg',
+        href: '/uploads/documents/event-spaces/bowling_alley_rates_c95a7ed40c.jpg',
         isExternal: true,
       },
       {
         label: 'Party Packages',
-        href: '/documents/event-spaces/bowling-alley-party-package.pdf',
+        href: '/uploads/documents/event-spaces/bowling_alley_party_package_0f4129f8bf.pdf',
         isExternal: true,
       },
       { label: 'Book A Lane', href: 'mailto:youth@amclub.org.sg', isExternal: true },
@@ -1852,7 +1852,7 @@ export const membershipSubpages: SubpageData[] = [
     ctas: [
       {
         label: 'Application Checklist',
-        href: '/documents/membership/forms/application-checklist.pdf',
+        href: '/uploads/membership/forms/application_checklist_4d9df9b60d.pdf',
         isExternal: true,
       },
     ],
@@ -1874,12 +1874,12 @@ export const membershipSubpages: SubpageData[] = [
     downloads: {
       heading: "Forms You'll Need",
       items: [
-        { label: 'Application Checklist',              href: '/documents/membership/forms/application-checklist.pdf',              isExternal: true },
-        { label: 'Application Form',                   href: '/documents/membership/forms/membership-application-form.pdf',        isExternal: true },
-        { label: 'Endorsement Form',                   href: '/documents/membership/forms/endorsement-form.pdf',                   isExternal: true },
+        { label: 'Application Checklist',              href: '/uploads/membership/forms/application_checklist_4d9df9b60d.pdf',              isExternal: true },
+        { label: 'Application Form',                   href: '/uploads/membership/forms/membership_application_form_4d47580ef5.pdf',        isExternal: true },
+        { label: 'Endorsement Form',                   href: '/uploads/membership/forms/endorsement_form_24c6b5a2d9.pdf',                   isExternal: true },
         { label: 'Junior Membership Application Form', href: 'https://amclub.jotform.com/253623954879979',                           isExternal: true },
-        { label: 'PDPA Acknowledgement Form',          href: '/documents/membership/forms/pdpa-acknowledgement-form.pdf',          isExternal: true },
-        { label: 'GIRO Payment Form',                  href: '/documents/membership/forms/giro-payment-form.pdf',                  isExternal: true },
+        { label: 'PDPA Acknowledgement Form',          href: '/uploads/membership/forms/pdpa_acknowledgement_form_c85e2ee832.pdf',          isExternal: true },
+        { label: 'GIRO Payment Form',                  href: '/uploads/membership/forms/giro_payment_form_cee011fab9.pdf',                  isExternal: true },
         { label: 'Car Registration Form',              href: 'https://amclub.jotform.com/250688995352877',                          isExternal: true },
         { label: 'Visiting Membership Application Form', href: 'https://amclub.jotform.com/260038799703970',                        isExternal: true },
       ],
@@ -2041,7 +2041,7 @@ export const homeSubpages: SubpageData[] = [
     parentSection: 'The American Club',
     parentHref: '/home',
     ctas: [
-      { label: 'View Advertising Rate Card', href: '/documents/ad-rate-card.pdf', isExternal: true },
+      { label: 'View Advertising Rate Card', href: '/uploads/documents/ad_rate_card_4fc13eb6b7.pdf', isExternal: true },
       { label: 'Enquire Now', href: 'mailto:marketing@amclub.org.sg', isExternal: true },
     ],
     extraSections: [

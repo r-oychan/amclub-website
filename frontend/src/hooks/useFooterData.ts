@@ -96,8 +96,8 @@ export const DEFAULT_FOOTER: FooterData = {
     { platform: 'whatsapp', href: 'https://www.whatsapp.com/channel/0029Vb6eMBREawdpTErdKE47' },
   ],
   legalLinks: [
-    { label: 'Club Constitution', href: '/documents/club-constitution.pdf', isExternal: true },
-    { label: 'Club By-laws', href: '/documents/club-bylaws.pdf', isExternal: true },
+    { label: 'Club Constitution', href: '/uploads/documents/club_constitution_6260f2051b.pdf', isExternal: true },
+    { label: 'Club By-laws', href: '/uploads/documents/club_bylaws_8dc9bdff4e.pdf', isExternal: true },
     { label: 'Privacy Statement', href: '/privacy-statement' },
   ],
   copyright: '© 2026 The American Club Singapore® All rights reserved.',
