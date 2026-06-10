@@ -13,6 +13,13 @@ const PUBLIC_FIND_TYPES = [
   'api::membership-page.membership-page',
   'api::joining-fees-page.joining-fees-page',
   'api::referral-page.referral-page',
+  // Membership/about subpages — these were granted ad-hoc in dev's admin and
+  // never listed here, so fresh environments 403'd them (caught on the uat
+  // rebuild: public GET worked on dev, Forbidden on uat).
+  'api::niche-group-membership-page.niche-group-membership-page',
+  'api::reciprocal-clubs-page.reciprocal-clubs-page',
+  'api::start-application-page.start-application-page',
+  'api::advertise-with-us-page.advertise-with-us-page',
   'api::event-spaces-page.event-spaces-page',
   'api::whats-on-page.whats-on-page',
   'api::header.header',

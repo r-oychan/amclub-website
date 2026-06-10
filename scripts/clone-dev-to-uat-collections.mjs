@@ -298,7 +298,9 @@ async function cloneSingleton(path) {
   }
   data.publishedAt = entry.publishedAt || new Date().toISOString();
   if (DRY) { console.log(`  ${path.padEnd(26)} would PUT (${Object.keys(data).length} fields)`); return 1; }
-  await api(DST, `/${path}`, { method: 'PUT', body: { data } });
+  // ?status=published is the explicit Strapi v5 publish semantic — publishedAt
+  // in the body alone doesn't reliably publish a never-before-published doc.
+  await api(DST, `/${path}?status=published`, { method: 'PUT', body: { data } });
   console.log(`  ${path.padEnd(26)} PUT ✓ (${Object.keys(data).length} fields, media cached ${mediaCache.size})`);
   return 1;
 }
