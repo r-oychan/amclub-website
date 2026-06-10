@@ -14,7 +14,7 @@ export default factories.createCoreController(
     async find(ctx) {
       const entry = await strapi
         .documents('api::reciprocal-clubs-page.reciprocal-clubs-page')
-        .findFirst({ populate: POPULATE });
+        .findFirst({ populate: POPULATE, status: 'published' });
       return { data: entry, meta: {} };
     },
   })

@@ -12,7 +12,7 @@ export default factories.createCoreController(
     async find(ctx) {
       const entry = await strapi
         .documents('api::niche-group-membership-page.niche-group-membership-page')
-        .findFirst({ populate: POPULATE });
+        .findFirst({ populate: POPULATE, status: 'published' });
       return { data: entry, meta: {} };
     },
   })

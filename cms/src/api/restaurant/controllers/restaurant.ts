@@ -24,6 +24,7 @@ export default factories.createCoreController('api::restaurant.restaurant', ({ s
       filters: q.filters as Record<string, unknown> | undefined,
       sort: q.sort as never,
       populate: POPULATE,
+      status: 'published',
     });
     return { data: entries, meta: {} };
   },
@@ -32,6 +33,7 @@ export default factories.createCoreController('api::restaurant.restaurant', ({ s
     const entry = await strapi.documents('api::restaurant.restaurant').findOne({
       documentId: id,
       populate: POPULATE,
+      status: 'published',
     });
     return { data: entry, meta: {} };
   },

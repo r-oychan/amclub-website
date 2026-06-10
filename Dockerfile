@@ -4,7 +4,7 @@
 # ============================================================
 
 # ── Stage 1: Build frontend ──────────────────────────────────
-FROM node:20-alpine AS frontend-builder
+FROM node:24-alpine AS frontend-builder
 RUN apk add --no-cache libc6-compat
 WORKDIR /build
 COPY frontend/package*.json ./
@@ -17,7 +17,7 @@ ENV VITE_ELEVENLABS_AGENT_ID=$VITE_ELEVENLABS_AGENT_ID
 RUN npm run build
 
 # ── Stage 2: Build CMS ───────────────────────────────────────
-FROM node:20-alpine AS cms-builder
+FROM node:24-alpine AS cms-builder
 RUN apk add --no-cache libc6-compat python3 make g++
 WORKDIR /build
 COPY cms/package*.json ./
@@ -41,15 +41,19 @@ COPY cms/ ./
 RUN NODE_ENV=production npm run build
 
 # ── Stage 3: Production runtime ──────────────────────────────
-FROM node:20-alpine
+FROM node:24-alpine
 
-RUN apk add --no-cache nginx wget
+# gettext provides `envsubst`, used at startup to template the storage
+# account name into the nginx config (see entrypoint.sh).
+RUN apk add --no-cache nginx wget gettext
 
 # Nginx directories
 RUN mkdir -p /run/nginx /data
 
-# Copy Nginx config
-COPY infra/docker/nginx.conf /etc/nginx/http.d/default.conf
+# Copy Nginx config as a TEMPLATE — entrypoint.sh renders the final config,
+# substituting ${STORAGE_ACCOUNT}/${STORAGE_CONTAINER_NAME} into the /uploads
+# reverse-proxy block so media is served from this origin.
+COPY infra/docker/nginx.conf /etc/nginx/http.d/default.conf.template
 
 # Copy frontend build
 COPY --from=frontend-builder /build/dist /app/frontend

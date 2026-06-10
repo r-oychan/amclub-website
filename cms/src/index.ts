@@ -2,6 +2,8 @@
 // Lifecycle hooks for ElevenLabs KB sync now live in the elevenlabs-chatbot plugin
 // (cms/src/plugins/elevenlabs-chatbot). It registers its own bootstrap.
 
+import { createHmac } from 'node:crypto';
+
 const PUBLIC_FIND_TYPES = [
   'api::home-page.home-page',
   'api::about-page.about-page',
@@ -15,6 +17,7 @@ const PUBLIC_FIND_TYPES = [
   'api::whats-on-page.whats-on-page',
   'api::header.header',
   'api::footer.footer',
+  'api::site-config.site-config',
   'api::event.event',
   'api::event-category.event-category',
   'api::testimonial.testimonial',
@@ -22,9 +25,8 @@ const PUBLIC_FIND_TYPES = [
   'api::faq-category.faq-category',
   'api::faq-page.faq-page',
   'api::restaurant.restaurant',
-  'api::coach.coach',
-  // Section 2 (Fitness) — per-discipline coach collections. Legacy `coach`
-  // collection above will be dropped once data migration is verified.
+  // Section 2 (Fitness) — per-discipline coach collections (replaced the
+  // legacy `coach` collection, now removed).
   'api::aquatics-coach.aquatics-coach',
   'api::tennis-coach.tennis-coach',
   'api::pilates-instructor.pilates-instructor',
@@ -178,9 +180,131 @@ async function sweepExpiredKbDocs(strapi: any) {
   }
 }
 
+// Ensure a deterministic read-only API token named "preview" exists, whose
+// access key equals env.PREVIEW_TOKEN. The frontend's Preview mode sends this
+// token (handed to it by Strapi's preview handler URL) so it can fetch DRAFT
+// content. We hash the raw value exactly as Strapi does (HMAC-SHA512 with the
+// apiToken salt) and upsert the row — reproducible across deploys, no manual
+// token creation in /admin. Read-only type → find/findOne on all types, nothing
+// more. Skips quietly if PREVIEW_TOKEN is unset (e.g. local dev without it).
+async function ensurePreviewToken(strapi: any) {
+  const raw = process.env.PREVIEW_TOKEN;
+  if (!raw) {
+    strapi.log.info('[bootstrap] PREVIEW_TOKEN unset — skipping preview token');
+    return;
+  }
+  const salt = strapi.config.get('admin.apiToken.salt') || process.env.API_TOKEN_SALT;
+  if (!salt) {
+    strapi.log.warn('[bootstrap] apiToken salt missing — cannot manage preview token');
+    return;
+  }
+  const accessKey = createHmac('sha512', salt).update(raw).digest('hex');
+  const existing = await strapi.db.query('admin::api-token').findOne({ where: { name: 'preview' } });
+  if (!existing) {
+    await strapi.db.query('admin::api-token').create({
+      data: {
+        name: 'preview',
+        description: 'Read-only token for the frontend draft Preview (auto-managed by bootstrap).',
+        type: 'read-only',
+        accessKey,
+        lifespan: null,
+        expiresAt: null,
+      },
+    });
+    strapi.log.info('[bootstrap] created read-only preview API token');
+  } else if (existing.accessKey !== accessKey) {
+    await strapi.db.query('admin::api-token').update({
+      where: { id: existing.id },
+      data: { accessKey, type: 'read-only' },
+    });
+    strapi.log.info('[bootstrap] refreshed preview API token key');
+  }
+}
+
+// Document Service middleware: for a request that is BOTH asking for drafts
+// (?status=draft) AND authenticated (Authorization header — an invalid token is
+// rejected upstream, so reaching here means a valid one), flip the read status
+// to 'draft'. This is the single chokepoint that overrides the hardcoded
+// `status: 'published'` in every custom controller, so Preview shows unpublished
+// content without editing ~20 controllers. Public (token-less) requests are
+// untouched, so drafts never leak to the live site.
+function registerPreviewStatusMiddleware(strapi: any) {
+  const READ_ACTIONS = new Set(['findMany', 'findOne', 'findFirst', 'count']);
+  strapi.documents.use((ctx: any, next: any) => {
+    if (READ_ACTIONS.has(ctx.action)) {
+      const req = strapi.requestContext?.get?.();
+      // Only act on real HTTP requests that explicitly ask for drafts. Internal
+      // calls (cron, bootstrap, the preview handler's own lookup) have no
+      // request context and keep whatever status they passed.
+      if (req && req.query?.status === 'draft') {
+        const hasAuth = Boolean(req.request?.header?.authorization);
+        // Authenticated (valid token — invalid ones are rejected upstream) →
+        // serve drafts for Preview. Unauthenticated → force published, so a
+        // public caller can never read drafts via ?status=draft.
+        ctx.params = { ...ctx.params, status: hasAuth ? 'draft' : 'published' };
+      }
+    }
+    return next();
+  });
+  strapi.log.info('[register] preview draft-status document middleware active');
+}
+
+// Admin edit-view layout fix: on environments whose content-manager
+// configuration predates the schema reorder, `expiredAt` sits stranded at the
+// bottom of the event edit view (next to featuredOnHomepage) instead of beside
+// `date`, which it semantically overrides. The layout lives in the core store
+// (NOT the schema), so a schema change alone doesn't move it on existing envs.
+// This reconciles it on boot: move `expiredAt` into its own row directly after
+// the row containing `date`. Idempotent — if it's already there (or no config
+// row exists yet, meaning Strapi will generate the layout fresh from the
+// already-correct schema order), it no-ops.
+async function reorderEventEditLayout(strapi: any) {
+  const key = 'plugin_content_manager_configuration_content_types::api::event.event';
+  const row = await strapi.db.query('strapi::core-store').findOne({ where: { key } });
+  if (!row?.value) return; // fresh env — layout will be generated from schema order
+  const cfg = typeof row.value === 'string' ? JSON.parse(row.value) : row.value;
+  const edit: { name: string; size: number }[][] = cfg?.layouts?.edit;
+  if (!Array.isArray(edit)) return;
+
+  const dateRowIdx = edit.findIndex((r) => r.some((f) => f.name === 'date'));
+  if (dateRowIdx < 0) return;
+  // Already in place? (same row as date, or the row right after it)
+  const inDateRow = edit[dateRowIdx].some((f) => f.name === 'expiredAt');
+  const inNextRow = edit[dateRowIdx + 1]?.some((f) => f.name === 'expiredAt');
+  if (inDateRow || inNextRow) return;
+
+  let field: { name: string; size: number } | null = null;
+  for (const r of edit) {
+    const i = r.findIndex((f) => f.name === 'expiredAt');
+    if (i >= 0) { field = r.splice(i, 1)[0]; break; }
+  }
+  if (!field) return; // not in the layout at all — nothing to move
+
+  const compact = edit.filter((r) => r.length > 0);
+  const insertAt = compact.findIndex((r) => r.some((f) => f.name === 'date')) + 1;
+  compact.splice(insertAt, 0, [field]);
+  cfg.layouts.edit = compact;
+  await strapi.db.query('strapi::core-store').update({
+    where: { id: row.id },
+    data: { value: JSON.stringify(cfg) },
+  });
+  strapi.log.info('[bootstrap] moved event expiredAt next to date in the edit layout');
+}
+
 export default {
-  register() {},
+  register({ strapi }: { strapi: any }) {
+    try {
+      registerPreviewStatusMiddleware(strapi);
+    } catch (e) {
+      strapi.log.error('[register] failed to register preview status middleware', e);
+    }
+  },
   async bootstrap({ strapi }: { strapi: any }) {
+    try {
+      await ensurePreviewToken(strapi);
+    } catch (e) {
+      strapi.log.error('[bootstrap] failed to ensure preview token', e);
+    }
     try {
       await grantPublicReadAccess(strapi);
     } catch (e) {
@@ -190,6 +314,11 @@ export default {
       await backfillUploadMimes(strapi);
     } catch (e) {
       strapi.log.error('[bootstrap] failed to backfill upload mimes', e);
+    }
+    try {
+      await reorderEventEditLayout(strapi);
+    } catch (e) {
+      strapi.log.error('[bootstrap] failed to reorder event edit layout', e);
     }
     // Hourly content-expiry KB sweep. config/server.ts enables cron.
     try {

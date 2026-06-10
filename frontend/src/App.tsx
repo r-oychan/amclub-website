@@ -3,6 +3,7 @@ import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { ChatbotWidget } from './components/shared/ChatbotWidget';
 import { ScrollToTop } from './components/shared/ScrollToTop';
+import { Analytics } from './components/shared/Analytics';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import DiningPage from './pages/DiningPage';
@@ -30,6 +31,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <ScrollToTop />
+      <Analytics />
       <div className="min-h-screen flex flex-col">
         <Header />
         <main className="flex-1">

@@ -38,6 +38,19 @@ const MEMBER_LINKS = [
   { label: 'Niche Group Membership', href: '/membership/niche-group-membership' },
 ];
 
+const LEGAL_LINKS = [
+  { label: 'Club Constitution', href: '/documents/club-constitution.pdf', isExternal: true },
+  { label: 'Club By-laws', href: '/documents/club-bylaws.pdf', isExternal: true },
+  { label: 'Privacy Statement', href: '/privacy-statement' },
+];
+
+const SOCIALS = [
+  { platform: 'instagram', href: 'https://www.instagram.com/americanclubsingapore/' },
+  { platform: 'facebook', href: 'https://www.facebook.com/AmericanClubSingapore/' },
+  { platform: 'linkedin', href: 'https://www.linkedin.com/company/the-american-club-singapore' },
+  { platform: 'whatsapp', href: 'https://www.whatsapp.com/channel/0029Vb6eMBREawdpTErdKE47' },
+];
+
 (async () => {
   console.log(`Seed target: ${ctx.BASE}`);
   let logoId = null;
@@ -62,6 +75,8 @@ const MEMBER_LINKS = [
       { title: 'About Us', links: ABOUT_LINKS },
       { title: 'Member', links: MEMBER_LINKS },
     ],
+    socials: SOCIALS,
+    legalLinks: LEGAL_LINKS,
     copyright: '© 2026 The American Club Singapore® All rights reserved.',
     publishedAt: new Date().toISOString(),
   };

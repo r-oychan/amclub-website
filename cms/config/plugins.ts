@@ -79,6 +79,11 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
           containerName: env('STORAGE_CONTAINER_NAME', 'media'),
           defaultPath: 'uploads',
           cdnBaseURL: env('STORAGE_CDN_URL') || undefined,
+          // Strip the container segment from the public URL when cdnBaseURL is
+          // set, so uploads resolve as `<site>/uploads/...` (served by nginx's
+          // /uploads proxy) rather than `<site>/media/uploads/...`. Without
+          // this the provider keeps `/media/` and admin-uploaded images 404.
+          removeCN: env('STORAGE_CDN_URL') ? 'true' : undefined,
         },
       },
     };

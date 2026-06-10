@@ -52,6 +52,9 @@ interface VenueData {
   hours?: string;
   image?: { url: string; alternativeText?: string };
   video?: { url: string; title?: string };
+  /** Fitness facilities expose the hero as `heroImage`/`heroVideo` (vs dining's `image`). */
+  heroImage?: { url: string; alternativeText?: string } | null;
+  heroVideo?: string | null;
   cuisineType?: string;
   cuisineIconSlug?: string;
   /** Facility-side equivalents of cuisineType / cuisineIconSlug */
@@ -189,7 +192,7 @@ interface VenueData {
 
 const SECTION_MAP: Record<string, { apiPath: string; parentLabel: string; parentHref: string }> = {
   dining: { apiPath: '/restaurants', parentLabel: 'Dining & Retail', parentHref: '/dining' },
-  fitness: { apiPath: '/facilities', parentLabel: 'Fitness & Wellness', parentHref: '/fitness' },
+  fitness: { apiPath: '/fitness-facilities', parentLabel: 'Fitness & Wellness', parentHref: '/fitness' },
   kids: { apiPath: '/facilities', parentLabel: 'Kids', parentHref: '/kids' },
   'event-spaces': { apiPath: '/facilities', parentLabel: 'Private Events & Catering', parentHref: '/event-spaces' },
   membership: { apiPath: '/facilities', parentLabel: 'Membership', parentHref: '/membership' },
@@ -345,8 +348,11 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
         setVenue({
           ...fallback,
           ...api,
-          image: api.image ?? fallback?.image,
-          video: api.video ?? fallback?.video,
+          // Fitness facilities use `heroImage`/`heroVideo`; dining/others use
+          // `image`/`video`. Prefer whichever the collection provides, then the
+          // static fallback.
+          image: api.heroImage ?? api.image ?? fallback?.image,
+          video: api.video ?? (api.heroVideo ? { url: api.heroVideo } : undefined) ?? fallback?.video,
           ctas: api.ctas?.length ? api.ctas : fallback?.ctas,
           extraSections: api.extraSections?.length ? api.extraSections : fallback?.extraSections,
           promoCards: api.promoCards ?? fallback?.promoCards,

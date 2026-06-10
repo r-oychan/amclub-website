@@ -1007,6 +1007,30 @@ export interface SharedSeo extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedSocialLink extends Struct.ComponentSchema {
+  collectionName: 'components_shared_social_links';
+  info: {
+    description: 'Social media link; the icon is chosen from the platform';
+    displayName: 'Social Link';
+    icon: 'share';
+  };
+  attributes: {
+    href: Schema.Attribute.String & Schema.Attribute.Required;
+    platform: Schema.Attribute.Enumeration<
+      [
+        'instagram',
+        'facebook',
+        'linkedin',
+        'whatsapp',
+        'youtube',
+        'x',
+        'tiktok',
+      ]
+    > &
+      Schema.Attribute.Required;
+  };
+}
+
 export interface SharedStatItem extends Struct.ComponentSchema {
   collectionName: 'components_shared_stat_items';
   info: {
@@ -1218,6 +1242,7 @@ declare module '@strapi/strapi' {
       'shared.referral-row': SharedReferralRow;
       'shared.schedule-row': SharedScheduleRow;
       'shared.seo': SharedSeo;
+      'shared.social-link': SharedSocialLink;
       'shared.stat-item': SharedStatItem;
       'shared.tab-item': SharedTabItem;
       'shared.team-member': SharedTeamMember;

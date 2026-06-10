@@ -32,6 +32,16 @@
       "repeatable": true,
       "component": "shared.footer-column"
     },
+    "socials": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.social-link"
+    },
+    "legalLinks": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link"
+    },
     "copyright": {
       "type": "string"
     }

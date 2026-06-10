@@ -18,14 +18,17 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name == 'main' && 'prod' || github.ref_name == 'uat' && 'uat' || 'dev' }}
     env:
+      # Run all JS-based actions (incl. pulumi/actions@v6, azure/login) on
+      # Node 24 to match our toolchain and clear the Node 20 deprecation.
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
       AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
       AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       STACK: ${{ github.ref_name == 'main' && 'prod' || github.ref_name == 'uat' && 'uat' || 'dev' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: npm

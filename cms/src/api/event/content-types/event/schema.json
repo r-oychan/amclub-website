@@ -33,6 +33,9 @@
       "type": "date",
       "required": true
     },
+    "expiredAt": {
+      "type": "date"
+    },
     "time": {
       "type": "string"
     },
@@ -61,16 +64,9 @@
       "target": "api::event-category.event-category",
       "inversedBy": "events"
     },
-    "featured": {
-      "type": "boolean",
-      "default": false
-    },
     "featuredOnHomepage": {
       "type": "boolean",
       "default": false
-    },
-    "expiredAt": {
-      "type": "date"
     },
     "ctas": {
       "type": "component",

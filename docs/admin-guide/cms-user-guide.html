@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CMS User Guide — The American Club Website</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <span class="brand">THE AMERICAN CLUB <span class="accent">/</span> WEBSITE ADMIN GUIDES</span>
+  <nav>
+    <a href="cms-user-guide.html" class="active">CMS User Guide</a>
+    <a href="tech-admin-guide.html">Technical Admin Guide</a>
+  </nav>
+</header>
+
+<div class="layout">
+
+<aside class="toc">
+  <h2>On this page</h2>
+  <ol>
+    <li><a href="#welcome">1. Welcome</a></li>
+    <li><a href="#environments">2. The Three Websites</a></li>
+    <li><a href="#login">3. Logging In</a></li>
+    <li><a href="#dashboard">4. The Dashboard</a></li>
+    <li><a href="#content-model">5. How Content Is Organised</a></li>
+    <li><a href="#editing">6. Editing an Entry</a>
+      <ol>
+        <li><a href="#field-types">Field types</a></li>
+        <li><a href="#images">Images &amp; files</a></li>
+      </ol>
+    </li>
+    <li><a href="#draft-publish">7. Draft vs Published</a></li>
+    <li><a href="#new-entry">8. Creating &amp; Cloning Entries</a></li>
+    <li><a href="#single-types">9. Editing Page Content</a></li>
+    <li><a href="#special-fields">10. Special Fields</a></li>
+    <li><a href="#media-library">11. The Media Library</a></li>
+    <li><a href="#style-rules">12. House Style Rules</a></li>
+    <li><a href="#verify">13. Checking Your Changes</a></li>
+    <li><a href="#troubleshooting">14. If Something Goes Wrong</a></li>
+  </ol>
+</aside>
+
+<main>
+
+<div class="doc-header">
+  <span class="audience">For Content Editors — No Technical Knowledge Needed</span>
+  <h1>CMS User Guide<br>The American Club Website</h1>
+  <p>Everything you need to update text, images, events, promotions, and page content on the Club's
+     website — without touching any code. Changes you publish appear on the public website within moments.</p>
+  <p class="meta">Last updated 8 June 2026 · Screenshots taken on the UAT environment (the screens are identical in production) ·
+     Technical readers: see the <a href="tech-admin-guide.html">Technical Admin Guide</a></p>
+</div>
+
+<!-- ============================================================ -->
+<section class="card" id="welcome">
+  <h2>1. Welcome</h2>
+  <p>The Club's website does not store its words and pictures inside the website code. Instead, all content lives in a
+     <strong>Content Management System (CMS)</strong> called <strong>Strapi</strong>. When a visitor opens a page,
+     the website fetches the latest published content from the CMS and displays it.</p>
+  <p>That means <strong>you</strong> can change almost anything visitors see — event listings, dining promotions,
+     headings, photos, opening hours, PDFs — by editing it in the CMS and pressing <strong>Publish</strong>.
+     No developer required.</p>
+  <div class="callout tip">
+    <span class="label">Golden rule</span>
+    <p><strong>Save</strong> keeps your work as a draft (invisible to the public). <strong>Publish</strong> puts it on
+       the live website. Nothing reaches visitors until you publish it.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="environments">
+  <h2>2. The Three Websites</h2>
+  <p>There are three copies of the Club website. They look the same but serve different purposes:</p>
+  <table>
+    <thead>
+      <tr><th>Environment</th><th>Public website</th><th>CMS login</th><th>What it's for</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="badge env-prod">PRODUCTION</span></td>
+        <td><a href="https://amclub.org.sg" target="_blank" rel="noopener">amclub.org.sg</a></td>
+        <td><a href="https://amclub.org.sg/admin" target="_blank" rel="noopener">amclub.org.sg/admin</a></td>
+        <td><strong>The real website members see.</strong> This is where you do your day-to-day content updates.</td>
+      </tr>
+      <tr>
+        <td><span class="badge env-uat">UAT</span></td>
+        <td><a href="https://uat.amclub.org.sg" target="_blank" rel="noopener">uat.amclub.org.sg</a></td>
+        <td><a href="https://uat.amclub.org.sg/admin" target="_blank" rel="noopener">uat.amclub.org.sg/admin</a></td>
+        <td>A rehearsal copy used to review and approve upcoming website changes before they go live. Safe to practise in.</td>
+      </tr>
+      <tr>
+        <td><span class="badge env-dev">DEV</span></td>
+        <td><a href="https://dev.amclub.org.sg" target="_blank" rel="noopener">dev.amclub.org.sg</a></td>
+        <td><a href="https://dev.amclub.org.sg/admin" target="_blank" rel="noopener">dev.amclub.org.sg/admin</a></td>
+        <td>The development team's workbench. Content here changes frequently and may be reset — don't rely on it.</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="callout warn">
+    <span class="label">Check the address bar</span>
+    <p>Before editing, glance at the browser address bar. If it says <code>uat.</code> or <code>dev.</code>, you are
+       <em>not</em> on the live site — edits there will not appear on the real website. For live updates, always use
+       <strong>amclub.org.sg/admin</strong>.</p>
+  </div>
+  <div class="callout note">
+    <span class="label">New to the CMS?</span>
+    <p>Practise on <strong>UAT</strong> first. You can experiment freely there without any risk to the live website.
+       All screenshots in this guide were taken on UAT — production looks exactly the same.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="login">
+  <h2>3. Logging In</h2>
+  <p>Open the CMS login page for your environment (e.g. <a href="https://amclub.org.sg/admin" target="_blank" rel="noopener">amclub.org.sg/admin</a>).
+     You'll see this screen:</p>
+  <figure>
+    <img src="screenshots/login.png" alt="Strapi login screen with email/password fields and a Continue with Microsoft button" loading="lazy">
+    <figcaption>The CMS login screen. Use either your email + password, or the Microsoft button.</figcaption>
+  </figure>
+  <p>There are two ways in:</p>
+  <ol>
+    <li><strong>Continue with Microsoft</strong> — recommended for Club staff. Click the white button and sign in with
+        your usual Club Microsoft account. No separate password to remember.</li>
+    <li><strong>Email + password</strong> — enter the email and password you were invited with, then click
+        <strong>Login</strong>.</li>
+  </ol>
+  <h3>Forgot your password?</h3>
+  <p>Click <strong>"Forgot your password?"</strong> under the login button and follow the email instructions.
+     If no email arrives, ask a website administrator to re-invite you (see
+     <a href="#troubleshooting">If Something Goes Wrong</a>).</p>
+  <div class="callout note">
+    <span class="label">Access levels</span>
+    <p>Most content editors have the <strong>Editor</strong> role — you can create, edit, and publish content,
+       but cannot change website structure or user accounts. That's intentional and keeps the site safe.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="dashboard">
+  <h2>4. The Dashboard</h2>
+  <p>After logging in you land on the dashboard:</p>
+  <figure>
+    <img src="screenshots/dashboard.png" alt="Strapi dashboard showing last edited entries, last published entries, profile, and total entries widgets" loading="lazy">
+    <figcaption>The dashboard: recent edits on the left, recent publishes on the right.</figcaption>
+  </figure>
+  <p>Useful parts:</p>
+  <ul>
+    <li><strong>Last edited entries</strong> — quick links back to whatever you (or colleagues) touched recently.
+        Handy for "where was I yesterday?"</li>
+    <li><strong>Last published entries</strong> — what most recently went live.</li>
+    <li><strong>Left icon bar</strong> — the navigation. The two you'll use daily are
+        <strong>Content Manager</strong> (the pencil icon — all website content) and
+        <strong>Media Library</strong> (the picture icon — all images and files).</li>
+  </ul>
+  <div class="callout warn">
+    <span class="label">Please ignore</span>
+    <p><strong>Content-Type Builder</strong>, <strong>Settings</strong>, and <strong>Marketplace</strong> in the
+       left menu are for the development team. Changing things there can break the website.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="content-model">
+  <h2>5. How Content Is Organised</h2>
+  <p>Open <strong>Content Manager</strong> from the left menu. Content is split into two groups,
+     listed in the panel on the left:</p>
+  <h3>Collection Types — lists of similar things</h3>
+  <p>Each collection holds many entries of the same kind. Names are prefixed with the part of the website they belong
+     to, so <strong>"What's On: Events"</strong> feeds the What's On section, <strong>"Dining: Promotions"</strong>
+     feeds Dining, and so on. The ones editors use most:</p>
+  <table>
+    <thead><tr><th>Collection</th><th>What it controls</th></tr></thead>
+    <tbody>
+      <tr><td>What's On: Events</td><td>Every event listed on the What's On pages and homepage event carousel</td></tr>
+      <tr><td>What's On: Categories</td><td>The event filter categories (Dining, Kids, Sports…)</td></tr>
+      <tr><td>Dining: Promotions</td><td>Dining promotions and offers</td></tr>
+      <tr><td>Dining: Restaurants</td><td>Each restaurant's name, description, hours, menus, photos</td></tr>
+      <tr><td>News: Articles</td><td>News stories on the News page</td></tr>
+      <tr><td>Gallery: Albums</td><td>Photo albums on the Gallery page</td></tr>
+      <tr><td>FAQ: Items / FAQ: Categories</td><td>Questions and answers across the site</td></tr>
+      <tr><td>Event Spaces: Venues</td><td>Ballrooms and function rooms for hire</td></tr>
+      <tr><td>Fitness: Gym Trainers / Pilates Instructors / Tennis Coaches / Aquatics Coaches</td><td>Coach profiles with photos and bios</td></tr>
+      <tr><td>About: Committee Members</td><td>The General Committee profiles on the About page</td></tr>
+      <tr><td>Home: Testimonials</td><td>Member quotes shown on the homepage</td></tr>
+    </tbody>
+  </table>
+  <h3>Single Types — one-of-a-kind pages</h3>
+  <p>Each single type is the content of one specific page (or sitewide element). For example
+     <strong>"Home: Page"</strong> holds the homepage hero text, the stats numbers, and section headings;
+     <strong>"Global: Header"</strong> and <strong>"Global: Footer"</strong> control the navigation menu and footer
+     that appear on every page.</p>
+  <figure>
+    <img src="screenshots/content-manager-events.png" alt="Content Manager showing the What's On: Events collection list with statuses, and the full list of collection and single types in the left panel" loading="lazy">
+    <figcaption>Content Manager: collection types and single types on the left, the selected collection's entries on the right.</figcaption>
+  </figure>
+  <div class="callout tip">
+    <span class="label">Finding things fast</span>
+    <p>Use the <strong>Search</strong> box at the top of the Content Manager panel to filter the list of types, and the
+       <strong>Search / Filters</strong> buttons above an entry list to find a specific entry by title.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="editing">
+  <h2>6. Editing an Entry</h2>
+  <p>Click any entry in a list to open it. Here's a typical event:</p>
+  <figure>
+    <img src="screenshots/entry-edit.png" alt="Editing an event entry: title, subtitle, slug, description, rich-text long description, and the Publish/Save panel on the right" loading="lazy">
+    <figcaption>An event entry. Content fields in the middle; Save &amp; Publish in the right-hand panel.</figcaption>
+  </figure>
+  <p>The basic flow is always the same:</p>
+  <ol>
+    <li>Change the fields you need.</li>
+    <li>Click <strong>Save</strong> (right panel) — stores a draft.</li>
+    <li>Click <strong>Publish</strong> — puts it on the live website.</li>
+  </ol>
+
+  <h3 id="field-types">Field types you'll meet</h3>
+  <table>
+    <thead><tr><th>Field</th><th>How it works</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Short text</strong> (title, subtitle, location)</td>
+          <td>Plain text, one line. Fields marked with a red <strong>*</strong> are required.</td></tr>
+      <tr><td><strong>Long text</strong> (description)</td>
+          <td>Plain paragraph text, no formatting.</td></tr>
+      <tr><td><strong>Rich text</strong> (longDescription)</td>
+          <td>Has a toolbar — bold, italic, lists, links, headings. Use <strong>Preview mode</strong> to check how it reads.</td></tr>
+      <tr><td><strong>Slug</strong></td>
+          <td>The entry's web address ending, e.g. <code>fathers-day-grillhouse</code> →
+              <code>amclub.org.sg/whats-on/fathers-day-grillhouse</code>. Auto-generated from the title — avoid changing
+              it after publishing, because saved links and QR codes would break.</td></tr>
+      <tr><td><strong>Date / time</strong></td>
+          <td>Pick from the calendar pop-up. The separate <em>time</em> text field is the human-friendly wording shown
+              on the page, e.g. "6:00 PM – 9:00 PM".</td></tr>
+      <tr><td><strong>True / false toggles</strong> (featured, featuredOnHomepage)</td>
+          <td>Click TRUE or FALSE. <em>featured</em> highlights the entry in its section;
+              <em>featuredOnHomepage</em> also shows it in the homepage carousel.</td></tr>
+      <tr><td><strong>Relation</strong> (category)</td>
+          <td>Links this entry to another, e.g. assigning an event to the "Dining" category. Pick from the drop-down;
+              remove with the ✕.</td></tr>
+      <tr><td><strong>Component groups</strong> (ctas, seo)</td>
+          <td>Expandable blocks of grouped fields. <em>ctas</em> adds buttons to the page;
+              <em>seo</em> sets the title/description Google shows. Click "No entry yet. Click to add one." to create.</td></tr>
+    </tbody>
+  </table>
+
+  <h3 id="images">Images &amp; files on an entry</h3>
+  <figure>
+    <img src="screenshots/entry-edit-media-relations.png" alt="The lower half of an event entry: image field with thumbnail, category relation, featured toggles, ctas and seo component slots, expiredAt date" loading="lazy">
+    <figcaption>Further down the same entry: the image field, category, toggles, and optional components.</figcaption>
+  </figure>
+  <p>To change an image, hover over it and use the small buttons: <strong>＋ Add</strong> (choose a different
+     image), <strong>Edit</strong> (crop/details), or <strong>Delete</strong> (remove it from this entry — the file stays in the
+     Media Library). When adding, you can pick an existing image <em>from the library</em> or upload a new one.</p>
+  <div class="callout tip">
+    <span class="label">Image sizes</span>
+    <p>Upload photos at least <strong>1600&nbsp;px wide</strong> for banners/heroes and around
+       <strong>800&nbsp;px wide</strong> for cards. JPEG for photos, PNG for logos. The website resizes them
+       automatically — bigger is safer than smaller.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="draft-publish">
+  <h2>7. Draft vs Published</h2>
+  <p>Every entry is in one of three states, shown as a coloured badge in lists and at the top of the editor:</p>
+  <table>
+    <thead><tr><th>Badge</th><th>Meaning</th><th>Visible to the public?</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge draft">Draft</span></td><td>Saved but never published</td><td>No</td></tr>
+      <tr><td><span class="badge published">Published</span></td><td>Live, and the draft matches what's live</td><td>Yes</td></tr>
+      <tr><td><span class="badge modified">Modified</span></td><td>Live, but you've saved newer changes that aren't published yet</td><td>The <em>old</em> version stays visible until you publish</td></tr>
+    </tbody>
+  </table>
+  <p>At the top of the editor are two tabs: <strong>DRAFT</strong> (what you're editing) and
+     <strong>PUBLISHED</strong> (a read-only view of what's currently live). Use the PUBLISHED tab to compare
+     before you push changes out.</p>
+  <h3>Unpublishing</h3>
+  <p>To take something off the website without deleting it, open the entry, click the
+     <strong>⋯ (More document actions)</strong> button next to Publish, and choose <strong>Unpublish</strong>.
+     The entry returns to Draft and disappears from the site.</p>
+  <div class="callout warn">
+    <span class="label">Deleting is forever</span>
+    <p>Prefer <strong>Unpublish</strong> over Delete. A deleted entry (and its slug/web address) cannot be recovered
+       from the admin panel.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="new-entry">
+  <h2>8. Creating &amp; Cloning Entries</h2>
+  <h3>From scratch</h3>
+  <ol>
+    <li>Open the collection (e.g. <strong>What's On: Events</strong>) and click
+        <strong>＋ Create new entry</strong> (top right).</li>
+    <li>Fill in at least the required fields (marked <strong>*</strong>).</li>
+    <li><strong>Save</strong>, review, then <strong>Publish</strong>.</li>
+  </ol>
+  <h3>Cloning — the fast way for recurring items</h3>
+  <p>For something similar to an existing entry (a monthly event, a repeating promotion), open the existing entry and
+     click <strong>Clone entry</strong> in the right-hand <strong>CLONE</strong> panel. This creates a new
+     <em>draft</em> copy: the title gets a <code>(copy)</code> suffix and the slug gets <code>-copy</code>.
+     Rename both, update the dates and details, then publish.</p>
+  <div class="callout note">
+    <span class="label">About clones</span>
+    <p>The clone <em>shares</em> the original's images and category links (they're linked, not duplicated).
+       Changing the clone's image assignment won't affect the original entry.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="single-types">
+  <h2>9. Editing Page Content (Single Types)</h2>
+  <p>Single types work exactly like entries — Save then Publish — but they're structured as the
+     <em>sections</em> of one page. Here's <strong>Home: Page</strong>:</p>
+  <figure>
+    <img src="screenshots/single-type-home.png" alt="The Home: Page single type showing the hero section's heading, subheading and CTA fields" loading="lazy">
+    <figcaption>Home: Page — the hero section. Scroll down for About, Events, Services, Experience, Moments and FAQ sections.</figcaption>
+  </figure>
+  <p>Things to know:</p>
+  <ul>
+    <li>Sections appear in the order they're shown on the page: <em>hero → aboutSection → events → services →
+        experience → moments → faq</em>.</li>
+    <li>Repeatable items (hero slides, stats, service features, experience tabs) can be
+        <strong>re-ordered by dragging</strong> the handle on the right of each row, added with
+        <strong>＋ Add an entry</strong>, or removed with the bin icon.</li>
+    <li><strong>CTA blocks</strong> (call-to-action buttons) have a <em>label</em> (the button text), an
+        <em>href</em> (where it goes — use <code>/membership</code> style for pages on our own site, full
+        <code>https://…</code> links for external sites), and an <em>isExternal</em> toggle
+        (set TRUE for external links so they open in a new tab).</li>
+    <li>Layout pickers like <em>variant</em>, <em>dark</em>, or <em>titlePosition</em> control appearance —
+        if unsure, leave them as they are.</li>
+  </ul>
+  <div class="callout tip">
+    <span class="label">Sitewide elements</span>
+    <p><strong>Global: Header</strong> controls the navigation menu (labels, order, dropdown links) and
+       <strong>Global: Footer</strong> the footer columns, contact details, and social links. Edits there appear on
+       every page — publish carefully.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="special-fields">
+  <h2>10. Special Fields Worth Knowing</h2>
+  <h3>expiredAt — auto-hiding old events and promotions</h3>
+  <p>Events and dining promotions disappear from listing pages automatically once their date passes.
+     The optional <strong>expiredAt</strong> field <em>overrides</em> that: set it if you want the item hidden on a
+     different date than its event date (e.g. a promotion that should stay visible all month).</p>
+  <ul>
+    <li>Leave <strong>expiredAt</strong> empty → the entry hides after its own <em>date</em> passes.</li>
+    <li>Set <strong>expiredAt</strong> → the entry hides after <em>that</em> date instead.</li>
+    <li>Expired entries are only hidden from <em>listings</em> — anyone with a direct link can still open the
+        detail page, and the entry stays in the CMS for you to reuse or clone next year.</li>
+  </ul>
+  <h3>Sync to ElevenLabs — the website chatbot</h3>
+  <p>The website chatbot answers member questions using published content. Published events and promotions are
+     synced to its knowledge base automatically (expired ones are removed hourly). The
+     <strong>Sync to ElevenLabs</strong> button in the right panel forces an immediate re-sync after a significant
+     edit — useful but rarely needed. It only works on published entries.</p>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="media-library">
+  <h2>11. The Media Library</h2>
+  <p>All images, PDFs, and videos live in the <strong>Media Library</strong> (picture icon in the left menu).</p>
+  <figure>
+    <img src="screenshots/media-library-assets.png" alt="Media Library grid of uploaded images with checkboxes, sort and filter controls" loading="lazy">
+    <figcaption>The Media Library. Use Search (magnifier icon) to find a file by name.</figcaption>
+  </figure>
+  <ul>
+    <li><strong>Add new assets</strong> uploads files (you can drag-and-drop several at once).</li>
+    <li>Click a file to see its details, replace it, or copy its link.</li>
+    <li>Deleting a file here removes it <em>everywhere it is used</em> on the website — check before deleting.</li>
+  </ul>
+  <div class="callout warn">
+    <span class="label">File naming</span>
+    <p>Name files in <strong>lowercase-with-hyphens</strong> before uploading:
+       <code>fathers-day-grillhouse.jpg</code> ✓ &nbsp;·&nbsp; <code>Fathers Day GRILLHOUSE.JPG</code> ✗.
+       No spaces, capitals, or underscores. Consistent names keep the library searchable.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="style-rules">
+  <h2>12. House Style Rules</h2>
+  <ul>
+    <li><strong>Times</strong> use uppercase AM/PM without periods: <code>6:00 PM</code> ✓, <code>6.00 p.m.</code> ✗.</li>
+    <li><strong>Dates</strong> in body text are written out: <code>Sunday, June 21, 2026</code>.</li>
+    <li><strong>Venue names</strong> match their official names exactly (Grillhouse, Tradewinds, Union Bar, The 2nd Floor, Central…).</li>
+    <li><strong>Event titles</strong> follow the pattern <em>Name @ Venue</em>, e.g. <code>Trivia Night @ Union Bar</code>.</li>
+    <li><strong>Links to our own pages</strong> start with <code>/</code> (e.g. <code>/whats-on</code>);
+        only external sites use full <code>https://</code> addresses with <em>isExternal</em> set to TRUE.</li>
+    <li>Keep <strong>subtitles</strong> to one short sentence — they appear on cards where space is tight.</li>
+  </ul>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="verify">
+  <h2>13. Checking Your Changes</h2>
+  <ol>
+    <li>Publish the entry.</li>
+    <li>Open the public page in a <strong>new browser tab</strong> (e.g. <code>amclub.org.sg/whats-on</code>) and refresh.
+        Changes normally appear immediately; if not, hard-refresh with <kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>
+        (Mac) or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> (Windows).</li>
+    <li>Check the page on your phone too — most members browse on mobile.</li>
+  </ol>
+  <div class="callout tip">
+    <span class="label">Pre-publish checklist</span>
+    <p>Title spelled correctly · date and time right (AM/PM uppercase) · image looks good ·
+       category assigned · links tested · slug sensible.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="troubleshooting">
+  <h2>14. If Something Goes Wrong</h2>
+  <table>
+    <thead><tr><th>Problem</th><th>What to check / do</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>My change isn't on the website</td>
+        <td>1) Did you click <strong>Publish</strong> (not just Save)? A <span class="badge modified">Modified</span>
+            badge means unpublished changes. 2) Hard-refresh the page. 3) Are you editing the same environment you're
+            viewing? (Editing on UAT won't change the live site.)</td>
+      </tr>
+      <tr>
+        <td>An event vanished from the listings</td>
+        <td>Its date (or <em>expiredAt</em>) has passed — that's the automatic expiry working. Update the date or
+            clear <em>expiredAt</em> and republish to bring it back.</td>
+      </tr>
+      <tr>
+        <td>Image thumbnails look broken in the CMS</td>
+        <td>Usually temporary — refresh. If it persists, tell the website administrator (it's a server setting,
+            not something you did).</td>
+      </tr>
+      <tr>
+        <td>I can't log in</td>
+        <td>Try <strong>Continue with Microsoft</strong> first. Otherwise use "Forgot your password?". If your account
+            shows as Inactive you'll need an administrator to re-invite you.</td>
+      </tr>
+      <tr>
+        <td>I deleted/changed something by mistake</td>
+        <td>Stop editing and contact the website administrator straight away — the sooner they know, the easier it is
+            to restore.</td>
+      </tr>
+      <tr>
+        <td>The Publish button is greyed out</td>
+        <td>Either nothing has changed since the last publish, or a required field (marked *) is empty —
+            scroll up for a red error message.</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3>Who to contact</h3>
+  <p>For account access, missing content types, or anything that looks like a fault rather than a content issue,
+     contact the website maintenance team (Prefix) or your internal website administrator. Technical staff can find
+     diagnostic procedures in the <a href="tech-admin-guide.html">Technical Admin Guide</a>.</p>
+</section>
+
+<p class="doc-footer">
+  The American Club, Singapore — Website CMS User Guide ·
+  <a href="tech-admin-guide.html">Technical Admin Guide</a> ·
+  Generated June 2026
+</p>
+
+</main>
+</div>
+</body>
+</html>

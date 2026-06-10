@@ -108,7 +108,7 @@ const IMAGES = [
 const EVENT_CATEGORIES = ['Dining', 'Fitness & Wellness', 'Kids', 'Member Engagement'];
 
 const EVENTS = [
-  // category, title, date (ISO), image filename, featured (always true here)
+  // category, title, date (ISO), image filename (all flagged featuredOnHomepage)
   ['Dining',              'Nostalgic Flavors of Singapore',                        '2026-12-04', 'event-1-nostalgic-flavors.jpg'],
   ['Fitness & Wellness',  'Pedal to Victory! A Spin Bike Time Challenge',          '2026-11-05', 'event-2-pedal-to-victory.jpg'],
   ['Kids',                'Scarily Fun Friday Nights for the Kids!',               '2026-10-19', 'event-3-scarily-fun-fridays.jpg'],
@@ -200,7 +200,7 @@ async function ensureEvent(category, title, date, imageId) {
     title, slug, date,
     image: imageId,
     category: category.documentId,
-    featured: true,
+    featuredOnHomepage: true,
     publishedAt: new Date().toISOString(),
   };
   if (DRY) { console.log(`  [dry] upsert event: ${title}`); return { documentId: `dry-${slug}`, slug }; }

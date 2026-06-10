@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Technical Admin Guide — The American Club Website</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <span class="brand">THE AMERICAN CLUB <span class="accent">/</span> WEBSITE ADMIN GUIDES</span>
+  <nav>
+    <a href="cms-user-guide.html">CMS User Guide</a>
+    <a href="tech-admin-guide.html" class="active">Technical Admin Guide</a>
+  </nav>
+</header>
+
+<div class="layout">
+
+<aside class="toc">
+  <h2>On this page</h2>
+  <ol>
+    <li><a href="#architecture">1. Architecture</a></li>
+    <li><a href="#environments">2. Environments &amp; Branching</a></li>
+    <li><a href="#repo">3. Repository Layout</a></li>
+    <li><a href="#cms">4. The Strapi CMS</a>
+      <ol>
+        <li><a href="#content-types">Content types</a></li>
+        <li><a href="#plugins">Plugins &amp; customisations</a></li>
+      </ol>
+    </li>
+    <li><a href="#users-sso">5. Admin Users, Roles &amp; SSO</a></li>
+    <li><a href="#api-tokens">6. API Tokens</a></li>
+    <li><a href="#seeding">7. Seed Scripts &amp; Content Ops</a></li>
+    <li><a href="#media">8. Media Storage</a></li>
+    <li><a href="#cicd">9. CI/CD</a></li>
+    <li><a href="#infra">10. Infrastructure (Pulumi/Azure)</a></li>
+    <li><a href="#frontend">11. Frontend Integration</a></li>
+    <li><a href="#verification">12. Verification Commands</a></li>
+    <li><a href="#troubleshooting">13. Troubleshooting</a></li>
+    <li><a href="#reference">14. Key File Reference</a></li>
+  </ol>
+</aside>
+
+<main>
+
+<div class="doc-header">
+  <span class="audience">For Developers, DevOps &amp; Technical Administrators</span>
+  <h1>Technical Admin Guide<br>The American Club Website</h1>
+  <p>Architecture, environments, deployment, CMS internals, content seeding, and operations runbook for the
+     amclub-website monorepo. For day-to-day content editing, hand editors the
+     <a href="cms-user-guide.html" style="color:#f0b9bd">CMS User Guide</a>.</p>
+  <p class="meta">Last updated 8 June 2026 · Sources: repo <code>docs/</code>, <code>SPECS.md</code>, <code>infra/</code>,
+     workflows · Screenshots from UAT admin</p>
+</div>
+
+<!-- ============================================================ -->
+<section class="card" id="architecture">
+  <h2>1. Architecture</h2>
+  <table>
+    <thead><tr><th>Layer</th><th>Technology</th></tr></thead>
+    <tbody>
+      <tr><td>Frontend</td><td>React 19 + Vite + Tailwind CSS v4 + TypeScript (strict), React Router v7</td></tr>
+      <tr><td>CMS</td><td>Strapi v5 (currently 5.46.x), PostgreSQL 16 in deployed envs, SQLite locally</td></tr>
+      <tr><td>Hosting</td><td>Azure Container Apps — one all-in-one container per environment (nginx + Strapi + built frontend)</td></tr>
+      <tr><td>Storage</td><td>Azure Blob Storage for media (<code>amclub&lt;env&gt;data</code> / container <code>media</code>)</td></tr>
+      <tr><td>IaC</td><td>Pulumi (TypeScript), state in Azure Blob backend (<code>azblob://state</code>)</td></tr>
+      <tr><td>CI/CD</td><td>GitHub Actions (<code>ci.yml</code> + <code>deploy.yml</code>)</td></tr>
+      <tr><td>Auth (admin)</td><td>Email/password + Microsoft Entra ID SSO via <code>strapi-plugin-sso</code></td></tr>
+      <tr><td>Chatbot</td><td>ElevenLabs agent fed by a custom Strapi plugin syncing published content to its knowledge base</td></tr>
+    </tbody>
+  </table>
+  <h3>Request routing (inside the container)</h3>
+  <p><code>docker/nginx.conf</code> routes <code>/</code> → built SPA, <code>/api/*</code> → Strapi (:1337),
+     <code>/admin/*</code> → Strapi admin, <code>/strapi-plugin-sso/*</code> → SSO endpoints. The deployed frontend
+     always talks to <em>its own origin</em> (<code>/api</code>) — never a hardcoded Strapi URL.</p>
+  <div class="callout note">
+    <span class="label">Design &amp; spec sources of truth</span>
+    <p><code>DESIGN.md</code> (root) holds the design tokens; <code>SPECS.md</code> (root) maps every page,
+       component, and CMS binding. Read both before changing anything visual or structural.
+       The Framer prototype is at <code>tactesting.framer.website</code>.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="environments">
+  <h2>2. Environments &amp; Branching</h2>
+  <p>Three long-lived branches map 1:1 to environments. <strong>All work lands on <code>dev</code> first</strong>;
+     promotion is via PR <code>dev → uat → main</code>. Never push directly to <code>uat</code>/<code>main</code>,
+     never force-push them.</p>
+  <table>
+    <thead><tr><th>Branch</th><th>Environment</th><th>Public URL</th><th>Admin</th><th>Azure subscription / tenant</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>dev</code></td>
+        <td><span class="badge env-dev">DEV</span></td>
+        <td>dev.amclub.org.sg</td>
+        <td>dev.amclub.org.sg/admin</td>
+        <td>Prefix subscription (legacy tenant)</td>
+      </tr>
+      <tr>
+        <td><code>uat</code></td>
+        <td><span class="badge env-uat">UAT</span></td>
+        <td>uat.amclub.org.sg</td>
+        <td>uat.amclub.org.sg/admin</td>
+        <td rowspan="2">Client "Website" subscription (tenant <code>8137d2b4…</code>)</td>
+      </tr>
+      <tr>
+        <td><code>main</code></td>
+        <td><span class="badge env-prod">PROD</span></td>
+        <td>amclub.org.sg</td>
+        <td>amclub.org.sg/admin</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>Check what's queued for promotion:</p>
+  <pre><code>git log --oneline origin/uat..origin/dev    # ready for UAT
+git log --oneline origin/main..origin/uat   # ready for PROD</code></pre>
+  <div class="callout warn">
+    <span class="label">Environment-aware code only</span>
+    <p>API base URLs, Strapi origins, feature flags, and analytics IDs come from env vars
+       (<code>VITE_*</code> at build time for the frontend; Container App settings at runtime for Strapi).
+       Never hardcode a single environment's URL in source.</p>
+  </div>
+  <div class="callout note">
+    <span class="label">Content divergence on prod</span>
+    <p>Content edited live on prod is logged under <code>content-updates/</code> (see <code>log.md</code> there) so it
+       can be replayed onto dev seed scripts later. Don't edit dev content while doing prod content work.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="repo">
+  <h2>3. Repository Layout</h2>
+  <pre><code>amclub-website/
+├── cms/                  Strapi v5 project (APIs, plugins, providers, config)
+├── frontend/             React + Vite + Tailwind SPA
+├── infra/                Pulumi IaC (index.ts, Pulumi.&lt;env&gt;.yaml, README.md)
+├── docker/               Dockerfile entrypoint + nginx.conf
+├── scripts/              seed-*.mjs / patch-*.mjs content scripts + seed-helpers.mjs
+├── media/                ALL source assets, mirroring site structure (media/about/, media/dining/…)
+├── content-updates/      Audit log of manual prod content edits (for replay)
+├── docs/                 media-storage.md · strapi-patterns.md · troubleshooting.md · admin-guide/ (this)
+├── .github/workflows/    ci.yml · deploy.yml
+├── DESIGN.md             Design tokens (Stitch DESIGN.md spec)
+└── SPECS.md              Page/component/CMS-binding source of truth</code></pre>
+  <ul>
+    <li><strong>Conventions:</strong> TypeScript strict, no <code>any</code>; named exports; 2-space indent, single
+        quotes; conventional commits (<code>feat:</code>, <code>fix:</code>…).</li>
+    <li><strong>Asset naming:</strong> lowercase-with-hyphens only. Rename legacy spaced/uppercase files when touched
+        and update every reference.</li>
+  </ul>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="cms">
+  <h2>4. The Strapi CMS</h2>
+
+  <h3 id="content-types">Content types</h3>
+  <p>~19 collection types + ~21 single types live under <code>cms/src/api/&lt;type&gt;/content-types/&lt;type&gt;/schema.json</code>.
+     Admin display names follow the <code>&lt;Section&gt;: &lt;Entity&gt;</code> convention (e.g.
+     <em>Dining: Restaurants</em>, <em>Global: Header</em>) — set in <code>info.displayName</code> only.
+     <strong>Never</strong> change <code>singularName</code>/<code>pluralName</code>; they define API routes.</p>
+  <figure>
+    <img src="screenshots/content-type-builder.png" alt="Content-Type Builder showing the About: Page schema with nested hero component fields" loading="lazy">
+    <figcaption>Content-Type Builder (read-only in deployed envs — schemas are locked because Strapi runs in production mode).
+                Schema changes are made in code on <code>dev</code> and deployed.</figcaption>
+  </figure>
+  <div class="callout warn">
+    <span class="label">Schema change procedure</span>
+    <p>Edit <code>schema.json</code> (or use the builder against a <em>local</em> dev Strapi), commit to
+       <code>dev</code>, let CI deploy. Also update <code>content-inventory.json</code> and <code>SPECS.md</code>
+       in the same commit. Adding fields via the deployed admin is not possible (production mode) and would be lost anyway.</p>
+  </div>
+
+  <h3 id="plugins">Plugins &amp; customisations</h3>
+  <table>
+    <thead><tr><th>Customisation</th><th>Location</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>upload-azure-folders</code> provider</td>
+        <td><code>cms/providers/upload-azure-folders/</code> (linked via <code>file:</code> dep)</td>
+        <td>Wraps the Azure upload provider; honours a <code>path</code> form-data field so blobs land in
+            folder hierarchies. Must be COPYed in <em>both</em> Dockerfile stages.</td>
+      </tr>
+      <tr>
+        <td><code>upload-path-to-folder</code> middleware</td>
+        <td><code>cms/src/middlewares/upload-path-to-folder.ts</code>, registered after <code>strapi::body</code>
+            in <code>cms/config/middlewares.ts</code></td>
+        <td>Mirrors blob paths into Media Library folders on <code>POST /api/upload</code>.</td>
+      </tr>
+      <tr>
+        <td>Expiry filter</td>
+        <td><code>cms/src/utils/expiry-filter.ts</code> + event / dining-promotion controllers</td>
+        <td>Hides expired events/promos from listing endpoints (fallback field e.g. <code>date</code>, explicit
+            override <code>expiredAt</code>). Skipped when the query targets a slug/documentId so detail pages still resolve.</td>
+      </tr>
+      <tr>
+        <td><code>elevenlabs-chatbot</code> local plugin</td>
+        <td><code>cms/src/plugins/elevenlabs-chatbot/</code></td>
+        <td>Syncs published entries to the ElevenLabs agent knowledge base; hourly cron
+            (<code>expiryKbSweep</code> in <code>cms/src/index.ts</code>, rule <code>0 * * * *</code>) unsyncs expired rows.
+            Needs <code>ELEVENLABS_API_KEY</code> / <code>ELEVENLABS_AGENT_ID</code>.</td>
+      </tr>
+      <tr>
+        <td><code>clone-entry</code> local plugin</td>
+        <td><code>cms/src/plugins/clone-entry/</code></td>
+        <td>Adds the CLONE panel in the entry editor (new draft, <code>-copy</code> slug suffix; media/relations linked).</td>
+      </tr>
+      <tr>
+        <td><code>strapi-plugin-sso</code></td>
+        <td>npm dep, configured in <code>cms/config/plugins.ts</code></td>
+        <td>"Continue with Microsoft" login via Entra ID (see <a href="#users-sso">§5</a>).</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="callout note">
+    <span class="label">Known Strapi v5 gotcha</span>
+    <p>Media fields <em>newly added</em> to existing single types/components don't persist via REST PUT on this
+       project's local DB (e.g. <code>header.menuIcon</code>). Frontend fallbacks are used until proper migrations land —
+       see <code>docs/strapi-patterns.md</code>.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="users-sso">
+  <h2>5. Admin Users, Roles &amp; SSO</h2>
+  <figure>
+    <img src="screenshots/settings-users.png" alt="Settings → Users list showing admin accounts with Super Admin and Editor roles" loading="lazy">
+    <figcaption>Settings → Administration Panel → Users. Club content staff get <strong>Editor</strong>; keep
+                <strong>Super Admin</strong> to the maintenance team + one client owner.</figcaption>
+  </figure>
+  <ul>
+    <li><strong>Invite flow:</strong> Settings → Users → <em>Invite new user</em> → assign role → send the registration
+        link. Accounts show <em>Inactive</em> until the invite is accepted.</li>
+    <li><strong>Roles:</strong> Super Admin (everything), Editor (create/edit/publish all content), Author
+        (own content only). Content staff = Editor.</li>
+    <li><strong>SSO:</strong> Entra app <code>amclub-strapi</code> (client id <code>a4f530c4…</code>). Redirect URI is
+        derived from <code>PUBLIC_SITE_URL</code> per environment, so each env needs its redirect registered on the app.
+        Configured via GH environment secrets <code>AZUREAD_TENANT_ID</code>, <code>AZUREAD_OAUTH_CLIENT_ID</code>,
+        <code>AZUREAD_OAUTH_CLIENT_SECRET</code>, <code>AZUREAD_SCOPE</code> — all optional; if unset, the env falls back
+        to password login only.</li>
+  </ul>
+  <div class="callout danger">
+    <span class="label">SSO whitelist lockout</span>
+    <p>If <code>USE_WHITELIST: true</code> is enabled with an empty whitelist, SSO logins are rejected. Recover via
+       password login → <code>/admin/settings/strapi-plugin-sso</code> → add emails, or revert the flag and redeploy.
+       Details in <code>docs/troubleshooting.md</code>.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="api-tokens">
+  <h2>6. API Tokens</h2>
+  <figure>
+    <img src="screenshots/settings-api-tokens.png" alt="Settings → API Tokens list showing Full Access, Read Only, and seed tokens" loading="lazy">
+    <figcaption>Settings → API Tokens. The <code>seed</code> token is what the content scripts authenticate with.</figcaption>
+  </figure>
+  <ul>
+    <li>Tokens are <strong>per environment</strong> and shown only once at creation — store them in the matching
+        <code>cms/.env.seed.&lt;env&gt;</code> file (git-ignored). Never commit a token.</li>
+    <li>The <code>seed</code> token needs full content + upload permissions for the seed scripts to upsert entries and
+        upload media.</li>
+    <li>Public reads from the frontend do <em>not</em> use a token — public role permissions on each content type's
+        <code>find</code>/<code>findOne</code> govern that.</li>
+  </ul>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="seeding">
+  <h2>7. Seed Scripts &amp; Content Ops</h2>
+  <p><strong>Pre-release content lives in seed scripts, not in ad-hoc <code>/admin</code> edits.</strong> Every piece of
+     initial copy, image, or PDF must be reproducible against a fresh Strapi by re-running the scripts in
+     <code>scripts/</code>.</p>
+  <h3>Conventions</h3>
+  <ul>
+    <li><code>seed-&lt;area&gt;.mjs</code> — idempotent upserts for a page/collection (safe to re-run; matches by slug/key).</li>
+    <li><code>patch-&lt;date&gt;-&lt;topic&gt;.mjs</code> — dated one-off fixes, kept for audit/replay.</li>
+    <li><code>seed-helpers.mjs</code> — shared <code>api()</code>, <code>uploadFile()</code>, slugify, and the
+        <code>TOP_LEVEL_BLOB_MAP</code> that maps <code>media/&lt;section&gt;/…</code> to blob paths.</li>
+    <li>Auth/config from <code>cms/.env.seed.&lt;env&gt;</code>: <code>STRAPI_BASE_URL</code> + <code>STRAPI_API_TOKEN</code>.</li>
+  </ul>
+  <pre><code># run a seed against an environment
+node scripts/seed-events.mjs --env=uat          # most scripts accept --env / --dry-run
+
+# warm the container first if it scaled to zero (avoids mid-run fetch failures)
+curl -sS "$BASE/api/upload/files?pagination[pageSize]=1" &gt; /dev/null</code></pre>
+  <h3>Rules</h3>
+  <ul>
+    <li>If you enter content ad-hoc in <code>/admin</code>, port it back into the matching seed script
+        <strong>in the same commit</strong>.</li>
+    <li>Manual <em>prod</em> content edits are logged in <code>content-updates/</code> (entry files + <code>log.md</code>)
+        for later replay onto dev.</li>
+    <li>Assets referenced by seeds live under <code>media/</code> mirroring site structure; delete orphans when
+        replacing assets.</li>
+  </ul>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="media">
+  <h2>8. Media Storage</h2>
+  <figure>
+    <img src="screenshots/media-library.png" alt="Media Library root showing the API Uploads folder with 413 assets" loading="lazy">
+    <figcaption>UAT Media Library. Seeded uploads currently land under "API Uploads"
+                (the path→folder middleware mirrors blob paths when a <code>path</code> field is supplied).</figcaption>
+  </figure>
+  <ul>
+    <li><strong>Blob layout:</strong> storage account <code>amclub&lt;env&gt;data</code>, container <code>media</code>
+        (public read at Blob level), URLs like
+        <code>https://amclubuatdata.blob.core.windows.net/media/uploads/&lt;file&gt;</code>.</li>
+    <li><strong>Upload flow:</strong> Strapi upload → custom <code>upload-azure-folders</code> provider →
+        blob path from the <code>path</code> form-data field → <code>upload-path-to-folder</code> middleware mirrors the
+        path into Media Library folders.</li>
+    <li><strong>CORS:</strong> admin thumbnails require a GET/HEAD/OPTIONS CORS rule on the blob service
+        (set via Pulumi <code>BlobServiceProperties</code>; one-off fix via <code>az storage cors add</code>).</li>
+    <li>Full details and incident history: <code>docs/media-storage.md</code>.</li>
+  </ul>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="cicd">
+  <h2>9. CI/CD</h2>
+  <h3>ci.yml — every push/PR to dev/uat/main</h3>
+  <ul>
+    <li>CMS: <code>npm run build</code></li>
+    <li>Frontend: <code>npm run typecheck &amp;&amp; npm run lint &amp;&amp; npm run build</code></li>
+    <li>Infra: <code>npx tsc --noEmit</code></li>
+  </ul>
+  <h3>deploy.yml — on push to a branch, after CI</h3>
+  <ol>
+    <li>Maps branch → GitHub environment (<code>dev</code>/<code>uat</code>/<code>prod</code>) and pulls that
+        environment's secrets.</li>
+    <li>Builds the all-in-one Docker image (multi-stage: cms-builder → frontend-builder → runtime;
+        <code>cms/providers/</code> copied in both CMS stages).</li>
+    <li>Runs <code>pulumi up</code> against the matching stack with
+        <code>PUBLIC_SITE_URL</code> auto-set per branch, plus ElevenLabs + Entra SSO vars.</li>
+  </ol>
+  <table>
+    <thead><tr><th>Secret / var</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><code>AZURE_CREDENTIALS</code></td><td>Service principal JSON for the target subscription</td></tr>
+      <tr><td><code>AZURE_STORAGE_ACCOUNT</code> / <code>AZURE_STORAGE_KEY</code></td>
+          <td>Pulumi state backend (<code>azblob://state</code>). dev = <code>pulumistateb6e87494</code> (legacy tenant);
+              uat + prod = <code>pulumistate56994511</code> (client tenant)</td></tr>
+      <tr><td><code>ELEVENLABS_API_KEY</code> / <code>ELEVENLABS_AGENT_ID</code></td><td>Chatbot knowledge-base sync</td></tr>
+      <tr><td><code>AZUREAD_*</code></td><td>Entra SSO (optional — password fallback if unset)</td></tr>
+    </tbody>
+  </table>
+  <div class="callout note">
+    <span class="label">"Deploy succeeded" but the site looks stale?</span>
+    <p>The new Container App revision may have failed its probes and traffic stayed on the old one. Check
+       <code>az containerapp revision list</code> / <code>az containerapp logs show</code> —
+       recipe in <a href="#troubleshooting">§13</a>.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="infra">
+  <h2>10. Infrastructure (Pulumi / Azure)</h2>
+  <p>One Pulumi stack per environment (<code>infra/Pulumi.&lt;env&gt;.yaml</code>), all resources in Southeast Asia.
+     Per stack:</p>
+  <table>
+    <thead><tr><th>Resource</th><th>Name pattern</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Resource group</td><td><code>amclub-&lt;env&gt;-rg</code></td><td></td></tr>
+      <tr><td>Container registry</td><td><code>amclub&lt;env&gt;acr</code></td><td>Basic SKU</td></tr>
+      <tr><td>PostgreSQL Flexible Server</td><td><code>amclub-&lt;env&gt;-pg</code></td><td>PG16, Standard_B1ms, 32 GB, 7-day backups</td></tr>
+      <tr><td>Storage account</td><td><code>amclub&lt;env&gt;data</code></td><td>Blob container <code>media</code> (public Blob read) + legacy file share</td></tr>
+      <tr><td>Container App</td><td><code>amclub-&lt;env&gt;-app</code></td><td>0.5 vCPU / 1 GB, min 1 replica (keep ≥1 to avoid cold-start seed failures)</td></tr>
+      <tr><td>Container Apps env + Log Analytics</td><td><code>amclub-&lt;env&gt;-env</code></td><td>30-day log retention</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li>App secrets (DB password, Strapi keys/salts/JWT secrets) are auto-generated by Pulumi per deployment.</li>
+    <li>Stack outputs: <code>appUrl</code>, <code>postgresHost</code>, <code>containerRegistryLoginServer</code>,
+        <code>resourceGroupName</code>.</li>
+    <li>Approx. running cost ≈ US$28/month per environment.</li>
+    <li><strong>Direct DB access:</strong> port 5432 is blocked from local machines — use Azure Cloud Shell or go
+        through the content API instead.</li>
+    <li>Setup walkthroughs and multi-subscription patterns: <code>infra/README.md</code>.</li>
+  </ul>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="frontend">
+  <h2>11. Frontend Integration</h2>
+  <ul>
+    <li><strong>API client:</strong> <code>frontend/src/lib/api.ts</code> — <code>fetchAPI&lt;T&gt;()</code> wrapper reading
+        <code>VITE_API_URL</code> (defaults to same-origin <code>/api</code> in deployed builds). Strapi v5 populate
+        syntax: <code>populate[field]=…</code> or <code>populate=*</code>.</li>
+    <li><strong>Types:</strong> <code>frontend/src/lib/types.ts</code> + <code>blocks.ts</code> mirror Strapi response shapes.</li>
+    <li><strong>Pattern references:</strong> <code>frontend/src/pages/VenueDetailPage.tsx</code> and
+        <code>frontend/src/hooks/useHeaderData.ts</code> are the canonical CMS-wired examples.</li>
+    <li><strong>Definition of Done</strong> for any page: matching content type exists → component is props-only
+        (zero hardcoded copy) → fetches via <code>fetchAPI</code> with loading/empty states → a published entry renders
+        on the deployed URL. Track <code>cms-wired</code> status per page in <code>SPECS.md</code>.</li>
+    <li><strong>Breakpoints:</strong> mobile &lt;768, tablet 768–1199, desktop 1200–1439, desktop XL 1440+.</li>
+  </ul>
+  <div class="callout danger">
+    <span class="label">Hard rule</span>
+    <p>Never hardcode user-facing content (text, image URLs, CTA hrefs, list data) in <code>.tsx</code>. If real copy is
+       going into a component, stop and add/extend a CMS field instead. Pages that "render fine offline" are regressions.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="verification">
+  <h2>12. Verification Commands</h2>
+  <pre><code>cd frontend &amp;&amp; npm run typecheck &amp;&amp; npm run lint &amp;&amp; npm run build
+cd cms &amp;&amp; npm run build
+cd infra &amp;&amp; npx tsc --noEmit
+npm run test          # root: runs all of the above</code></pre>
+  <p>Before any commit: run the relevant verification, then a browser regression sweep of the local build
+     (every route at 1440px — no blank screens, no console errors), then targeted testing of the change itself.</p>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="troubleshooting">
+  <h2>13. Troubleshooting</h2>
+  <p>Condensed from <code>docs/troubleshooting.md</code> — read that file for full symptom→cause→fix detail.</p>
+  <table>
+    <thead><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Broken thumbnails in admin Media Library</td>
+        <td>Missing CORS rule on the blob service</td>
+        <td><code>az storage cors add --account-name amclub&lt;env&gt;data --services b --methods GET HEAD OPTIONS
+            --origins '*' --allowed-headers '*' --exposed-headers '*' --max-age 3600</code></td>
+      </tr>
+      <tr>
+        <td>Uploads appear flat under "API Uploads"</td>
+        <td><code>upload-path-to-folder</code> middleware not registered (or no <code>path</code> sent)</td>
+        <td>Confirm <code>{ name: 'global::upload-path-to-folder' }</code> sits after <code>strapi::body</code> in
+            <code>cms/config/middlewares.ts</code></td>
+      </tr>
+      <tr>
+        <td><code>Cannot find module 'upload-azure-folders'</code> at boot</td>
+        <td><code>cms/providers/</code> missing from a Dockerfile stage</td>
+        <td>COPY providers before <code>npm ci</code> (builder) and after node_modules (runtime)</td>
+      </tr>
+      <tr>
+        <td>Deploy "succeeded" but site serves old build</td>
+        <td>New Container App revision unhealthy; traffic pinned to previous revision</td>
+        <td><code>az containerapp revision list -n amclub-&lt;env&gt;-app -g amclub-&lt;env&gt;-rg</code> then
+            <code>az containerapp logs show … --tail 200</code></td>
+      </tr>
+      <tr>
+        <td>Seed script dies mid-run with <code>fetch failed</code></td>
+        <td>Cold start after scale-to-zero</td>
+        <td>Keep min replicas = 1; warm with a trivial GET before seeding</td>
+      </tr>
+      <tr>
+        <td>Locked out of admin after enabling SSO whitelist</td>
+        <td><code>USE_WHITELIST: true</code> with empty whitelist table</td>
+        <td>Password login → SSO settings page → add emails; or revert flag + redeploy</td>
+      </tr>
+      <tr>
+        <td>Pulumi state errors / NXDOMAIN</td>
+        <td>Wrong state storage account for the env</td>
+        <td>dev → <code>pulumistateb6e87494</code>; uat/prod → <code>pulumistate56994511</code>. Verify with
+            <code>nslookup &lt;account&gt;.blob.core.windows.net</code> and <code>infra/Pulumi.&lt;env&gt;.yaml</code></td>
+      </tr>
+      <tr>
+        <td>Editor reports change not visible</td>
+        <td>Usually workflow, not infra</td>
+        <td>Walk them through the <a href="cms-user-guide.html#troubleshooting">CMS User Guide §14</a> first
+            (publish vs save, environment mix-up, expiry filter)</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="callout tip">
+    <span class="label">Keep the runbook alive</span>
+    <p>Every new gotcha or pattern goes into <code>docs/troubleshooting.md</code> / <code>docs/strapi-patterns.md</code>
+       when you land the fix — the next engineer (or session) saves hours.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="reference">
+  <h2>14. Key File Reference</h2>
+  <table>
+    <thead><tr><th>Purpose</th><th>Path</th></tr></thead>
+    <tbody>
+      <tr><td>Frontend API client</td><td><code>frontend/src/lib/api.ts</code></td></tr>
+      <tr><td>Frontend types for Strapi shapes</td><td><code>frontend/src/lib/types.ts</code>, <code>frontend/src/lib/blocks.ts</code></td></tr>
+      <tr><td>Router / pages</td><td><code>frontend/src/App.tsx</code>, <code>frontend/src/pages/</code></td></tr>
+      <tr><td>Header data hook (CMS-wired example)</td><td><code>frontend/src/hooks/useHeaderData.ts</code></td></tr>
+      <tr><td>CMS plugin/provider config</td><td><code>cms/config/plugins.ts</code></td></tr>
+      <tr><td>CMS middleware order</td><td><code>cms/config/middlewares.ts</code></td></tr>
+      <tr><td>Custom upload provider</td><td><code>cms/providers/upload-azure-folders/</code></td></tr>
+      <tr><td>Path→folder middleware</td><td><code>cms/src/middlewares/upload-path-to-folder.ts</code></td></tr>
+      <tr><td>Expiry filter</td><td><code>cms/src/utils/expiry-filter.ts</code></td></tr>
+      <tr><td>Cron (KB sweep)</td><td><code>cms/src/index.ts</code></td></tr>
+      <tr><td>Local plugins</td><td><code>cms/src/plugins/elevenlabs-chatbot/</code>, <code>cms/src/plugins/clone-entry/</code></td></tr>
+      <tr><td>Infra entry point</td><td><code>infra/index.ts</code> (+ <code>infra/README.md</code>)</td></tr>
+      <tr><td>Seed helpers</td><td><code>scripts/seed-helpers.mjs</code></td></tr>
+      <tr><td>Docker</td><td><code>Dockerfile</code>, <code>docker/entrypoint.sh</code>, <code>docker/nginx.conf</code></td></tr>
+      <tr><td>Deep-dive docs</td><td><code>docs/media-storage.md</code> · <code>docs/strapi-patterns.md</code> · <code>docs/troubleshooting.md</code></td></tr>
+      <tr><td>Design tokens / page specs</td><td><code>DESIGN.md</code> · <code>SPECS.md</code></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<p class="doc-footer">
+  The American Club, Singapore — Website Technical Admin Guide ·
+  <a href="cms-user-guide.html">CMS User Guide</a> ·
+  Generated June 2026
+</p>
+
+</main>
+</div>
+</body>
+</html>

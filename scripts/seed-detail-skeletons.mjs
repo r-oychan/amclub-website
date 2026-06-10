@@ -37,8 +37,12 @@ async function upsertBySlug(plural, payload) {
   const slug = payload.slug;
   if (!slug) throw new Error(`Entry missing slug: ${JSON.stringify(payload).slice(0, 80)}`);
   const existing = await findOneBySlug(ctx, plural, slug);
+  // `shortDescription` is a legacy key no longer in the detail schemas (they use
+  // `description`). Strip it so the PUT doesn't fail validation; existing
+  // descriptions are left untouched.
+  const { shortDescription: _legacyShortDescription, ...clean } = payload;
   const body = {
-    data: { ...payload, publishedAt: new Date().toISOString() },
+    data: { ...clean, publishedAt: new Date().toISOString() },
   };
   if (existing?.documentId) {
     if (DRY) {

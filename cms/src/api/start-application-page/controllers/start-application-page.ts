@@ -12,7 +12,7 @@ export default factories.createCoreController(
     async find(ctx) {
       const entry = await strapi
         .documents('api::start-application-page.start-application-page')
-        .findFirst({ populate: POPULATE });
+        .findFirst({ populate: POPULATE, status: 'published' });
       return { data: entry, meta: {} };
     },
   })
