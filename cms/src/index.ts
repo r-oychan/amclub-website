@@ -249,6 +249,48 @@ function registerPreviewStatusMiddleware(strapi: any) {
   strapi.log.info('[register] preview draft-status document middleware active');
 }
 
+// Admin edit-view layout fix: on environments whose content-manager
+// configuration predates the schema reorder, `expiredAt` sits stranded at the
+// bottom of the event edit view (next to featuredOnHomepage) instead of beside
+// `date`, which it semantically overrides. The layout lives in the core store
+// (NOT the schema), so a schema change alone doesn't move it on existing envs.
+// This reconciles it on boot: move `expiredAt` into its own row directly after
+// the row containing `date`. Idempotent — if it's already there (or no config
+// row exists yet, meaning Strapi will generate the layout fresh from the
+// already-correct schema order), it no-ops.
+async function reorderEventEditLayout(strapi: any) {
+  const key = 'plugin_content_manager_configuration_content_types::api::event.event';
+  const row = await strapi.db.query('strapi::core-store').findOne({ where: { key } });
+  if (!row?.value) return; // fresh env — layout will be generated from schema order
+  const cfg = typeof row.value === 'string' ? JSON.parse(row.value) : row.value;
+  const edit: { name: string; size: number }[][] = cfg?.layouts?.edit;
+  if (!Array.isArray(edit)) return;
+
+  const dateRowIdx = edit.findIndex((r) => r.some((f) => f.name === 'date'));
+  if (dateRowIdx < 0) return;
+  // Already in place? (same row as date, or the row right after it)
+  const inDateRow = edit[dateRowIdx].some((f) => f.name === 'expiredAt');
+  const inNextRow = edit[dateRowIdx + 1]?.some((f) => f.name === 'expiredAt');
+  if (inDateRow || inNextRow) return;
+
+  let field: { name: string; size: number } | null = null;
+  for (const r of edit) {
+    const i = r.findIndex((f) => f.name === 'expiredAt');
+    if (i >= 0) { field = r.splice(i, 1)[0]; break; }
+  }
+  if (!field) return; // not in the layout at all — nothing to move
+
+  const compact = edit.filter((r) => r.length > 0);
+  const insertAt = compact.findIndex((r) => r.some((f) => f.name === 'date')) + 1;
+  compact.splice(insertAt, 0, [field]);
+  cfg.layouts.edit = compact;
+  await strapi.db.query('strapi::core-store').update({
+    where: { id: row.id },
+    data: { value: JSON.stringify(cfg) },
+  });
+  strapi.log.info('[bootstrap] moved event expiredAt next to date in the edit layout');
+}
+
 export default {
   register({ strapi }: { strapi: any }) {
     try {
@@ -272,6 +314,11 @@ export default {
       await backfillUploadMimes(strapi);
     } catch (e) {
       strapi.log.error('[bootstrap] failed to backfill upload mimes', e);
+    }
+    try {
+      await reorderEventEditLayout(strapi);
+    } catch (e) {
+      strapi.log.error('[bootstrap] failed to reorder event edit layout', e);
     }
     // Hourly content-expiry KB sweep. config/server.ts enables cron.
     try {
