@@ -152,8 +152,13 @@ async function remap(value) {
   if (isRelation(value)) return undefined; // handled explicitly per-type
   if (value && typeof value === 'object') {
     const out = {};
+    // Strapi 5.46's input validator is KEY-ORDER sensitive for dynamic-zone
+    // items: __component must precede nested component fields (e.g. `items`),
+    // else PUT fails with "Invalid key __component at body". GET responses can
+    // emit __component last, so pin it first when rebuilding the object.
+    if (typeof value.__component === 'string') out.__component = value.__component;
     for (const [k, v] of Object.entries(value)) {
-      if (k === 'id') continue; // let Strapi assign new component ids
+      if (k === 'id' || k === '__component') continue; // Strapi assigns new component ids
       const rv = await remap(v);
       if (rv !== undefined) out[k] = rv;
     }
