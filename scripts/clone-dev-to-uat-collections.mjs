@@ -124,9 +124,19 @@ const isMedia = (v) => v && typeof v === 'object' && typeof v.mime === 'string' 
 const isRelation = (v) => v && typeof v === 'object' && typeof v.documentId === 'string' && !isMedia(v);
 const SYSTEM = new Set(['id', 'documentId', 'createdAt', 'updatedAt', 'publishedAt', 'locale', 'createdBy', 'updatedBy']);
 
+// Optional dev→uat document-URL rewrite map (build with
+// scripts/build-doc-url-map.mjs). Dev content embeds hashed document hrefs as
+// PLAIN STRINGS (e.g. /uploads/documents/fitness/pilates_price_list_<devhash>
+// .docx) — those aren't media relations, so reuploadMedia never sees them and
+// the dev hash 404s on uat. With --doc-map=<file>, any string value exactly
+// matching a dev URL is rewritten to its uat equivalent.
+const DOC_MAP_PATH = (process.argv.find((a) => a.startsWith('--doc-map=')) || '').slice('--doc-map='.length);
+const DOC_MAP = DOC_MAP_PATH ? JSON.parse(readFileSync(DOC_MAP_PATH, 'utf8')) : {};
+
 // Deep-remap an attribute value: re-upload media → id(s); strip component
-// ids and recurse; leave scalars. Relations are handled by the caller via
-// the per-type config (this drops stray relation objects it encounters).
+// ids and recurse; leave scalars (rewriting mapped document hrefs). Relations
+// are handled by the caller via the per-type config (this drops stray
+// relation objects it encounters).
 async function remap(value) {
   if (Array.isArray(value)) {
     if (value.length && isMedia(value[0])) {
@@ -149,6 +159,7 @@ async function remap(value) {
     }
     return out;
   }
+  if (typeof value === 'string' && DOC_MAP[value]) return DOC_MAP[value];
   return value;
 }
 
@@ -175,7 +186,8 @@ const COLLECTIONS = [
   ['event-categories', {}],
   ['faq-categories', {}],
   ['restaurants', {}],
-  ['coaches', {}],
+  // 'coaches' removed — legacy api::coach type was deleted (superseded by the
+  // per-discipline collections below); querying it now 404s and aborts the run.
   ['aquatics-coaches', {}],
   ['gym-trainers', {}],
   ['tennis-coaches', {}],
@@ -226,7 +238,10 @@ async function cloneType(plural, cfg) {
         }
       }
     }
-    data.publishedAt = e.publishedAt || new Date().toISOString();
+    // Preserve the source's draft/published split: only published dev entries
+    // arrive published on uat. Omitting publishedAt keeps a POSTed entry as a
+    // draft — previously `|| now()` force-published dev's unfinished drafts.
+    if (e.publishedAt) data.publishedAt = e.publishedAt;
 
     if (DRY) {
       created++;
@@ -261,7 +276,7 @@ const SINGLETONS = [
   'kids-page', 'membership-page', 'event-spaces-page', 'contact-us-page', 'faq-page',
   'gallery-page', 'news-page', 'joining-fees-page', 'niche-group-membership-page',
   'reciprocal-clubs-page', 'referral-page', 'start-application-page',
-  'advertise-with-us-page', 'whats-on-page', 'header', 'footer',
+  'advertise-with-us-page', 'whats-on-page', 'header', 'footer', 'site-config',
 ];
 
 async function cloneSingleton(path) {
