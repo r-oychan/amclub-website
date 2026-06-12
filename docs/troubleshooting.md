@@ -254,3 +254,11 @@ cat infra/Pulumi.<env>.yaml                        # confirm stack config
 ```
 
 Update memory files in `~/.claude/projects/.../memory/` when reality diverges from what's saved.
+
+## Patch fails with `Invalid key <newField>` right after a deploy
+
+**Symptom:** a content patch that PUTs a newly added schema field errors immediately after the Deploy workflow reports success; re-running the same patch a minute later works.
+
+**Cause:** Container Apps revision swap lag — the request hit the *old* revision, whose Strapi doesn't know the new field yet (input validation rejects unknown keys). Seen twice on `patch-2026-06-12-benefits-text.mjs` (dev and uat).
+
+**Fix:** wait ~30–60 s after the new revision shows 100 % traffic (`az containerapp revision list`), or just re-run the patch — all content patches in `scripts/` are idempotent by design.
