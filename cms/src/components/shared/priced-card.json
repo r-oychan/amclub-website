@@ -44,6 +44,10 @@
       ],
       "default": "positive"
     },
+    "benefitsText": {
+      "type": "text",
+      "description": "Benefits — one per line. When filled, this replaces the per-bullet rows below."
+    },
     "bullets": {
       "type": "component",
       "repeatable": true,

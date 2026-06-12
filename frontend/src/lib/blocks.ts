@@ -173,6 +173,8 @@ export interface BlockPricedCardGrid {
     breakdown?: string;
     badge?: string;
     badgeTone?: 'positive' | 'negative';
+    /** One benefit per line; takes precedence over `bullets` when filled. */
+    benefitsText?: string;
     bullets?: Array<{ text: string }>;
     cta?: StrapiLink;
     secondaryCta?: StrapiLink;

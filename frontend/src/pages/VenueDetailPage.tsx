@@ -279,6 +279,8 @@ interface MembershipSingleton {
       description?: string;
       bulletStyle?: 'check' | 'dot' | 'dash' | 'none';
       image?: { url?: string } | null;
+      /** One benefit per line; takes precedence over `bullets` when filled. */
+      benefitsText?: string;
       bullets?: { text?: string }[];
     }[];
   }[];
@@ -295,7 +297,11 @@ function mapSingletonToVenue(s: MembershipSingleton, fallback: VenueData | null)
         subheading: grid.subheading ?? fallback?.tierCards?.subheading,
         cards: (grid.items ?? []).map((it) => {
           const fb = fbCards.find((c) => c.name === it.name);
-          const bullets = (it.bullets ?? []).map((b) => b.text ?? '').filter(Boolean);
+          // benefitsText: one benefit per line (editor-friendly single field);
+          // falls back to the legacy per-row bullets component.
+          const bullets = it.benefitsText
+            ? it.benefitsText.split('\n').map((s) => s.trim()).filter(Boolean)
+            : (it.bullets ?? []).map((b) => b.text ?? '').filter(Boolean);
           return {
             name: it.name ?? '',
             description: it.description ?? fb?.description ?? '',
