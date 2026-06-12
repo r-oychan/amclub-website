@@ -209,7 +209,7 @@ const SECTION_MAP: Record<string, { apiPath: string; parentLabel: string; parent
   dining: { apiPath: '/restaurants', parentLabel: 'Dining & Retail', parentHref: '/dining' },
   fitness: { apiPath: '/fitness-facilities', parentLabel: 'Fitness & Wellness', parentHref: '/fitness' },
   kids: { apiPath: '/kids-experiences', parentLabel: 'Kids', parentHref: '/kids' },
-  'event-spaces': { apiPath: '/facilities', parentLabel: 'Private Events & Catering', parentHref: '/event-spaces' },
+  'event-spaces': { apiPath: '/event-spaces', parentLabel: 'Private Events & Catering', parentHref: '/event-spaces' },
   membership: { apiPath: '/facilities', parentLabel: 'Membership', parentHref: '/membership' },
   'home-sub': { apiPath: '/facilities', parentLabel: 'The American Club', parentHref: '/home' },
 };
@@ -470,6 +470,19 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           // static fallback.
           image: api.heroImage ?? api.image ?? fallback?.image,
           video: api.video ?? (api.heroVideo ? { url: api.heroVideo } : undefined) ?? fallback?.video,
+          // Null-guards for sparse CMS entries (e.g. event-spaces venues):
+          // `...api` above would otherwise overwrite fallback values with null
+          // and silently blank phone/hours/etc. that prod currently shows.
+          name: api.name || fallback?.name || '',
+          description: api.description || fallback?.description || '',
+          capacity: api.capacity ?? fallback?.capacity,
+          locationLevel: api.locationLevel ?? fallback?.locationLevel,
+          phone: api.phone ?? fallback?.phone,
+          email: api.email ?? fallback?.email,
+          locationContact: api.locationContact ?? fallback?.locationContact,
+          operatingHoursSections: api.operatingHoursSections?.length
+            ? api.operatingHoursSections
+            : fallback?.operatingHoursSections,
           ctas: api.ctas?.length ? api.ctas : fallback?.ctas,
           extraSections: api.extraSections?.length ? api.extraSections : fallback?.extraSections,
           promoCards: api.promoCards ?? fallback?.promoCards,

@@ -168,11 +168,13 @@
     "ctas": [
       {
         "label": "View Capacity Chart",
-        "href": "#"
+        "href": "/documents/event-spaces/capacity-chart.pdf",
+        "isExternal": true
       },
       {
         "label": "Enquire Now",
-        "href": "#"
+        "href": "mailto:catering@amclub.org.sg",
+        "isExternal": true
       }
     ]
   },
