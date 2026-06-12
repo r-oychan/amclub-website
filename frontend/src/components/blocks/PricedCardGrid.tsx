@@ -102,21 +102,26 @@ export function PricedCardGrid({
                       )}
                     </div>
                   )}
-                  {item.bullets?.length ? (
-                    <ul className="space-y-2 mb-5">
-                      {item.bullets
-                        .filter((b) => b.text)
-                        .map((b, i) => (
+                  {(() => {
+                    // `benefitsText` (one benefit per line) wins over the
+                    // legacy per-row `bullets` component when filled.
+                    const lines = item.benefitsText
+                      ? item.benefitsText.split('\n').map((s) => s.trim()).filter(Boolean)
+                      : (item.bullets ?? []).filter((b) => b.text).map((b) => b.text);
+                    return lines.length ? (
+                      <ul className="space-y-2 mb-5">
+                        {lines.map((t, i) => (
                           <li
                             key={i}
                             className="flex gap-2 font-body text-[14px] leading-[1.5] text-text-dark/85"
                           >
                             <span className="text-accent mt-1">▸</span>
-                            <span>{b.text}</span>
+                            <span>{t}</span>
                           </li>
                         ))}
-                    </ul>
-                  ) : null}
+                      </ul>
+                    ) : null;
+                  })()}
                   {(cta || secondaryCta) && (
                     <div className="mt-auto flex flex-wrap gap-3 pt-2">
                       {cta && (
