@@ -33,6 +33,11 @@ function localImagePath(webPath) {
     join(ROOT, 'media', stripped),
     join(ROOT, 'media', 'kids', basename(webPath)),
     join(ROOT, 'media', 'kids', stripped),
+    // Renamed canonical copies (lowercase-hyphen names) are tracked under the
+    // frontend's public dir; media/kids/<page>/Gallery holds the unrenamed
+    // originals and macOS's case-insensitive FS prevents a parallel lowercase
+    // gallery/ next to it.
+    join(ROOT, 'frontend', 'public', webPath.replace(/^\//, '')),
   ];
   for (const c of candidates) if (existsSync(c)) return c;
   return null;
@@ -121,6 +126,22 @@ async function upsertKids(slug, entry, idx, parentDocId) {
     : undefined;
   const partyPackages = await normPartyPackages(entry.partyPackages);
 
+  // Marquee gallery component — uploads each row's images and carries the
+  // editor-facing on/off toggle through (enabled defaults to true).
+  let marquee;
+  if (entry.marquee?.rows?.length) {
+    const rows = [];
+    for (const r of entry.marquee.rows) {
+      const ids = [];
+      for (const img of r.images ?? []) {
+        const up = await uploadIfPresent(img);
+        if (up?.id) ids.push(up.id);
+      }
+      if (ids.length) rows.push({ direction: r.direction ?? 'rtl', durationSec: r.durationSec ?? null, images: ids });
+    }
+    if (rows.length) marquee = { enabled: entry.marquee.enabled ?? true, heading: entry.marquee.heading ?? null, rows };
+  }
+
   const payload = {
     name: entry.name,
     slug,
@@ -141,6 +162,7 @@ async function upsertKids(slug, entry, idx, parentDocId) {
     faq,
     quotes,
     partyPackages,
+    marquee,
     order: idx,
     parent: parentDocId ?? null,
     publishedAt: new Date().toISOString(),

@@ -72,7 +72,49 @@
         "question": "Why are arcade games chargeable?",
         "answer": "Token purchases allow parents to track children's gaming time and spending. Additionally, charging enables the Club to offer newest equipment, including brand-new arcade games imported directly from the United States."
       }
-    ]
+    ],
+    "marquee": {
+      "enabled": true,
+      "rows": [
+        {
+          "direction": "rtl",
+          "images": [
+            "/images/kids/the-quad-poolside/gallery/quad-image-a.jpg",
+            "/images/kids/the-quad-poolside/gallery/dscf-0001.jpg",
+            "/images/kids/the-quad-poolside/gallery/dscf-0043.jpg",
+            "/images/kids/the-quad-poolside/gallery/dscf-0079.jpg",
+            "/images/kids/the-quad-poolside/gallery/dscf-0147.jpg",
+            "/images/kids/the-quad-poolside/gallery/dscf-0209.jpg",
+            "/images/kids/the-quad-poolside/gallery/quad-extra.jpg"
+          ]
+        },
+        {
+          "direction": "ltr",
+          "images": [
+            "/images/kids/the-quad-poolside/gallery/quad-image-b.jpg",
+            "/images/kids/the-quad-poolside/gallery/dscf-0020.jpg",
+            "/images/kids/the-quad-poolside/gallery/dscf-0046.jpg",
+            "/images/kids/the-quad-poolside/gallery/dscf-0119.jpg",
+            "/images/kids/the-quad-poolside/gallery/dscf-0163.jpg",
+            "/images/kids/the-quad-poolside/gallery/dscf-0247.jpg",
+            "/images/kids/the-quad-poolside/gallery/dscf-9917.jpg",
+            "/images/kids/the-quad-poolside/gallery/dscf-9971.jpg"
+          ]
+        },
+        {
+          "direction": "rtl",
+          "images": [
+            "/images/kids/the-quad/gallery/quad-image-a.jpg",
+            "/images/kids/the-quad/gallery/dscf-0001.jpg",
+            "/images/kids/the-quad/gallery/dscf-0043.jpg",
+            "/images/kids/the-quad/gallery/dscf-0079.jpg",
+            "/images/kids/the-quad/gallery/dscf-0147.jpg",
+            "/images/kids/the-quad/gallery/dscf-0209.jpg",
+            "/images/kids/the-quad/gallery/quad-extra.jpg"
+          ]
+        }
+      ]
+    }
   },
   "the-quad": {
     "slug": "the-quad",
@@ -147,7 +189,52 @@
         "question": "Why are arcade games chargeable?",
         "answer": "Token purchases allow parents oversight of gaming time and spending. The system enables the club to offer newest, imported equipment unavailable elsewhere in Singapore. No refunds apply to utilized tokens."
       }
-    ]
+    ],
+    "marquee": {
+      "enabled": true,
+      "rows": [
+        {
+          "direction": "rtl",
+          "images": [
+            "/images/kids/the-quad/gallery/quad-image-a.jpg",
+            "/images/kids/the-quad/gallery/dscf-0001.jpg",
+            "/images/kids/the-quad/gallery/dscf-0043.jpg",
+            "/images/kids/the-quad/gallery/dscf-0079.jpg",
+            "/images/kids/the-quad/gallery/dscf-0147.jpg",
+            "/images/kids/the-quad/gallery/dscf-0209.jpg",
+            "/images/kids/the-quad/gallery/quad-extra.jpg"
+          ]
+        },
+        {
+          "direction": "ltr",
+          "images": [
+            "/images/kids/the-quad/gallery/quad-image-b.jpg",
+            "/images/kids/the-quad/gallery/dscf-0020.jpg",
+            "/images/kids/the-quad/gallery/dscf-0046.jpg",
+            "/images/kids/the-quad/gallery/dscf-0119.jpg",
+            "/images/kids/the-quad/gallery/dscf-0163.jpg",
+            "/images/kids/the-quad/gallery/dscf-0247.jpg",
+            "/images/kids/the-quad/gallery/dscf-9917.jpg",
+            "/images/kids/the-quad/gallery/dscf-9971.jpg"
+          ]
+        },
+        {
+          "direction": "rtl",
+          "images": [
+            "/images/kids/the-quad-studio/gallery/classes-image-a.jpg",
+            "/images/kids/the-quad-studio/gallery/classes-1.jpg",
+            "/images/kids/the-quad-studio/gallery/classes-3.jpg"
+          ]
+        },
+        {
+          "direction": "ltr",
+          "images": [
+            "/images/kids/the-quad-studio/gallery/classes-image-b.jpg",
+            "/images/kids/the-quad-studio/gallery/classes-2.jpg"
+          ]
+        }
+      ]
+    }
   },
   "the-quad-studios": {
     "slug": "the-quad-studios",
@@ -208,7 +295,27 @@
         "question": "Can I upgrade or change my membership type?",
         "answer": ""
       }
-    ]
+    ],
+    "marquee": {
+      "enabled": true,
+      "rows": [
+        {
+          "direction": "rtl",
+          "images": [
+            "/images/kids/the-quad-studio/gallery/classes-image-a.jpg",
+            "/images/kids/the-quad-studio/gallery/classes-1.jpg",
+            "/images/kids/the-quad-studio/gallery/classes-3.jpg"
+          ]
+        },
+        {
+          "direction": "ltr",
+          "images": [
+            "/images/kids/the-quad-studio/gallery/classes-image-b.jpg",
+            "/images/kids/the-quad-studio/gallery/classes-2.jpg"
+          ]
+        }
+      ]
+    }
   },
   "the-hangout": {
     "slug": "the-hangout",

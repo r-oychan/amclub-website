@@ -135,6 +135,17 @@ interface VenueData {
     heading?: string;
     rows: { images: string[]; direction?: 'ltr' | 'rtl'; durationSec?: number }[];
   };
+  /** CMS marquee component (kids-experiences). When present it overrides the
+   *  static `gallery` fallback; `enabled: false` hides the marquee entirely. */
+  marquee?: {
+    enabled?: boolean | null;
+    heading?: string | null;
+    rows?: {
+      direction?: 'ltr' | 'rtl' | null;
+      durationSec?: number | null;
+      images?: { url: string }[] | null;
+    }[] | null;
+  } | null;
   quotes?: {
     heading?: string;
     items: { text: string; attribution?: string; role?: string }[];
@@ -193,7 +204,7 @@ interface VenueData {
 const SECTION_MAP: Record<string, { apiPath: string; parentLabel: string; parentHref: string }> = {
   dining: { apiPath: '/restaurants', parentLabel: 'Dining & Retail', parentHref: '/dining' },
   fitness: { apiPath: '/fitness-facilities', parentLabel: 'Fitness & Wellness', parentHref: '/fitness' },
-  kids: { apiPath: '/facilities', parentLabel: 'Kids', parentHref: '/kids' },
+  kids: { apiPath: '/kids-experiences', parentLabel: 'Kids', parentHref: '/kids' },
   'event-spaces': { apiPath: '/facilities', parentLabel: 'Private Events & Catering', parentHref: '/event-spaces' },
   membership: { apiPath: '/facilities', parentLabel: 'Membership', parentHref: '/membership' },
   'home-sub': { apiPath: '/facilities', parentLabel: 'The American Club', parentHref: '/home' },
@@ -237,6 +248,29 @@ function staticFallback(section: string, slug: string): VenueData | null {
     venueCards: sp.venueCards,
     packageCards: sp.packageCards,
   };
+}
+
+/** Marquee resolution with the CMS on/off toggle:
+ *  - entry has the marquee component + enabled=false → marquee hidden, even if
+ *    a static fallback exists (that's the point of the toggle);
+ *  - component present + enabled + rows with images → CMS content wins
+ *    (media objects flattened to URL strings for MarqueeGallery);
+ *  - component absent (entry never edited) → static subpages fallback.
+ *  The flat `gallery` media field is deliberately ignored — wrong shape. */
+function resolveMarquee(api: VenueData, fallback: VenueData | null): VenueData['gallery'] {
+  const m = api.marquee;
+  if (m) {
+    if (m.enabled === false) return undefined;
+    const rows = (m.rows ?? [])
+      .map((r) => ({
+        direction: r.direction ?? undefined,
+        durationSec: r.durationSec ?? undefined,
+        images: (r.images ?? []).map((img) => img.url),
+      }))
+      .filter((r) => r.images.length > 0);
+    return rows.length > 0 ? { heading: m.heading ?? undefined, rows } : undefined;
+  }
+  return fallback?.gallery;
 }
 
 /* Map extra section titles to DetailSection icon names */
@@ -362,7 +396,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           imagePanels: api.imagePanels?.length ? api.imagePanels : fallback?.imagePanels,
           cardSections: api.cardSections?.length ? api.cardSections : fallback?.cardSections,
           faq: api.faq?.length ? api.faq : fallback?.faq,
-          gallery: api.gallery ?? fallback?.gallery,
+          gallery: resolveMarquee(api, fallback),
           partyPackages: api.partyPackages ?? fallback?.partyPackages,
           quotes: api.quotes ?? fallback?.quotes,
           downloads: api.downloads ?? fallback?.downloads,
