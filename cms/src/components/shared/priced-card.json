@@ -7,27 +7,58 @@
   },
   "options": {},
   "attributes": {
-    "name": { "type": "string", "required": true },
-    "subheading": { "type": "string" },
-    "description": { "type": "text" },
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "subheading": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
     "image": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
-    "feeLabel": { "type": "string" },
-    "feeAmount": { "type": "string" },
-    "breakdown": { "type": "text" },
-    "badge": { "type": "string" },
+    "feeLabel": {
+      "type": "string"
+    },
+    "feeAmount": {
+      "type": "string"
+    },
+    "breakdown": {
+      "type": "text"
+    },
+    "badge": {
+      "type": "string"
+    },
     "badgeTone": {
       "type": "enumeration",
-      "enum": ["positive", "negative"],
+      "enum": [
+        "positive",
+        "negative"
+      ],
       "default": "positive"
     },
     "bullets": {
       "type": "component",
       "repeatable": true,
       "component": "shared.text-line"
+    },
+    "bulletStyle": {
+      "type": "enumeration",
+      "enum": [
+        "check",
+        "dot",
+        "dash",
+        "none"
+      ],
+      "default": "check",
+      "description": "Bullet glyph for the benefits list"
     },
     "cta": {
       "type": "component",

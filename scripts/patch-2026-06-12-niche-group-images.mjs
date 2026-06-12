@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // Attach real CMS media to the niche-group-membership-page singleton:
 //   - heroImage            ← media/membership/niche-group/hero.jpg
-//   - body tier card images ← tier-elite.jpg (Elite Membership),
-//                             tier-vip-gold.jpg (VIP Gold)
+//   - tier images uploaded to the Media Library but NOT attached — prod's
+//     tier cards render gradient tiles; editors attach a photo per tier card
+//     in /admin when they want one (the layout swaps tile→photo only then).
 // These were previously hot-linked framerusercontent.com URLs in the static
 // subpages.ts fallback; with the page now CMS-driven (NicheGroupMembershipPage)
 // the images become editable per tier card in /admin.
@@ -66,21 +67,19 @@ function clean(v) {
   const body = (data.body ?? []).map((block) => {
     const b = clean(block);
     if (b.__component === 'blocks.priced-card-grid') {
-      b.items = (b.items ?? []).map((it, i) => {
-        const src = (block.items ?? [])[i];
-        const file = TIER_IMAGES[src?.name];
-        return file ? { ...it, image: ids[file] } : it;
-      });
+      // Parity with prod: tier cards default to the gradient tile, so the
+      // patch leaves/clears item images (editors attach photos when desired).
+      b.items = (b.items ?? []).map((it) => ({ ...it, image: null }));
     }
     return b;
   });
 
   const payload = { heroImage: ids['niche-group-hero.jpg'], body };
   if (DRY) {
-    console.log('  [dry] PUT heroImage + body with tier images:', Object.keys(TIER_IMAGES).join(', '));
+    console.log('  [dry] PUT heroImage; tier images left unattached (gradients render)');
     return;
   }
   await api(ctx, '/niche-group-membership-page?status=published', { method: 'PUT', body: { data: payload } });
-  console.log('  ↻ singleton updated (heroImage + tier card images), published');
+  console.log('  ↻ singleton updated (heroImage set, tier images unattached), published');
   console.log('\n✓ Done.');
 })().catch((e) => { console.error(e); process.exit(1); });
