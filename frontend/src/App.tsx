@@ -15,6 +15,7 @@ import MembershipPage from './pages/MembershipPage';
 import JoiningFeesPage from './pages/JoiningFeesPage';
 import ReferralPage from './pages/ReferralPage';
 import ReciprocalClubsPage from './pages/ReciprocalClubsPage';
+import NicheGroupMembershipPage from './pages/NicheGroupMembershipPage';
 import AdvertiseWithUsPage from './pages/AdvertiseWithUsPage';
 import WhatsOnPage from './pages/WhatsOnPage';
 import EventDetailPage from './pages/EventDetailPage';
@@ -54,6 +55,7 @@ export default function App() {
             <Route path="/membership/joining-fees" element={<JoiningFeesPage />} />
             <Route path="/membership/referal" element={<ReferralPage />} />
             <Route path="/membership/reciprocal-clubs" element={<ReciprocalClubsPage />} />
+            <Route path="/membership/niche-group-membership" element={<NicheGroupMembershipPage />} />
             <Route
               path="/membership/the-eagles-rewards-program"
               element={<Navigate to="/membership/niche-group-membership" replace />}
