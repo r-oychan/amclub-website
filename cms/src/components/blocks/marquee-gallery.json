@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_blocks_marquee_galleries",
+  "info": {
+    "displayName": "Marquee Gallery",
+    "icon": "picture",
+    "description": "Auto-scrolling image marquee with per-row direction and an on/off toggle"
+  },
+  "attributes": {
+    "enabled": {
+      "type": "boolean",
+      "default": true,
+      "description": "Toggle the marquee on/off without deleting its content"
+    },
+    "heading": {
+      "type": "string"
+    },
+    "rows": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.marquee-row"
+    }
+  }
+}

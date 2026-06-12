@@ -259,7 +259,7 @@ export const diningSubpages: SubpageData[] = [
     phone: '6739 4359',
     email: 'central@amclub.org.sg',
     image:
-      '/uploads/restaurants/central.jpeg',
+      '/images/restaurants/central.jpeg',
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
     ctas: [
@@ -292,7 +292,7 @@ export const diningSubpages: SubpageData[] = [
     email: '2ndfloor@amclub.org.sg',
     dressCode: 'Smart Casual',
     image:
-      '/uploads/restaurants/the-2nd-floor.jpeg',
+      '/images/restaurants/the-2nd-floor.jpeg',
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
     ctas: [
@@ -339,7 +339,7 @@ export const diningSubpages: SubpageData[] = [
     phone: '6739 4361',
     email: 'tradewinds@amclub.org.sg',
     image:
-      '/uploads/restaurants/tradewinds.jpeg',
+      '/images/restaurants/tradewinds.jpeg',
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
     ctas: [
@@ -381,7 +381,7 @@ export const diningSubpages: SubpageData[] = [
     phone: '6739 4357',
     email: 'grillhouse@amclub.org.sg',
     image:
-      '/uploads/restaurants/grillhouse.jpeg',
+      '/images/restaurants/grillhouse.jpeg',
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
     ctas: [
@@ -410,7 +410,7 @@ export const diningSubpages: SubpageData[] = [
     phone: '6739 4340',
     email: 'unionbar@amclub.org.sg',
     image:
-      '/uploads/restaurants/union-bar.jpeg',
+      '/images/restaurants/union-bar.jpeg',
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
     ctas: [
@@ -452,7 +452,7 @@ export const diningSubpages: SubpageData[] = [
     phone: '6739 4407',
     email: 'gourmetpantry@amclub.org.sg',
     image:
-      '/uploads/restaurants/the-gourmet-pantry.jpeg',
+      '/images/restaurants/the-gourmet-pantry.jpeg',
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
     ctas: [
@@ -533,7 +533,7 @@ export const diningSubpages: SubpageData[] = [
     phone: '6739 4332',
     email: 'essentials@amclub.org.sg',
     image:
-      '/uploads/services/essentials.jpeg',
+      '/images/services/essentials.jpeg',
     parentSection: 'Dining & Retail',
     parentHref: '/dining',
     ctas: [{ label: 'Essentials2Go!', href: 'https://amclub.jotform.com/253312807189965', isExternal: true }],
@@ -1147,7 +1147,7 @@ export const kidsSubpages: SubpageData[] = [
     phone: '6739 4444 / 4413',
     email: 'youth@amclub.org.sg',
     image:
-      '/uploads/pages/kids/detail/quadpoolside-hero.jpeg',
+      '/images/kids/detail/quadpoolside-hero.jpeg',
     parentSection: 'Kids',
     parentHref: '/kids',
     ctas: [
@@ -1228,7 +1228,7 @@ export const kidsSubpages: SubpageData[] = [
     phone: '6739 4444 / 4413',
     email: 'youth@amclub.org.sg',
     image:
-      '/uploads/pages/kids/detail/quad-hero.jpeg',
+      '/images/kids/detail/quad-hero.jpeg',
     parentSection: 'Kids',
     parentHref: '/kids',
     ctas: [
@@ -1309,7 +1309,7 @@ export const kidsSubpages: SubpageData[] = [
     phone: '6739 4413 / 4432',
     email: 'youth@amclub.org.sg',
     image:
-      '/uploads/pages/kids/detail/quadstudio-hero.jpeg',
+      '/images/kids/detail/quadstudio-hero.jpeg',
     parentSection: 'Kids',
     parentHref: '/kids',
     ctas: [
@@ -1347,7 +1347,7 @@ export const kidsSubpages: SubpageData[] = [
     phone: '6739 4444 / 4413',
     email: 'youth@amclub.org.sg',
     image:
-      '/uploads/pages/kids/hangout.jpeg',
+      '/images/kids/hangout.jpeg',
     parentSection: 'Kids',
     parentHref: '/kids',
   },
@@ -1522,7 +1522,7 @@ export const kidsSubpages: SubpageData[] = [
     phone: '6739-4413 / 4444',
     email: 'youth@amclub.org.sg',
     image:
-      '/uploads/pages/kids/parties.jpg',
+      '/images/kids/parties.jpg',
     parentSection: 'Kids',
     parentHref: '/kids',
     partyPackages: {

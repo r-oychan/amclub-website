@@ -87,6 +87,11 @@
         "images"
       ]
     },
+    "marquee": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.marquee-gallery"
+    },
     "faq": {
       "type": "component",
       "repeatable": true,

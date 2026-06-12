@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_blocks_marquee_rows",
+  "info": {
+    "displayName": "Marquee Row",
+    "icon": "arrowRight",
+    "description": "One scrolling strip of the marquee gallery"
+  },
+  "attributes": {
+    "direction": {
+      "type": "enumeration",
+      "enum": ["rtl", "ltr"],
+      "default": "rtl"
+    },
+    "durationSec": {
+      "type": "integer",
+      "min": 5,
+      "description": "Seconds per full loop (default 60)"
+    },
+    "images": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["images"]
+    }
+  }
+}

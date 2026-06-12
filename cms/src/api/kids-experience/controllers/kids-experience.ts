@@ -6,6 +6,7 @@ import { factories } from '@strapi/strapi';
 const POPULATE = {
   heroImage: true,
   gallery: true,
+  marquee: { populate: { rows: { populate: { images: true } } } },
   ctas: true,
   bottomCtas: true,
   locationContact: true,
