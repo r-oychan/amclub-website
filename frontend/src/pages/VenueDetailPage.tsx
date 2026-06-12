@@ -171,8 +171,12 @@ interface VenueData {
       name: string;
       description: string;
       benefits: string[];
-      gradientFrom: string;
-      gradientTo: string;
+      /** Editor-selectable bullet glyph (CMS `bulletStyle`); default check. */
+      bulletStyle?: 'check' | 'dot' | 'dash' | 'none';
+      /** Optional photo (CMS-editable) — replaces the gradient tile when set. */
+      image?: string;
+      gradientFrom?: string;
+      gradientTo?: string;
     }[];
   };
   venueCards?: {
@@ -247,6 +251,74 @@ function staticFallback(section: string, slug: string): VenueData | null {
     tierCards: sp.tierCards,
     venueCards: sp.venueCards,
     packageCards: sp.packageCards,
+  };
+}
+
+/** Membership subpages backed by SINGLE TYPES rather than a collection.
+ *  These render through this page's standard layout (identical to prod), but
+ *  fetch their singleton and map it over the static fallback — so copy, hero,
+ *  tier-card images and bullets are CMS-editable without any visual change. */
+const SINGLETON_OVERRIDES: Record<string, Record<string, string>> = {
+  membership: { 'niche-group-membership': '/niche-group-membership-page' },
+};
+
+interface MembershipSingleton {
+  title?: string;
+  heading?: string;
+  description?: string;
+  heroImage?: { url?: string; alternativeText?: string } | null;
+  phone?: string;
+  email?: string;
+  ctas?: { label: string; href: string; isExternal?: boolean }[];
+  body?: {
+    __component?: string;
+    heading?: string;
+    subheading?: string;
+    items?: {
+      name?: string;
+      description?: string;
+      bulletStyle?: 'check' | 'dot' | 'dash' | 'none';
+      image?: { url?: string } | null;
+      bullets?: { text?: string }[];
+    }[];
+  }[];
+}
+
+/** Map a membership singleton onto VenueData, preserving the fallback's
+ *  presentation-only values (tier gradients) by card name. */
+function mapSingletonToVenue(s: MembershipSingleton, fallback: VenueData | null): VenueData {
+  const grid = (s.body ?? []).find((b) => b.__component === 'blocks.priced-card-grid');
+  const fbCards = fallback?.tierCards?.cards ?? [];
+  const tierCards = grid
+    ? {
+        heading: grid.heading ?? fallback?.tierCards?.heading,
+        subheading: grid.subheading ?? fallback?.tierCards?.subheading,
+        cards: (grid.items ?? []).map((it) => {
+          const fb = fbCards.find((c) => c.name === it.name);
+          const bullets = (it.bullets ?? []).map((b) => b.text ?? '').filter(Boolean);
+          return {
+            name: it.name ?? '',
+            description: it.description ?? fb?.description ?? '',
+            benefits: bullets.length ? bullets : fb?.benefits ?? [],
+            bulletStyle: it.bulletStyle ?? undefined,
+            image: it.image?.url ?? undefined,
+            gradientFrom: fb?.gradientFrom,
+            gradientTo: fb?.gradientTo,
+          };
+        }),
+      }
+    : fallback?.tierCards;
+  const base: VenueData =
+    fallback ?? ({ name: '', slug: '', description: '' } as VenueData);
+  return {
+    ...base,
+    name: s.heading ?? s.title ?? base.name,
+    description: s.description ?? base.description,
+    image: s.heroImage?.url ? { url: s.heroImage.url } : base.image,
+    ctas: s.ctas?.length ? s.ctas : base.ctas,
+    phone: s.phone ?? base.phone,
+    email: s.email ?? base.email,
+    tierCards,
   };
 }
 
@@ -352,6 +424,17 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
     if (!config || !lookupSlug || !section) return;
     const load = async () => {
       setLoading(true);
+      // Singleton-backed subpages (e.g. /membership/niche-group-membership):
+      // fetch the single type and map it over the static fallback so the CMS
+      // drives content inside this page's unchanged layout.
+      const singletonPath = SINGLETON_OVERRIDES[section]?.[lookupSlug];
+      if (singletonPath) {
+        const s = await fetchAPI<MembershipSingleton>(singletonPath);
+        const fb = staticFallback(section, lookupSlug);
+        setVenue(s ? mapSingletonToVenue(s, fb) : fb);
+        setLoading(false);
+        return;
+      }
       // Strapi v5's `populate=*` only goes one level deep, which leaves
       // operatingHoursSections.rows empty. List each relation explicitly and
       // deep-populate the nested rows.
@@ -970,18 +1053,28 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {venue.tierCards.cards.map((card, i) => (
                 <div key={`${card.name}-${i}`} className="flex flex-col" style={{ gap: '24px' }}>
-                  {/* Card image: radial gradient + diagonal stripe overlay */}
-                  <div
-                    aria-hidden
-                    className="w-full mx-auto rounded-2xl"
-                    style={{
-                      aspectRatio: '252 / 238',
-                      maxWidth: '252px',
-                      backgroundImage: `${STRIPE_PATTERN_SVG}, radial-gradient(119% 122% at -32% -2.8%, ${card.gradientFrom} 0%, ${card.gradientTo} 100%)`,
-                      backgroundSize: '126px, auto',
-                      backgroundRepeat: 'repeat, no-repeat',
-                    }}
-                  />
+                  {/* Card image: CMS photo when set, else the original radial
+                      gradient + diagonal stripe tile (same box either way) */}
+                  {card.image ? (
+                    <img
+                      src={card.image}
+                      alt={card.name}
+                      className="w-full mx-auto rounded-2xl object-cover"
+                      style={{ aspectRatio: '252 / 238', maxWidth: '252px' }}
+                    />
+                  ) : (
+                    <div
+                      aria-hidden
+                      className="w-full mx-auto rounded-2xl"
+                      style={{
+                        aspectRatio: '252 / 238',
+                        maxWidth: '252px',
+                        backgroundImage: `${STRIPE_PATTERN_SVG}, radial-gradient(119% 122% at -32% -2.8%, ${card.gradientFrom ?? '#1F3157'} 0%, ${card.gradientTo ?? '#14213D'} 100%)`,
+                        backgroundSize: '126px, auto',
+                        backgroundRepeat: 'repeat, no-repeat',
+                      }}
+                    />
+                  )}
                   <h3
                     className="font-heading text-primary"
                     style={{
@@ -1013,22 +1106,30 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                     Benefits
                   </h4>
                   <ul className="flex flex-col" style={{ gap: '12px' }}>
-                    {card.benefits.map((b, j) => (
-                      <li
-                        key={j}
-                        className="text-text-dark flex"
-                        style={{ fontSize: '15.2px', lineHeight: '22px', gap: '10px' }}
-                      >
-                        <span
-                          aria-hidden
-                          className="text-accent shrink-0"
-                          style={{ fontWeight: 700, lineHeight: '22px' }}
+                    {card.benefits.map((b, j) => {
+                      // Editor-selectable bullet glyph; default = the original ✓.
+                      const glyph = { check: '✓', dot: '•', dash: '–', none: '' }[
+                        card.bulletStyle ?? 'check'
+                      ];
+                      return (
+                        <li
+                          key={j}
+                          className="text-text-dark flex"
+                          style={{ fontSize: '15.2px', lineHeight: '22px', gap: '10px' }}
                         >
-                          ✓
-                        </span>
-                        <span>{b}</span>
-                      </li>
-                    ))}
+                          {glyph && (
+                            <span
+                              aria-hidden
+                              className="text-accent shrink-0"
+                              style={{ fontWeight: 700, lineHeight: '22px' }}
+                            >
+                              {glyph}
+                            </span>
+                          )}
+                          <span>{b}</span>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               ))}
