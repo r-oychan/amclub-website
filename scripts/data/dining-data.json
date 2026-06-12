@@ -19,7 +19,7 @@
     "level": "Level 1",
     "phone": "6739 4359",
     "email": "central@amclub.org.sg",
-    "image": "/uploads/restaurants/central.jpeg",
+    "image": "/images/restaurants/central.jpeg",
     "parentSection": "Dining & Retail",
     "parentHref": "/dining",
     "ctas": [
@@ -52,7 +52,7 @@
     "phone": "6739 4329",
     "email": "2ndfloor@amclub.org.sg",
     "dressCode": "Smart Casual",
-    "image": "/uploads/restaurants/the-2nd-floor.jpeg",
+    "image": "/images/restaurants/the-2nd-floor.jpeg",
     "parentSection": "Dining & Retail",
     "parentHref": "/dining",
     "ctas": [
@@ -108,7 +108,7 @@
     "level": "Level 1",
     "phone": "6739 4361",
     "email": "tradewinds@amclub.org.sg",
-    "image": "/uploads/restaurants/tradewinds.jpeg",
+    "image": "/images/restaurants/tradewinds.jpeg",
     "parentSection": "Dining & Retail",
     "parentHref": "/dining",
     "ctas": [
@@ -171,7 +171,7 @@
     "level": "Level 1",
     "phone": "6739 4357",
     "email": "grillhouse@amclub.org.sg",
-    "image": "/uploads/restaurants/grillhouse.jpeg",
+    "image": "/images/restaurants/grillhouse.jpeg",
     "parentSection": "Dining & Retail",
     "parentHref": "/dining",
     "ctas": [
@@ -206,7 +206,7 @@
     "level": "Basement 2",
     "phone": "6739 4340",
     "email": "unionbar@amclub.org.sg",
-    "image": "/uploads/restaurants/union-bar.jpeg",
+    "image": "/images/restaurants/union-bar.jpeg",
     "parentSection": "Dining & Retail",
     "parentHref": "/dining",
     "ctas": [
@@ -256,7 +256,7 @@
     "level": "Level 1",
     "phone": "6739 4340",
     "email": "gourmetpantry@amclub.org.sg",
-    "image": "/uploads/restaurants/the-gourmet-pantry.jpeg",
+    "image": "/images/restaurants/the-gourmet-pantry.jpeg",
     "parentSection": "Dining & Retail",
     "parentHref": "/dining",
     "ctas": [
@@ -342,7 +342,7 @@
     "level": "Level 1",
     "phone": "6739 4332",
     "email": "essentials@amclub.org.sg",
-    "image": "/uploads/services/essentials.jpeg",
+    "image": "/images/services/essentials.jpeg",
     "parentSection": "Dining & Retail",
     "parentHref": "/dining",
     "ctas": [

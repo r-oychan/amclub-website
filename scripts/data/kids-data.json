@@ -8,7 +8,7 @@
     "level": "Level 1",
     "phone": "6739 4444 / 4413",
     "email": "youth@amclub.org.sg",
-    "image": "/uploads/pages/kids/detail/quadpoolside-hero.jpeg",
+    "image": "/images/kids/detail/quadpoolside-hero.jpeg",
     "parentSection": "Kids",
     "parentHref": "/kids",
     "ctas": [
@@ -83,7 +83,7 @@
     "level": "Basement 1",
     "phone": "6739 4444 / 4413",
     "email": "youth@amclub.org.sg",
-    "image": "/uploads/pages/kids/detail/quad-hero.jpeg",
+    "image": "/images/kids/detail/quad-hero.jpeg",
     "parentSection": "Kids",
     "parentHref": "/kids",
     "ctas": [
@@ -158,7 +158,7 @@
     "level": "Basement 3",
     "phone": "6739 4413 / 4432",
     "email": "youth@amclub.org.sg",
-    "image": "/uploads/pages/kids/detail/quadstudio-hero.jpeg",
+    "image": "/images/kids/detail/quadstudio-hero.jpeg",
     "parentSection": "Kids",
     "parentHref": "/kids",
     "ctas": [
@@ -218,7 +218,7 @@
     "level": "Level 1",
     "phone": "6739 4444 / 4413",
     "email": "youth@amclub.org.sg",
-    "image": "/uploads/pages/kids/hangout.jpeg",
+    "image": "/images/kids/hangout.jpeg",
     "parentSection": "Kids",
     "parentHref": "/kids"
   },
@@ -398,7 +398,7 @@
     "description": "There's no better place to celebrate your child's big day than right here at the Club. Our dedicated Youth team brings the fun to life with creative themes, engaging activities, tasty treats, and a show-stopping birthday cake. It's joyful, stress-free celebrating – designed to make every moment magical for your child and unforgettable for you.",
     "phone": "6739-4413 / 4444",
     "email": "youth@amclub.org.sg",
-    "image": "/uploads/pages/kids/parties.jpg",
+    "image": "/images/kids/parties.jpg",
     "parentSection": "Kids",
     "parentHref": "/kids",
     "partyPackages": {
