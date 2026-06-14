@@ -1,0 +1,102 @@
+{
+  "kind": "singleType",
+  "collectionName": "niche_group_membership_pages",
+  "info": {
+    "singularName": "niche-group-membership-page",
+    "pluralName": "niche-group-membership-pages",
+    "displayName": "Membership: Niche Group Page",
+    "description": "Content for /membership/niche-group-membership — rendered through VenueDetailPage layout"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "parentLabel": {
+      "type": "string"
+    },
+    "parentHref": {
+      "type": "string"
+    },
+    "heroImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "label": {
+      "type": "string"
+    },
+    "heading": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "intro": {
+      "type": "text"
+    },
+    "locationLevel": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "email"
+    },
+    "operatingHoursSections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.operating-hours-section"
+    },
+    "locationContact": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.location-contact"
+    },
+    "downloads": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.downloads-section"
+    },
+    "ctas": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link",
+      "max": 4
+    },
+    "bottomCtas": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link",
+      "max": 4
+    },
+    "body": {
+      "type": "dynamiczone",
+      "components": [
+        "blocks.text-block",
+        "blocks.card-grid",
+        "blocks.feature-grid",
+        "blocks.three-col-grid",
+        "blocks.cta-banner",
+        "blocks.faq-section",
+        "blocks.downloads-section",
+        "blocks.tabs-section",
+        "blocks.team-grid",
+        "blocks.image-panel-slideshow",
+        "blocks.priced-card-grid",
+        "blocks.quotes-block",
+        "blocks.collage-gallery"
+      ]
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
+  }
+}

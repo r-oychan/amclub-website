@@ -1,0 +1,88 @@
+{
+  "kind": "collectionType",
+  "collectionName": "aquatics_coaches",
+  "info": {
+    "singularName": "aquatics-coach",
+    "pluralName": "aquatics-coaches",
+    "displayName": "Fitness: Aquatics Coaches",
+    "description": "Aquatics Coach entries — one row per person. Linked from `facility` team grid by section."
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "role": {
+      "type": "string",
+      "required": true
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    },
+    "photo": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "shortBio": {
+      "type": "text"
+    },
+    "bioImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "bioDocument": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "files"
+      ]
+    },
+    "bioHtml": {
+      "type": "richtext"
+    },
+    "qualifications": {
+      "type": "text"
+    },
+    "expertise": {
+      "type": "text"
+    },
+    "imageOffsetX": {
+      "type": "decimal",
+      "default": 50,
+      "min": 0,
+      "max": 100
+    },
+    "imageOffsetY": {
+      "type": "decimal",
+      "default": 50,
+      "min": 0,
+      "max": 100
+    },
+    "imageZoom": {
+      "type": "decimal",
+      "default": 1,
+      "min": 0.5,
+      "max": 4
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
+  }
+}

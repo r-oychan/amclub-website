@@ -21,7 +21,7 @@ const PROMOTIONS = [
     title: 'May Monthly Promotions',
     slug: 'club-wide-may-monthly-promo',
     summary: 'A round-up of this month\'s dining specials across the Club.',
-    restaurantTag: 'club-wide',
+    restaurantSlug: 'club-wide',
     imageFiles: ['club-wide-may-monthly-promo.jpg'],
     ctas: [],
     order: 1,
@@ -30,7 +30,7 @@ const PROMOTIONS = [
     title: 'Central Daily Specials',
     slug: 'central-daily-specials',
     summary: 'Daily promotions on coffee, bagels, smoothies, wraps and weekend treats at Central.',
-    restaurantTag: 'central',
+    restaurantSlug: 'central',
     imageFiles: ['central-daily-specials.jpg'],
     ctas: [],
     order: 2,
@@ -39,7 +39,7 @@ const PROMOTIONS = [
     title: 'A Toast to Mom',
     slug: 'grillhouse-a-toast-to-mom',
     summary: 'Raise a glass and share a Mother\'s Day platter poolside at Grillhouse.',
-    restaurantTag: 'grillhouse',
+    restaurantSlug: 'grillhouse',
     imageFiles: ['grillhouse-a-toast-to-mom.jpg'],
     ctas: [],
     order: 3,
@@ -48,7 +48,7 @@ const PROMOTIONS = [
     title: 'Seasonal Brews',
     slug: 'grillhouse-seasonal-brews',
     summary: 'A curated rotation of craft beers, paired with Grillhouse classics.',
-    restaurantTag: 'grillhouse',
+    restaurantSlug: 'grillhouse',
     imageFiles: ['grillhouse-seasonal-brews.jpg'],
     ctas: [],
     order: 4,
@@ -57,7 +57,7 @@ const PROMOTIONS = [
     title: 'A Heartwarming Mother\'s Day Feast',
     slug: 'the-2nd-floor-heartwarming-mothers-day-feast',
     summary: 'A multi-course Mother\'s Day menu featuring East-meets-West favourites at The 2nd Floor.',
-    restaurantTag: 'the-2nd-floor',
+    restaurantSlug: 'the-2nd-floor',
     imageFiles: ['the-2nd-floor-heartwarming-mothers-day-feast.jpg'],
     ctas: [],
     order: 5,
@@ -66,7 +66,7 @@ const PROMOTIONS = [
     title: 'The Ultimate Happy Hour',
     slug: 'the-2nd-floor-the-ultimate-happy-hour',
     summary: '1-for-1 drinks by the glass on Tuesdays to Fridays. Wine corkage waived every Tuesday.',
-    restaurantTag: 'the-2nd-floor',
+    restaurantSlug: 'the-2nd-floor',
     imageFiles: ['the-2nd-floor-the-ultimate-happy-hour.jpg'],
     ctas: [],
     order: 6,
@@ -75,7 +75,7 @@ const PROMOTIONS = [
     title: 'Four New Ways to Sip',
     slug: 'the-2nd-floor-four-new-ways-to-sip',
     summary: 'New seasonal cocktails to discover at The 2nd Floor bar.',
-    restaurantTag: 'the-2nd-floor',
+    restaurantSlug: 'the-2nd-floor',
     imageFiles: ['the-2nd-floor-four-new-ways-to-sip.jpg'],
     ctas: [],
     order: 7,
@@ -84,7 +84,7 @@ const PROMOTIONS = [
     title: 'Eggs-tra Good Mornings',
     slug: 'tradewinds-eggs-tra-good-mornings',
     summary: 'Start your day right with the new breakfast lineup at Tradewinds.',
-    restaurantTag: 'tradewinds',
+    restaurantSlug: 'tradewinds',
     imageFiles: ['tradewinds-eggs-tra-good-mornings.jpg'],
     ctas: [],
     order: 8,
@@ -93,7 +93,7 @@ const PROMOTIONS = [
     title: 'Bloody Mary Specials',
     slug: 'union-bar-bloody-mary-specials',
     summary: 'Refreshed Bloody Mary creations on the Union Bar list this month.',
-    restaurantTag: 'union-bar',
+    restaurantSlug: 'union-bar',
     imageFiles: ['union-bar-bloody-mary-specials.jpg'],
     ctas: [],
     order: 9,
@@ -106,16 +106,25 @@ function imageFilesOf(p) {
   return [];
 }
 
-async function ensurePromotion(p, mediaByFile) {
+async function ensurePromotion(p, mediaByFile, restaurantsBySlug) {
   const files = imageFilesOf(p);
   const ids = files.map((f) => mediaByFile[f]?.id).filter((x) => x != null);
-  if (DRY) { console.log(`  [dry] upsert promotion: ${p.title} (${ids.length} page(s))`); return; }
+  const isClubWide = p.restaurantSlug === 'club-wide';
+  const restaurantId = isClubWide ? null : restaurantsBySlug.get(p.restaurantSlug);
+  if (!isClubWide && !restaurantId) {
+    console.warn(`  ! promo ${p.slug}: no restaurant with slug=${p.restaurantSlug} — skipping relation`);
+  }
+  if (DRY) {
+    console.log(`  [dry] upsert promotion: ${p.title} (${ids.length} page(s), restaurant=${restaurantId ?? '–'}, isClubWide=${isClubWide})`);
+    return;
+  }
   const existing = await findOneBySlug(ctx, 'dining-promotions', p.slug);
   const payload = {
     title: p.title,
     slug: p.slug,
     summary: p.summary,
-    restaurantTag: p.restaurantTag,
+    restaurant: restaurantId ?? null,
+    isClubWide,
     validFrom: p.validFrom,
     validTo: p.validTo,
     image: ids[0] ?? null,
@@ -167,29 +176,48 @@ async function main() {
   console.log(`Strapi base: ${ctx.BASE}`);
   console.log(`Mode:        ${DRY ? 'DRY-RUN' : 'LIVE'}`);
 
+  // Fetch all restaurants so we can resolve `restaurantSlug` → documentId for
+  // the `restaurant` relation on each promo. Slug list is dynamic (driven by
+  // the Restaurant collection), so adding a new restaurant in Strapi
+  // automatically becomes available as a promo target.
+  console.log('\n[0/4] Resolving restaurants…');
+  const restaurantsResp = await api(ctx, '/restaurants?pagination[pageSize]=50&fields[0]=slug');
+  const restaurantsBySlug = new Map(
+    (restaurantsResp?.data ?? []).map((r) => [r.slug, r.documentId]),
+  );
+  const validSlugs = new Set([...restaurantsBySlug.keys(), 'club-wide']);
+  console.log(`  ${restaurantsBySlug.size} restaurant(s) + club-wide`);
+
   // Auto-discover any extra flyers dropped into media/dining/promotions/.
-  // Convention: `<restaurant>-<title>[-<page>].<ext>` (page is a trailing
-  // numeric suffix). Files sharing the same `<restaurant>-<title>` group into
-  // a single promotion with multiple pages, ordered numerically.
+  // Convention: `<restaurant-slug>-<title>[-<page>].<ext>` (page is a trailing
+  // numeric suffix). Files sharing the same `<restaurant-slug>-<title>` group
+  // into a single promotion with multiple pages, ordered numerically. The
+  // restaurant-slug part is matched against the live Restaurant collection
+  // plus `club-wide`, so the regex stays in sync as restaurants are added.
   const discovered = readdirSync(PROMO_DIR).filter((f) => /\.(jpe?g|png|webp)$/i.test(f));
   const knownFiles = new Set(PROMOTIONS.flatMap((p) => imageFilesOf(p)));
-  const TAG_RE = /^(club-wide|central|grillhouse|the-2nd-floor|tradewinds|union-bar|the-gourmet-pantry)[-_](.+?)(?:[-_](\d+))?$/;
-  const newGroups = new Map(); // baseSlug → { tag, files: [{file, page}] }
+  // Sort longer slugs first so e.g. `the-gourmet-pantry-…` matches before `the-`.
+  const tagAlternation = Array.from(validSlugs)
+    .sort((a, b) => b.length - a.length)
+    .map((s) => s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'))
+    .join('|');
+  const TAG_RE = new RegExp(`^(${tagAlternation})[-_](.+?)(?:[-_](\\d+))?$`);
+  const newGroups = new Map(); // baseSlug → { restaurantSlug, files: [{file, page}] }
   for (const f of discovered) if (!knownFiles.has(f)) {
     const base = f.replace(/\.[^.]+$/, '');
     const m = base.match(TAG_RE);
-    const tag = m ? m[1] : 'club-wide';
+    const restaurantSlug = m ? m[1] : 'club-wide';
     const titlePart = m ? m[2] : base;
     const page = m && m[3] ? parseInt(m[3], 10) : 1;
-    const groupKey = `${tag}-${titlePart}`;
-    if (!newGroups.has(groupKey)) newGroups.set(groupKey, { tag, titlePart, files: [] });
+    const groupKey = `${restaurantSlug}-${titlePart}`;
+    if (!newGroups.has(groupKey)) newGroups.set(groupKey, { restaurantSlug, titlePart, files: [] });
     newGroups.get(groupKey).files.push({ file: f, page });
   }
   for (const [groupKey, g] of newGroups) {
     g.files.sort((a, b) => a.page - b.page);
     PROMOTIONS.push({
       title: g.titlePart.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
-      slug: groupKey, summary: '', restaurantTag: g.tag,
+      slug: groupKey, summary: '', restaurantSlug: g.restaurantSlug,
       imageFiles: g.files.map((x) => x.file),
       validFrom: null, validTo: null, ctas: [], order: 99,
     });
@@ -201,7 +229,7 @@ async function main() {
 
   console.log('\n[2/4] Upserting promotion entries…');
   for (const p of PROMOTIONS) {
-    await ensurePromotion(p, media);
+    await ensurePromotion(p, media, restaurantsBySlug);
     console.log(`  ✓ ${p.title}`);
   }
 

@@ -9,6 +9,7 @@ const POPULATE = {
     },
   },
   joinCta: { populate: { ctas: true } },
+  joinCommunityImages: true,
   intro: { populate: { cta: true } },
   benefits: {
     populate: {
@@ -16,7 +17,9 @@ const POPULATE = {
       cta: true,
     },
   },
+  benefitIcons: true,
   findRightCta: { populate: { ctas: true } },
+  findMembershipImage: true,
   programs: {
     populate: {
       cards: { populate: { image: true, cta: true } },

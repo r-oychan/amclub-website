@@ -47,7 +47,7 @@ async function upsertMembershipPage({ media }) {
       body: "The American Club is more than a social club – it's a welcoming community where Members and their families connect, unwind, and belong.",
       variant: 'light',
       ctas: [
-        { label: 'Start Your Application', href: '#', variant: 'primary' },
+        { label: 'Start Your Application', href: '/membership/start-application', variant: 'primary' },
       ],
     },
     joinCommunityImages: [
@@ -84,16 +84,16 @@ async function upsertMembershipPage({ media }) {
       body: 'The American Club offers a range of membership options. Membership is open to individuals aged 21 and above.',
       variant: 'default',
       ctas: [
-        { label: 'Membership Types & Joining Fees', href: '#', variant: 'primary' },
-        { label: 'Book a Club Tour',                href: '#', variant: 'outline' },
+        { label: 'Membership Types & Joining Fees', href: '/membership/joining-fees', variant: 'primary' },
+        { label: 'Book a Club Tour',                href: 'https://amclub.jotform.com/260813837273966?parentURL=https%3A%2F%2Famclub.org.sg%2Fmembership-enquiry-form%2F&jsForm=true', isExternal: true, variant: 'outline' },
       ],
     },
     findMembershipImage: media['find-membership-lobby.jpg'].id,
     programs: {
       cards: [
-        { heading: 'Refer & Be Rewarded',          description: 'Extend the privilege of membership to your family and friends, and enjoy exclusive rewards through our referral program.', image: media['program-refer.png'].id,          cta: { label: 'Learn More', href: '#', variant: 'text' } },
+        { heading: 'Refer & Be Rewarded',          description: 'Extend the privilege of membership to your family and friends, and enjoy exclusive rewards through our referral program.', image: media['program-refer.png'].id,          cta: { label: 'Learn More', href: '/membership/referal', variant: 'text' } },
         { heading: 'Niche Group Membership',        description: 'A tiered membership experience that offers elevated recognition and privileges as you enjoy more of the Club.',                image: media['program-eagle-rewards.png'].id, cta: { label: 'Learn More', href: '/membership/niche-group-membership', variant: 'text' } },
-        { heading: 'Reciprocal Clubs',             description: 'Enjoy privileged access to over 150 distinguished private clubs worldwide, extending the comfort and prestige of membership wherever you travel.', image: media['program-reciprocal.jpg'].id, cta: { label: 'Learn More', href: '#', variant: 'text' } },
+        { heading: 'Reciprocal Clubs',             description: 'Enjoy privileged access to over 150 distinguished private clubs worldwide, extending the comfort and prestige of membership wherever you travel.', image: media['program-reciprocal.jpg'].id, cta: { label: 'Learn More', href: '/membership/reciprocal-clubs', variant: 'text' } },
       ],
     },
     faq: {
@@ -108,8 +108,8 @@ async function upsertMembershipPage({ media }) {
       body: "Take the first step toward life at Singapore's premier social club.",
       variant: 'default',
       ctas: [
-        { label: 'Start Your Application', href: '#', variant: 'primary' },
-        { label: 'Book a Club Tour',       href: '#', variant: 'outline' },
+        { label: 'Start Your Application', href: '/membership/start-application', variant: 'primary' },
+        { label: 'Book a Club Tour',       href: 'https://amclub.jotform.com/260813837273966?parentURL=https%3A%2F%2Famclub.org.sg%2Fmembership-enquiry-form%2F&jsForm=true', isExternal: true, variant: 'outline' },
       ],
     },
   };

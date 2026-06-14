@@ -52,6 +52,9 @@ interface VenueData {
   hours?: string;
   image?: { url: string; alternativeText?: string };
   video?: { url: string; title?: string };
+  /** Fitness facilities expose the hero as `heroImage`/`heroVideo` (vs dining's `image`). */
+  heroImage?: { url: string; alternativeText?: string } | null;
+  heroVideo?: string | null;
   cuisineType?: string;
   cuisineIconSlug?: string;
   /** Facility-side equivalents of cuisineType / cuisineIconSlug */
@@ -132,6 +135,17 @@ interface VenueData {
     heading?: string;
     rows: { images: string[]; direction?: 'ltr' | 'rtl'; durationSec?: number }[];
   };
+  /** CMS marquee component (kids-experiences). When present it overrides the
+   *  static `gallery` fallback; `enabled: false` hides the marquee entirely. */
+  marquee?: {
+    enabled?: boolean | null;
+    heading?: string | null;
+    rows?: {
+      direction?: 'ltr' | 'rtl' | null;
+      durationSec?: number | null;
+      images?: { url: string }[] | null;
+    }[] | null;
+  } | null;
   quotes?: {
     heading?: string;
     items: { text: string; attribution?: string; role?: string }[];
@@ -157,8 +171,12 @@ interface VenueData {
       name: string;
       description: string;
       benefits: string[];
-      gradientFrom: string;
-      gradientTo: string;
+      /** Editor-selectable bullet glyph (CMS `bulletStyle`); default check. */
+      bulletStyle?: 'check' | 'dot' | 'dash' | 'none';
+      /** Optional photo (CMS-editable) — replaces the gradient tile when set. */
+      image?: string;
+      gradientFrom?: string;
+      gradientTo?: string;
     }[];
   };
   venueCards?: {
@@ -189,9 +207,9 @@ interface VenueData {
 
 const SECTION_MAP: Record<string, { apiPath: string; parentLabel: string; parentHref: string }> = {
   dining: { apiPath: '/restaurants', parentLabel: 'Dining & Retail', parentHref: '/dining' },
-  fitness: { apiPath: '/facilities', parentLabel: 'Fitness & Wellness', parentHref: '/fitness' },
-  kids: { apiPath: '/facilities', parentLabel: 'Kids', parentHref: '/kids' },
-  'event-spaces': { apiPath: '/facilities', parentLabel: 'Private Events & Catering', parentHref: '/event-spaces' },
+  fitness: { apiPath: '/fitness-facilities', parentLabel: 'Fitness & Wellness', parentHref: '/fitness' },
+  kids: { apiPath: '/kids-experiences', parentLabel: 'Kids', parentHref: '/kids' },
+  'event-spaces': { apiPath: '/event-spaces', parentLabel: 'Private Events & Catering', parentHref: '/event-spaces' },
   membership: { apiPath: '/facilities', parentLabel: 'Membership', parentHref: '/membership' },
   'home-sub': { apiPath: '/facilities', parentLabel: 'The American Club', parentHref: '/home' },
 };
@@ -234,6 +252,103 @@ function staticFallback(section: string, slug: string): VenueData | null {
     venueCards: sp.venueCards,
     packageCards: sp.packageCards,
   };
+}
+
+/** Membership subpages backed by SINGLE TYPES rather than a collection.
+ *  These render through this page's standard layout (identical to prod), but
+ *  fetch their singleton and map it over the static fallback — so copy, hero,
+ *  tier-card images and bullets are CMS-editable without any visual change. */
+const SINGLETON_OVERRIDES: Record<string, Record<string, string>> = {
+  membership: { 'niche-group-membership': '/niche-group-membership-page' },
+};
+
+interface MembershipSingleton {
+  title?: string;
+  heading?: string;
+  description?: string;
+  heroImage?: { url?: string; alternativeText?: string } | null;
+  phone?: string;
+  email?: string;
+  ctas?: { label: string; href: string; isExternal?: boolean }[];
+  body?: {
+    __component?: string;
+    heading?: string;
+    subheading?: string;
+    items?: {
+      name?: string;
+      description?: string;
+      bulletStyle?: 'check' | 'dot' | 'dash' | 'none';
+      image?: { url?: string } | null;
+      /** One benefit per line; takes precedence over `bullets` when filled. */
+      benefitsText?: string;
+      bullets?: { text?: string }[];
+    }[];
+  }[];
+}
+
+/** Map a membership singleton onto VenueData, preserving the fallback's
+ *  presentation-only values (tier gradients) by card name. */
+function mapSingletonToVenue(s: MembershipSingleton, fallback: VenueData | null): VenueData {
+  const grid = (s.body ?? []).find((b) => b.__component === 'blocks.priced-card-grid');
+  const fbCards = fallback?.tierCards?.cards ?? [];
+  const tierCards = grid
+    ? {
+        heading: grid.heading ?? fallback?.tierCards?.heading,
+        subheading: grid.subheading ?? fallback?.tierCards?.subheading,
+        cards: (grid.items ?? []).map((it) => {
+          const fb = fbCards.find((c) => c.name === it.name);
+          // benefitsText: one benefit per line (editor-friendly single field);
+          // falls back to the legacy per-row bullets component.
+          const bullets = it.benefitsText
+            ? it.benefitsText.split('\n').map((s) => s.trim()).filter(Boolean)
+            : (it.bullets ?? []).map((b) => b.text ?? '').filter(Boolean);
+          return {
+            name: it.name ?? '',
+            description: it.description ?? fb?.description ?? '',
+            benefits: bullets.length ? bullets : fb?.benefits ?? [],
+            bulletStyle: it.bulletStyle ?? undefined,
+            image: it.image?.url ?? undefined,
+            gradientFrom: fb?.gradientFrom,
+            gradientTo: fb?.gradientTo,
+          };
+        }),
+      }
+    : fallback?.tierCards;
+  const base: VenueData =
+    fallback ?? ({ name: '', slug: '', description: '' } as VenueData);
+  return {
+    ...base,
+    name: s.heading ?? s.title ?? base.name,
+    description: s.description ?? base.description,
+    image: s.heroImage?.url ? { url: s.heroImage.url } : base.image,
+    ctas: s.ctas?.length ? s.ctas : base.ctas,
+    phone: s.phone ?? base.phone,
+    email: s.email ?? base.email,
+    tierCards,
+  };
+}
+
+/** Marquee resolution with the CMS on/off toggle:
+ *  - entry has the marquee component + enabled=false → marquee hidden, even if
+ *    a static fallback exists (that's the point of the toggle);
+ *  - component present + enabled + rows with images → CMS content wins
+ *    (media objects flattened to URL strings for MarqueeGallery);
+ *  - component absent (entry never edited) → static subpages fallback.
+ *  The flat `gallery` media field is deliberately ignored — wrong shape. */
+function resolveMarquee(api: VenueData, fallback: VenueData | null): VenueData['gallery'] {
+  const m = api.marquee;
+  if (m) {
+    if (m.enabled === false) return undefined;
+    const rows = (m.rows ?? [])
+      .map((r) => ({
+        direction: r.direction ?? undefined,
+        durationSec: r.durationSec ?? undefined,
+        images: (r.images ?? []).map((img) => img.url),
+      }))
+      .filter((r) => r.images.length > 0);
+    return rows.length > 0 ? { heading: m.heading ?? undefined, rows } : undefined;
+  }
+  return fallback?.gallery;
 }
 
 /* Map extra section titles to DetailSection icon names */
@@ -315,6 +430,17 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
     if (!config || !lookupSlug || !section) return;
     const load = async () => {
       setLoading(true);
+      // Singleton-backed subpages (e.g. /membership/niche-group-membership):
+      // fetch the single type and map it over the static fallback so the CMS
+      // drives content inside this page's unchanged layout.
+      const singletonPath = SINGLETON_OVERRIDES[section]?.[lookupSlug];
+      if (singletonPath) {
+        const s = await fetchAPI<MembershipSingleton>(singletonPath);
+        const fb = staticFallback(section, lookupSlug);
+        setVenue(s ? mapSingletonToVenue(s, fb) : fb);
+        setLoading(false);
+        return;
+      }
       // Strapi v5's `populate=*` only goes one level deep, which leaves
       // operatingHoursSections.rows empty. List each relation explicitly and
       // deep-populate the nested rows.
@@ -345,8 +471,24 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
         setVenue({
           ...fallback,
           ...api,
-          image: api.image ?? fallback?.image,
-          video: api.video ?? fallback?.video,
+          // Fitness facilities use `heroImage`/`heroVideo`; dining/others use
+          // `image`/`video`. Prefer whichever the collection provides, then the
+          // static fallback.
+          image: api.heroImage ?? api.image ?? fallback?.image,
+          video: api.video ?? (api.heroVideo ? { url: api.heroVideo } : undefined) ?? fallback?.video,
+          // Null-guards for sparse CMS entries (e.g. event-spaces venues):
+          // `...api` above would otherwise overwrite fallback values with null
+          // and silently blank phone/hours/etc. that prod currently shows.
+          name: api.name || fallback?.name || '',
+          description: api.description || fallback?.description || '',
+          capacity: api.capacity ?? fallback?.capacity,
+          locationLevel: api.locationLevel ?? fallback?.locationLevel,
+          phone: api.phone ?? fallback?.phone,
+          email: api.email ?? fallback?.email,
+          locationContact: api.locationContact ?? fallback?.locationContact,
+          operatingHoursSections: api.operatingHoursSections?.length
+            ? api.operatingHoursSections
+            : fallback?.operatingHoursSections,
           ctas: api.ctas?.length ? api.ctas : fallback?.ctas,
           extraSections: api.extraSections?.length ? api.extraSections : fallback?.extraSections,
           promoCards: api.promoCards ?? fallback?.promoCards,
@@ -356,7 +498,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           imagePanels: api.imagePanels?.length ? api.imagePanels : fallback?.imagePanels,
           cardSections: api.cardSections?.length ? api.cardSections : fallback?.cardSections,
           faq: api.faq?.length ? api.faq : fallback?.faq,
-          gallery: api.gallery ?? fallback?.gallery,
+          gallery: resolveMarquee(api, fallback),
           partyPackages: api.partyPackages ?? fallback?.partyPackages,
           quotes: api.quotes ?? fallback?.quotes,
           downloads: api.downloads ?? fallback?.downloads,
@@ -930,18 +1072,28 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {venue.tierCards.cards.map((card, i) => (
                 <div key={`${card.name}-${i}`} className="flex flex-col" style={{ gap: '24px' }}>
-                  {/* Card image: radial gradient + diagonal stripe overlay */}
-                  <div
-                    aria-hidden
-                    className="w-full mx-auto rounded-2xl"
-                    style={{
-                      aspectRatio: '252 / 238',
-                      maxWidth: '252px',
-                      backgroundImage: `${STRIPE_PATTERN_SVG}, radial-gradient(119% 122% at -32% -2.8%, ${card.gradientFrom} 0%, ${card.gradientTo} 100%)`,
-                      backgroundSize: '126px, auto',
-                      backgroundRepeat: 'repeat, no-repeat',
-                    }}
-                  />
+                  {/* Card image: CMS photo when set, else the original radial
+                      gradient + diagonal stripe tile (same box either way) */}
+                  {card.image ? (
+                    <img
+                      src={card.image}
+                      alt={card.name}
+                      className="w-full mx-auto rounded-2xl object-cover"
+                      style={{ aspectRatio: '252 / 238', maxWidth: '252px' }}
+                    />
+                  ) : (
+                    <div
+                      aria-hidden
+                      className="w-full mx-auto rounded-2xl"
+                      style={{
+                        aspectRatio: '252 / 238',
+                        maxWidth: '252px',
+                        backgroundImage: `${STRIPE_PATTERN_SVG}, radial-gradient(119% 122% at -32% -2.8%, ${card.gradientFrom ?? '#1F3157'} 0%, ${card.gradientTo ?? '#14213D'} 100%)`,
+                        backgroundSize: '126px, auto',
+                        backgroundRepeat: 'repeat, no-repeat',
+                      }}
+                    />
+                  )}
                   <h3
                     className="font-heading text-primary"
                     style={{
@@ -973,22 +1125,30 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                     Benefits
                   </h4>
                   <ul className="flex flex-col" style={{ gap: '12px' }}>
-                    {card.benefits.map((b, j) => (
-                      <li
-                        key={j}
-                        className="text-text-dark flex"
-                        style={{ fontSize: '15.2px', lineHeight: '22px', gap: '10px' }}
-                      >
-                        <span
-                          aria-hidden
-                          className="text-accent shrink-0"
-                          style={{ fontWeight: 700, lineHeight: '22px' }}
+                    {card.benefits.map((b, j) => {
+                      // Editor-selectable bullet glyph; default = the original ✓.
+                      const glyph = { check: '✓', dot: '•', dash: '–', none: '' }[
+                        card.bulletStyle ?? 'check'
+                      ];
+                      return (
+                        <li
+                          key={j}
+                          className="text-text-dark flex"
+                          style={{ fontSize: '15.2px', lineHeight: '22px', gap: '10px' }}
                         >
-                          ✓
-                        </span>
-                        <span>{b}</span>
-                      </li>
-                    ))}
+                          {glyph && (
+                            <span
+                              aria-hidden
+                              className="text-accent shrink-0"
+                              style={{ fontWeight: 700, lineHeight: '22px' }}
+                            >
+                              {glyph}
+                            </span>
+                          )}
+                          <span>{b}</span>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               ))}

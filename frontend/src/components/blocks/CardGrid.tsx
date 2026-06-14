@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+import type { PointerEvent as ReactPointerEvent, MouseEvent as ReactMouseEvent } from 'react';
 import { Link } from 'react-router';
 import type { CardItem, CtaButton } from '../../lib/types';
 import { SectionHeader } from '../shared/SectionHeader';
@@ -58,27 +60,145 @@ export function CardGrid({
   );
 }
 
+// Auto-scrolling, draggable event marquee. The motion eases in and out so
+// there are no abrupt starts/stops: hovering decelerates to a gentle pause,
+// pressing and dragging scrubs the row left/right, and releasing waits a beat
+// before easing back up to cruising speed. Infinite loop via scrollLeft wrap
+// on the duplicated item set. The container stays the `group`, so hovering any
+// card still lights up every title at once (matching the Framer prototype).
+const MARQUEE_CRUISE_SPEED = 45; // px per second when auto-scrolling
+const MARQUEE_EASE_RATE = 2.4; // velocity easing (frame-rate independent)
+const MARQUEE_RESUME_DELAY_MS = 1400; // pause after the pointer leaves before resuming
+const MARQUEE_DRAG_THRESHOLD = 5; // px of movement before a press counts as a drag
+
 function EventMarquee({ items }: { items: CardItem[] }) {
-  // Duplicate the items so the sequence is seamless: when the first half
-  // has scrolled into the second half's starting position, the transform
-  // resets from -50% back to 0 without a visible jump.
+  // Duplicate the items so scrollLeft can wrap seamlessly for an infinite loop.
   const loop = [...items, ...items];
+  const viewportRef = useRef<HTMLDivElement>(null);
+
+  const speedRef = useRef(0); // current velocity (px/sec), eased toward target
+  const targetRef = useRef(MARQUEE_CRUISE_SPEED); // desired velocity
+  const draggingRef = useRef(false);
+  const movedRef = useRef(false); // did the current press move past the threshold?
+  const dragStartXRef = useRef(0);
+  const dragStartScrollRef = useRef(0);
+  const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const el = viewportRef.current;
+    if (!el) return;
+
+    // Respect reduced-motion preferences: no auto-scroll, drag still works.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      targetRef.current = 0;
+      speedRef.current = 0;
+    }
+
+    let raf = 0;
+    let last = performance.now();
+    const tick = (now: number) => {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      // Ease current speed toward the target (exponential smoothing → ease in/out).
+      const k = 1 - Math.exp(-MARQUEE_EASE_RATE * dt);
+      speedRef.current += (targetRef.current - speedRef.current) * k;
+      if (!draggingRef.current && Math.abs(speedRef.current) > 0.05) {
+        el.scrollLeft += speedRef.current * dt;
+      }
+      // Seamless wrap: content is duplicated, so one full set === half the width.
+      const half = el.scrollWidth / 2;
+      if (half > 0) {
+        if (el.scrollLeft >= half) el.scrollLeft -= half;
+        else if (el.scrollLeft < 0) el.scrollLeft += half;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => {
+      cancelAnimationFrame(raf);
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    };
+  }, []);
+
+  const clearResume = () => {
+    if (resumeTimerRef.current) {
+      clearTimeout(resumeTimerRef.current);
+      resumeTimerRef.current = null;
+    }
+  };
+  const scheduleResume = () => {
+    clearResume();
+    resumeTimerRef.current = setTimeout(() => {
+      targetRef.current = MARQUEE_CRUISE_SPEED;
+    }, MARQUEE_RESUME_DELAY_MS);
+  };
+
+  const handlePointerEnter = () => {
+    clearResume();
+    targetRef.current = 0; // decelerate to a pause while hovering
+  };
+
+  const handlePointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    const el = viewportRef.current;
+    if (!el) return;
+    draggingRef.current = true;
+    movedRef.current = false;
+    targetRef.current = 0;
+    speedRef.current = 0;
+    clearResume();
+    dragStartXRef.current = e.clientX;
+    dragStartScrollRef.current = el.scrollLeft;
+    el.setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (!draggingRef.current) return;
+    const el = viewportRef.current;
+    if (!el) return;
+    const dx = e.clientX - dragStartXRef.current;
+    if (Math.abs(dx) > MARQUEE_DRAG_THRESHOLD) movedRef.current = true;
+    el.scrollLeft = dragStartScrollRef.current - dx;
+  };
+
+  const endDrag = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (!draggingRef.current) return;
+    draggingRef.current = false;
+    const el = viewportRef.current;
+    if (el && el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+    scheduleResume();
+  };
+
+  const handlePointerLeave = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (draggingRef.current) endDrag(e);
+    else scheduleResume();
+  };
+
+  // Swallow the click that fires after a drag so cards don't navigate on release.
+  const handleClickCapture = (e: ReactMouseEvent<HTMLDivElement>) => {
+    if (movedRef.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      movedRef.current = false;
+    }
+  };
+
   return (
-    <div className="relative w-full overflow-hidden mt-4 group">
-      <div
-        className="flex gap-6 w-max group-hover:[animation-play-state:paused]"
-        style={{ animation: 'marquee-rtl 60s linear infinite' }}
-      >
+    <div
+      ref={viewportRef}
+      className="relative w-full overflow-hidden mt-4 group cursor-grab touch-pan-y select-none active:cursor-grabbing"
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={endDrag}
+      onPointerCancel={endDrag}
+      onClickCapture={handleClickCapture}
+    >
+      <div className="flex gap-6 w-max">
         {loop.map((item, i) => (
           <EventCard key={i} item={item} />
         ))}
       </div>
-      <style>{`
-        @keyframes marquee-rtl {
-          from { transform: translateX(0%); }
-          to { transform: translateX(-50%); }
-        }
-      `}</style>
     </div>
   );
 }
@@ -94,6 +214,7 @@ function EventCard({ item }: { item: CardItem }) {
           <img
             src={item.image}
             alt={item.title ?? ''}
+            draggable={false}
             className="w-full aspect-[344/217] object-cover block"
           />
           {month && day && (
@@ -121,7 +242,7 @@ function EventCard({ item }: { item: CardItem }) {
   );
   if (!item.href) return inner;
   return (
-    <Link to={item.href} className="block">
+    <Link to={item.href} draggable={false} className="block">
       {inner}
     </Link>
   );

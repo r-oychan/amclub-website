@@ -81,8 +81,37 @@ export function initEnv() {
   return { BASE, TOKEN, auth: { Authorization: `Bearer ${TOKEN}` }, ROOT };
 }
 
+// Document URL manifest (old static href → blob /uploads path), produced by
+// seed-documents.mjs and regenerated per environment. Loaded lazily so every
+// seed automatically gets its PDF hrefs rewritten to the CMS/blob copies via
+// api() below — no per-seed change, and no env-specific hash baked into code.
+let _docMap = null;
+function docMap() {
+  if (_docMap) return _docMap;
+  try { _docMap = JSON.parse(readFileSync(join(__dirname, 'data', 'document-urls.json'), 'utf8')); }
+  catch { _docMap = {}; }
+  return _docMap;
+}
+
+// Deep-replace any string value that exactly matches a manifest key (an old
+// /documents/… or /menus/… href) with its mapped /uploads/… blob path.
+function rewriteDocHrefs(value, map) {
+  if (typeof value === 'string') return map[value] ?? value;
+  if (Array.isArray(value)) return value.map((v) => rewriteDocHrefs(v, map));
+  if (value && typeof value === 'object') {
+    const out = {};
+    for (const [k, v] of Object.entries(value)) out[k] = rewriteDocHrefs(v, map);
+    return out;
+  }
+  return value;
+}
+
 export async function api({ BASE, auth }, path, opts = {}) {
   const url = `${BASE}/api${path}`;
+  const map = docMap();
+  const body = opts.body && typeof opts.body !== 'string' && Object.keys(map).length
+    ? rewriteDocHrefs(opts.body, map)
+    : opts.body;
   const res = await fetch(url, {
     ...opts,
     headers: {
@@ -90,7 +119,7 @@ export async function api({ BASE, auth }, path, opts = {}) {
       ...auth,
       ...(opts.headers || {}),
     },
-    body: opts.body ? (typeof opts.body === 'string' ? opts.body : JSON.stringify(opts.body)) : undefined,
+    body: body ? (typeof body === 'string' ? body : JSON.stringify(body)) : undefined,
   });
   const text = await res.text();
   let json;
@@ -114,40 +143,177 @@ export async function findUploadedByName(ctx, name) {
   return Array.isArray(arr) && arr.length ? arr[0] : null;
 }
 
-export async function uploadFile(ctx, localPath) {
+// Filename extension → mime, used so the FormData blob carries the right
+// Content-Type. Without this, Strapi's Azure upload provider stores the blob
+// as `application/octet-stream` and browsers won't render the file as an
+// image (the SVG icons + JPGs go missing in the live UI even though the
+// upload "succeeds").
+const MIME_BY_EXT = {
+  jpg: 'image/jpeg',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+  gif: 'image/gif',
+  webp: 'image/webp',
+  svg: 'image/svg+xml',
+  avif: 'image/avif',
+  mp4: 'video/mp4',
+  webm: 'video/webm',
+  mov: 'video/quicktime',
+  pdf: 'application/pdf',
+  doc: 'application/msword',
+  docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+};
+
+function mimeForFile(name) {
+  const dot = name.lastIndexOf('.');
+  if (dot < 0) return 'application/octet-stream';
+  return MIME_BY_EXT[name.slice(dot + 1).toLowerCase()] ?? 'application/octet-stream';
+}
+
+/**
+ * Upload a file to Strapi. By default, if a file with the same name already
+ * exists in the media library, returns it (dedup). Pass `{ replace: true }`
+ * to PUT-replace the existing file with the local one — useful for fixing
+ * incorrectly-uploaded files (e.g. wrong Content-Type on the underlying blob).
+ */
+/**
+ * Derive a blob sub-folder path from a local file's location under `media/`.
+ * The blob structure mirrors the SITE PAGE / IA hierarchy, not the local
+ * directory layout (which has grown organically and mixes flat sub-dirs
+ * with a `pages/` prefix). A top-level mapping table normalises the
+ * first segment; everything below is preserved as-is.
+ *
+ * Examples (local → blob path returned):
+ *   media/restaurants/central.jpeg         → dining/restaurants
+ *   media/dining/central/menu.pdf          → dining/central
+ *   media/pages/dining/hero-bg.jpg         → dining
+ *   media/promotions/fathers-day.jpg       → dining/promotions
+ *   media/logos/central.png                → dining/restaurants
+ *   media/services/tac2go.jpeg             → dining/services
+ *   media/branding/logo.webp               → global/branding
+ *   media/social/instagram.png             → global/social
+ *   media/fitness/aquatics/coach-x.jpg     → fitness/aquatics
+ *   media/about/heritage-1966.jpg          → about
+ *
+ * Returning null falls back to the provider's defaultPath alone.
+ */
+const TOP_LEVEL_BLOB_MAP = {
+  // strip the legacy `pages/` prefix so `pages/dining/...` → `dining/...`
+  pages: '',
+  // dining-related sub-dirs all live under /dining in blob storage
+  restaurants: 'dining/restaurants',
+  logos: 'dining/restaurants',
+  promotions: 'dining/promotions',
+  services: 'dining/services',
+  marketing: 'dining/marketing',
+  // global / cross-section assets
+  branding: 'global/branding',
+  social: 'global/social',
+  hero: 'global/hero',
+  icons: 'global/icons',
+  'TAC-favicon': 'global/favicon',
+};
+
+function autoPathFromLocal(localPath) {
+  const mediaRoot = join(ROOT, 'media') + '/';
+  if (!localPath.startsWith(mediaRoot)) return null;
+  const rel = localPath.slice(mediaRoot.length);
+  const dir = dirname(rel);
+  if (dir === '.' || !dir) return null;
+  const segments = dir.split('/');
+  const first = segments[0];
+  if (first in TOP_LEVEL_BLOB_MAP) {
+    const mapped = TOP_LEVEL_BLOB_MAP[first];
+    const tail = segments.slice(1).join('/');
+    return [mapped, tail].filter(Boolean).join('/');
+  }
+  // Already-canonical top-level dirs (about, dining, event-spaces, fitness,
+  // gallery, home, kids, membership, news) pass through unchanged.
+  return dir;
+}
+
+export async function uploadFile(ctx, localPath, { replace = isReplace(), path } = {}) {
   const name = basename(localPath);
   const existing = await findUploadedByName(ctx, name);
-  if (existing) return existing;
+  if (existing && !replace) return existing;
   const buf = readFileSync(localPath);
+  const mime = mimeForFile(name);
   const fd = new FormData();
-  const blob = new Blob([buf]);
+  const blob = new Blob([buf], { type: mime });
   fd.append('files', blob, name);
-  const res = await fetch(`${ctx.BASE}/api/upload`, { method: 'POST', headers: ctx.auth, body: fd });
+  // Effective folder path: explicit `path` arg wins, else auto-derive from
+  // the file's location under `media/`. Anything that lands in metas.path
+  // → entity.path → our wrapper provider appends it to defaultPath. Mirrors
+  // the seed-script `media/<section>/<page>/...` convention into the blob
+  // hierarchy without per-script changes.
+  const effectivePath = path !== undefined ? path : autoPathFromLocal(localPath);
+  if (effectivePath) fd.append('path', effectivePath);
+  let url;
+  let method;
+  if (existing && replace) {
+    fd.append('fileInfo', JSON.stringify({ name, alternativeText: existing.alternativeText ?? '', caption: existing.caption ?? '' }));
+    url = `${ctx.BASE}/api/upload?id=${existing.id}`;
+    method = 'POST';
+  } else {
+    url = `${ctx.BASE}/api/upload`;
+    method = 'POST';
+  }
+  const res = await fetch(url, { method, headers: ctx.auth, body: fd });
   if (!res.ok) {
     const err = await res.text();
     throw new Error(`upload ${name} → ${res.status}: ${err}`);
   }
   const arr = await res.json();
-  return arr[0];
+  return Array.isArray(arr) ? arr[0] : arr;
 }
 
 /**
  * Upload every file in `names` from `dir`. Returns a map of name → media object.
  * Logs progress; honors dry-run.
  */
-export async function uploadAll(ctx, dir, names, { dry = false } = {}) {
+export async function uploadAll(ctx, dir, names, { dry = false, replace = isReplace(), path: folderPath } = {}) {
   const map = {};
   for (const name of names) {
-    const path = join(dir, name);
-    statSync(path); // throws if missing
+    const fullLocal = join(dir, name);
+    statSync(fullLocal); // throws if missing
     if (dry) {
       map[name] = { id: 0, name };
-      console.log(`  [dry] upload ${name}`);
+      console.log(`  [dry] upload ${name}${folderPath ? ` → ${folderPath}/` : ''}`);
       continue;
     }
-    const m = await uploadFile(ctx, path);
+    const m = await uploadFile(ctx, fullLocal, { replace, path: folderPath });
     map[name] = m;
-    console.log(`  ✓ ${name.padEnd(40)} → id=${m.id}`);
+    console.log(`  ✓ ${name.padEnd(40)} → id=${m.id}${folderPath ? ` (${folderPath})` : ''}`);
   }
   return map;
+}
+
+export const isReplace = () => process.argv.includes('--replace');
+
+/**
+ * Publish a Strapi v5 document. v5 changed the publish flow — sending
+ * `publishedAt: new Date()` in the data body no longer publishes a
+ * draft (the document stays in `draft` status). The official REST way
+ * is to call the publish action endpoint.
+ *
+ * Usage after upserting a draftAndPublish: true entry:
+ *   await publishDocument(ctx, 'fitness-facilities', resp.data.documentId)
+ *
+ * For singletons, omit the documentId — we POST to
+ * /api/<plural>/actions/publish.
+ */
+export async function publishDocument(ctx, plural, documentId) {
+  const path = documentId
+    ? `/${plural}/${documentId}/actions/publish`
+    : `/${plural}/actions/publish`;
+  try {
+    return await api(ctx, path, { method: 'POST' });
+  } catch (e) {
+    // Strapi sometimes responds 200 with empty body — our api() helper
+    // throws on JSON parse failure. Swallow only that case. Anything
+    // else: warn (the document may already be published).
+    if (!/JSON|parse/i.test(String(e.message))) {
+      console.warn(`  ! publishDocument(${plural}, ${documentId ?? '<singleton>'}) failed: ${e.message}`);
+    }
+  }
 }

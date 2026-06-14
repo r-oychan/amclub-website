@@ -37,30 +37,10 @@ const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
   return `${STRAPI_URL}${m.url}`;
 };
 
-// Patch CTAs the CMS still seeds with placeholder/wrong hrefs. 'Book a Club
-// Tour' should always go to the JotForm membership-enquiry form regardless of
-// what the seed/CMS currently carries (it has historically been '#' and
-// '/contact-us'). Once the deployed Strapi entry carries the correct URL,
-// remove this override.
-const TOUR_FORM_URL =
-  'https://amclub.jotform.com/260813837273966?parentURL=https%3A%2F%2Famclub.org.sg%2Fmembership-enquiry-form%2F&jsForm=true';
-const overrideHref = (label: string, href?: string) => {
-  if (label === 'Book a Club Tour') {
-    return { href: TOUR_FORM_URL, isExternal: true };
-  }
-  return { href: href ?? '#', isExternal: undefined };
-};
-
-const linkOf = (l?: StrapiLink) => {
-  if (!l) return undefined;
-  const o = overrideHref(l.label, l.href);
-  return { label: l.label, href: o.href, isExternal: o.isExternal ?? l.isExternal };
-};
+const linkOf = (l?: StrapiLink) =>
+  l ? { label: l.label, href: l.href ?? '#', isExternal: l.isExternal } : undefined;
 const linksOf = (ls?: StrapiLink[]) =>
-  (ls ?? []).map((l) => {
-    const o = overrideHref(l.label, l.href);
-    return { label: l.label, href: o.href, isExternal: o.isExternal ?? l.isExternal };
-  });
+  (ls ?? []).map((l) => ({ label: l.label, href: l.href ?? '#', isExternal: l.isExternal }));
 
 export default function EventSpacesPage() {
   const [data, setData] = useState<StrapiEventSpacesPage | null>(null);

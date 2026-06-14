@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_shared_image_panel_slides",
+  "info": {
+    "displayName": "Image Panel Slide",
+    "icon": "picture",
+    "description": "A single slide in an Image Panel Slideshow: image + optional caption + subCaption."
+  },
+  "attributes": {
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"],
+      "required": true
+    },
+    "caption": {
+      "type": "string"
+    },
+    "subCaption": {
+      "type": "string"
+    }
+  }
+}

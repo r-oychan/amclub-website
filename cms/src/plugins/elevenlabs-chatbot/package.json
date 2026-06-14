@@ -1,0 +1,25 @@
+{
+  "name": "elevenlabs-chatbot",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ElevenLabs ConvAI chatbot + KB sync for Strapi v5",
+  "license": "UNLICENSED",
+  "strapi": {
+    "name": "elevenlabs-chatbot",
+    "displayName": "ElevenLabs Chatbot",
+    "description": "Push CMS content to ElevenLabs ConvAI as knowledge-base docs, attach to an agent, and serve a public config endpoint for the on-site chat widget.",
+    "kind": "plugin"
+  },
+  "exports": {
+    "./strapi-server": {
+      "source": "./strapi-server.ts",
+      "default": "./strapi-server.js"
+    },
+    "./strapi-admin": {
+      "source": "./strapi-admin.ts",
+      "import": "./strapi-admin.ts",
+      "default": "./strapi-admin.ts"
+    },
+    "./package.json": "./package.json"
+  }
+}

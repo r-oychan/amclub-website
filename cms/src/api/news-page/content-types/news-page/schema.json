@@ -4,15 +4,34 @@
   "info": {
     "singularName": "news-page",
     "pluralName": "news-pages",
-    "displayName": "News Page",
+    "displayName": "News: Page",
     "description": "Club news landing page"
   },
-  "options": { "draftAndPublish": true },
+  "options": {
+    "draftAndPublish": true
+  },
   "attributes": {
-    "title": { "type": "string", "required": true },
-    "introHeading": { "type": "string" },
-    "introBody": { "type": "text" },
-    "heroImage": { "type": "media", "multiple": false, "allowedTypes": ["images"] },
-    "seo": { "type": "component", "repeatable": false, "component": "shared.seo" }
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "introHeading": {
+      "type": "string"
+    },
+    "introBody": {
+      "type": "text"
+    },
+    "heroImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
   }
 }

@@ -9,23 +9,147 @@
 
 | Route | Page Component | Strapi Type | Content Type Name | CMS Wired |
 |---|---|---|---|---|
-| `/home` | `HomePage.tsx` | singleType | `home-page` | ❌ |
-| `/about` | `AboutPage.tsx` | singleType | `about-page` | ❌ |
-| `/dining` | `DiningPage.tsx` | singleType | `dining-page` | ❌ |
-| `/fitness` | `FitnessPage.tsx` | singleType | `fitness-page` | ❌ |
-| `/kids` | `KidsPage.tsx` | singleType | `kids-page` | ❌ |
-| `/event-spaces` | `EventSpacesPage.tsx` | singleType | `event-spaces-page` | ❌ |
-| `/membership` | `MembershipPage.tsx` | singleType | `membership-page` | ❌ |
+| `/home` | `HomePage.tsx` | singleType | `home-page` | ✅ |
+| `/about` | `AboutPage.tsx` | singleType | `about-page` | ✅ |
+| `/dining` | `DiningPage.tsx` | singleType | `dining-page` | ✅ |
+| `/fitness` | `FitnessPage.tsx` | singleType | `fitness-page` | ✅ |
+| `/kids` | `KidsPage.tsx` | singleType | `kids-page` | 🟡 |
+| `/event-spaces` | `EventSpacesPage.tsx` | singleType | `event-spaces-page` | ✅ |
+| `/membership` | `MembershipPage.tsx` | singleType | `membership-page` | ✅ |
 | `/whats-on` | `WhatsOnPage.tsx` | singleType + collection | `whats-on-page` + `event` (filtered by `event-category`) | 🟡 |
 | `/whats-on/:slug` | `EventDetailPage.tsx` | collection | `event` (by slug) | 🟡 |
-| `/home-sub/news` | `NewsPage.tsx` | — | static list (Club News) | ❌ |
+| `/home-sub/news` | `NewsPage.tsx` | singleType + collection | `news-page` + `news-article` | 🟡 |
 | `/home-sub/gallery` | `GalleryPage.tsx` | singleType + collection | `gallery-page` + `gallery-album` | ✅ |
-| `/home-sub/contact-us` | `ContactUsPage.tsx` | — | static (`data/contactUs.ts`) — Map + Getting Here + Outlet Operating Hours tabs | ❌ |
+| `/home-sub/contact-us` | `ContactUsPage.tsx` | singleType | `contact-us-page` (with `talkToUsCta`) | ✅ |
 | `/:section/:slug` | `VenueDetailPage.tsx` | collection | `restaurant` / `venue` / `facility` | ✅ |
 
-> **CMS Wired** = page meets all four conditions in CLAUDE.md → "Workflow: CMS Wiring → Definition of Done". Flip ❌ → ✅ only after the deployed URL renders the deployed Strapi entry. Header nav (`useHeaderData`) is also wired, though it is not a page.
+> **CMS Wired** = page meets all four conditions in CLAUDE.md → "Workflow: CMS Wiring → Definition of Done". 🟡 = page fetches from Strapi single-type but still carries some hardcoded content (UI chrome strings like "Load More" / "Read More", or custom inline section components like `QuadSection` / `ChildSafetySection` whose decorative SVG content lives in the React file). All `CTA_OVERRIDES`, `FALLBACK_*`, `DUMMY_*`, `MOMENTS_FALLBACK`, `COLLAGE_FALLBACK`, and Framer-CDN fallback URLs were removed in PR-2 — pages now fail closed if the deployed CMS hasn't been reseeded against the latest seed scripts.
+
+### Strict-CMS backlog
+
+| Page / area | Status |
+|---|---|
+| `KidsPage` | 🟡 — `QuadSection` (3 Quad venue cards + decorative SVG cluster) and `ChildSafetySection` (heading + body + 3 features + 2 images + decorative inline SVG icons) need new Strapi block components designed before they can be wired (or the `kids-page.safety` field needs to be extended past `blocks.feature-grid`). Decorative inline SVGs stay inline; only content moves to CMS. |
+| `WhatsOnPage`, `GalleryPage`, `NewsPage` | 🟡 — UI chrome strings ("Load More", "Read More", empty-state copy, breadcrumb parent labels) are still hardcoded — by the agreed PR-2 scope ("no UI chrome"). Move to a `site-copy` singleton if needed later. |
+| `EventDetailPage` | 🟡 — Confirm all event detail fields render from CMS; mark 🟡 → ✅ after deployed verification. |
+| `useHeaderData` | ✅ PR-3 — `scripts/seed-header.mjs` uploads `media/branding/*` and populates the full `header` single type (logo, ctaButton, 7 navItems with columns + nav-items + images). `useHeaderData` now only carries a `LOADING_HEADER` (logo + empty nav) until CMS responds. |
+| `news-article.image` | ✅ PR-3 — `seed-news.mjs` now uploads cover images from `media/news/` and assigns them via the `image` field. Only 2 of the original 6 covers had matching article slugs (`news-whatsapp.jpg` → "Join our WhatsApp Channels", `news-expat-living.jpg` → "Expat Living Reader's Choice Award 2025"); the other 4 orphans + the `_manifest.txt` legacy mapping file were removed. |
+| `DetailHeroBanner` | 🟡 — Local `/branding/detail-hero-fallback.jpg` is used when a detail item has no image. Strict-CMS goal: add `site-settings.detailHeroFallback` media field, populate via seed, drop local fallback. |
+| `Header.tsx` `menu-icon` | 🟡 — Static reference to `/branding/menu-icon.png` (the burger-pattern overlay; not part of `header.logo`). Strict-CMS goal: add `header.menuIcon` media field (note: this is a "newly-added media field" and may hit the documented Strapi REST PUT persistence bug — see `cms/CLAUDE.md` notes). |
+| Strapi DB media-relations persistence bug | 🟡 — Newly-added `media` attributes on existing singletype/component schemas don't persist via REST PUT. Blocks adding new media fields (`header.menuIcon`, `site-settings.detailHeroFallback`, kid-quad-venue, child-safety-feature). Resolve via Knex migration or `strapi.documents().update()` script. |
+| `frontend/src/data/subpages.ts` | 🟡 — **Phase A/B/C landed (2026-05-21).** Schemas + per-section types + BlockRenderer + skeleton seeds are live on dev. 31 entries seeded across the 4 new types (`fitness-facility`, `kids-experience`, `event-space`, + 4 membership singletons). Remaining work: **per-entry rich content migration** — operating hours, contact details, body dynamiczone blocks (party packages, priced cards, image slideshows, FAQs, etc.). Once each section's entries are fully fleshed out via richer seed scripts, delete that section's array from `subpages.ts` in the same commit. Final removal is Phase D. |
+| Phase A schemas + Phase B BlockRenderer | ✅ — Adds 3 new collection types (`fitness-facility`, `kids-experience`, `event-space` — each with a `body` dynamiczone of 14 reusable blocks) + 4 membership singletons + 3 new block components (`image-panel-slideshow`, `priced-card-grid`, `quotes-block`). Frontend BlockRenderer dispatches `__component` to existing React components; new `MembershipSingletonPage` wraps any singleton with a body dynamiczone. VenueDetailPage dispatches per-section to the new endpoints with `/facilities` fallback during cutover. |
+| Phase C skeleton seeds | ✅ — `scripts/seed-detail-skeletons.mjs` creates 31 entries with name/slug/parent/short-description/contact/intro. Rich body migration is per-section follow-up work. |
+
+### Local `media/` directory inventory
+
+| Folder | Seeded by | Notes |
+|---|---|---|
+| `media/about/` | `seed-about-page.mjs` | GC portraits, mgmt, awards, heritage |
+| `media/about/collage/` | `seed-about-page.mjs` | 5 collage images (downloaded from Framer in PR-2) |
+| `media/branding/` | `seed-header.mjs` (PR-3) | logo, menu-icon, nav-dining/fitness/kids, detail-hero-fallback. Logo + nav images are uploaded to Strapi as `header.logo` / `nav-column.image`. menu-icon and detail-hero-fallback still served from `frontend/public/branding/` until follow-up `header.menuIcon` / `site-settings.detailHeroFallback` fields are added (blocked by media-relations bug). |
+| `media/dining/` | `seed-dining-page.mjs`, `seed-dining-promotions.mjs` | restaurants, promotions |
+| `media/event-spaces/` | `seed-event-spaces-page.mjs` | private packages, distinctive spaces, catering |
+| `media/fitness/` | `seed-fitness-page.mjs`, `seed-facilities.mjs` | spa/aquatics/gym/tennis/etc. |
+| `media/gallery/` | `seed-gallery.mjs` | 23 albums (subfolders with spaces — defer rename) |
+| `media/hero/`, `media/home/` | `seed-home-page.mjs` | home page hero/services/experience/about/events |
+| `media/icons/` | **(not yet seeded — PR-3)** | cuisine SVGs, dresscode, promo-accent — currently served from `frontend/public/icons/` |
+| `media/kids/`, `media/pages/kids/` | `seed-kids-page.mjs`, `seed-facilities.mjs` | hangout/parties/packages |
+| `media/logos/` | `seed-dining-page.mjs` | restaurant logos |
+| `media/membership/` | `seed-membership-page.mjs`, `seed-membership-forms.mjs` | hero, community, programs, forms (PDFs) |
+| `media/news/` | `seed-news.mjs` (PR-3) | 2 article cover images (`news-whatsapp.jpg`, `news-expat-living.jpg`) uploaded and assigned via `news-article.image`. The 4 orphan covers + legacy `_manifest.txt` were removed in PR-3. |
+| `media/pages/` | varies | subfolder structure for new page-specific media |
+| `media/promotions/`, `media/restaurants/`, `media/services/` | `seed-dining-page.mjs` | dining-page sub-blocks |
+| `media/social/` | `seed-home-page.mjs` (SOCIAL_DIR) | 4 social posts (jpg + mp4); seeded into `testimonial` entries |
+| `media/TAC-favicon/` | **(not Strapi-managed)** | favicons consumed by `frontend/public/` build copy |
+
+Deleted in PR-1: `media/marketing/` (orphan), `media/membership-add/` (empty). Deleted in PR-2: `frontend/public/images/social/` (now CMS-served), `frontend/public/membership/` (FALLBACK_* removed).
 
 All page-typed entries use a `content` **dynamiczone** (block-based), populated by Strapi block components listed below.
+
+---
+
+## Page Reference (page → React components + CMS sources)
+
+Each row lists, for one route: the React page file, the React components it composes, and the Strapi single-types / collections it consumes. Components are grouped by `frontend/src/components/<group>/` folder. "🟢 single-type" = `findFirst` against an `api::<name>.<name>` singleType; "🟢 collection" = `findMany` against a collection type.
+
+| Route | Page file | React components | Strapi sources |
+|---|---|---|---|
+| `/home` (also `/`) | `HomePage.tsx` | `blocks/Hero` `blocks/AboutSection` `blocks/CardGrid` `blocks/FeatureGrid` `blocks/TabsSection` `blocks/TestimonialSlider` `blocks/FaqAccordion` `shared/PageFade` | 🟢 single-type `home-page` (with nested `hero` `aboutSection` `events` `services` `experience` `moments` `faq` blocks); 🟢 collection `event` (filtered by upcoming date, with `category`) |
+| `/about` | `AboutPage.tsx` | `blocks/Hero` `blocks/TextBlock` `blocks/StatsCounter` `blocks/TeamGrid` `blocks/CtaBanner` `blocks/PartnerOrganizations` `blocks/AwardsGrid` `blocks/HeritageTimeline` `blocks/GovernanceBlock` `blocks/ManagementSlider` `blocks/CollageGallery` `shared/PageFade` | 🟢 single-type `about-page`; 🟢 collection `committee-member` (filtered twice: `memberType=general-committee` and `memberType=management`) |
+| `/dining` | `DiningPage.tsx` | `blocks/Hero` `blocks/CtaBanner` `blocks/OverlaySection` `dining/RestaurantCard` `dining/PromoCell` `shared/PageFade` `shared/CtaIcon` | 🟢 single-type `dining-page`; 🟢 collection `restaurant` |
+| `/dining/dining-promotion` | `DiningPromotionsPage.tsx` | `blocks/Hero` `blocks/CtaBanner` `shared/PageFade` `shared/CtaIcon` | 🟢 single-type `dining-promotions-page`; 🟢 collection `dining-promotion` |
+| `/dining/:slug` | `VenueDetailPage.tsx` (section=dining) | `shared/Button` `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `detail/DetailSection` `detail/ContactRow` `detail/MarqueeGallery` `blocks/FaqAccordion` `blocks/Testimonials` `kids/KidsPartyPackages` `shared/CtaIcon` | 🟢 collection `restaurant` (by slug) — fallback to `frontend/src/data/subpages.ts` if not present in CMS |
+| `/fitness` | `FitnessPage.tsx` | `blocks/Hero` `blocks/CtaBanner` `blocks/OverlaySection` `blocks/ThreeColGrid` `shared/PageFade` | 🟢 single-type `fitness-page` (with nested `senSpa` `aquatics` `gym` `tennis` `moreActivities` `bowling`) |
+| `/fitness/:slug` and `/fitness/:slug/:subSlug` | `VenueDetailPage.tsx` (section=fitness) | same as dining detail | 🟢 collection `facility` (by slug, filtered to section=fitness via the slug); subSlug pages register under `<slug>-<subSlug>` |
+| `/coaches/:section/:slug` | `CoachDetailPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `shared/Button` | 🟢 collection `coach` (by slug + section) |
+| `/kids` | `KidsPage.tsx` | `blocks/Hero` `blocks/CtaBanner` `blocks/OverlaySection` `blocks/ThreeColGrid` `kids/QuadSection` `kids/ChildSafetySection` `kids/KidsPartyPackages` `shared/PageFade` | 🟢 single-type `kids-page` (with nested `hangout` `parties` `partyPackages` `learning` `safety`) |
+| `/kids/:slug` | `VenueDetailPage.tsx` (section=kids) | same as dining detail | 🟢 collection `facility` (section=kids) |
+| `/event-spaces` | `EventSpacesPage.tsx` | `blocks/Hero` `blocks/CtaBanner` `event-spaces/PrivateEventPackages` `event-spaces/DistinctiveEventSpaces` `event-spaces/OffsiteCateringServices` `shared/PageFade` | 🟢 single-type `event-spaces-page` (with nested `privatePackages` `distinctiveSpaces` `offsiteCatering`) |
+| `/event-spaces/:slug` | `VenueDetailPage.tsx` (section=event-spaces) | same as dining detail | 🟢 collection `facility` (section=event-space) |
+| `/membership` | `MembershipPage.tsx` | `blocks/Hero` `blocks/CtaBanner` `blocks/FeatureGrid` `blocks/OverlaySection` `blocks/MembershipCommunityCollage` `blocks/MembershipPrograms` `shared/PageFade` | 🟢 single-type `membership-page` (with nested `hero` `joinCta` `joinCommunityImages` `intro` `benefits` `benefitIcons` `findRightCta` `findMembershipImage` `programs` `faq` `beginJourneyCta`) |
+| `/membership/joining-fees` | `JoiningFeesPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `shared/CtaIcon` | 🟢 single-type `joining-fees-page` |
+| `/membership/referal` | `ReferralPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `shared/CtaIcon` | 🟢 single-type `referral-page` |
+| `/membership/reciprocal-clubs` | `ReciprocalClubsPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `detail/DetailSection` `blocks/ImagePanelSlideshow` `shared/CtaIcon` | ❌ static — uses inline content + `frontend/src/data/subpages.ts` (PR-2 follow-up to migrate to its own `reciprocal-clubs-page` single-type) |
+| `/membership/niche-group-membership` | `VenueDetailPage.tsx` (singleton override) | same as dining detail — tier cards keep the prod gradient layout; CMS photo replaces a tile only when set; bullets have an editor-selectable `bulletStyle` | 🟢 single-type `niche-group-membership-page` mapped into the layout (copy, hero, tier images/bullets editable; patch-2026-06-12-niche-group-images) |
+| `/membership/:slug` | `VenueDetailPage.tsx` (section=membership) | same as dining detail | 🟢 collection `facility` (section=membership) — subpages like `start-application` and the legacy detail pages |
+| `/whats-on` | `WhatsOnPage.tsx` | `blocks/Hero` `blocks/CtaBanner` `shared/PageFade` | 🟢 single-type `whats-on-page`; 🟢 collection `event` (with `category` → `event-category`); 🟢 collection `event-category` (for category filter bar) |
+| `/whats-on/:slug` | `EventDetailPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `detail/DetailSection` `shared/CtaIcon` `shared/Button` `shared/PageFade` | 🟢 collection `event` (by slug; populates `category` + `image` + `ctas`) |
+| `/home-sub/news` | `NewsPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `shared/PageFade` | 🟢 single-type `news-page`; 🟢 collection `news-article` (paginated, sorted by `order`) |
+| `/home-sub/club-news/:slug` | `NewsArticlePage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `shared/PageFade` | 🟢 collection `news-article` (by slug; populates `htmlBody`, `image`, `body`) |
+| `/home-sub/gallery` | `GalleryPage.tsx` | `detail/DetailHeroBanner` `shared/PageFade` `shared/Lightbox` | 🟢 single-type `gallery-page`; 🟢 collection `gallery-album` (with `images` media + `coverImage`) |
+| `/home-sub/contact-us` | `ContactUsPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `contact/MapGettingHere` `contact/OutletOperatingHours` `contact/TalkToUsBanner` `shared/PageFade` | 🟢 single-type `contact-us-page` (with `outletGroups[].cards[].blocks[].rows` + `talkToUsCta`) |
+| `/home-sub/:slug` | `VenueDetailPage.tsx` (section=home-sub) | same as dining detail | 🟢 collection `facility` (section=home-sub) — only `advertise-with-us` currently routes here (the news/gallery/contact-us slugs hit their dedicated pages above) |
+| `/faq` | `FaqPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `blocks/FaqAccordion` `blocks/FaqAnswerBlocks` `shared/PageFade` | 🟢 single-type `faq-page`; 🟢 collection `faq-category` (sorted by `displayOrder`); 🟢 collection `faq-item` (grouped by category, sorted by `order`) |
+| `/privacy-statement` | `PrivacyStatementPage.tsx` | `shared/PageFade` | ❌ static — inline copy in component (PR-2 follow-up to migrate to a `privacy-statement-page` single-type) |
+
+### Layout chrome (every route)
+
+| Component | React | CMS source |
+|---|---|---|
+| Top nav (floating bar / mega menu / hamburger) | `components/layout/Header.tsx` via `hooks/useHeaderData.ts` | 🟢 single-type `header` (`logo`, `ctaButton`, 7 `navItems` → `shared.nav-dropdown` → `shared.nav-column` → `shared.nav-item`) |
+| Footer | `components/layout/Footer.tsx` | 🟢 single-type `footer` (`contact`, `columns` → `shared.footer-column`, `logo`) |
+| Chatbot | `components/chatbot/ChatbotWidget.tsx` | 🟢 single-type `site-settings` (boolean `chatbotEnabled`) + ElevenLabs runtime |
+
+### Collections used across multiple pages
+
+| Collection | Used by | Key fields |
+|---|---|---|
+| `event` | HomePage (upcoming events block), WhatsOnPage (full listing), EventDetailPage | title, slug, date, time, location, image, category, ctas, longDescription |
+| `event-category` | WhatsOnPage (filter bar) | name, slug, displayOrder |
+| `committee-member` | AboutPage | name, role, image, bio, memberType (general-committee / management), order |
+| `coach` _(legacy, to be removed after Section 2 cleanup)_ | Superseded by per-discipline collections below | name, slug, section, bio, image |
+| `aquatics-coach` _(Section 2)_ | `/coaches/aquatics/:slug` + fitness/aquatics team grid | name, slug, role, order, photo, shortBio, **bioImage**, **bioDocument** (PDF), **bioHtml** (rich text), qualifications, expertise, imageOffsetX/Y, imageZoom, seo. Modal opens only if bioImage / bioDocument / bioHtml is set. |
+| `tennis-coach` _(Section 2)_ | `/coaches/tennis/:slug` + fitness/tennis team grid | same shape as aquatics-coach |
+| `pilates-instructor` _(Section 2)_ | `/coaches/pilates/:slug` + fitness/pilates team grid | same shape as aquatics-coach |
+| `gym-trainer` _(Section 2)_ | `/coaches/gym/:slug` + fitness/gym team grid | same shape as aquatics-coach |
+| `testimonial` | HomePage (moments slider via `home-page.moments.testimonials`) | memberName, quote, photo, video, ctaLabel, ctaUrl |
+| `faq-item` | FaqPage, HomePage faq accordion | question, slug, answer (blocks), category (legacy enum) + faqCategory (→ faq-category), order |
+| `faq-category` | FaqPage | name, slug, displayOrder |
+| `restaurant` | DiningPage (grid), VenueDetailPage (dining detail) | name, slug, cuisineType, description, image, logo, dressCode, smartCasual, ctas, **bottomCtas, body (dynamiczone)**, order |
+| `fitness-facility` _(new in Phase A — replaces `facility` for `/fitness/*`)_ | FitnessPage, VenueDetailPage (fitness detail) | name, slug, shortDescription, heroImage, heroVideo, parentLabel/Href, locationLevel, phone, email, dressCode, teamHeading/Members, downloads, operatingHoursSections, locationContact, ctas, bottomCtas, **body (dynamiczone)**, order, **parent (self-relation for nested programs)**, children, coaches (m2m), seo |
+| `kids-experience` _(new in Phase A — replaces `facility` for `/kids/*`)_ | KidsPage, VenueDetailPage (kids detail) | name, slug, shortDescription, heroImage, heroVideo, parentLabel/Href, ageRange, programType, locationLevel, phone, email, operatingHoursSections, locationContact, ctas, bottomCtas, **body (dynamiczone)**, order, seo |
+| `event-space` _(new in Phase A — replaces `venue` for `/event-spaces/*`)_ | EventSpacesPage, VenueDetailPage (event-spaces detail) | name, slug, shortDescription, heroImage, heroVideo, parentLabel/Href, capacity, floorPlanPdf, setupOptions, locationLevel, phone, email, operatingHoursSections, locationContact, ctas, bottomCtas, **body (dynamiczone)**, order, seo |
+| `fitness-facility` _(Section 2 — replaces legacy `facility`)_ | `/fitness/:slug` and `/fitness/:slug/:subSlug` via `VenueDetailPage` | name, slug, shortDescription, heroImage, heroVideo, parentLabel/Href, locationLevel, phone, email, dressCode, operatingHoursSections (repeatable), locationContact, ctas, bottomCtas, downloads, gallery, body (dynamiczone), order, **parent (self-relation for nested programs like aquatics-swimamerica)**, seo. **Team grid** is sourced from the per-discipline coach collections by slug (no inline `teamMembers` component). Kids / event-spaces / membership / home-sub render from `subpages.ts` static fallback until they get their own section collections. |
+| `venue` _(legacy — to be removed in Phase D)_ | (defined but not currently routed; superseded by `event-space`) | name, slug, description, image, gallery, capacity, contact, ctas |
+
+### Singletons added in Phase A (membership)
+
+| Single type | Used by | Key fields |
+|---|---|---|
+| `reciprocal-clubs-page` | `/membership/reciprocal-clubs` | title, hero, heading/intro, ctas, bottomCtas, **body (dynamiczone)**, seo |
+| `start-application-page` | `/membership/start-application` _(new route)_ | same skeleton |
+| `niche-group-membership-page` | `/membership/niche-group-membership` | same skeleton |
+| `advertise-with-us-page` | `/membership/advertise-with-us` _(currently routed under `/home-sub`; consolidated to `/membership`)_ | same skeleton |
+
+### Detail-page `body` dynamiczone — allowed blocks
+
+All four detail-page collection types + the membership singletons share one dynamiczone of blocks. POPULATE map centralised in `cms/src/lib/detail-page-populate.ts`.
+
+`blocks.text-block` · `blocks.card-grid` · `blocks.feature-grid` · `blocks.three-col-grid` · `blocks.cta-banner` · `blocks.faq-section` · `blocks.downloads-section` · `blocks.tabs-section` · `blocks.party-packages` · `blocks.team-grid` · **`blocks.image-panel-slideshow`** _(new)_ · **`blocks.priced-card-grid`** _(new)_ · **`blocks.quotes-block`** _(new)_ · `blocks.collage-gallery` · `blocks.operating-hours-section` _(reciprocal only)_ · `blocks.location-contact` _(reciprocal only)_
+| `gallery-album` | GalleryPage | title, slug, coverImage, images[], date, photoCount, description, order |
+| `news-article` | NewsPage (list), NewsArticlePage (detail) | title, slug, date, excerpt, image, category, htmlBody (shared.html-block), body (blocks), order |
+| `dining-promotion` | DiningPromotionsPage | (per promo: title, image, description, ctas, dates) |
 
 ---
 
@@ -113,14 +237,16 @@ All page-typed entries use a `content` **dynamiczone** (block-based), populated 
 | faq-page | `faq-page` | title, introHeading, introBody, heroImage, seo |
 | header | `header` | logo, navItems (nav-item[]), cta (shared.link) |
 | footer | `footer` | contact (address, phone, email), columns (footer-column[]), logo |
+| site-config | `site-config` | **googleAnalyticsId** (GA4 Measurement ID `G-XXXX`, editable in CMS). Read site-wide by `frontend/src/components/shared/Analytics.tsx`, which injects gtag.js on every route and emits SPA `page_view` events. Empty = analytics disabled. Optional `VITE_GA_ID` build-time fallback. Seeded blank by `scripts/seed-site-config.mjs`. |
 
 ### Collections (multiple records)
 | Name | API ID | Key Fields |
 |---|---|---|
-| restaurant | `restaurant` | name, slug, description, image, gallery, contact, category, ctas |
+| restaurant | `restaurant` | name, slug, cuisineType, dressCode, smartCasual, description, image, logo, cuisineIconSlug, **menuUrl** (single source of truth for the per-restaurant menu PDF — read by both `/dining/:slug` and the dining-promotion CTAs), gallery, contact, ctas, order |
+| dining-promotion | `dining-promotion` | title, slug, summary, **`restaurant`** (relation manyToOne → `restaurant`, replaces the old hardcoded enum), **`isClubWide`** (boolean — true when the promo applies club-wide, no restaurant relation needed), validFrom, validTo, image, images (multi-page), ctas, order, seo. The promotions page derives anchor (`#promo-<slug>`), sidebar label, and "View Menu" link from the populated relation — `MENU_URLS` constant on the frontend was removed. |
 | venue | `venue` | name, slug, description, image, gallery, capacity, contact, ctas |
 | facility | `facility` | name, slug, description, image, gallery, section (fitness/kids/event), ctas |
-| event | `event` | title, slug, date, time, location, dressCode, reservation, description, longDescription, image, category (→ event-category), featured, ctas (shared.link[]) |
+| event | `event` | title, slug, date, **expiredAt** (optional listing-expiry override, sits next to `date` in the edit view), time, location, dressCode, reservation, description, longDescription, image, category (→ event-category), **featuredOnHomepage** (boolean, default false — drives the homepage events carousel; the unused `featured` field was removed), ctas (shared.link[]), seo |
 | event-category | `event-category` | name, slug, displayOrder |
 | testimonial | `testimonial` | quote, author, role, image |
 | committee-member | `committee-member` | name, role, image, bio, order |

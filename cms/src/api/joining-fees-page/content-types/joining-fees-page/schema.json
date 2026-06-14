@@ -4,16 +4,22 @@
   "info": {
     "singularName": "joining-fees-page",
     "pluralName": "joining-fees-pages",
-    "displayName": "Joining Fees Page",
+    "displayName": "Membership: Joining Fees Page",
     "description": "Membership joining-fees page content"
   },
   "options": {
     "draftAndPublish": true
   },
   "attributes": {
-    "title": { "type": "string" },
-    "individualHeading": { "type": "string" },
-    "individualSubheading": { "type": "text" },
+    "title": {
+      "type": "string"
+    },
+    "individualHeading": {
+      "type": "string"
+    },
+    "individualSubheading": {
+      "type": "text"
+    },
     "individualCtas": {
       "type": "component",
       "repeatable": true,
@@ -25,9 +31,15 @@
       "repeatable": true,
       "component": "shared.priced-card"
     },
-    "corporateHeading": { "type": "string" },
-    "corporateIntro1": { "type": "text" },
-    "corporateIntro2": { "type": "text" },
+    "corporateHeading": {
+      "type": "string"
+    },
+    "corporateIntro1": {
+      "type": "text"
+    },
+    "corporateIntro2": {
+      "type": "text"
+    },
     "corporateCtas": {
       "type": "component",
       "repeatable": true,
@@ -39,11 +51,32 @@
       "repeatable": true,
       "component": "shared.corporate-class-card"
     },
-    "nominationFeeHeading": { "type": "string" },
-    "nominationFeeBody": { "type": "text" },
-    "refundHeading": { "type": "string" },
-    "refundBody": { "type": "text" },
-    "additionalNotesHeading": { "type": "string" },
+    "nominationFeeHeading": {
+      "type": "string"
+    },
+    "nominationFeeBody": {
+      "type": "text"
+    },
+    "supplementaryHeading": {
+      "type": "string"
+    },
+    "supplementarySubheading": {
+      "type": "text"
+    },
+    "supplementaryCards": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.priced-card"
+    },
+    "refundHeading": {
+      "type": "string"
+    },
+    "refundBody": {
+      "type": "text"
+    },
+    "additionalNotesHeading": {
+      "type": "string"
+    },
     "additionalNotes": {
       "type": "component",
       "repeatable": true,

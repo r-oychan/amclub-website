@@ -76,21 +76,21 @@ const QUAD_VENUES: ThreeColItem[] = [
   {
     heading: 'The Quad Poolside',
     description: 'A safe, imaginative play space perfect for curious kids below 6 years old.',
-    image: '/uploads/pages/kids/quadpoolside.jpeg',
+    image: '/images/kids/quadpoolside.jpeg',
     imageAlt: 'The Quad Poolside',
     cta: { label: 'Learn More', href: '/kids/the-quad-poolside' },
   },
   {
     heading: 'The Quad',
     description: 'A dynamic play zone packed with arcade games, interactive challenges, and endless fun for kids 6 years old and above.',
-    image: '/uploads/pages/kids/quad-card.jpeg',
+    image: '/images/kids/quad-card.jpeg',
     imageAlt: 'The Quad',
     cta: { label: 'Learn More', href: '/kids/the-quad' },
   },
   {
     heading: 'The Quad Studios',
     description: "Where learning meets celebration \u2013 home to kids' recreational classes and a versatile party space for their most special moments.",
-    image: '/uploads/pages/kids/quadstudio.jpeg',
+    image: '/images/kids/quadstudio.jpeg',
     imageAlt: 'The Quad Studios',
     cta: { label: 'Learn More', href: '/kids/the-quad-studios' },
   },
@@ -131,7 +131,7 @@ export function QuadSection() {
           {/* Central Quad logo */}
           <div className="absolute inset-0 rounded-full bg-[#FEB700] flex items-center justify-center shadow-lg overflow-hidden">
             <img
-              src="/uploads/pages/kids/quad.png"
+              src="/images/kids/quad.png"
               alt=""
               className="w-[78%] h-[78%] object-contain"
             />

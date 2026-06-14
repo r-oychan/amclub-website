@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_blocks_package_card_grids",
+  "info": {
+    "displayName": "Package Card Grid",
+    "icon": "gift",
+    "description": "Grid of event package cards (Wedding / Corporate / Parties packages)."
+  },
+  "attributes": {
+    "heading": { "type": "string" },
+    "subheading": { "type": "text" },
+    "columns": {
+      "type": "integer",
+      "default": 3,
+      "min": 1,
+      "max": 4
+    },
+    "cards": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.package-card"
+    }
+  }
+}

@@ -92,7 +92,7 @@ async function upsertFitnessPage({ media }) {
       textBgColor: '#272E3D',
       textTheme: 'light',
       ctas: [
-        { label: 'Personal Training & Group Fitness Classes', href: '/documents/fitness/personal-training-group-fitness-class.pdf', variant: 'outline', bordered: true, isExternal: true },
+        { label: 'Personal Training & Group Fitness Classes', href: '/documents/fitness/personal-training-group-fitness-rates-2026.pdf', variant: 'outline', bordered: true, isExternal: true },
         { label: 'Group Fitness Class Schedule',              href: '/documents/fitness/group-fitness-class-schedule.jpg',         variant: 'outline', bordered: true, isExternal: true },
         { label: 'Learn More',                                href: '/fitness/gym',                                                variant: 'outline', bordered: true },
       ],

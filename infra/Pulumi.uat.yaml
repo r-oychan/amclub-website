@@ -1,12 +1,14 @@
 config:
   azure-native:location: southeastasia
-  # Custom domain bound to the uat Container App. MUST be declared here
-  # (not just configured in the portal) — Azure Container Apps uses PUT
-  # semantics, so every `pulumi up` strips any customDomains missing from
-  # the desired-state body. See Pulumi.prod.yaml for the full background.
+  # Custom domain bound to the UAT Container App. See Pulumi.dev.yaml for
+  # the full explanation of why this must be declared in stack config
+  # (TL;DR: Azure Container Apps PUT semantics strip customDomains if
+  # they're not in the desired-state body).
   #
-  # certName lookup:
+  # Look up the certName via:
   #   az containerapp env certificate list -g amclub-uat-rg -n amclub-uat-env
+  # (or via Azure Portal → Container Apps Environment → Certificates).
+  # The cert name follows the pattern `<domain>-amclub-<env>-<timestamp>`.
   amclub-website:customDomains:
     - name: uat.amclub.org.sg
       certName: uat.amclub.org.sg-amclub-u-260519023822

@@ -1,0 +1,12 @@
+{
+  "collectionName": "components_shared_faq_pairs",
+  "info": {
+    "displayName": "FAQ Pair",
+    "icon": "question",
+    "description": "Inline question/answer pair. For page-scoped FAQs that don't need to live in the global faq-item collection."
+  },
+  "attributes": {
+    "question": { "type": "string", "required": true },
+    "answer": { "type": "text" }
+  }
+}

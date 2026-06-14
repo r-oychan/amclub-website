@@ -4,19 +4,46 @@
   "info": {
     "singularName": "event-spaces-page",
     "pluralName": "event-spaces-pages",
-    "displayName": "Event Spaces Page",
+    "displayName": "Event Spaces: Page",
     "description": "Event Spaces Page content"
   },
   "options": {
     "draftAndPublish": true
   },
   "attributes": {
-    "title": { "type": "string", "required": true },
-    "hero": { "type": "component", "repeatable": false, "component": "blocks.hero" },
-    "privatePackages": { "type": "component", "repeatable": false, "component": "blocks.private-event-packages" },
-    "distinctiveSpaces": { "type": "component", "repeatable": false, "component": "blocks.distinctive-event-spaces" },
-    "offsiteCatering": { "type": "component", "repeatable": false, "component": "blocks.offsite-catering-services" },
-    "finalCta": { "type": "component", "repeatable": false, "component": "blocks.cta-banner" },
-    "seo": { "type": "component", "repeatable": false, "component": "shared.seo" }
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "hero": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.hero"
+    },
+    "privatePackages": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.private-event-packages"
+    },
+    "distinctiveSpaces": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.distinctive-event-spaces"
+    },
+    "offsiteCatering": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.offsite-catering-services"
+    },
+    "finalCta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.cta-banner"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
   }
 }

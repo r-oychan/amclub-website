@@ -18,14 +18,17 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ github.ref_name == 'main' && 'prod' || github.ref_name == 'uat' && 'uat' || 'dev' }}
     env:
+      # Run all JS-based actions (incl. pulumi/actions@v6, azure/login) on
+      # Node 24 to match our toolchain and clear the Node 20 deprecation.
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
       AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
       AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_KEY }}
       PULUMI_CONFIG_PASSPHRASE: ${{ secrets.PULUMI_CONFIG_PASSPHRASE }}
       STACK: ${{ github.ref_name == 'main' && 'prod' || github.ref_name == 'uat' && 'uat' || 'dev' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: npm
@@ -68,6 +71,15 @@ jobs:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
           ELEVENLABS_AGENT_ID: ${{ vars.ELEVENLABS_AGENT_ID }}
           PUBLIC_SITE_URL: ${{ github.ref_name == 'main' && 'https://amclub.org.sg' || github.ref_name == 'uat' && 'https://uat.amclub.org.sg' || 'https://dev.amclub.org.sg' }}
+          # Microsoft Entra ID SSO for the Strapi admin (via strapi-plugin-sso).
+          # All four are optional — if AZUREAD_OAUTH_CLIENT_ID is unset, the
+          # plugin will simply not be reachable and password login still works.
+          # The redirect URI is derived inside infra/index.ts from the
+          # Container App's own FQDN, so it doesn't need a GH secret.
+          AZUREAD_TENANT_ID: ${{ secrets.AZUREAD_TENANT_ID }}
+          AZUREAD_OAUTH_CLIENT_ID: ${{ secrets.AZUREAD_OAUTH_CLIENT_ID }}
+          AZUREAD_OAUTH_CLIENT_SECRET: ${{ secrets.AZUREAD_OAUTH_CLIENT_SECRET }}
+          AZUREAD_SCOPE: ${{ vars.AZUREAD_SCOPE || 'user.read' }}
 
       - name: Show deployment URL
         if: success()

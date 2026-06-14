@@ -1,0 +1,132 @@
+{
+  "kind": "collectionType",
+  "collectionName": "kids_experiences",
+  "info": {
+    "singularName": "kids-experience",
+    "pluralName": "kids-experiences",
+    "displayName": "Kids: Experiences",
+    "description": "Kids section detail pages — venues (The Quad, The Hangout) and programs (Recreational Classes, Seasonal Camps, Kids Parties). Mirrors the fitness-facility shape with added inline FAQ + quotes + party packages."
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "name",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "heroImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "heroVideo": {
+      "type": "string"
+    },
+    "parentLabel": {
+      "type": "string"
+    },
+    "parentHref": {
+      "type": "string"
+    },
+    "locationLevel": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "email"
+    },
+    "operatingHoursSections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.operating-hours-section"
+    },
+    "extraSections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.extra-section"
+    },
+    "locationContact": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.location-contact"
+    },
+    "ctas": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link",
+      "max": 4
+    },
+    "bottomCtas": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link",
+      "max": 4
+    },
+    "downloads": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.downloads-section"
+    },
+    "gallery": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "marquee": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.marquee-gallery"
+    },
+    "faq": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.faq-pair"
+    },
+    "quotes": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.quotes-block"
+    },
+    "partyPackages": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.party-packages"
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    },
+    "parent": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::kids-experience.kids-experience",
+      "inversedBy": "children"
+    },
+    "children": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::kids-experience.kids-experience",
+      "mappedBy": "parent"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
+  }
+}

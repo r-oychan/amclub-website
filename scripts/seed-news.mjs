@@ -7,14 +7,15 @@
 // is NOT in the JSON list is removed so the live News page reflects
 // the canonical list exactly.
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, statSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { initEnv, api, findOneBySlug, isDryRun } from './seed-helpers.mjs';
+import { initEnv, api, findOneBySlug, isDryRun, uploadFile } from './seed-helpers.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 const DATA_FILE = join(ROOT, 'scripts', 'data', 'news-articles.json');
+const COVER_DIR = join(ROOT, 'media', 'news');
 const DRY = isDryRun();
 const ctx = initEnv();
 
@@ -49,7 +50,20 @@ async function deleteArticle(documentId, slug) {
   await api(ctx, `/news-articles/${documentId}`, { method: 'DELETE' });
 }
 
+async function ensureCoverImage(filename) {
+  if (!filename) return null;
+  const path = join(COVER_DIR, filename);
+  try { statSync(path); } catch {
+    console.warn(`    ! cover missing: ${filename}`);
+    return null;
+  }
+  if (DRY) { console.log(`  [dry] upload cover: ${filename}`); return null; }
+  const m = await uploadFile(ctx, path);
+  return m?.id ?? null;
+}
+
 async function upsertArticle(a) {
+  const imageId = await ensureCoverImage(a.image);
   const payload = {
     title: a.title,
     slug: a.slug,
@@ -59,6 +73,7 @@ async function upsertArticle(a) {
     order: a.order ?? 0,
     body: toBlocks(a.body),
     publishedAt: new Date().toISOString(),
+    ...(imageId ? { image: imageId } : {}),
   };
   if (DRY) { console.log(`  [dry] upsert article: ${a.title}`); return; }
   const existing = await findOneBySlug(ctx, 'news-articles', a.slug);

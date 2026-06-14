@@ -4,7 +4,7 @@
   "info": {
     "singularName": "event",
     "pluralName": "events",
-    "displayName": "Event",
+    "displayName": "What's On: Events",
     "description": "Club events and activities"
   },
   "options": {
@@ -33,6 +33,9 @@
       "type": "date",
       "required": true
     },
+    "expiredAt": {
+      "type": "date"
+    },
     "time": {
       "type": "string"
     },
@@ -51,7 +54,9 @@
     "image": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "category": {
       "type": "relation",
@@ -59,7 +64,7 @@
       "target": "api::event-category.event-category",
       "inversedBy": "events"
     },
-    "featured": {
+    "featuredOnHomepage": {
       "type": "boolean",
       "default": false
     },

@@ -4,11 +4,11 @@
   "info": {
     "singularName": "committee-member",
     "pluralName": "committee-members",
-    "displayName": "Committee Member",
+    "displayName": "About: Committee Members",
     "description": "Club committee and management members"
   },
   "options": {
-    "draftAndPublish": false
+    "draftAndPublish": true
   },
   "attributes": {
     "name": {
@@ -30,11 +30,16 @@
     "photo": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "memberType": {
       "type": "enumeration",
-      "enum": ["general-committee", "management"],
+      "enum": [
+        "general-committee",
+        "management"
+      ],
       "default": "general-committee"
     },
     "order": {

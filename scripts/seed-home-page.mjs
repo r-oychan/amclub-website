@@ -17,7 +17,7 @@
 import { readFileSync, readdirSync, statSync, createReadStream } from 'node:fs';
 import { resolve, dirname, join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { initEnv } from './seed-helpers.mjs';
+import { initEnv, uploadFile as helperUploadFile } from './seed-helpers.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
@@ -63,21 +63,10 @@ async function findUploadedByName(name) {
   return Array.isArray(arr) && arr.length ? arr[0] : null;
 }
 
+// Delegates to the shared helper so uploads carry mime + auto-derived
+// path (the helper maps media/home/foo.jpg → blob folder `home`, etc.).
 async function uploadFile(localPath) {
-  const name = basename(localPath);
-  const existing = await findUploadedByName(name);
-  if (existing) return existing;
-  const buf = readFileSync(localPath);
-  const fd = new FormData();
-  const blob = new Blob([buf]);
-  fd.append('files', blob, name);
-  const res = await fetch(`${BASE}/api/upload`, { method: 'POST', headers: auth, body: fd });
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`upload ${name} → ${res.status}: ${err}`);
-  }
-  const arr = await res.json();
-  return arr[0];
+  return helperUploadFile({ BASE, auth }, localPath);
 }
 
 // ── Plan ─────────────────────────────────────────────────
@@ -119,7 +108,7 @@ const IMAGES = [
 const EVENT_CATEGORIES = ['Dining', 'Fitness & Wellness', 'Kids', 'Member Engagement'];
 
 const EVENTS = [
-  // category, title, date (ISO), image filename, featured (always true here)
+  // category, title, date (ISO), image filename (all flagged featuredOnHomepage)
   ['Dining',              'Nostalgic Flavors of Singapore',                        '2026-12-04', 'event-1-nostalgic-flavors.jpg'],
   ['Fitness & Wellness',  'Pedal to Victory! A Spin Bike Time Challenge',          '2026-11-05', 'event-2-pedal-to-victory.jpg'],
   ['Kids',                'Scarily Fun Friday Nights for the Kids!',               '2026-10-19', 'event-3-scarily-fun-fridays.jpg'],
@@ -153,12 +142,37 @@ const TESTIMONIALS = [
 ];
 
 const FAQ_ITEMS = [
-  // question, category, order  (answer empty per D8)
-  ['What types of membership do you offer?',          'membership', 1],
-  ['What facilities and services are included?',      'facilities', 2],
-  ['Is membership transferable?',                     'membership', 3],
-  ['Can I upgrade or change my membership type?',     'membership', 4],
+  // question, category, order, answer (plain text — converted to blocks on upsert)
+  [
+    'What types of membership do you offer?',
+    'membership',
+    1,
+    'The Club offers several membership categories including Ordinary, Term, Junior, and Corporate. Each comes with its own privileges, eligibility, and joining-fee structure. Visit the Membership Types & Joining Fees page or contact our Membership team for guidance on the option that best suits you and your family.',
+  ],
+  [
+    'What facilities and services are included?',
+    'facilities',
+    2,
+    'Members enjoy access to our gym, aquatics centre, sên Spa, tennis courts, multi-purpose court, bowling alley, and a full suite of fitness studios — plus eight restaurants and bars, kids programmes, and a private events team. Operating hours and class schedules are published weekly in the Member portal.',
+  ],
+  [
+    'Is membership transferable?',
+    'membership',
+    3,
+    'Membership is generally non-transferable, but certain categories allow nomination or transfer to immediate family members under defined conditions. Please reach out to our Membership team for the latest rules and any documentation required.',
+  ],
+  [
+    'Can I upgrade or change my membership type?',
+    'membership',
+    4,
+    'Yes — Members may upgrade or change their membership category subject to eligibility, availability, and any applicable difference in entrance fees. Speak with our Membership team and they will walk you through the process.',
+  ],
 ];
+
+const toBlocks = (text) => [{
+  type: 'paragraph',
+  children: [{ type: 'text', text }],
+}];
 
 const slugify = (s) => s.toLowerCase()
   .replace(/['']/g, '')
@@ -186,7 +200,7 @@ async function ensureEvent(category, title, date, imageId) {
     title, slug, date,
     image: imageId,
     category: category.documentId,
-    featured: true,
+    featuredOnHomepage: true,
     publishedAt: new Date().toISOString(),
   };
   if (DRY) { console.log(`  [dry] upsert event: ${title}`); return { documentId: `dry-${slug}`, slug }; }
@@ -222,12 +236,17 @@ async function ensureTestimonial(slug, quote, imageId, videoId, postUrl, order) 
   }
 }
 
-async function ensureFaqItem(question, category, order) {
+async function ensureFaqItem(question, category, order, answerText) {
   const slug = slugify(question);
   if (DRY) { console.log(`  [dry] upsert faq-item: ${question}`); return { documentId: `dry-${slug}`, slug }; }
   const existing = await findOneBySlug('faq-items', slug);
-  const payload = { question, slug, category, order, answer: null };
-  if (DRY) { console.log(`  [dry] upsert faq-item: ${question}`); return { documentId: `dry-${slug}`, slug }; }
+  const payload = {
+    question,
+    slug,
+    category,
+    order,
+    answer: answerText ? toBlocks(answerText) : null,
+  };
   if (existing) {
     const r = await api(`/faq-items/${existing.documentId}`, { method: 'PUT', body: { data: payload } });
     return r.data;
@@ -408,8 +427,8 @@ async function main() {
 
   console.log('\n[5/6] FAQ items…');
   const faqIds = [];
-  for (const [q, cat, order] of FAQ_ITEMS) {
-    const f = await ensureFaqItem(q, cat, order);
+  for (const [q, cat, order, answerText] of FAQ_ITEMS) {
+    const f = await ensureFaqItem(q, cat, order, answerText);
     faqIds.push(f.documentId);
     console.log(`  ✓ ${q}`);
   }

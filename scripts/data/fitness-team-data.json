@@ -1,0 +1,352 @@
+{
+  "aquatics": [
+    {
+      "name": "Greg",
+      "role": "Aquatics Manager & Head Swim Coach",
+      "image": "/images/fitness/team-aquatics/greg.jpg",
+      "imageOffsetX": 48,
+      "imageOffsetY": 25,
+      "imageZoom": 1.7,
+      "coachLink": "/coaches/aquatics/greg"
+    },
+    {
+      "name": "Zack",
+      "role": "Aquatics Coordinator",
+      "image": "/images/fitness/team-aquatics/zack.jpg",
+      "imageOffsetX": 48,
+      "imageOffsetY": 25,
+      "imageZoom": 1.8,
+      "coachLink": "/coaches/aquatics/zack"
+    },
+    {
+      "name": "Hariz",
+      "role": "Assistant Swim Coach & Coordinator",
+      "image": "/images/fitness/team-aquatics/hariz.jpg",
+      "imageOffsetX": 48,
+      "imageOffsetY": 28,
+      "imageZoom": 1.8,
+      "coachLink": "/coaches/aquatics/hariz"
+    },
+    {
+      "name": "Abdul",
+      "role": "Chief Lifeguard Trainer",
+      "image": "/images/fitness/team-aquatics/abdul.jpg",
+      "imageOffsetX": 48,
+      "imageOffsetY": 25,
+      "imageZoom": 1.8,
+      "coachLink": "/coaches/aquatics/abdul"
+    },
+    {
+      "name": "Marc",
+      "role": "Swim Coach",
+      "image": "/images/fitness/team-aquatics/marc.png",
+      "imageOffsetX": 48,
+      "imageOffsetY": 35,
+      "imageZoom": 1.4
+    },
+    {
+      "name": "Rodel",
+      "role": "Swim Coach / Lifeguard Trainer",
+      "image": "/images/fitness/team-aquatics/rodel.jpg",
+      "imageOffsetX": 48,
+      "imageOffsetY": 22,
+      "imageZoom": 1.8,
+      "coachLink": "/coaches/aquatics/rodel"
+    },
+    {
+      "name": "Ben",
+      "role": "Swim Coach / Lifeguard Trainer",
+      "image": "/images/fitness/team-aquatics/ben.jpeg",
+      "imageOffsetX": 48,
+      "imageOffsetY": 28,
+      "imageZoom": 2.0
+    },
+    {
+      "name": "Francesca",
+      "role": "Swim Coach",
+      "image": "/images/fitness/team-aquatics/francesca.jpg",
+      "imageOffsetX": 48,
+      "imageOffsetY": 32,
+      "imageZoom": 1.7
+    },
+    {
+      "name": "Caroline",
+      "role": "Part-time Swim Coach",
+      "image": "/images/fitness/team-aquatics/caroline.jpg",
+      "imageOffsetX": 50,
+      "imageOffsetY": 28,
+      "imageZoom": 1.55
+    },
+    {
+      "name": "Daniel",
+      "role": "Part-time Swim Coach",
+      "image": "/images/fitness/team-aquatics/daniel.jpg",
+      "imageOffsetX": 48,
+      "imageOffsetY": 25,
+      "imageZoom": 1.8
+    },
+    {
+      "name": "Yat",
+      "role": "Part-time Swim Coach / Lifeguard Trainer",
+      "image": "/images/fitness/team-aquatics/yat.jpg",
+      "imageOffsetX": 48,
+      "imageOffsetY": 22,
+      "imageZoom": 1.6
+    },
+    {
+      "name": "Sia",
+      "role": "Part-time Lifeguard Trainer",
+      "image": "/images/fitness/team-aquatics/sia.jpg",
+      "imageOffsetX": 50,
+      "imageOffsetY": 30,
+      "imageZoom": 1.5
+    }
+  ],
+  "gym": [
+    {
+      "name": "Mubin",
+      "role": "Personal Trainer",
+      "image": "/images/fitness/team-pt/mubin.png",
+      "bioImage": "/images/fitness/team-pt/mubin-bio.png"
+    },
+    {
+      "name": "Robert",
+      "role": "Personal Trainer",
+      "image": "/images/fitness/team-pt/robert.jpg",
+      "bioImage": "/images/fitness/team-pt/robert-bio.png"
+    },
+    {
+      "name": "Liza",
+      "role": "Personal Trainer",
+      "image": "/images/fitness/team-pt/liza.jpg",
+      "bioImage": "/images/fitness/team-pt/liza-bio.png"
+    },
+    {
+      "name": "Irfan",
+      "role": "Personal Trainer",
+      "image": "/images/fitness/team-pt/irfan.jpg",
+      "bioImage": "/images/fitness/team-pt/irfan-bio.png"
+    },
+    {
+      "name": "Flinson",
+      "role": "Personal Trainer",
+      "image": "/images/fitness/team-pt/flinson.jpg",
+      "bioImage": "/images/fitness/team-pt/flinson-bio.png"
+    },
+    {
+      "name": "Ewan",
+      "role": "Personal Trainer",
+      "image": "/images/fitness/team-pt/ewan.jpg",
+      "bioImage": "/images/fitness/team-pt/ewan-bio.png"
+    },
+    {
+      "name": "Eric",
+      "role": "Personal Trainer",
+      "image": "/images/fitness/team-pt/eric.jpg",
+      "bioImage": "/images/fitness/team-pt/eric-bio.png"
+    },
+    {
+      "name": "Elaine",
+      "role": "Personal Trainer",
+      "image": "/images/fitness/team-pt/elaine.jpg",
+      "bioImage": "/images/fitness/team-pt/elaine-bio.png"
+    },
+    {
+      "name": "Ashton",
+      "role": "Personal Trainer",
+      "image": "/images/fitness/team-pt/ashton.jpg",
+      "bioImage": "/images/fitness/team-pt/ashton-bio.png"
+    },
+    {
+      "name": "Adrian",
+      "role": "Personal Trainer",
+      "image": "/images/fitness/team-pt/adrian.jpg",
+      "bioImage": "/images/fitness/team-pt/adrian-bio.png"
+    },
+    {
+      "name": "Yattz",
+      "role": "Personal Trainer",
+      "image": "/images/fitness/team-pt/yattz.jpg",
+      "bioImage": "/images/fitness/team-pt/yattz-bio.png"
+    },
+    {
+      "name": "Nadesh",
+      "role": "Personal Trainer",
+      "image": "/images/fitness/team-pt/nadesh.jpg",
+      "bioImage": "/images/fitness/team-pt/nadesh-bio.png"
+    },
+    {
+      "name": "Sam",
+      "role": "Personal Trainer",
+      "image": "/images/fitness/team-pt/sam.jpg",
+      "bioImage": "/images/fitness/team-pt/sam-bio.png"
+    },
+    {
+      "name": "Crystal",
+      "role": "Personal Trainer",
+      "image": "/images/fitness/team-pt/crystal.jpg",
+      "bioImage": "/images/fitness/team-pt/crystal-bio.png"
+    },
+    {
+      "name": "Jenny",
+      "role": "Personal Trainer",
+      "image": "/images/fitness/team-pt/jenny.jpg",
+      "bioImage": "/images/fitness/team-pt/jenny-bio.png"
+    },
+    {
+      "name": "Vanan",
+      "role": "Personal Trainer",
+      "image": "/images/fitness/team-pt/vanan.jpg",
+      "bioImage": "/images/fitness/team-pt/vanan-bio.png"
+    },
+    {
+      "name": "Ghazali",
+      "role": "Personal Trainer",
+      "image": "/images/fitness/team-pt/ghazali.jpg",
+      "bioImage": "/images/fitness/team-pt/ghazali-bio.png"
+    },
+    {
+      "name": "Andyn",
+      "role": "Personal Trainer",
+      "image": "/images/fitness/team-pt/andyn.jpg",
+      "bioImage": "/images/fitness/team-pt/andyn-bio.png"
+    },
+    {
+      "name": "Zack",
+      "role": "Personal Trainer",
+      "bioImage": "/images/fitness/team-pt/zack-bio.png"
+    },
+    {
+      "name": "Desmond",
+      "role": "Personal Trainer",
+      "bioImage": "/images/fitness/team-pt/desmond-bio.png"
+    }
+  ],
+  "tennis": [
+    {
+      "name": "Azhar Zainudin",
+      "role": "Director of Tennis",
+      "image": "/images/fitness/team/azhar-zainudin.jpg",
+      "bioImage": "/images/fitness/team/azhar-zainudin-bio.png",
+      "imageOffsetX": 48,
+      "imageOffsetY": 35,
+      "imageZoom": 2.0
+    },
+    {
+      "name": "Jorge Pinilla",
+      "role": "Director of Player Development",
+      "image": "/images/fitness/team/jorge-pinilla-headshot.png",
+      "bioImage": "/images/fitness/team/jorge-pinilla-bio.png",
+      "imageOffsetX": 44,
+      "imageOffsetY": 30,
+      "imageZoom": 2.0
+    },
+    {
+      "name": "Herman Ali",
+      "role": "Senior Tennis Professional",
+      "image": "/images/fitness/team/herman-ali.jpg",
+      "bioImage": "/images/fitness/team/herman-ali-bio.png",
+      "imageOffsetX": 48,
+      "imageOffsetY": 22,
+      "imageZoom": 2.0
+    },
+    {
+      "name": "Reduan Ariffin",
+      "role": "Tennis Professional",
+      "image": "/images/fitness/team/reduan-ariffin.jpg",
+      "bioImage": "/images/fitness/team/reduan-ariffin-bio.png",
+      "imageOffsetX": 48,
+      "imageOffsetY": 30,
+      "imageZoom": 1.8
+    },
+    {
+      "name": "Sharassalam Rasak",
+      "role": "Tennis Professional",
+      "image": "/images/fitness/team/sharassalam-rasak.jpg",
+      "bioImage": "/images/fitness/team/sharassalam-rasak-bio.png",
+      "imageOffsetX": 48,
+      "imageOffsetY": 28,
+      "imageZoom": 2.0
+    },
+    {
+      "name": "Ethan Lee",
+      "role": "Tennis Professional",
+      "image": "/images/fitness/team/ethan-lee.jpg",
+      "bioImage": "/images/fitness/team/ethan-lee-bio.png",
+      "imageOffsetX": 48,
+      "imageOffsetY": 25,
+      "imageZoom": 2.0
+    },
+    {
+      "name": "Ezequiel Suarez",
+      "role": "Tennis Professional",
+      "image": "/images/fitness/team/ezequiel-suarez.jpg",
+      "bioImage": "/images/fitness/team/ezequiel-suarez-bio.png",
+      "imageOffsetX": 52,
+      "imageOffsetY": 30,
+      "imageZoom": 2.0
+    },
+    {
+      "name": "Jarek Grela",
+      "role": "Tennis Professional",
+      "image": "/images/fitness/team/jarek-grela-headshot.png",
+      "bioImage": "/images/fitness/team/jarek-grela-bio.png",
+      "imageOffsetX": 48,
+      "imageOffsetY": 22,
+      "imageZoom": 2.2
+    },
+    {
+      "name": "Jose Nino",
+      "role": "Tennis Professional",
+      "image": "/images/fitness/team/jose-nino.jpg",
+      "bioImage": "/images/fitness/team/jose-nino-bio.png",
+      "imageOffsetX": 48,
+      "imageOffsetY": 18,
+      "imageZoom": 2.0
+    }
+  ],
+  "pilates": [
+    {
+      "name": "Annie Agoncillo",
+      "role": "Pilates Coach",
+      "image": "/images/fitness/team-pilates/annie-agoncillo.jpg",
+      "bioImage": "/images/fitness/team-pilates/annie-agoncillo-bio.png"
+    },
+    {
+      "name": "Alvan Chan",
+      "role": "Pilates Coach",
+      "image": "/images/fitness/team-pilates/alvan-chan.jpg",
+      "bioImage": "/images/fitness/team-pilates/alvan-chan-bio.jpg"
+    },
+    {
+      "name": "Anthea Lee",
+      "role": "Pilates Instructor",
+      "image": "/images/fitness/team-pilates/anthea-lee.png",
+      "bioImage": "/images/fitness/team-pilates/anthea-lee-bio.png"
+    },
+    {
+      "name": "Felicia Tan",
+      "role": "Pilates Coach",
+      "image": "/images/fitness/team-pilates/felicia-tan.jpg",
+      "bioImage": "/images/fitness/team-pilates/felicia-tan-bio.png"
+    },
+    {
+      "name": "Mary Sng",
+      "role": "Pilates Coach",
+      "image": "/images/fitness/team-pilates/mary-sng.jpg",
+      "bioImage": "/images/fitness/team-pilates/mary-sng-bio.png"
+    },
+    {
+      "name": "Chua Li Li",
+      "role": "Pilates Coach",
+      "image": "/images/fitness/team-pilates/chua-li-li.jpg",
+      "bioImage": "/images/fitness/team-pilates/chua-li-li-bio.png"
+    },
+    {
+      "name": "Danielle Chue",
+      "role": "Pilates Coach",
+      "image": "/images/fitness/team-pilates/danielle-chue.jpg",
+      "bioImage": "/images/fitness/team-pilates/danielle-chue-bio.png"
+    }
+  ]
+}

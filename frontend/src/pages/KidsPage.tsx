@@ -134,7 +134,7 @@ export default function KidsPage() {
         imageAlt: 'The Quad Studio Party Package',
         cta: {
           label: 'Download Brochure',
-          href: '/documents/kids/the-quad-studios-party-package.pdf',
+          href: '/uploads/documents/kids/the_quad_studios_party_package_a30659c48d.pdf',
           isExternal: true,
         },
       },
@@ -144,7 +144,7 @@ export default function KidsPage() {
         imageAlt: 'The Bowling Alley Party Package',
         cta: {
           label: 'Download Brochure',
-          href: '/documents/kids/the-bowling-alley-party-package.pdf',
+          href: '/uploads/documents/kids/the_bowling_alley_party_package_a48fe5d6f1.pdf',
           isExternal: true,
         },
       },
@@ -154,7 +154,7 @@ export default function KidsPage() {
         imageAlt: 'Union Bar x The Bowling Alley',
         cta: {
           label: 'View Menu',
-          href: '/documents/kids/union-bar-bowling-alley-menu.jpg',
+          href: '/uploads/documents/kids/union_bar_bowling_alley_menu_f4e33ce856.jpg',
           isExternal: true,
         },
       },

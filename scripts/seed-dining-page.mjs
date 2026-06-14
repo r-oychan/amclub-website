@@ -1,12 +1,34 @@
 #!/usr/bin/env node
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { initEnv, api, findOneBySlug, uploadAll, slugify, isDryRun } from './seed-helpers.mjs';
+import { readFileSync } from 'node:fs';
+import { initEnv, api, findOneBySlug, uploadAll, publishDocument, slugify, isDryRun } from './seed-helpers.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
 const DRY = isDryRun();
 const ctx = initEnv();
+
+// Pre-extracted extraSections per restaurant slug (from the legacy
+// subpages.ts via scripts/data/dining-data.json). Used to fill the new
+// `extraSections` field on the restaurant collection.
+const EXTRAS_BY_SLUG = (() => {
+  try {
+    const map = {};
+    const dataPath = join(resolve(dirname(fileURLToPath(import.meta.url)), '..'), 'scripts', 'data', 'dining-data.json');
+    const data = JSON.parse(readFileSync(dataPath, 'utf8'));
+    for (const [slug, e] of Object.entries(data)) {
+      if (Array.isArray(e?.extraSections) && e.extraSections.length) {
+        map[slug] = e.extraSections.map((s) => ({
+          title: s.title,
+          content: s.content ?? null,
+          bullets: Array.isArray(s.bullets) && s.bullets.length ? s.bullets : null,
+        }));
+      }
+    }
+    return map;
+  } catch { return {}; }
+})();
 
 // 6 restaurant photos + 6 logos + 1 hero + 2 delivery + 1 essentials = 16
 const HERO_DIR = join(ROOT, 'media', 'pages', 'dining');
@@ -34,7 +56,9 @@ const RESTAURANTS = [
     menuLinks: [
       { label: 'View Menu', href: '/menus/central-menu.pdf' },
     ],
-    ctas: [{ label: 'Promotions', href: '/dining/dining-promotion#promo-central', icon: 'arrow' }],
+    // Promotions CTA auto-derived by VenueDetailPage from /dining-promotions
+    // when a promo with this restaurant relation exists.
+    ctas: [],
     operatingHoursSections: [
       { title: 'Opening Hours', rows: [
         { dayRange: 'Daily', time: '7:00 AM - 7:00 PM' },
@@ -50,7 +74,7 @@ const RESTAURANTS = [
     menuLinks: [
       { label: 'View Menu', href: '/menus/grillhouse-menu.pdf' },
     ],
-    ctas: [{ label: 'Promotions', href: '/dining/dining-promotion#promo-grillhouse', icon: 'arrow' }],
+    ctas: [],
     operatingHoursSections: [
       { title: 'Grillhouse Operating Hours', rows: [
         { dayRange: 'Sunday to Thursday', time: '11:00 AM - 9:00 PM', lastOrder: 'Last order at 8:30 PM' },
@@ -72,7 +96,7 @@ const RESTAURANTS = [
     menuLinks: [
       { label: 'View Menu', href: '/menus/the-2nd-floor-menu.pdf' },
     ],
-    ctas: [{ label: 'Promotions', href: '/dining/dining-promotion#promo-the-2nd-floor', icon: 'arrow' }],
+    ctas: [],
     operatingHoursSections: [
       { title: 'Operating Hours', rows: [
         {
@@ -109,7 +133,7 @@ const RESTAURANTS = [
     menuLinks: [
       { label: 'View Menu', href: '/menus/tradewinds-menu.pdf' },
     ],
-    ctas: [{ label: 'Promotions', href: '/dining/dining-promotion#promo-tradewinds', icon: 'arrow' }],
+    ctas: [],
     operatingHoursSections: [
       { title: 'Opening Hours', rows: [
         { dayRange: 'Sunday to Thursday', time: '8:00 AM - 9:00 PM',  lastOrder: 'Last order at 8:30 PM' },
@@ -126,7 +150,9 @@ const RESTAURANTS = [
     menuLinks: [
       { label: 'View Menu', href: '/menus/union-bar-menu.pdf' },
     ],
-    ctas: [{ label: 'Promotions', href: '/dining/dining-promotion#promo-union-bar', icon: 'arrow' }],
+    ctas: [
+      { label: 'Sports Screening Schedule', href: 'https://docs.google.com/presentation/d/1Ruk_oS8bijGO1Osuuuc4cL3aGc7DknzVmMRqsyN7gZ8/edit?slide=id.g36c0dd5bddb_0_2#slide=id.g36c0dd5bddb_0_2', isExternal: true, icon: 'arrow' },
+    ],
     operatingHoursSections: [
       { title: 'Opening Hours', rows: [
         { dayRange: 'Sunday to Thursday',              time: '12:00 PM - 11:00 PM' },
@@ -167,11 +193,17 @@ async function ensureRestaurant(r, imageId, logoId) {
     ...(c.isExternal != null ? { isExternal: c.isExternal } : {}),
   }));
   const ctas = [...menuCtas, ...extraCtas].slice(0, 3);
+  // The first menuLink (if any) is also written to `restaurant.menuUrl` so
+  // the dining-promotion page can derive each promo's "View Menu" CTA from
+  // its linked restaurant — replaces the old hardcoded `MENU_URLS` constant
+  // in DiningPromotionsPage.tsx.
+  const menuUrl = r.menuLinks?.[0]?.href ?? null;
   const payload = {
     name: r.name,
     slug: r.slug,
     cuisineType: r.cuisineType,
     cuisineIconSlug: r.cuisineIconSlug,
+    menuUrl,
     description: r.description,
     image: imageId,
     logo: logoId,
@@ -180,13 +212,16 @@ async function ensureRestaurant(r, imageId, logoId) {
     ctas,
     operatingHoursSections: r.operatingHoursSections ?? [],
     locationContact: r.locationContact ?? null,
+    extraSections: EXTRAS_BY_SLUG[r.slug] ?? [],
     publishedAt: new Date().toISOString(),
   };
   if (existing) {
     const resp = await api(ctx, `/restaurants/${existing.documentId}`, { method: 'PUT', body: { data: payload } });
+    await publishDocument(ctx, 'restaurants', resp?.data?.documentId ?? existing.documentId);
     return resp.data;
   }
   const resp = await api(ctx, '/restaurants', { method: 'POST', body: { data: payload } });
+  if (resp?.data?.documentId) await publishDocument(ctx, 'restaurants', resp.data.documentId);
   return resp.data;
 }
 

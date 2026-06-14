@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_shared_package_cards",
+  "info": {
+    "displayName": "Package Card",
+    "icon": "gift",
+    "description": "Single event-package card — used inside package-card-grid blocks (Wedding/Corporate/Parties packages)."
+  },
+  "attributes": {
+    "heading": { "type": "string", "required": true },
+    "tagline": { "type": "text" },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "imageAlt": { "type": "string" },
+    "benefits": { "type": "json" },
+    "detailsLabel": { "type": "string" },
+    "downloadLink": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.link"
+    }
+  }
+}

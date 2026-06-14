@@ -44,66 +44,8 @@ const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
   return `${STRAPI_URL}${m.url}`;
 };
 
-// Real destinations for CTAs the CMS still seeds with placeholder hrefs.
-// When the seed runs against a Strapi instance that supports component
-// updates these can be removed; until then we patch the href client-side.
-const CTA_OVERRIDES: Record<string, { href: string; isExternal: boolean }> = {
-  'Book a Club Tour': {
-    href: 'https://amclub.jotform.com/260813837273966?parentURL=https%3A%2F%2Famclub.org.sg%2Fmembership-enquiry-form%2F&jsForm=true',
-    isExternal: true,
-  },
-  'Start Your Application': { href: '/membership/start-application', isExternal: false },
-  'Start an Application': { href: '/membership/start-application', isExternal: false },
-  'Membership Types & Joining Fees': { href: '/membership/joining-fees', isExternal: false },
-};
-
 const linksOf = (ls?: StrapiLink[]) =>
-  (ls ?? []).map((l) => {
-    const override = CTA_OVERRIDES[l.label];
-    if (override && (!l.href || l.href === '#')) {
-      return { label: l.label, href: override.href, isExternal: override.isExternal };
-    }
-    return { label: l.label, href: l.href ?? '#', isExternal: l.isExternal };
-  });
-
-// Until the deployed CMS programs entry is re-seeded, the three "Membership
-// Programs" cards may carry stale labels (e.g. "The Eagle Rewards Program")
-// and placeholder hrefs ("#"). Map current/legacy headings to the canonical
-// label + slug for this site. Matching is case-insensitive.
-const PROGRAM_CARD_OVERRIDES: { match: RegExp; heading: string; href: string }[] = [
-  { match: /refer/i, heading: 'Refer & Be Rewarded', href: '/membership/referal' },
-  {
-    match: /(eagle|niche)/i,
-    heading: 'Niche Group Membership',
-    href: '/membership/niche-group-membership',
-  },
-  { match: /reciprocal/i, heading: 'Reciprocal Clubs', href: '/membership/reciprocal-clubs' },
-];
-
-function applyProgramCardOverride(heading: string, href: string) {
-  const m = PROGRAM_CARD_OVERRIDES.find((o) => o.match.test(heading));
-  if (!m) return { heading, href };
-  const finalHref = !href || href === '#' ? m.href : href;
-  return { heading: m.heading, href: finalHref };
-}
-
-// Fallback assets served from /public/membership/ — used until the CMS schema
-// migration adds first-class media fields for these slots.
-const FALLBACK_COMMUNITY_IMAGES = [
-  '/membership/community-kids.jpg',
-  '/membership/community-fitness.jpg',
-  '/membership/community-tennis.jpg',
-  '/membership/community-dining.jpg',
-];
-const FALLBACK_BENEFIT_ICONS = [
-  '/membership/icon-facilities.svg',
-  '/membership/icon-dining.svg',
-  '/membership/icon-events.svg',
-  '/membership/icon-kids.svg',
-  '/membership/icon-community.svg',
-  '/membership/icon-reciprocal.svg',
-];
-const FALLBACK_FIND_MEMBERSHIP_IMAGE = '/membership/find-membership-lobby.jpg';
+  (ls ?? []).map((l) => ({ label: l.label, href: l.href ?? '#', isExternal: l.isExternal }));
 
 export default function MembershipPage() {
   const [data, setData] = useState<StrapiMembershipPage | null>(null);
@@ -112,18 +54,9 @@ export default function MembershipPage() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const page = await fetchAPI<StrapiMembershipPage>('/membership-page', {
-        'populate[hero][populate]': '*',
-        'populate[joinCta][populate]': '*',
-        'populate[joinCommunityImages]': '*',
-        'populate[intro]': '*',
-        'populate[benefits][populate][features][populate]': '*',
-        'populate[benefitIcons]': '*',
-        'populate[findRightCta][populate]': '*',
-        'populate[findMembershipImage]': '*',
-        'populate[programs][populate][cards][populate]': '*',
-        'populate[beginJourneyCta][populate]': '*',
-      });
+      // Server-side POPULATE in cms/src/api/membership-page/controllers handles
+      // every relation; Strapi 5.46 rejects `populate[x]=*` on leaf media fields.
+      const page = await fetchAPI<StrapiMembershipPage>('/membership-page');
       if (cancelled) return;
       setData(page);
       setLoaded(true);
@@ -139,27 +72,21 @@ export default function MembershipPage() {
     heading: f.heading,
     description: f.description,
     image: mediaUrl(f.image),
-    icon: mediaUrl(f.icon) ?? cmsBenefitIcons[i] ?? FALLBACK_BENEFIT_ICONS[i],
+    icon: mediaUrl(f.icon) ?? cmsBenefitIcons[i],
   }));
 
-  const programCards = (data.programs?.cards ?? []).map((c) => {
-    const override = applyProgramCardOverride(c.heading, c.cta?.href ?? '#');
-    return {
-      heading: override.heading,
-      description: c.description,
-      image: mediaUrl(c.image),
-      cta: c.cta ? { label: c.cta.label, href: override.href } : undefined,
-    };
-  });
+  const programCards = (data.programs?.cards ?? []).map((c) => ({
+    heading: c.heading,
+    description: c.description,
+    image: mediaUrl(c.image),
+    cta: c.cta ? { label: c.cta.label, href: c.cta.href ?? '#' } : undefined,
+  }));
 
-  const cmsJoinImages = (data.joinCommunityImages ?? [])
+  const joinImages = (data.joinCommunityImages ?? [])
     .map((m) => ({ src: mediaUrl(m) ?? '', alt: m.alternativeText ?? '' }))
     .filter((i) => i.src);
-  const joinImages = cmsJoinImages.length > 0
-    ? cmsJoinImages
-    : FALLBACK_COMMUNITY_IMAGES.map((src) => ({ src, alt: '' }));
 
-  const findImage = mediaUrl(data.findMembershipImage) ?? FALLBACK_FIND_MEMBERSHIP_IMAGE;
+  const findImage = mediaUrl(data.findMembershipImage);
 
   return (
     <PageFade loaded={loaded}>
@@ -190,7 +117,7 @@ export default function MembershipPage() {
         />
       )}
 
-      {data.findRightCta && (
+      {data.findRightCta && findImage && (
         <OverlaySection
           image={findImage}
           imageAlt={data.findMembershipImage?.alternativeText ?? ''}

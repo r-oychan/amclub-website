@@ -4,17 +4,19 @@
   "info": {
     "singularName": "footer",
     "pluralName": "footers",
-    "displayName": "Footer",
+    "displayName": "Global: Footer",
     "description": "Site footer with contact info and links"
   },
   "options": {
-    "draftAndPublish": false
+    "draftAndPublish": true
   },
   "attributes": {
     "logo": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images"]
+      "allowedTypes": [
+        "images"
+      ]
     },
     "address": {
       "type": "text"
@@ -29,6 +31,16 @@
       "type": "component",
       "repeatable": true,
       "component": "shared.footer-column"
+    },
+    "socials": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.social-link"
+    },
+    "legalLinks": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link"
     },
     "copyright": {
       "type": "string"

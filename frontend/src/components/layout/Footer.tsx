@@ -1,42 +1,6 @@
 import { Link } from 'react-router';
-
-const EXPLORE_LINKS = [
-  { label: 'Dining & Retail', href: '/dining' },
-  { label: 'Fitness & Wellness', href: '/fitness' },
-  { label: 'Kids', href: '/kids' },
-  { label: 'Private Events & Catering', href: '/event-spaces' },
-  { label: 'Membership', href: '/membership' },
-  { label: 'Events Calendar', href: '/whats-on' },
-];
-
-const ABOUT_LINKS = [
-  { label: 'Club News', href: '/home-sub/news' },
-  { label: 'Gallery', href: '/home-sub/gallery' },
-  { label: 'Advertising & Sponsorships', href: '/home-sub/advertise-with-us' },
-  { label: 'Contact Us', href: '/home-sub/contact-us' },
-];
-
-const MEMBER_LINKS = [
-  { label: 'Login', href: 'https://amclub-portal.iontone.com/#/login', external: true },
-  { label: 'Reciprocal Clubs', href: '/membership/reciprocal-clubs' },
-  { label: 'Refer a Friend', href: '/membership/referal' },
-  { label: 'Niche Group Membership', href: '/membership/niche-group-membership' },
-];
-
-const LEGAL_LINKS = [
-  { label: 'Club Constitution', href: '/documents/club-constitution.pdf', external: true },
-  { label: 'Club By-laws', href: '/documents/club-bylaws.pdf', external: true },
-  { label: 'Privacy Statement', href: '/privacy-statement' },
-];
-
-const SOCIALS = [
-  { label: 'Instagram', href: 'https://www.instagram.com/americanclubsingapore/', icon: InstagramIcon },
-  { label: 'Facebook', href: 'https://www.facebook.com/AmericanClubSingapore/', icon: FacebookIcon },
-  { label: 'LinkedIn', href: 'https://www.linkedin.com/company/the-american-club-singapore', icon: LinkedInIcon },
-  { label: 'WhatsApp', href: 'https://www.whatsapp.com/channel/0029Vb6eMBREawdpTErdKE47', icon: WhatsAppIcon },
-];
-
-const LOGO_URL = 'https://framerusercontent.com/images/jYpgpsEhknSxMZJWxquvCab3o.webp';
+import { useFooterData } from '../../hooks/useFooterData';
+import type { FooterColumnData, FooterLink } from '../../hooks/useFooterData';
 
 // Shared text styles — Framer uses one Lato uppercase scale for almost all footer text
 const LINK_CLASSES =
@@ -46,11 +10,22 @@ const HEADING_CLASSES =
 const META_CLASSES =
   'font-body text-[12.8px] font-normal leading-[1.6] tracking-[-0.02em] text-secondary';
 
+const SOCIAL_ICONS: Record<string, () => React.ReactElement> = {
+  instagram: InstagramIcon,
+  facebook: FacebookIcon,
+  linkedin: LinkedInIcon,
+  whatsapp: WhatsAppIcon,
+};
+
 export function Footer() {
+  const footer = useFooterData();
+  const telHref = `tel:${footer.phone.replace(/\s+/g, '')}`;
+  const mailHref = `mailto:${footer.email}`;
+
   return (
     <footer className="relative bg-primary text-white overflow-hidden">
       <img
-        src={LOGO_URL}
+        src={footer.logoUrl}
         alt=""
         aria-hidden="true"
         className="pointer-events-none select-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] max-w-none opacity-[0.04]"
@@ -59,80 +34,77 @@ export function Footer() {
       <div className="relative mx-auto w-full max-w-[1280px] px-6 sm:px-10 lg:px-[60px] pt-16 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.2fr_1fr_1fr_1fr] gap-10 lg:gap-12">
           <div>
-            <img src={LOGO_URL} alt="The American Club Singapore" className="h-20 w-auto mb-6 brightness-0 invert" />
+            <img src={footer.logoUrl} alt="The American Club Singapore" className="h-20 w-auto mb-6 brightness-0 invert" />
             <address className={`not-italic ${META_CLASSES} space-y-1`}>
-              <p>10 Claymore Hill Singapore, 229573</p>
+              <p>{footer.address}</p>
               <p>
                 Tel:{' '}
-                <a href="tel:+6567373411" className="hover:text-white transition-colors">+65 6737 3411</a>
+                <a href={telHref} className="hover:text-white transition-colors">{footer.phone}</a>
               </p>
               <p>
                 Email:{' '}
-                <a href="mailto:info@amclub.org.sg" className="hover:text-white transition-colors">info@amclub.org.sg</a>
+                <a href={mailHref} className="hover:text-white transition-colors">{footer.email}</a>
               </p>
             </address>
 
             <div className="mt-6 flex items-center gap-4">
-              {SOCIALS.map(({ label, href, icon: Icon }) => (
-                <a
-                  key={label}
-                  href={href}
-                  aria-label={label}
-                  target={href.startsWith('http') ? '_blank' : undefined}
-                  rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                  className="text-secondary hover:text-white transition-colors"
-                >
-                  <Icon />
-                </a>
-              ))}
+              {footer.socials.map(({ platform, href }) => {
+                const Icon = SOCIAL_ICONS[platform] ?? ExternalIcon;
+                return (
+                  <a
+                    key={platform}
+                    href={href}
+                    aria-label={platform.charAt(0).toUpperCase() + platform.slice(1)}
+                    target={href.startsWith('http') ? '_blank' : undefined}
+                    rel={href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    className="text-secondary hover:text-white transition-colors"
+                  >
+                    <Icon />
+                  </a>
+                );
+              })}
             </div>
           </div>
 
-          <FooterColumn heading="Explore the Club" links={EXPLORE_LINKS} />
-          <FooterColumn heading="About Us" links={ABOUT_LINKS} />
-          <FooterColumn heading="Member" links={MEMBER_LINKS} />
+          {footer.columns.map((col) => (
+            <FooterColumn key={col.heading} column={col} />
+          ))}
         </div>
 
         <div className="mt-14 pt-6 border-t border-white/10 flex flex-col-reverse md:flex-row md:items-center md:justify-between gap-4">
           <ul className="flex flex-wrap items-center gap-y-2">
-            {LEGAL_LINKS.map((l, i) => (
+            {footer.legalLinks.map((l, i) => (
               <li key={l.label} className="flex items-center">
-                <a
-                  href={l.href}
-                  className={LINK_CLASSES}
-                  {...(l.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                >
-                  {l.label}
-                </a>
-                {i < LEGAL_LINKS.length - 1 && (
+                {l.isExternal ? (
+                  <a href={l.href} className={LINK_CLASSES} target="_blank" rel="noopener noreferrer">
+                    {l.label}
+                  </a>
+                ) : (
+                  <Link to={l.href} className={LINK_CLASSES}>
+                    {l.label}
+                  </Link>
+                )}
+                {i < footer.legalLinks.length - 1 && (
                   <span className="text-secondary mx-5" aria-hidden="true">|</span>
                 )}
               </li>
             ))}
           </ul>
-          <p className={META_CLASSES}>
-            &copy; {new Date().getFullYear()} The American Club Singapore&reg; All rights reserved.
-          </p>
+          <p className={META_CLASSES}>{footer.copyright}</p>
         </div>
       </div>
     </footer>
   );
 }
 
-function FooterColumn({
-  heading,
-  links,
-}: {
-  heading: string;
-  links: { label: string; href: string; external?: boolean }[];
-}) {
+function FooterColumn({ column }: { column: FooterColumnData }) {
   return (
     <div>
-      <h3 className={HEADING_CLASSES} style={{ fontFamily: 'var(--font-body)' }}>{heading}</h3>
+      <h3 className={HEADING_CLASSES} style={{ fontFamily: 'var(--font-body)' }}>{column.heading}</h3>
       <ul className="space-y-4">
-        {links.map((link) => (
+        {column.links.map((link: FooterLink) => (
           <li key={link.label}>
-            {link.external ? (
+            {link.isExternal ? (
               <a href={link.href} target="_blank" rel="noopener noreferrer" className={LINK_CLASSES}>
                 {link.label}
               </a>
@@ -179,6 +151,16 @@ function WhatsAppIcon() {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M12 2C6.48 2 2 6.48 2 12c0 1.78.47 3.45 1.28 4.9L2 22l5.25-1.25A9.92 9.92 0 0012 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm5.18 14.13c-.22.62-1.27 1.18-1.78 1.25-.45.06-1.03.09-1.66-.1-.38-.12-.87-.28-1.5-.55-2.65-1.14-4.38-3.81-4.51-3.99-.13-.18-1.08-1.43-1.08-2.73 0-1.3.68-1.94.92-2.21.24-.27.53-.34.7-.34h.5c.16 0 .38-.06.59.45.22.51.74 1.78.81 1.91.07.13.11.28.02.45-.09.18-.13.28-.27.43-.13.16-.28.35-.4.46-.13.13-.27.28-.12.55.16.27.69 1.13 1.48 1.83 1.02.91 1.88 1.19 2.15 1.32.27.13.43.11.59-.07.16-.18.68-.79.86-1.07.18-.27.36-.22.6-.13.24.09 1.51.71 1.77.84.26.13.43.2.49.31.07.11.07.65-.16 1.27z" />
+    </svg>
+  );
+}
+
+// Fallback for any platform without a dedicated glyph (youtube, x, tiktok…).
+function ExternalIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
+      <path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20" stroke="currentColor" strokeWidth="1.4" />
     </svg>
   );
 }
