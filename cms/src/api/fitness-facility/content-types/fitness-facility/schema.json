@@ -107,6 +107,11 @@
         "blocks.collage-gallery"
       ]
     },
+    "imagePanels": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.image-text-panel"
+    },
     "order": {
       "type": "integer",
       "default": 0

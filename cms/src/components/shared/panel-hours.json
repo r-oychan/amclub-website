@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_shared_panel_hours",
+  "info": {
+    "displayName": "Panel Hours",
+    "icon": "clock",
+    "description": "A titled group of schedule lines inside an image-text panel (e.g. \"Men's Social\" → its time rows)."
+  },
+  "attributes": {
+    "title": { "type": "string", "required": true },
+    "rows": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.text-line"
+    }
+  }
+}

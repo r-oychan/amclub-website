@@ -505,6 +505,18 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
         'populate[operatingHoursSections][populate]': '*',
         'populate[teamMembers][populate]': '*',
         'populate[downloads][populate]': '*',
+        // promoCards (restaurants, e.g. The Gourmet Pantry) — grid + its image cards.
+        'populate[promoCards][populate][cards][populate]': '*',
+        // imagePanels (fitness, e.g. Tennis) — image/cta/bullets one level, plus the
+        // nested operatingHours.rows (text-line) two levels down.
+        'populate[imagePanels][populate][image]': 'true',
+        'populate[imagePanels][populate][cta]': 'true',
+        'populate[imagePanels][populate][bullets]': 'true',
+        'populate[imagePanels][populate][operatingHours][populate]': '*',
+        // quotes / Member Testimonials (e.g. kids camps) — the component stores
+        // items as { quote, author, role }; mapped to { text, attribution } below.
+        'populate[quotes][populate]': '*',
+        'populate[bottomCtas]': 'true',
       };
       const items = await fetchAPI<VenueData[]>(config.apiPath, params);
       const fallback = staticFallback(section, lookupSlug);
@@ -519,6 +531,36 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
             typeof m.bioImage === 'string'
               ? m.bioImage
               : (m.bioImage as { url?: string } | undefined)?.url,
+        }));
+        // imagePanels (fitness) come from the CMS as `image` media objects and
+        // `bullets`/`operatingHours.rows` as `shared.text-line` objects ({ text }).
+        // The renderer expects a URL string and string[]; flatten to match (the
+        // subpages fallback is already flat, so it bypasses this).
+        const toStrings = (arr: unknown): string[] | undefined =>
+          Array.isArray(arr)
+            ? arr.map((x) => (typeof x === 'string' ? x : (x as { text?: string } | null)?.text)).filter((x): x is string => !!x)
+            : undefined;
+        // quotes: CMS quote-item uses { quote, author, role }; Testimonials reads
+        // { text, attribution, role }. Map field names (fallback subpages already
+        // uses text/attribution, so this no-ops on that shape).
+        const rawQuotes = api.quotes as
+          | { heading?: string; items?: { text?: string; quote?: string; attribution?: string; author?: string; role?: string }[] }
+          | undefined;
+        const apiQuotes = rawQuotes?.items?.length
+          ? {
+              heading: rawQuotes.heading,
+              items: rawQuotes.items
+                .map((q) => ({ text: q.text ?? q.quote ?? '', attribution: q.attribution ?? q.author, role: q.role }))
+                .filter((q) => q.text),
+            }
+          : undefined;
+        const apiPanels = api.imagePanels?.map((p) => ({
+          ...p,
+          image: imgSrc(p.image) as string,
+          bullets: toStrings(p.bullets) ?? p.bullets,
+          operatingHours: Array.isArray(p.operatingHours)
+            ? p.operatingHours.map((h) => ({ title: h.title, rows: toStrings(h.rows) ?? [] }))
+            : p.operatingHours,
         }));
         // Enrich with static fallback for fields missing from CMS
         setVenue({
@@ -548,12 +590,12 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           teamMembers: apiTeam?.length ? apiTeam : fallback?.teamMembers,
           teamHeading: api.teamHeading ?? fallback?.teamHeading,
           bottomCtas: api.bottomCtas?.length ? api.bottomCtas : fallback?.bottomCtas,
-          imagePanels: api.imagePanels?.length ? api.imagePanels : fallback?.imagePanels,
+          imagePanels: apiPanels?.length ? apiPanels : fallback?.imagePanels,
           cardSections: api.cardSections?.length ? api.cardSections : fallback?.cardSections,
           faq: api.faq?.length ? api.faq : fallback?.faq,
           gallery: resolveMarquee(api, fallback),
           partyPackages: api.partyPackages ?? fallback?.partyPackages,
-          quotes: api.quotes ?? fallback?.quotes,
+          quotes: apiQuotes?.items?.length ? apiQuotes : fallback?.quotes,
           downloads: api.downloads ?? fallback?.downloads,
           tierCards: api.tierCards ?? fallback?.tierCards,
           venueCards: api.venueCards ?? fallback?.venueCards,
@@ -913,15 +955,42 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
               {venue.extraSections?.map((extra, i) => (
                 <DetailSection key={i} icon={resolveIcon(extra.title)} title={extra.title}>
                   <div className="flex flex-col" style={{ gap: '16px' }}>
-                    {extra.content?.split('\n').filter(Boolean).map((line, j) => (
-                      <p
-                        key={j}
-                        className="text-text-dark"
-                        style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
+                    {extra.content && (
+                      <ReactMarkdown
+                        remarkPlugins={[remarkBreaks]}
+                        rehypePlugins={[rehypeRaw]}
+                        components={{
+                          p: ({ children }) => (
+                            <p className="text-text-dark" style={{ fontSize: '19.2px', lineHeight: '26.88px' }}>
+                              {children}
+                            </p>
+                          ),
+                          a: ({ href, children }) => {
+                            const external = isHardLink(href);
+                            return (
+                              <a
+                                href={href}
+                                target={external ? '_blank' : undefined}
+                                rel={external ? 'noopener noreferrer' : undefined}
+                                className="text-accent underline underline-offset-2 hover:no-underline"
+                              >
+                                {children}
+                              </a>
+                            );
+                          },
+                          ul: ({ children }) => (
+                            <ul className="list-disc pl-6 flex flex-col" style={{ gap: '8px' }}>{children}</ul>
+                          ),
+                          li: ({ children }) => (
+                            <li className="text-text-dark" style={{ fontSize: '19.2px', lineHeight: '26.88px' }}>
+                              {children}
+                            </li>
+                          ),
+                        }}
                       >
-                        {line}
-                      </p>
-                    ))}
+                        {extra.content}
+                      </ReactMarkdown>
+                    )}
                     {extra.bullets && extra.bullets.length > 0 && (
                       <ul className="list-disc pl-6 flex flex-col" style={{ gap: '8px' }}>
                         {extra.bullets.map((bullet, k) => (

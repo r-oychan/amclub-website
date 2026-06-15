@@ -125,6 +125,11 @@
       "repeatable": true,
       "component": "blocks.extra-section"
     },
+    "promoCards": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.promo-card-grid"
+    },
     "seo": {
       "type": "component",
       "repeatable": false,
