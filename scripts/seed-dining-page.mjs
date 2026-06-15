@@ -163,6 +163,28 @@ const RESTAURANTS = [
     order: 6,
   },
   {
+    // Essentials is a retail/services outlet, not a dining restaurant. Excluded
+    // from the /dining grid by slug in DiningPage.tsx (HIDDEN_FROM_GRID) but
+    // reachable at /dining/essentials and from the dining-page Essentials promo
+    // section. Image reused from media/services/essentials.jpeg (also used by the
+    // dining-page essentials block) — no duplicate upload. cuisineIconSlug is null
+    // (no retail icon); VenueDetailPage just renders the "Retail" label.
+    name: 'Essentials', slug: 'essentials', cuisineType: 'Retail', cuisineIconSlug: null,
+    description: 'Essentials is your convenient one-stop shop for everyday needs – featuring exclusive items imported directly from the US, as well as pantry staples, seasonal treats, premium beverages, baking supplies, and laundry services.\n\nEssentials2Go!, our online platform, makes shopping effortless – available for home delivery or self-collection at Essentials, whichever suits you best.',
+    imageFile: 'essentials.jpeg', logoFile: null, dressCode: null,
+    menuLinks: [],
+    ctas: [
+      { label: 'Essentials2Go!', href: 'https://amclub.jotform.com/253312807189965', isExternal: true, icon: 'arrow' },
+    ],
+    operatingHoursSections: [
+      { title: 'Opening Hours', rows: [
+        { dayRange: 'Daily', time: '8:00 AM - 8:00 PM' },
+      ] },
+    ],
+    locationContact: { locationLevel: 'Level 1', phone: '6739 4332', email: 'essentials@amclub.org.sg' },
+    order: 7,
+  },
+  {
     // UNCORKED is a wine-club program, not a venue. Excluded from the
     // /dining grid by slug in DiningPage.tsx but still reachable at
     // /dining/uncorked. Membership bullets live in subpages.ts because
@@ -285,7 +307,10 @@ async function main() {
 
   console.log('\n[2/4] Restaurants…');
   for (const r of RESTAURANTS) {
-    await ensureRestaurant(r, restMedia[r.imageFile]?.id ?? null, logoMedia[r.logoFile]?.id ?? null);
+    // Most images come from media/restaurants/; essentials reuses the already-
+    // uploaded media/services/essentials.jpeg (shared with the dining-page block).
+    const imageId = restMedia[r.imageFile]?.id ?? servMedia[r.imageFile]?.id ?? null;
+    await ensureRestaurant(r, imageId, logoMedia[r.logoFile]?.id ?? null);
     console.log(`  ✓ ${r.name}`);
   }
 
