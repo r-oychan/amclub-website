@@ -10,6 +10,22 @@ const STORAGE_HOST = (() => {
   try { return new URL(url).host; } catch { return url; }
 })();
 
+// The PUBLIC host that media URLs are actually rewritten to (STORAGE_CDN_URL /
+// PUBLIC_SITE_URL, e.g. amclub.org.sg). The upload provider stores absolute URLs
+// on this host, NOT the raw blob host — so the admin loads thumbnails from here.
+// The admin itself may be served from a different host (e.g. www.amclub.org.sg),
+// in which case 'self' does NOT cover the apex media host and the browser blocks
+// every thumbnail under CSP. Add it explicitly. Per-env, so dev/uat/prod each get
+// their own apex.
+const CDN_HOST = (() => {
+  const url = process.env.STORAGE_CDN_URL || process.env.PUBLIC_SITE_URL;
+  if (!url) return undefined;
+  try { return new URL(url).host; } catch { return undefined; }
+})();
+
+const IMG_HOSTS = ["'self'", 'data:', 'blob:', 'market-assets.strapi.io', STORAGE_HOST, CDN_HOST].filter(Boolean);
+const MEDIA_HOSTS = ["'self'", 'data:', 'blob:', STORAGE_HOST, CDN_HOST].filter(Boolean);
+
 const config: Core.Config.Middlewares = [
   'strapi::logger',
   'strapi::errors',
@@ -24,19 +40,8 @@ const config: Core.Config.Middlewares = [
         useDefaults: true,
         directives: {
           'connect-src': ["'self'", 'https:'],
-          'img-src': [
-            "'self'",
-            'data:',
-            'blob:',
-            'market-assets.strapi.io',
-            STORAGE_HOST,
-          ],
-          'media-src': [
-            "'self'",
-            'data:',
-            'blob:',
-            STORAGE_HOST,
-          ],
+          'img-src': IMG_HOSTS,
+          'media-src': MEDIA_HOSTS,
           upgradeInsecureRequests: null,
         },
       },

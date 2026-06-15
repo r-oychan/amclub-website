@@ -33,6 +33,16 @@ The blob's stored `Content-Type` is set by whatever the upload provider sends. `
 
 The bootstrap in `cms/src/index.ts → backfillUploadMimes` fixes the DB row's mime column for legacy uploads, but doesn't touch the blob's stored Content-Type header. CSP-side fix is already configured in `cms/config/middlewares.ts` — adds `STORAGE_HOST` to `img-src` so the admin can request the blob host at all.
 
+**Fix 3 — CSP missing the PUBLIC media host (PROD-ONLY www/apex split):**
+
+**Symptom:** A specific entry's media thumbnail is blank in the Content Manager *on prod only* — dev/uat are fine. The blob/thumbnail returns `200 image/jpeg` with `Access-Control-Allow-Origin: *` (so it's neither 404, mime, nor CORS), yet the admin won't render it.
+
+**Cause:** The upload provider rewrites media URLs to the PUBLIC host (`STORAGE_CDN_URL`/`PUBLIC_SITE_URL`, e.g. `https://amclub.org.sg/uploads/...`), **not** the raw blob host. On dev/uat the admin and media share a host (`dev.amclub.org.sg`) so CSP `'self'` covers it. On **prod the admin is served from `www.amclub.org.sg` but media resolve on the apex `amclub.org.sg`** — a different CSP origin not in `img-src` (which only had `'self'` + the blob host) → browser blocks every thumbnail.
+
+**Diagnosis:** `curl -sD - -o /dev/null https://www.amclub.org.sg/admin | grep -i content-security-policy` → check `img-src` lists the apex media host. Compare against the media `url` host returned by the content API.
+
+**Fix:** `cms/config/middlewares.ts` now derives `CDN_HOST` from `STORAGE_CDN_URL || PUBLIC_SITE_URL` and adds it to both `img-src` and `media-src` (per-env). Requires a CMS rebuild + redeploy.
+
 ### Files show under "API Uploads" in admin even though blob path looks right
 
 **Symptom:** Admin Media Library has a tree (Dining, Fitness, etc.) with the right folders, but all files appear under a flat "API Uploads" bucket. Folders are empty.
