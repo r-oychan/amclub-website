@@ -842,6 +842,14 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                         </a>
                       );
                     },
+                    ol: ({ children }) => (
+                      <ol className="list-decimal pl-6 flex flex-col" style={{ gap: '8px' }}>{children}</ol>
+                    ),
+                    li: ({ children }) => (
+                      <li className="text-text-dark" style={{ fontSize: '19.2px', lineHeight: '26.88px' }}>
+                        {children}
+                      </li>
+                    ),
                   }}
                 >
                   {venue.description}
@@ -980,6 +988,9 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                           },
                           ul: ({ children }) => (
                             <ul className="list-disc pl-6 flex flex-col" style={{ gap: '8px' }}>{children}</ul>
+                          ),
+                          ol: ({ children }) => (
+                            <ol className="list-decimal pl-6 flex flex-col" style={{ gap: '8px' }}>{children}</ol>
                           ),
                           li: ({ children }) => (
                             <li className="text-text-dark" style={{ fontSize: '19.2px', lineHeight: '26.88px' }}>
