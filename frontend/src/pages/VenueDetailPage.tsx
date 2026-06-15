@@ -513,6 +513,10 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
         'populate[imagePanels][populate][cta]': 'true',
         'populate[imagePanels][populate][bullets]': 'true',
         'populate[imagePanels][populate][operatingHours][populate]': '*',
+        // quotes / Member Testimonials (e.g. kids camps) — the component stores
+        // items as { quote, author, role }; mapped to { text, attribution } below.
+        'populate[quotes][populate]': '*',
+        'populate[bottomCtas]': 'true',
       };
       const items = await fetchAPI<VenueData[]>(config.apiPath, params);
       const fallback = staticFallback(section, lookupSlug);
@@ -536,6 +540,20 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           Array.isArray(arr)
             ? arr.map((x) => (typeof x === 'string' ? x : (x as { text?: string } | null)?.text)).filter((x): x is string => !!x)
             : undefined;
+        // quotes: CMS quote-item uses { quote, author, role }; Testimonials reads
+        // { text, attribution, role }. Map field names (fallback subpages already
+        // uses text/attribution, so this no-ops on that shape).
+        const rawQuotes = api.quotes as
+          | { heading?: string; items?: { text?: string; quote?: string; attribution?: string; author?: string; role?: string }[] }
+          | undefined;
+        const apiQuotes = rawQuotes?.items?.length
+          ? {
+              heading: rawQuotes.heading,
+              items: rawQuotes.items
+                .map((q) => ({ text: q.text ?? q.quote ?? '', attribution: q.attribution ?? q.author, role: q.role }))
+                .filter((q) => q.text),
+            }
+          : undefined;
         const apiPanels = api.imagePanels?.map((p) => ({
           ...p,
           image: imgSrc(p.image) as string,
@@ -577,7 +595,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           faq: api.faq?.length ? api.faq : fallback?.faq,
           gallery: resolveMarquee(api, fallback),
           partyPackages: api.partyPackages ?? fallback?.partyPackages,
-          quotes: api.quotes ?? fallback?.quotes,
+          quotes: apiQuotes?.items?.length ? apiQuotes : fallback?.quotes,
           downloads: api.downloads ?? fallback?.downloads,
           tierCards: api.tierCards ?? fallback?.tierCards,
           venueCards: api.venueCards ?? fallback?.venueCards,
@@ -937,15 +955,42 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
               {venue.extraSections?.map((extra, i) => (
                 <DetailSection key={i} icon={resolveIcon(extra.title)} title={extra.title}>
                   <div className="flex flex-col" style={{ gap: '16px' }}>
-                    {extra.content?.split('\n').filter(Boolean).map((line, j) => (
-                      <p
-                        key={j}
-                        className="text-text-dark"
-                        style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
+                    {extra.content && (
+                      <ReactMarkdown
+                        remarkPlugins={[remarkBreaks]}
+                        rehypePlugins={[rehypeRaw]}
+                        components={{
+                          p: ({ children }) => (
+                            <p className="text-text-dark" style={{ fontSize: '19.2px', lineHeight: '26.88px' }}>
+                              {children}
+                            </p>
+                          ),
+                          a: ({ href, children }) => {
+                            const external = isHardLink(href);
+                            return (
+                              <a
+                                href={href}
+                                target={external ? '_blank' : undefined}
+                                rel={external ? 'noopener noreferrer' : undefined}
+                                className="text-accent underline underline-offset-2 hover:no-underline"
+                              >
+                                {children}
+                              </a>
+                            );
+                          },
+                          ul: ({ children }) => (
+                            <ul className="list-disc pl-6 flex flex-col" style={{ gap: '8px' }}>{children}</ul>
+                          ),
+                          li: ({ children }) => (
+                            <li className="text-text-dark" style={{ fontSize: '19.2px', lineHeight: '26.88px' }}>
+                              {children}
+                            </li>
+                          ),
+                        }}
                       >
-                        {line}
-                      </p>
-                    ))}
+                        {extra.content}
+                      </ReactMarkdown>
+                    )}
                     {extra.bullets && extra.bullets.length > 0 && (
                       <ul className="list-disc pl-6 flex flex-col" style={{ gap: '8px' }}>
                         {extra.bullets.map((bullet, k) => (
