@@ -30,14 +30,30 @@ export function Button({
     </>
   );
 
-  if (href && (href.startsWith('http') || href.startsWith('#'))) {
-    return (
-      <a href={href} className={cls}>
-        {content}
-      </a>
-    );
-  }
   if (href) {
+    // A real browser navigation (plain <a>) is required for anything React Router
+    // can't resolve to an in-app route: absolute URLs, mailto/tel, in-page anchors,
+    // static assets under /uploads/, and any file-extension path. A router <Link>
+    // would intercept the click and silently do nothing — e.g. a /uploads/<file>.pdf
+    // CTA only worked via "open in new tab". Open external URLs and downloadable
+    // assets in a new tab; keep #/mailto/tel in-place.
+    const isAsset =
+      href.startsWith('/uploads/') ||
+      /\.(pdf|jpe?g|png|gif|webp|svg|docx?|xlsx?|pptx?|csv|txt|zip)$/i.test(href);
+    const isExternalUrl = href.startsWith('http');
+    if (isExternalUrl || isAsset || /^(mailto:|tel:|#)/i.test(href)) {
+      const newTab = isExternalUrl || isAsset;
+      return (
+        <a
+          href={href}
+          className={cls}
+          target={newTab ? '_blank' : undefined}
+          rel={newTab ? 'noopener noreferrer' : undefined}
+        >
+          {content}
+        </a>
+      );
+    }
     return (
       <Link to={href} className={cls}>
         {content}
