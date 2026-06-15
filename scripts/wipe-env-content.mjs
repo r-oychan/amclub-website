@@ -4,19 +4,30 @@
 // Documented recipe: docs/strapi-patterns.md → "Resetting media on a non-prod env".
 //
 // Safety rails:
-//   - refuses to run against anything but --env=dev or --env=uat
+//   - dev/uat: refuses anything else; dry-run unless --yes
+//   - prod: ALSO requires --i-understand-prod-wipe (destructive, irreversible
+//     without a backup). Even then only /api content rows are deleted —
+//     admin users, API tokens and the core store survive, so the existing
+//     prod API token in cms/.env.seed.prod keeps working.
 //   - dry-run by default; pass --yes to actually delete
-//   - touches only /api/* content — admin users, tokens, core store survive
 //
 // Usage:
 //   node scripts/wipe-env-content.mjs --env=uat          # dry-run (counts only)
 //   node scripts/wipe-env-content.mjs --env=uat --yes    # delete for real
+//   node scripts/wipe-env-content.mjs --env=prod --i-understand-prod-wipe --yes
 
 import { initEnv, api } from './seed-helpers.mjs';
 
 const envArg = (process.argv.find((a) => a.startsWith('--env=')) || '').slice('--env='.length);
-if (!['dev', 'uat'].includes(envArg)) {
-  console.error('Refusing: --env must be dev or uat (never prod).');
+if (!['dev', 'uat', 'prod'].includes(envArg)) {
+  console.error('Refusing: --env must be dev, uat, or prod.');
+  process.exit(1);
+}
+if (envArg === 'prod' && !process.argv.includes('--i-understand-prod-wipe')) {
+  console.error(
+    'Refusing prod wipe: re-run with --i-understand-prod-wipe AND --yes.\n' +
+    'Take a DB backup first (pg_dump amclub-prod-pg via Cloud Shell).',
+  );
   process.exit(1);
 }
 const YES = process.argv.includes('--yes');
@@ -48,10 +59,18 @@ const PLURALS = [
 // entries from plain listings); `status=draft` includes unpublished documents.
 const PAGE_QS = 'filters[id][$gt]=0&status=draft&pagination[page]=1&pagination[pageSize]=100';
 
+// --only=a,b limits the wipe to specific types (e.g. a targeted re-clone).
+const ONLY = (process.argv.find((a) => a.startsWith('--only=')) || '').slice('--only='.length).split(',').filter(Boolean);
+const TARGETS = ONLY.length ? PLURALS.filter((p) => ONLY.includes(p)) : PLURALS;
+if (ONLY.length) {
+  const unknown = ONLY.filter((p) => !PLURALS.includes(p));
+  if (unknown.length) { console.error(`Unknown --only types: ${unknown.join(', ')}`); process.exit(1); }
+}
+
 (async () => {
-  console.log(`[wipe-env-content] target=${ctx.BASE} mode=${YES ? 'DELETE' : 'dry-run'}`);
+  console.log(`[wipe-env-content] target=${ctx.BASE} mode=${YES ? 'DELETE' : 'dry-run'}${ONLY.length ? ` only=${ONLY.join(',')}` : ''}`);
   let total = 0;
-  for (const plural of PLURALS) {
+  for (const plural of TARGETS) {
     let deleted = 0;
     for (;;) {
       let r;

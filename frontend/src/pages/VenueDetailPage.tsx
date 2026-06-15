@@ -205,6 +205,16 @@ interface VenueData {
   };
 }
 
+/**
+ * Card image source resolver. Card grids (venueCards, packageCards,
+ * cardSections, …) are passed through from the CMS where `image` is a Strapi
+ * media OBJECT (`{ url, formats, … }`), while the static fallbacks supply a
+ * plain string path. Rendering the object directly yields `src="[object
+ * Object]"` and a broken image. This normalises both shapes to a URL string.
+ */
+const imgSrc = (img: unknown): string | undefined =>
+  typeof img === 'string' ? img : (img as { url?: string } | null | undefined)?.url;
+
 const SECTION_MAP: Record<string, { apiPath: string; parentLabel: string; parentHref: string }> = {
   dining: { apiPath: '/restaurants', parentLabel: 'Dining & Retail', parentHref: '/dining' },
   fitness: { apiPath: '/fitness-facilities', parentLabel: 'Fitness & Wellness', parentHref: '/fitness' },
@@ -1076,7 +1086,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                       gradient + diagonal stripe tile (same box either way) */}
                   {card.image ? (
                     <img
-                      src={card.image}
+                      src={imgSrc(card.image)}
                       alt={card.name}
                       className="w-full mx-auto rounded-2xl object-cover"
                       style={{ aspectRatio: '252 / 238', maxWidth: '252px' }}
@@ -1197,7 +1207,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                       <div className="bg-white overflow-hidden flex flex-col h-full transition-shadow hover:shadow-md">
                         <div className="aspect-[4/3] overflow-hidden">
                           <img
-                            src={card.image}
+                            src={imgSrc(card.image)}
                             alt={card.imageAlt ?? card.heading}
                             className="w-full h-full object-cover"
                           />
@@ -1305,13 +1315,25 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
               <div className={`grid ${colsClass} gap-8`}>
                 {venue.venueCards.cards.map((card, i) => (
                   <div key={`${card.heading}-${i}`} className="flex flex-col bg-white">
-                    <div className="aspect-square overflow-hidden">
-                      <img
-                        src={card.image}
-                        alt={card.imageAlt ?? card.heading}
-                        className="w-full h-full object-cover"
+                    {imgSrc(card.image) ? (
+                      <div className="aspect-square overflow-hidden">
+                        <img
+                          src={imgSrc(card.image)}
+                          alt={card.imageAlt ?? card.heading}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div
+                        aria-hidden
+                        className="aspect-square w-full"
+                        style={{
+                          backgroundImage: STRIPE_PATTERN_SVG,
+                          backgroundSize: '64px',
+                          backgroundRepeat: 'repeat',
+                        }}
                       />
-                    </div>
+                    )}
                     <div className="flex flex-col px-8" style={{ paddingTop: '32px', paddingBottom: '32px', gap: '16px' }}>
                       <h3
                         className="font-heading text-primary"
@@ -1390,7 +1412,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                     {card.image ? (
                       <div className="aspect-square overflow-hidden">
                         <img
-                          src={card.image}
+                          src={imgSrc(card.image)}
                           alt={card.heading}
                           className="w-full h-full object-cover"
                         />
@@ -1701,7 +1723,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                       <div className="relative w-full overflow-hidden group" style={{ aspectRatio: '213 / 300' }}>
                         {card.image && (
                           <img
-                            src={card.image}
+                            src={imgSrc(card.image)}
                             alt={card.title}
                             className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                           />
@@ -1774,7 +1796,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                     <div key={i} className="bg-bg rounded-lg overflow-hidden shadow-sm">
                       {card.image && (
                         <div className="aspect-[16/9] overflow-hidden">
-                          <img src={card.image} alt={card.title} className="w-full h-full object-cover" />
+                          <img src={imgSrc(card.image)} alt={card.title} className="w-full h-full object-cover" />
                         </div>
                       )}
                       <div className="p-6 flex flex-col gap-3">
