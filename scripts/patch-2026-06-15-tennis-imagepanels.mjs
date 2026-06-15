@@ -14,7 +14,7 @@
 
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { initEnv, api, uploadFile, findOneBySlug, publishDocument, isDryRun } from './seed-helpers.mjs';
+import { initEnv, api, uploadFile, findOneBySlug, isDryRun } from './seed-helpers.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
@@ -70,11 +70,13 @@ const lines = (...xs) => xs.map((text) => ({ text }));
     },
   ];
 
-  const resp = await api(ctx, `/fitness-facilities/${existing.documentId}`, {
+  // ?status=published is the explicit Strapi v5 publish semantic — publishedAt
+  // in the body alone updates only the draft (the /actions/publish route 405s on
+  // the content API).
+  await api(ctx, `/fitness-facilities/${existing.documentId}?status=published`, {
     method: 'PUT',
     body: { data: { imagePanels, publishedAt: new Date().toISOString() } },
   });
-  await publishDocument(ctx, 'fitness-facilities', resp?.data?.documentId ?? existing.documentId);
-  console.log(`  ✓ imagePanels set on ${SLUG} (program=${program?.id}, etiquette=${etiquette?.id})`);
+  console.log(`  ✓ imagePanels set+published on ${SLUG} (program=${program?.id}, etiquette=${etiquette?.id})`);
   console.log('\n✓ Done.');
 })().catch((e) => { console.error(e); process.exit(1); });

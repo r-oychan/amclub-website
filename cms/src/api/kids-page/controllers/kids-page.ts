@@ -19,6 +19,10 @@ const POPULATE = {
   safety: {
     populate: { features: { populate: { image: true, cta: true } }, cta: true },
   },
+  // Custom Kids sections (QuadSection / ChildSafetySection). Enumerate or the
+  // API drops them and the page falls back to hardcoded copy.
+  quadSection: { populate: { cards: { populate: { image: true, cta: true } } } },
+  childSafety: { populate: { badgeLogo: true, backgroundImage: true, features: true } },
   finalCta: { populate: { ctas: true } },
   seo: { populate: { metaImage: true } },
 };

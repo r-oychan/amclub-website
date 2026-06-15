@@ -562,6 +562,52 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
             ? p.operatingHours.map((h) => ({ title: h.title, rows: toStrings(h.rows) ?? [] }))
             : p.operatingHours,
         }));
+        // ── Team grid from the per-discipline coach collection ──
+        // Fitness facilities have no `teamMembers` field; the team is sourced
+        // from the dedicated coach collection (looked up by discipline = slug),
+        // falling back to the static subpages team only if the collection is empty.
+        const COACH_COLLECTIONS: Record<string, string> = {
+          tennis: 'tennis-coaches',
+          gym: 'gym-trainers',
+          pilates: 'pilates-instructors',
+          aquatics: 'aquatics-coaches',
+        };
+        let coachTeam: VenueData['teamMembers'] | undefined;
+        const coachCollection = COACH_COLLECTIONS[lookupSlug];
+        if (coachCollection) {
+          try {
+            const coaches = await fetchAPI<
+              Array<{
+                name: string;
+                role?: string;
+                slug: string;
+                shortBio?: string;
+                photo?: unknown;
+                bioImage?: unknown;
+                imageOffsetX?: number;
+                imageOffsetY?: number;
+                imageZoom?: number;
+              }>
+            >(`/${coachCollection}`, {
+              sort: 'order:asc',
+              'populate[photo]': 'true',
+              'populate[bioImage]': 'true',
+            });
+            coachTeam = coaches?.map((c) => ({
+              name: c.name,
+              role: c.role ?? '',
+              bio: c.shortBio,
+              image: imgSrc(c.photo),
+              bioImage: imgSrc(c.bioImage),
+              imageOffsetX: c.imageOffsetX ?? undefined,
+              imageOffsetY: c.imageOffsetY ?? undefined,
+              imageZoom: c.imageZoom ?? undefined,
+              coachLink: `/coaches/${lookupSlug}/${c.slug}`,
+            }));
+          } catch {
+            /* fall back to the static subpages team */
+          }
+        }
         // Enrich with static fallback for fields missing from CMS
         setVenue({
           ...fallback,
@@ -587,8 +633,8 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           ctas: api.ctas?.length ? api.ctas : fallback?.ctas,
           extraSections: api.extraSections?.length ? api.extraSections : fallback?.extraSections,
           promoCards: api.promoCards ?? fallback?.promoCards,
-          teamMembers: apiTeam?.length ? apiTeam : fallback?.teamMembers,
-          teamHeading: api.teamHeading ?? fallback?.teamHeading,
+          teamMembers: coachTeam?.length ? coachTeam : apiTeam?.length ? apiTeam : fallback?.teamMembers,
+          teamHeading: api.teamHeading ?? fallback?.teamHeading ?? (coachTeam?.length ? 'Meet Our Team' : undefined),
           bottomCtas: api.bottomCtas?.length ? api.bottomCtas : fallback?.bottomCtas,
           imagePanels: apiPanels?.length ? apiPanels : fallback?.imagePanels,
           cardSections: api.cardSections?.length ? api.cardSections : fallback?.cardSections,

@@ -98,7 +98,8 @@ const QUAD_VENUES: ThreeColItem[] = [
 
 /* ─── Component ──────────────────────────────────────────────── */
 
-export function QuadSection() {
+export function QuadSection({ cards }: { cards?: ThreeColItem[] } = {}) {
+  const venues = cards && cards.length ? cards : QUAD_VENUES;
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -219,7 +220,7 @@ export function QuadSection() {
             transitionDelay: '400ms',
           }}
         >
-          <ThreeColGrid items={QUAD_VENUES} variant="left" />
+          <ThreeColGrid items={venues} variant="left" />
         </div>
       </div>
     </section>

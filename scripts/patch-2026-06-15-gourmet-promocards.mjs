@@ -14,7 +14,7 @@
 
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { initEnv, api, uploadFile, findOneBySlug, publishDocument, isDryRun } from './seed-helpers.mjs';
+import { initEnv, api, uploadFile, findOneBySlug, isDryRun } from './seed-helpers.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
@@ -57,11 +57,13 @@ const IMG_DIR = join(ROOT, 'media', 'dining', 'the-gourmet-pantry');
     ],
   };
 
-  const resp = await api(ctx, `/restaurants/${existing.documentId}`, {
+  // ?status=published is the explicit Strapi v5 publish semantic — publishedAt
+  // in the body alone updates only the draft (the /actions/publish route 405s on
+  // the content API).
+  await api(ctx, `/restaurants/${existing.documentId}?status=published`, {
     method: 'PUT',
     body: { data: { promoCards, publishedAt: new Date().toISOString() } },
   });
-  await publishDocument(ctx, 'restaurants', resp?.data?.documentId ?? existing.documentId);
-  console.log(`  ✓ promoCards set on ${SLUG} (uncorked=${uncorked?.id}, bottles2go=${bottles?.id})`);
+  console.log(`  ✓ promoCards set+published on ${SLUG} (uncorked=${uncorked?.id}, bottles2go=${bottles?.id})`);
   console.log('\n✓ Done.');
 })().catch((e) => { console.error(e); process.exit(1); });

@@ -38,17 +38,39 @@ function HardHatGogglesIcon({ className }: { className?: string }) {
 
 /* ─── Section ─────────────────────────────────────────────────── */
 
-const FEATURES = [
-  { Icon: ShieldPersonIcon, label: 'Trained & Certified Team Members' },
-  { Icon: HandsHeartsIcon, label: 'Dedicated Attention & Supervision' },
-  { Icon: HardHatGogglesIcon, label: 'Safe & Secure Environment' },
+// Decorative icons stay inline (per design); CMS supplies only the labels, in order.
+const FEATURE_ICONS = [ShieldPersonIcon, HandsHeartsIcon, HardHatGogglesIcon];
+const FEATURE_LABELS = [
+  'Trained & Certified Team Members',
+  'Dedicated Attention & Supervision',
+  'Safe & Secure Environment',
 ];
 
 const HEADING = "Your Child's Safety Is Our Priority";
 const BODY =
   'All instructors and supervisors are certified professionals, and low child-to-staff ratios ensure personalized attention and close supervision. Comprehensive safety procedures and on-site, first-aid-trained staff further support a safe, secure environment.';
+const BADGE_LABEL = 'Recognized Company';
+const BADGE_LOGO = '/images/kids/safety/childsafeguarding-logo.png';
+const BACKGROUND = '/images/kids/safety/climbing-wall.jpg';
 
-export function ChildSafetySection() {
+export interface ChildSafetyProps {
+  heading?: string;
+  body?: string;
+  badgeLabel?: string;
+  badgeLogo?: string;
+  backgroundImage?: string;
+  /** Feature labels in order; decorative icons are matched by index. */
+  features?: string[];
+}
+
+export function ChildSafetySection(props: ChildSafetyProps = {}) {
+  const heading = props.heading || HEADING;
+  const body = props.body || BODY;
+  const badgeLabel = props.badgeLabel || BADGE_LABEL;
+  const badgeLogo = props.badgeLogo || BADGE_LOGO;
+  const background = props.backgroundImage || BACKGROUND;
+  const labels = props.features && props.features.length ? props.features : FEATURE_LABELS;
+  const features = labels.map((label, i) => ({ Icon: FEATURE_ICONS[i % FEATURE_ICONS.length], label }));
   const sectionRef = useRef<HTMLElement | null>(null);
   const [visible, setVisible] = useState(false);
 
@@ -73,7 +95,7 @@ export function ChildSafetySection() {
         {/* Climbing wall image — pinned to bottom of wrapper, partially behind the gradient fade */}
         <div className="absolute inset-x-0 bottom-0 h-[260px] sm:h-[400px] md:h-[560px] lg:h-[645px]">
           <img
-            src="/images/kids/safety/climbing-wall.jpg"
+            src={background}
             alt=""
             aria-hidden="true"
             className="h-full w-full object-cover"
@@ -92,12 +114,12 @@ export function ChildSafetySection() {
           <div className="absolute left-1/2 -top-10 md:-top-12 z-20 -translate-x-1/2">
             <div className="flex flex-col items-center gap-1 rounded-full bg-white px-7 pt-5 pb-3 md:px-9 md:pt-6 md:pb-4 shadow-md">
               <img
-                src="/images/kids/safety/childsafeguarding-logo.png"
+                src={badgeLogo}
                 alt="childsafeguarding.com"
                 className="h-7 md:h-9 w-auto"
               />
               <p className="text-[11px] md:text-[12.8px] font-bold tracking-wide text-[#001E62] uppercase">
-                Recognized Company
+                {badgeLabel}
               </p>
             </div>
           </div>
@@ -112,10 +134,10 @@ export function ChildSafetySection() {
               className="font-serif italic font-light text-white text-[28px] md:text-[38.4px]"
               style={{ lineHeight: 1.1, letterSpacing: '-0.03em' }}
             >
-              {HEADING}
+              {heading}
             </h2>
             <p className="mt-5 md:mt-6 text-[#F5F4F2] text-[15px] md:text-[17.6px] font-light leading-[1.4]">
-              {BODY}
+              {body}
             </p>
           </div>
 
@@ -125,7 +147,7 @@ export function ChildSafetySection() {
               visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
             }`}
           >
-            {FEATURES.map(({ Icon, label }) => (
+            {features.map(({ Icon, label }) => (
               <div key={label} className="flex flex-col items-center text-center">
                 <Icon className="h-[60px] w-[60px] md:h-[70px] md:w-[70px]" />
                 <h3 className="mt-3 md:mt-4 text-[15px] md:text-[17.6px] font-bold text-white">
