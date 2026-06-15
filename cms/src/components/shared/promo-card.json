@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_shared_promo_cards",
+  "info": {
+    "displayName": "Promo Card",
+    "icon": "image",
+    "description": "Image card with title, subtitle and a CTA — used in promo-card-grid blocks (e.g. The Gourmet Pantry 'From Our Cellar to Your Home')."
+  },
+  "attributes": {
+    "title": { "type": "string", "required": true },
+    "subtitle": { "type": "string" },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "cta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.link"
+    }
+  }
+}

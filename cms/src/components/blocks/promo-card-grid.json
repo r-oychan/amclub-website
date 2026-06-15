@@ -1,0 +1,23 @@
+{
+  "collectionName": "components_blocks_promo_card_grids",
+  "info": {
+    "displayName": "Promo Card Grid",
+    "icon": "grid",
+    "description": "Heading + description over a grid of image promo cards (card or overlay variant). e.g. 'From Our Cellar to Your Home'."
+  },
+  "attributes": {
+    "heading": { "type": "string" },
+    "description": { "type": "text" },
+    "variant": {
+      "type": "enumeration",
+      "enum": ["card", "overlay"],
+      "default": "card"
+    },
+    "columns": { "type": "integer", "min": 1, "max": 5 },
+    "cards": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.promo-card"
+    }
+  }
+}

@@ -505,6 +505,14 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
         'populate[operatingHoursSections][populate]': '*',
         'populate[teamMembers][populate]': '*',
         'populate[downloads][populate]': '*',
+        // promoCards (restaurants, e.g. The Gourmet Pantry) — grid + its image cards.
+        'populate[promoCards][populate][cards][populate]': '*',
+        // imagePanels (fitness, e.g. Tennis) — image/cta/bullets one level, plus the
+        // nested operatingHours.rows (text-line) two levels down.
+        'populate[imagePanels][populate][image]': 'true',
+        'populate[imagePanels][populate][cta]': 'true',
+        'populate[imagePanels][populate][bullets]': 'true',
+        'populate[imagePanels][populate][operatingHours][populate]': '*',
       };
       const items = await fetchAPI<VenueData[]>(config.apiPath, params);
       const fallback = staticFallback(section, lookupSlug);
@@ -519,6 +527,22 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
             typeof m.bioImage === 'string'
               ? m.bioImage
               : (m.bioImage as { url?: string } | undefined)?.url,
+        }));
+        // imagePanels (fitness) come from the CMS as `image` media objects and
+        // `bullets`/`operatingHours.rows` as `shared.text-line` objects ({ text }).
+        // The renderer expects a URL string and string[]; flatten to match (the
+        // subpages fallback is already flat, so it bypasses this).
+        const toStrings = (arr: unknown): string[] | undefined =>
+          Array.isArray(arr)
+            ? arr.map((x) => (typeof x === 'string' ? x : (x as { text?: string } | null)?.text)).filter((x): x is string => !!x)
+            : undefined;
+        const apiPanels = api.imagePanels?.map((p) => ({
+          ...p,
+          image: imgSrc(p.image) as string,
+          bullets: toStrings(p.bullets) ?? p.bullets,
+          operatingHours: Array.isArray(p.operatingHours)
+            ? p.operatingHours.map((h) => ({ title: h.title, rows: toStrings(h.rows) ?? [] }))
+            : p.operatingHours,
         }));
         // Enrich with static fallback for fields missing from CMS
         setVenue({
@@ -548,7 +572,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           teamMembers: apiTeam?.length ? apiTeam : fallback?.teamMembers,
           teamHeading: api.teamHeading ?? fallback?.teamHeading,
           bottomCtas: api.bottomCtas?.length ? api.bottomCtas : fallback?.bottomCtas,
-          imagePanels: api.imagePanels?.length ? api.imagePanels : fallback?.imagePanels,
+          imagePanels: apiPanels?.length ? apiPanels : fallback?.imagePanels,
           cardSections: api.cardSections?.length ? api.cardSections : fallback?.cardSections,
           faq: api.faq?.length ? api.faq : fallback?.faq,
           gallery: resolveMarquee(api, fallback),
