@@ -86,7 +86,7 @@ interface VenueData {
       title: string;
       subtitle?: string;
       image: string;
-      cta: { label: string; href: string };
+      cta: { label: string; href: string; isExternal?: boolean };
     }[];
   };
   teamMembers?: {
@@ -214,6 +214,23 @@ interface VenueData {
  */
 const imgSrc = (img: unknown): string | undefined =>
   typeof img === 'string' ? img : (img as { url?: string } | null | undefined)?.url;
+
+/**
+ * Whether an href must be a real browser navigation (a plain `<a>`) rather than
+ * a client-side React Router `<Link>`. Router intercepts `<Link>` clicks, so a
+ * link to a static asset (`/uploads/...pdf`) or a non-route path silently does
+ * nothing on a direct click — only "open in new tab" (a real navigation hitting
+ * nginx) works. Absolute URLs, mailto/tel, anything under `/uploads/`, and any
+ * file-extension path must therefore render as a hard anchor. CMS `isExternal`
+ * still forces a hard link too.
+ */
+const FILE_HREF_RE = /\.(pdf|jpe?g|png|gif|webp|svg|docx?|xlsx?|pptx?|csv|txt|zip)$/i;
+const isHardLink = (href?: string, isExternal?: boolean): boolean =>
+  !!href &&
+  (isExternal === true ||
+    /^(https?:|mailto:|tel:)/i.test(href) ||
+    href.startsWith('/uploads/') ||
+    FILE_HREF_RE.test(href));
 
 const SECTION_MAP: Record<string, { apiPath: string; parentLabel: string; parentHref: string }> = {
   dining: { apiPath: '/restaurants', parentLabel: 'Dining & Retail', parentHref: '/dining' },
@@ -736,7 +753,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                         <CtaIcon name={cta.icon ?? 'arrow'} size={20} className="text-accent" />
                       </>
                     );
-                    return cta.isExternal ? (
+                    return isHardLink(cta.href, cta.isExternal) ? (
                       <a
                         key={cta.label}
                         href={cta.href}
@@ -771,7 +788,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                       </p>
                     ),
                     a: ({ href, children }) => {
-                      const external = href?.startsWith('http');
+                      const external = isHardLink(href);
                       return (
                         <a
                           href={href}
@@ -1045,8 +1062,8 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                       <li key={item.label}>
                         <a
                           href={item.href}
-                          target={item.isExternal ? '_blank' : undefined}
-                          rel={item.isExternal ? 'noopener noreferrer' : undefined}
+                          target={isHardLink(item.href, item.isExternal) ? '_blank' : undefined}
+                          rel={isHardLink(item.href, item.isExternal) ? 'noopener noreferrer' : undefined}
                           className="inline-flex items-center gap-3 text-accent hover:underline"
                           style={{ fontSize: '17.6px', lineHeight: '26.4px', fontWeight: 400 }}
                         >
@@ -1274,7 +1291,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                     );
                     const key = `${card.heading}-${cIdx}`;
                     if (!card.cta) return <div key={key}>{inner}</div>;
-                    return card.cta.isExternal ? (
+                    return isHardLink(card.cta.href, card.cta.isExternal) ? (
                       <a
                         key={key}
                         href={card.cta.href}
@@ -1560,7 +1577,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                         <CtaIcon name="arrow" size={20} className="text-accent" />
                       </>
                     );
-                    return panel.cta.isExternal ? (
+                    return isHardLink(panel.cta.href, panel.cta.isExternal) ? (
                       <a
                         href={panel.cta.href}
                         target="_blank"
@@ -1804,17 +1821,29 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                       </div>
                     );
                     const key = `${card.title}-${i}`;
-                    return card.cta ? (
+                    if (!card.cta) return <div key={key}>{inner}</div>;
+                    const cardLinkClass =
+                      'block focus:outline-none focus-visible:ring-2 focus-visible:ring-accent';
+                    return isHardLink(card.cta.href, card.cta.isExternal) ? (
+                      <a
+                        key={key}
+                        href={card.cta.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={cardLinkClass}
+                        aria-label={`${card.title} — ${card.cta.label}`}
+                      >
+                        {inner}
+                      </a>
+                    ) : (
                       <Link
                         key={key}
                         to={card.cta.href}
-                        className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                        className={cardLinkClass}
                         aria-label={`${card.title} — ${card.cta.label}`}
                       >
                         {inner}
                       </Link>
-                    ) : (
-                      <div key={key}>{inner}</div>
                     );
                   }
                   // Default card variant
@@ -1840,24 +1869,45 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                         >
                           {card.title}
                         </h3>
-                        {card.cta && (
-                          <Link
-                            to={card.cta.href}
-                            className="inline-flex items-center gap-2 text-primary uppercase hover:text-accent transition-colors"
-                            style={{ fontSize: '13.6px', fontWeight: 700, letterSpacing: '0.544px' }}
-                          >
-                            {card.cta.label}
-                            <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
-                              <path
-                                d="M1 13L13 1M13 1H3M13 1V11"
-                                stroke="#DF4661"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </Link>
-                        )}
+                        {card.cta &&
+                          (() => {
+                            const ctaClass =
+                              'inline-flex items-center gap-2 text-primary uppercase hover:text-accent transition-colors';
+                            const ctaStyle = {
+                              fontSize: '13.6px',
+                              fontWeight: 700,
+                              letterSpacing: '0.544px',
+                            } as const;
+                            const ctaInner = (
+                              <>
+                                {card.cta.label}
+                                <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
+                                  <path
+                                    d="M1 13L13 1M13 1H3M13 1V11"
+                                    stroke="#DF4661"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              </>
+                            );
+                            return isHardLink(card.cta.href, card.cta.isExternal) ? (
+                              <a
+                                href={card.cta.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={ctaClass}
+                                style={ctaStyle}
+                              >
+                                {ctaInner}
+                              </a>
+                            ) : (
+                              <Link to={card.cta.href} className={ctaClass} style={ctaStyle}>
+                                {ctaInner}
+                              </Link>
+                            );
+                          })()}
                       </div>
                     </div>
                   );
@@ -2063,7 +2113,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                   <CtaIcon name="arrow" size={20} className="text-accent" />
                 </>
               );
-              return cta.isExternal ? (
+              return isHardLink(cta.href, cta.isExternal) ? (
                 <a
                   key={cta.label}
                   href={cta.href}
