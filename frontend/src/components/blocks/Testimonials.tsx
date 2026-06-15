@@ -90,10 +90,15 @@ export function Testimonials({
           </h2>
         )}
 
-        <div aria-hidden="true" className="mt-12 mb-10 flex justify-center text-accent">
-          <svg width="46" height="36" viewBox="0 0 46 36" fill="currentColor" aria-hidden="true">
-            <path d="M0 36V21C0 9.402 7.402 0 19 0v7.2c-5.2 0-9.6 4-9.6 9.6h9.6V36H0Zm27 0V21C27 9.402 34.402 0 46 0v7.2c-5.2 0-9.6 4-9.6 9.6H46V36H27Z" />
-          </svg>
+        {/* Decorative opening quotation mark — typographic glyph in the serif
+            heading font (the prior SVG read as a literal "99"). */}
+        <div aria-hidden="true" className="mt-12 mb-4 flex justify-center text-accent">
+          <span
+            className="font-heading select-none leading-none"
+            style={{ fontSize: '88px', lineHeight: 1 }}
+          >
+            &ldquo;
+          </span>
         </div>
 
         <div
