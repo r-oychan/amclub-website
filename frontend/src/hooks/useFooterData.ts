@@ -143,7 +143,10 @@ export function useFooterData(): FooterData {
     let cancelled = false;
 
     fetchAPI<StrapiFooter>('/footer', {
-      'populate[logo]': '*',
+      // Strapi v5 rejects `populate=*` on a media field ("Invalid key related
+      // at logo.related") → the whole /footer fetch 400s and the footer falls
+      // back to hardcoded (stale) legal-link URLs. Use `true` for media.
+      'populate[logo]': 'true',
       'populate[columns][populate][links]': '*',
       'populate[socials]': '*',
       'populate[legalLinks]': '*',

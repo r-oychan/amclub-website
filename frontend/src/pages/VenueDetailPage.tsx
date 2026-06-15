@@ -280,6 +280,10 @@ interface MembershipSingleton {
   phone?: string;
   email?: string;
   ctas?: { label: string; href: string; isExternal?: boolean }[];
+  downloads?: {
+    heading?: string;
+    items?: { label?: string; href?: string; isExternal?: boolean }[];
+  } | null;
   body?: {
     __component?: string;
     heading?: string;
@@ -332,6 +336,14 @@ function mapSingletonToVenue(s: MembershipSingleton, fallback: VenueData | null)
     description: s.description ?? base.description,
     image: s.heroImage?.url ? { url: s.heroImage.url } : base.image,
     ctas: s.ctas?.length ? s.ctas : base.ctas,
+    downloads: s.downloads?.items?.length
+      ? {
+          heading: s.downloads.heading,
+          items: s.downloads.items
+            .filter((i) => i.label && i.href)
+            .map((i) => ({ label: i.label!, href: i.href!, isExternal: i.isExternal })),
+        }
+      : base.downloads,
     phone: s.phone ?? base.phone,
     email: s.email ?? base.email,
     tierCards,
@@ -445,7 +457,15 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
       // drives content inside this page's unchanged layout.
       const singletonPath = SINGLETON_OVERRIDES[section]?.[lookupSlug];
       if (singletonPath) {
-        const s = await fetchAPI<MembershipSingleton>(singletonPath);
+        // Deep-populate nested components — without this `downloads.items` (and
+        // body cards) come back empty and the page silently falls back to the
+        // static subpages data, whose blob hrefs 404 on prod.
+        const s = await fetchAPI<MembershipSingleton>(singletonPath, {
+          'populate[heroImage]': 'true',
+          'populate[ctas]': 'true',
+          'populate[downloads][populate]': '*',
+          'populate[body][populate]': '*',
+        });
         const fb = staticFallback(section, lookupSlug);
         setVenue(s ? mapSingletonToVenue(s, fb) : fb);
         setLoading(false);
