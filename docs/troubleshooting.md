@@ -272,3 +272,35 @@ Update memory files in `~/.claude/projects/.../memory/` when reality diverges fr
 **Cause:** Container Apps revision swap lag — the request hit the *old* revision, whose Strapi doesn't know the new field yet (input validation rejects unknown keys). Seen twice on `patch-2026-06-12-benefits-text.mjs` (dev and uat).
 
 **Fix:** wait ~30–60 s after the new revision shows 100 % traffic (`az containerapp revision list`), or just re-run the patch — all content patches in `scripts/` are idempotent by design.
+
+## A newly-added field appears empty on the site even though it was seeded (custom controller POPULATE map drift)
+
+**Symptom:** you add a field to a detail content type (e.g. `fitness-facility.imagePanels`, `restaurant.promoCards`), seed it, and the public page still shows the old hardcoded `subpages.ts` fallback. Reading back via the REST API (`GET /api/<plural>?...&populate[field][populate]=*`) returns the field **empty**, so it *looks* like the write didn't persist.
+
+**The trap:** these detail types use a **custom `find`/`findOne` controller** with a **hardcoded `POPULATE` map** (see `cms/src/api/fitness-facility/controllers/fitness-facility.ts`, `restaurant`, and `cms/src/lib/detail-page-populate.ts`). The controllers **ignore the `populate` query param entirely** and always use their internal map. So:
+- Any field **missing from that map is never returned** — no matter what `populate=…` you pass. The frontend therefore never receives it and falls back to `subpages.ts`.
+- This masquerades as "the write didn't persist." It did — you just can't see it through the custom read path.
+
+**Confirm the write actually persisted** (bypass the custom `find` controller — the default `update` route *does* honour query populate):
+
+```js
+// PUT with populate in the URL returns the populated entity from the default update controller
+const r = await api(ctx, `/fitness-facilities/${docId}?populate[imagePanels][populate]=*`,
+  { method: 'PUT', body: { data: {} } });           // empty data = no-op write, just read back
+console.log(r.data.imagePanels);                      // populated → the data is there
+```
+
+If that shows the data but the normal `GET` doesn't, it's the controller map — **not** the DB.
+
+**Fix:** add the field (with the nested populate the frontend needs) to the controller's `POPULATE` constant, e.g.:
+
+```ts
+// fitness-facility controller
+imagePanels: { populate: { image: true, cta: true, bullets: true, operatingHours: { populate: { rows: true } } } },
+// restaurant controller
+promoCards: { populate: { cards: { populate: { image: true, cta: true } } } },
+```
+
+Then `cd cms && npm run build`, commit, deploy. **Rule of thumb:** every time you add a component/relation field to `fitness-facility`, `restaurant`, `kids-experience`, `event-space`, or any type with a custom controller, **update its `POPULATE` map in the same commit** — the schema and the controller's read map drift apart silently otherwise. Discovered 2026‑06‑16: commit `22c7ccf` added `imagePanels`/`promoCards` but left both controllers' maps untouched, so the content was invisible despite being stored.
+
+> Earlier misdiagnosis (recorded so nobody repeats it): this was first mistaken for a missing-DB-table / schema-sync problem. It is **not** — the component tables exist and the writes persist. `TRUNCATE strapi_database_schema` + restart does nothing for this; only the controller `POPULATE` map fix does.
