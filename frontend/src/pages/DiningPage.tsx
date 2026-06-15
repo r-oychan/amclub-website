@@ -101,10 +101,12 @@ export default function DiningPage() {
   if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
   if (!data) return <div className="min-h-screen flex items-center justify-center text-text-dark/70">Dining page content unavailable.</div>;
 
-  // UNCORKED is a wine-club program seeded into the restaurants collection
-  // so /dining/uncorked has a CMS-backed entry, but it shouldn't appear in
-  // the venue grid alongside the actual dining outlets.
-  const HIDDEN_FROM_GRID = new Set(['uncorked']);
+  // UNCORKED (wine-club program) and Essentials (retail/services outlet) are
+  // seeded into the restaurants collection so /dining/uncorked and
+  // /dining/essentials have CMS-backed entries, but neither should appear in
+  // the venue grid alongside the actual dining outlets. Essentials surfaces via
+  // its own promo section + the nav instead.
+  const HIDDEN_FROM_GRID = new Set(['uncorked', 'essentials']);
   const venues = restaurants
     .filter((r) => !HIDDEN_FROM_GRID.has(r.slug))
     .map((r) => ({
