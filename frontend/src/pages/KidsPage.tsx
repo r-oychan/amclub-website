@@ -46,6 +46,19 @@ interface StrapiKidsPage {
     features?: { heading: string; description?: string }[];
   };
   finalCta?: { heading: string; body?: string; variant?: 'default' | 'light' | 'dark' | 'accent'; ctas?: StrapiLink[] };
+  quadSection?: {
+    heading?: string;
+    subheading?: string;
+    cards?: { heading: string; description?: string; image?: StrapiMedia; imageAlt?: string; cta?: StrapiLink }[];
+  };
+  childSafety?: {
+    badgeLabel?: string;
+    badgeLogo?: StrapiMedia;
+    heading?: string;
+    body?: string;
+    backgroundImage?: StrapiMedia;
+    features?: { text?: string }[];
+  };
 }
 
 const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
@@ -108,6 +121,28 @@ export default function KidsPage() {
 
   const hangoutP = overlayProps(data.hangout);
   const partiesP = overlayProps(data.parties);
+
+  // QuadSection + ChildSafetySection from CMS (fall back to component defaults when absent).
+  const quadCards = (data.quadSection?.cards ?? [])
+    .filter((c) => c.image)
+    .map((c) => ({
+      heading: c.heading,
+      description: c.description ?? '',
+      image: mediaUrl(c.image) ?? '',
+      imageAlt: c.imageAlt ?? c.heading,
+      cta: { label: c.cta?.label ?? 'Learn More', href: c.cta?.href ?? '#' },
+    }));
+  const cs = data.childSafety;
+  const childSafetyProps = cs
+    ? {
+        heading: cs.heading,
+        body: cs.body,
+        badgeLabel: cs.badgeLabel,
+        badgeLogo: mediaUrl(cs.badgeLogo),
+        backgroundImage: mediaUrl(cs.backgroundImage),
+        features: (cs.features ?? []).map((f) => f.text).filter((t): t is string => !!t),
+      }
+    : {};
 
   const cmsPartyPackageItems = (data.partyPackages?.items ?? [])
     .filter((i) => i.image)
@@ -209,8 +244,8 @@ export default function KidsPage() {
         />
       )}
 
-      {/* Custom QuadSection — local enhancement, not yet CMS-driven */}
-      <QuadSection />
+      {/* Custom QuadSection — CMS-driven via kids-page.quadSection (falls back to defaults) */}
+      <QuadSection cards={quadCards.length ? quadCards : undefined} />
 
       {hangoutP && <OverlaySection {...hangoutP} />}
       {partiesP && <OverlaySection {...partiesP} />}
@@ -233,7 +268,7 @@ export default function KidsPage() {
 
       {/* Custom Child Safety section — sits between Learning and the final CTA, matches Framer order.
           Replaces the legacy FeatureGrid driven by data.safety, which duplicated this heading. */}
-      <ChildSafetySection />
+      <ChildSafetySection {...childSafetyProps} />
 
       {data.finalCta && (
         <CtaBanner
