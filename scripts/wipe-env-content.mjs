@@ -59,10 +59,18 @@ const PLURALS = [
 // entries from plain listings); `status=draft` includes unpublished documents.
 const PAGE_QS = 'filters[id][$gt]=0&status=draft&pagination[page]=1&pagination[pageSize]=100';
 
+// --only=a,b limits the wipe to specific types (e.g. a targeted re-clone).
+const ONLY = (process.argv.find((a) => a.startsWith('--only=')) || '').slice('--only='.length).split(',').filter(Boolean);
+const TARGETS = ONLY.length ? PLURALS.filter((p) => ONLY.includes(p)) : PLURALS;
+if (ONLY.length) {
+  const unknown = ONLY.filter((p) => !PLURALS.includes(p));
+  if (unknown.length) { console.error(`Unknown --only types: ${unknown.join(', ')}`); process.exit(1); }
+}
+
 (async () => {
-  console.log(`[wipe-env-content] target=${ctx.BASE} mode=${YES ? 'DELETE' : 'dry-run'}`);
+  console.log(`[wipe-env-content] target=${ctx.BASE} mode=${YES ? 'DELETE' : 'dry-run'}${ONLY.length ? ` only=${ONLY.join(',')}` : ''}`);
   let total = 0;
-  for (const plural of PLURALS) {
+  for (const plural of TARGETS) {
     let deleted = 0;
     for (;;) {
       let r;
