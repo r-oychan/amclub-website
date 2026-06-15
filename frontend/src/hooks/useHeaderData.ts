@@ -263,7 +263,9 @@ export function useHeaderData(): HeaderData {
     let cancelled = false;
 
     fetchAPI<StrapiHeader>('/header', {
-      'populate[logo]': '*',
+      // `true` (not `*`) for media fields — Strapi v5 400s on `populate=*` of
+      // a media relation, which would drop the header to its hardcoded fallback.
+      'populate[logo]': 'true',
       'populate[navItems][populate][columns][populate]': '*',
       'populate[ctaButton]': '*',
     }).then((result) => {
