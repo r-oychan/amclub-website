@@ -6,17 +6,27 @@
 // Stray blobs that lost their DB row are cleaned separately:
 //   az storage blob delete-batch -s media --pattern 'uploads/*' --account-name amclub<env>data
 //
-// Safety rails: refuses anything but --env=dev|uat; dry-run unless --yes.
+// Safety rails: dev/uat allowed; prod ALSO requires --i-understand-prod-wipe
+// (deletes every Media Library file + backing blob — irreversible without a
+// container backup). dry-run unless --yes.
 //
 // Usage:
 //   node scripts/reset-env-uploads.mjs --env=uat          # dry-run (count only)
 //   node scripts/reset-env-uploads.mjs --env=uat --yes    # delete for real
+//   node scripts/reset-env-uploads.mjs --env=prod --i-understand-prod-wipe --yes
 
 import { initEnv } from './seed-helpers.mjs';
 
 const envArg = (process.argv.find((a) => a.startsWith('--env=')) || '').slice('--env='.length);
-if (!['dev', 'uat'].includes(envArg)) {
-  console.error('Refusing: --env must be dev or uat (never prod).');
+if (!['dev', 'uat', 'prod'].includes(envArg)) {
+  console.error('Refusing: --env must be dev, uat, or prod.');
+  process.exit(1);
+}
+if (envArg === 'prod' && !process.argv.includes('--i-understand-prod-wipe')) {
+  console.error(
+    'Refusing prod media wipe: re-run with --i-understand-prod-wipe AND --yes.\n' +
+    'Snapshot the amclubproddata/media container first.',
+  );
   process.exit(1);
 }
 const YES = process.argv.includes('--yes');

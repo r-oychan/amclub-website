@@ -5,15 +5,24 @@
 // seed-*-page scripts (their nested component trees need page-specific deep
 // populate that the public API doesn't return generically).
 //
-// Source  = cms/.env.seed.dev   (STRAPI_BASE_URL + STRAPI_API_TOKEN)
-// Dest    = cms/.env.seed.uat
+// Source  = cms/.env.seed.<from>   (STRAPI_BASE_URL + STRAPI_API_TOKEN)
+// Dest    = cms/.env.seed.<to>
+// Default from=dev to=uat; override with --from=/--to= (e.g. uat→prod).
 //
 // Order matters: relation targets are created before their dependents, and
 // self-referential trees are created first, then their `parent` is patched.
 //
+// NOTE: cloning is idempotent — it SKIPS dest entries that already exist by
+// slug. It never deletes. To make the dest's set EXACTLY match the source,
+// wipe the target types on dest first:
+//   node scripts/wipe-env-content.mjs --env=<to> [--i-understand-prod-wipe] \
+//     --only=events,dining-promotions,fitness-facilities --yes
+//
 // Usage:
-//   node scripts/clone-dev-to-uat-collections.mjs --dry-run   # reads dev only
-//   node scripts/clone-dev-to-uat-collections.mjs             # writes to uat
+//   node scripts/clone-dev-to-uat-collections.mjs --dry-run            # reads src only
+//   node scripts/clone-dev-to-uat-collections.mjs                      # dev → uat
+//   node scripts/clone-dev-to-uat-collections.mjs --from=uat --to=prod \
+//     --only=events,dining-promotions,fitness-facilities               # uat → prod, 3 types
 
 import { readFileSync } from 'node:fs';
 import { resolve, dirname, join } from 'node:path';
@@ -36,8 +45,11 @@ function loadEnv(name) {
   return { BASE, auth: { Authorization: `Bearer ${TOKEN}` } };
 }
 
-const SRC = loadEnv('dev');
-const DST = loadEnv('uat');
+const FROM = (process.argv.find((a) => a.startsWith('--from=')) || '').slice('--from='.length) || 'dev';
+const TO = (process.argv.find((a) => a.startsWith('--to=')) || '').slice('--to='.length) || 'uat';
+if (FROM === TO) throw new Error(`--from and --to must differ (got ${FROM})`);
+const SRC = loadEnv(FROM);
+const DST = loadEnv(TO);
 
 async function api({ BASE, auth }, path, opts = {}) {
   const res = await fetch(`${BASE}/api${path}`, {
@@ -310,7 +322,7 @@ const ONLY = (process.argv.find((a) => a.startsWith('--only=')) || '').slice('--
 const SINGLES_MODE = process.argv.includes('--singletons');
 
 async function main() {
-  console.log(`[clone-dev-to-uat] dry=${DRY} mode=${SINGLES_MODE ? 'singletons' : 'collections'}${ONLY.length ? ` only=${ONLY.join(',')}` : ''}`);
+  console.log(`[clone ${FROM}→${TO}] dry=${DRY} mode=${SINGLES_MODE ? 'singletons' : 'collections'}${ONLY.length ? ` only=${ONLY.join(',')}` : ''}`);
   console.log(`  src=${SRC.BASE}`);
   console.log(`  dst=${DST.BASE}`);
   let total = 0;
