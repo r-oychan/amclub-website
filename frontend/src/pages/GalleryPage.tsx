@@ -3,6 +3,7 @@ import { fetchAPI, STRAPI_URL } from '../lib/api';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
 import { PageFade } from '../components/shared/PageFade';
 import { Lightbox, type LightboxImage } from '../components/shared/Lightbox';
+import { useSiteCopy } from '../hooks/useSiteCopy';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 
@@ -44,6 +45,7 @@ export default function GalleryPage() {
   const [albums, setAlbums] = useState<StrapiGalleryAlbum[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [visibleCount, setVisibleCount] = useState(8);
+  const { loadMoreLabel, viewAlbumLabel } = useSiteCopy();
   const [activeAlbumSlug, setActiveAlbumSlug] = useState<string | null>(null);
 
   useEffect(() => {
@@ -104,6 +106,7 @@ export default function GalleryPage() {
                 key={album.slug}
                 album={album}
                 onOpen={() => setActiveAlbumSlug(album.slug)}
+                viewAlbumLabel={viewAlbumLabel}
               />
             ))}
           </div>
@@ -115,7 +118,7 @@ export default function GalleryPage() {
                 onClick={() => setVisibleCount((c) => c + 4)}
                 className="inline-block px-6 py-3 rounded-full font-body font-bold text-sm tracking-wide bg-primary text-white hover:bg-primary-dark transition-all duration-200 cursor-pointer"
               >
-                Load More
+                {loadMoreLabel}
               </button>
             </div>
           )}
@@ -133,7 +136,7 @@ export default function GalleryPage() {
   );
 }
 
-function AlbumCard({ album, onOpen }: { album: StrapiGalleryAlbum; onOpen: () => void }) {
+function AlbumCard({ album, onOpen, viewAlbumLabel }: { album: StrapiGalleryAlbum; onOpen: () => void; viewAlbumLabel: string }) {
   const cover = mediaUrl(album.coverImage);
   const count = album.photoCount ?? album.images?.length ?? 0;
   return (
@@ -188,7 +191,7 @@ function AlbumCard({ album, onOpen }: { album: StrapiGalleryAlbum; onOpen: () =>
           className="inline-flex items-center gap-1.5 text-primary group-hover:text-accent transition-colors"
           style={{ fontSize: '14.4px', fontWeight: 700, letterSpacing: '0.576px', lineHeight: '20.16px' }}
         >
-          View Album
+          {viewAlbumLabel}
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
             <path d="M1 13L13 1M13 1H3M13 1V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>

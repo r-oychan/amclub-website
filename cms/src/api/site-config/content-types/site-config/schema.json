@@ -15,6 +15,21 @@
       "type": "string",
       "regex": "^(G-[A-Z0-9]+)?$",
       "description": "Google Analytics 4 Measurement ID (e.g. G-XXXXXXXXXX). Leave blank to disable analytics."
+    },
+    "loadMoreLabel": {
+      "type": "string",
+      "default": "Load More",
+      "description": "Button label for paginated lists (News, Gallery). Blank falls back to \"Load More\"."
+    },
+    "readMoreLabel": {
+      "type": "string",
+      "default": "Read More",
+      "description": "Link label on News article cards. Blank falls back to \"Read More\"."
+    },
+    "viewAlbumLabel": {
+      "type": "string",
+      "default": "View Album",
+      "description": "CTA label on Gallery album cards. Blank falls back to \"View Album\"."
     }
   }
 }
