@@ -2225,7 +2225,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
 
       {/* ── Quotes / Testimonials ── */}
       {venue.quotes && venue.quotes.items.length > 0 && (
-        <Testimonials heading={venue.quotes.heading} items={venue.quotes.items} />
+        <Testimonials heading={venue.quotes.heading} items={venue.quotes.items} dark={false} />
       )}
 
       {/* ── Marquee Gallery ── */}
