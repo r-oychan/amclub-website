@@ -269,7 +269,13 @@ function staticFallback(section: string, slug: string): VenueData | null {
  *  fetch their singleton and map it over the static fallback — so copy, hero,
  *  tier-card images and bullets are CMS-editable without any visual change. */
 const SINGLETON_OVERRIDES: Record<string, Record<string, string>> = {
-  membership: { 'niche-group-membership': '/niche-group-membership-page' },
+  membership: {
+    'niche-group-membership': '/niche-group-membership-page',
+    // Route to the CMS singleton so its (correct) downloads render; without
+    // this entry the page fell through to static subpages, whose form blob
+    // hrefs 404 on prod.
+    'start-application': '/start-application-page',
+  },
 };
 
 interface MembershipSingleton {
