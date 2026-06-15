@@ -16,7 +16,7 @@ const POPULATE = {
   // Added 2026-06: without this the field is stored but never returned, so the
   // frontend silently falls back to the hardcoded subpages.ts copy.
   imagePanels: {
-    populate: { image: true, cta: true, bullets: true, operatingHours: { populate: { rows: true } } },
+    populate: { image: true, ctas: true, bullets: true, operatingHours: { populate: { rows: true } } },
   },
   // FAQ pairs, card sections, and promo grid — flat fields the frontend renders
   // directly (VenueData.faq / .cardSections / .promoCards). Must be enumerated
