@@ -12,6 +12,12 @@ const POPULATE = {
   locationContact: true,
   operatingHoursSections: { populate: { rows: true } },
   extraSections: true,
+  // Alternating image+text panels (e.g. Tennis Programs / Tennis Etiquette).
+  // Added 2026-06: without this the field is stored but never returned, so the
+  // frontend silently falls back to the hardcoded subpages.ts copy.
+  imagePanels: {
+    populate: { image: true, cta: true, bullets: true, operatingHours: { populate: { rows: true } } },
+  },
   downloads: { populate: { items: true } },
   parent: { fields: ['slug', 'name'] },
   children: { fields: ['slug', 'name', 'order'] },
