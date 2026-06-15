@@ -838,8 +838,8 @@ export const fitnessSubpages: SubpageData[] = [
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [
-      { label: 'Personal Training & Group Fitness Rates 2026', href: '/uploads/documents/fitness/personal_training_group_fitness_rates_2026_18663b88d2.pdf', isExternal: true },
-      { label: 'Group Fitness Class Schedule', href: '/uploads/documents/fitness/group_fitness_class_schedule_563e9b5dd4.jpg', isExternal: true },
+      { label: 'Personal Training & Group Fitness Rates 2026', href: '/uploads/documents/fitness/personal_training_group_fitness_rates_2026.pdf', isExternal: true },
+      { label: 'Group Fitness Class Schedule', href: '/uploads/documents/fitness/group_fitness_class_schedule.jpg', isExternal: true },
     ],
     extraSections: [
       {
@@ -864,7 +864,7 @@ export const fitnessSubpages: SubpageData[] = [
             imageAlt: 'Personal trainer guiding a member through a dumbbell row',
             cta: {
               label: 'Explore',
-              href: '/uploads/documents/fitness/personal_training_group_fitness_rates_2026_18663b88d2.pdf',
+              href: '/uploads/documents/fitness/personal_training_group_fitness_rates_2026.pdf',
               isExternal: true,
             },
           },
@@ -876,7 +876,7 @@ export const fitnessSubpages: SubpageData[] = [
             imageAlt: 'Members performing a kettlebell squat group fitness class',
             cta: {
               label: 'Explore',
-              href: '/uploads/documents/fitness/group_fitness_class_schedule_563e9b5dd4.jpg',
+              href: '/uploads/documents/fitness/group_fitness_class_schedule.jpg',
               isExternal: true,
             },
           },
@@ -943,7 +943,7 @@ export const fitnessSubpages: SubpageData[] = [
         heading: 'Tennis Programs',
         cta: {
           label: 'Summer Term 2026 Schedule',
-          href: '/uploads/documents/fitness/tennis_summer_term_schedule_2026_76e7b54e1f.pdf',
+          href: '/uploads/documents/fitness/tennis_summer_term_schedule_2026.pdf',
           isExternal: true,
         },
         subheading: 'Tennis Socials',
@@ -1024,8 +1024,8 @@ export const fitnessSubpages: SubpageData[] = [
     parentSection: 'Fitness & Wellness',
     parentHref: '/fitness',
     ctas: [
-      { label: 'View Price List', href: '/uploads/documents/fitness/pilates_price_list_fd02c50227.docx', isExternal: true },
-      { label: 'View Class Schedule', href: '/uploads/documents/fitness/pilates_group_class_schedule_5355cca41c.jpeg', isExternal: true },
+      { label: 'View Price List', href: '/uploads/documents/fitness/pilates_price_list.docx', isExternal: true },
+      { label: 'View Class Schedule', href: '/uploads/documents/fitness/pilates_group_class_schedule.jpeg', isExternal: true },
     ],
     cardSections: [
       {
@@ -1038,7 +1038,7 @@ export const fitnessSubpages: SubpageData[] = [
             imageAlt: 'Members in a group Pilates Reformer class',
             cta: {
               label: 'Explore',
-              href: '/uploads/documents/fitness/pilates_group_class_schedule_5355cca41c.jpeg',
+              href: '/uploads/documents/fitness/pilates_group_class_schedule.jpeg',
               isExternal: true,
             },
           },
@@ -1050,7 +1050,7 @@ export const fitnessSubpages: SubpageData[] = [
             imageAlt: 'A Pilates Coach guiding a member through a Reformer exercise',
             cta: {
               label: 'Explore',
-              href: '/uploads/documents/fitness/pilates_price_list_fd02c50227.docx',
+              href: '/uploads/documents/fitness/pilates_price_list.docx',
               isExternal: true,
             },
           },
@@ -1095,7 +1095,7 @@ export const fitnessSubpages: SubpageData[] = [
       { name: 'Danielle Chue',   role: 'Pilates Coach',      image: '/images/fitness/team-pilates/danielle-chue.jpg',   bioImage: '/images/fitness/team-pilates/danielle-chue-bio.png' },
     ],
     bottomCtas: [
-      { label: 'Download Class Schedule', href: '/uploads/documents/fitness/pilates_group_class_schedule_5355cca41c.jpeg', isExternal: true },
+      { label: 'Download Class Schedule', href: '/uploads/documents/fitness/pilates_group_class_schedule.jpeg', isExternal: true },
     ],
   },
   {
