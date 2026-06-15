@@ -112,6 +112,21 @@
       "repeatable": true,
       "component": "shared.image-text-panel"
     },
+    "faq": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.faq-pair"
+    },
+    "cardSections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.card-section"
+    },
+    "promoCards": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.promo-card-grid"
+    },
     "order": {
       "type": "integer",
       "default": 0

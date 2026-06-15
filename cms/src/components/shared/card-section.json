@@ -1,0 +1,17 @@
+{
+  "collectionName": "components_shared_card_sections",
+  "info": {
+    "displayName": "Card Section",
+    "icon": "grid",
+    "description": "Optional heading/subheading + a row of image cards (e.g. Gym 'Equipment & Zones', Pilates 'Our Studios')."
+  },
+  "attributes": {
+    "heading": { "type": "string" },
+    "subheading": { "type": "text" },
+    "cards": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.three-col-item"
+    }
+  }
+}
