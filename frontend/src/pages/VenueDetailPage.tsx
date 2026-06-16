@@ -17,7 +17,7 @@ import { CtaIcon } from '../components/shared/CtaIcon';
 import { CtaButton, type CtaLink } from '../components/shared/CtaButton';
 import { ImageTextPanels } from '../components/detail/ImageTextPanels';
 import { mapImagePanels } from '../lib/imagePanels';
-import { resolveIcon } from '../lib/detailIcons';
+import { resolveIcon, type DetailIconName } from '../lib/detailIcons';
 
 interface ScheduleRow {
   dayRange: string;
@@ -68,6 +68,7 @@ interface VenueData {
   ctas?: CtaLink[];
   extraSections?: {
     title: string;
+    icon?: DetailIconName | null;
     content?: string;
     bullets?: string[];
     contactRows?: { label: string; value: string }[];
@@ -909,7 +910,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
 
               {/* ── Extra Sections (Reservation, etc.) ── */}
               {venue.extraSections?.map((extra, i) => (
-                <DetailSection key={i} icon={resolveIcon(extra.title)} title={extra.title}>
+                <DetailSection key={i} icon={extra.icon ?? resolveIcon(extra.title)} title={extra.title}>
                   <div className="flex flex-col" style={{ gap: '16px' }}>
                     {extra.content && <Markdown>{extra.content}</Markdown>}
                     {extra.bullets && extra.bullets.length > 0 && (

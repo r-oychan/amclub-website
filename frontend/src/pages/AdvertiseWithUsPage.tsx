@@ -6,6 +6,8 @@ import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
 import { CtaButton } from '../components/shared/CtaButton';
 import { type CtaIconName } from '../components/shared/CtaIcon';
 import { Markdown } from '../components/shared/Markdown';
+import { DetailSection } from '../components/detail/DetailSection';
+import { resolveIcon, type DetailIconName } from '../lib/detailIcons';
 
 interface StrapiLink {
   label?: string;
@@ -32,7 +34,7 @@ interface AdvertiseData {
   phone?: string;
   email?: string;
   body?: AdvertiseBlock[];
-  extraSections?: { title?: string; content?: string; bullets?: string[] }[];
+  extraSections?: { title?: string; content?: string; bullets?: string[]; icon?: DetailIconName | null }[];
   parentLabel?: string;
   parentHref?: string;
 }
@@ -164,26 +166,26 @@ export default function AdvertiseWithUsPage() {
                 </div>
               ))}
 
-              {/* Extra Sections (CMS-editable titled blocks with markdown content) */}
+              {/* Extra Sections — rendered with the facilities-style icon + title
+                  subheader (DetailSection). The icon is CMS-editable; when unset
+                  it's inferred from the title (e.g. "Sponsorship" → heart). */}
               {extraSections.map((ex, idx) => (
-                <div key={`ex-${idx}`} className="flex flex-col" style={{ gap: '20px' }}>
-                  {ex.title && (
-                    <h2
-                      className="font-heading text-primary"
-                      style={{ fontSize: '28px', fontWeight: 300, fontStyle: 'italic', lineHeight: 1.15 }}
-                    >
-                      {ex.title}
-                    </h2>
-                  )}
-                  {ex.content && <Markdown compact>{ex.content}</Markdown>}
-                  {Array.isArray(ex.bullets) && ex.bullets.length > 0 && (
-                    <ul className="list-disc pl-6 flex flex-col font-body text-text-dark/85" style={{ gap: '8px', fontSize: '17px', lineHeight: 1.55 }}>
-                      {ex.bullets.map((b, k) => (
-                        <li key={k}>{b}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
+                <DetailSection
+                  key={`ex-${idx}`}
+                  icon={ex.icon ?? resolveIcon(ex.title ?? '')}
+                  title={ex.title ?? ''}
+                >
+                  <div className="flex flex-col" style={{ gap: '16px' }}>
+                    {ex.content && <Markdown compact>{ex.content}</Markdown>}
+                    {Array.isArray(ex.bullets) && ex.bullets.length > 0 && (
+                      <ul className="list-disc pl-6 flex flex-col font-body text-text-dark/85" style={{ gap: '8px', fontSize: '17px', lineHeight: 1.55 }}>
+                        {ex.bullets.map((b, k) => (
+                          <li key={k}>{b}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </DetailSection>
               ))}
 
               {(data.phone || data.email) && (
