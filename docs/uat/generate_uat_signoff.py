@@ -348,7 +348,6 @@ simple_sheet("10. Infra & Security",
      ("Environment correctness", "Confirm UAT shows UAT content.", "No dev/localhost URLs or wrong-env content leaking."),
      ("Media origin / CORS", "Inspect image/PDF URLs on the site.", "Served from the site origin (/uploads); no CORS errors."),
      ("Backup / restore ready", "Confirm DB backup (PITR) + a manual dump exist.", "Recovery path verified before go-live."),
-     ("Deploy pipeline", "Confirm a content/code change deploys to UAT.", "Push → CI → deploy works; revision healthy."),
     ])
 
 wb.save(OUT)
