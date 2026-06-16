@@ -3,6 +3,7 @@ import { BODY_POPULATE, HEADER_POPULATE } from '../../../lib/detail-page-populat
 
 const POPULATE = {
   ...HEADER_POPULATE,
+  extraSections: true,
   body: BODY_POPULATE,
 };
 
