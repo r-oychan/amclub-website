@@ -39,6 +39,11 @@
     "intro": {
       "type": "text"
     },
+    "extraSections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.extra-section"
+    },
     "locationLevel": {
       "type": "string"
     },
