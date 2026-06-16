@@ -31,7 +31,7 @@
       "default": false
     },
     "description": {
-      "type": "text",
+      "type": "richtext",
       "required": true
     },
     "image": {
@@ -64,9 +64,6 @@
       "component": "shared.link",
       "max": 5
     },
-    "openingHours": {
-      "type": "blocks"
-    },
     "operatingHoursSections": {
       "type": "component",
       "repeatable": true,
@@ -85,9 +82,6 @@
     },
     "email": {
       "type": "email"
-    },
-    "detailedDescription": {
-      "type": "blocks"
     },
     "gallery": {
       "type": "media",

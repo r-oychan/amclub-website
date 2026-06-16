@@ -44,8 +44,6 @@ interface VenueData {
   parentSection?: string;
   parentHref?: string;
   description: string;
-  detailedDescription?: unknown[];
-  openingHours?: unknown[];
   operatingHoursSections?: OperatingHoursSection[];
   locationContact?: LocationContact | null;
   locationLevel?: string;
