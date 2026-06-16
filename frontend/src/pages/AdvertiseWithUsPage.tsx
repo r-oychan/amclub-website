@@ -19,12 +19,6 @@ interface StrapiLink {
   icon?: CtaIconName | null;
 }
 
-interface AdvertiseBlock {
-  __component: string;
-  heading?: string;
-  body?: string;
-}
-
 interface AdvertiseData {
   title?: string;
   label?: string;
@@ -35,7 +29,6 @@ interface AdvertiseData {
   phone?: string;
   email?: string;
   locationContact?: { locationLevel?: string; phone?: string; email?: string } | null;
-  body?: AdvertiseBlock[];
   extraSections?: { title?: string; content?: string; bullets?: string[]; icon?: DetailIconName | null }[];
   parentLabel?: string;
   parentHref?: string;
@@ -89,7 +82,6 @@ export default function AdvertiseWithUsPage() {
   const ctas = (data.ctas ?? []).filter((c) => c.label && c.href);
   const parentLabel = data.parentLabel ?? 'The American Club';
   const parentHref = data.parentHref ?? '/home';
-  const textBlocks = (data.body ?? []).filter((b) => b.__component === 'blocks.text-block');
   const extraSections = data.extraSections ?? [];
   // Optional Location & Contact module (same shape as dining). When filled it
   // renders the dining-style section; otherwise we fall back to the legacy
@@ -150,28 +142,6 @@ export default function AdvertiseWithUsPage() {
                   {data.description}
                 </div>
               )}
-
-              {/* Sub-sections (text-blocks rendered inline inside the right column) */}
-              {textBlocks.map((b, idx) => (
-                <div key={idx} className="flex flex-col" style={{ gap: '20px' }}>
-                  {b.heading && (
-                    <h2
-                      className="font-heading text-primary"
-                      style={{ fontSize: '28px', fontWeight: 300, fontStyle: 'italic', lineHeight: 1.15 }}
-                    >
-                      {b.heading}
-                    </h2>
-                  )}
-                  {b.body && (
-                    <div
-                      className="font-body text-text-dark/85 whitespace-pre-line"
-                      style={{ fontSize: '17px', lineHeight: 1.55 }}
-                    >
-                      {b.body}
-                    </div>
-                  )}
-                </div>
-              ))}
 
               {/* Extra Sections — rendered with the facilities-style icon + title
                   subheader (DetailSection). The icon is CMS-editable; when unset
