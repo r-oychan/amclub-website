@@ -59,7 +59,7 @@
       "type": "component",
       "repeatable": true,
       "component": "shared.link",
-      "max": 2
+      "max": 5
     },
     "order": {
       "type": "integer",

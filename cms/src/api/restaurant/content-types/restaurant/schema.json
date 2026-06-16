@@ -62,7 +62,7 @@
       "type": "component",
       "repeatable": true,
       "component": "shared.link",
-      "max": 3
+      "max": 5
     },
     "openingHours": {
       "type": "blocks"
@@ -100,7 +100,7 @@
       "type": "component",
       "repeatable": true,
       "component": "shared.link",
-      "max": 4
+      "max": 5
     },
     "body": {
       "type": "dynamiczone",
