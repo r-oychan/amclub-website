@@ -15,6 +15,9 @@ import { KidsPartyPackages } from '../components/kids/KidsPartyPackages';
 import { Testimonials } from '../components/blocks/Testimonials';
 import { CtaIcon } from '../components/shared/CtaIcon';
 import { CtaButton, type CtaLink } from '../components/shared/CtaButton';
+import { ImageTextPanels } from '../components/detail/ImageTextPanels';
+import { mapImagePanels } from '../lib/imagePanels';
+import { resolveIcon } from '../lib/detailIcons';
 
 interface ScheduleRow {
   dayRange: string;
@@ -391,20 +394,6 @@ function resolveMarquee(api: VenueData, fallback: VenueData | null): VenueData['
 }
 
 /* Map extra section titles to DetailSection icon names */
-function resolveIcon(
-  title: string
-): 'clock' | 'location' | 'reservation' | 'dresscode' | 'capacity' | 'menu' | 'sponsorship' {
-  const lower = title.toLowerCase();
-  if (lower.includes('sponsor') || lower.includes('partner')) return 'sponsorship';
-  if (lower.includes('reserv') || lower.includes('book')) return 'reservation';
-  if (lower.includes('menu') || lower.includes('food') || lower.includes('cuisine')) return 'menu';
-  if (lower.includes('hour') || lower.includes('time')) return 'clock';
-  if (lower.includes('location') || lower.includes('contact')) return 'location';
-  if (lower.includes('dress') || lower.includes('attire')) return 'dresscode';
-  if (lower.includes('capac') || lower.includes('seat')) return 'capacity';
-  return 'reservation';
-}
-
 /** Extract a YouTube video ID from a watch URL, youtu.be URL, embed URL, or raw ID. */
 function youtubeEmbedUrl(input: string): string | null {
   if (!input) return null;
@@ -528,14 +517,6 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
               ? m.bioImage
               : (m.bioImage as { url?: string } | undefined)?.url,
         }));
-        // imagePanels (fitness) come from the CMS as `image` media objects and
-        // `bullets`/`operatingHours.rows` as `shared.text-line` objects ({ text }).
-        // The renderer expects a URL string and string[]; flatten to match (the
-        // subpages fallback is already flat, so it bypasses this).
-        const toStrings = (arr: unknown): string[] | undefined =>
-          Array.isArray(arr)
-            ? arr.map((x) => (typeof x === 'string' ? x : (x as { text?: string } | null)?.text)).filter((x): x is string => !!x)
-            : undefined;
         // quotes: CMS quote-item uses { quote, author, role }; Testimonials reads
         // { text, attribution, role }. Map field names (fallback subpages already
         // uses text/attribution, so this no-ops on that shape).
@@ -550,17 +531,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                 .filter((q) => q.text),
             }
           : undefined;
-        const apiPanels = api.imagePanels?.map((p) => ({
-          ...p,
-          image: imgSrc(p.image) as string,
-          // Normalise to the multi-CTA shape: prefer `ctas`, fall back to the
-          // legacy single `cta` so panels seeded before the change still render.
-          ctas: p.ctas?.length ? p.ctas : p.cta ? [p.cta] : undefined,
-          bullets: toStrings(p.bullets) ?? p.bullets,
-          operatingHours: Array.isArray(p.operatingHours)
-            ? p.operatingHours.map((h) => ({ title: h.title, rows: toStrings(h.rows) ?? [] }))
-            : p.operatingHours,
-        }));
+        const apiPanels = mapImagePanels(api.imagePanels);
         // ── Team grid from the per-discipline coach collection ──
         // Fitness facilities have no `teamMembers` field; the team is sourced
         // from the dedicated coach collection (looked up by discipline = slug),
@@ -1544,204 +1515,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           sticky image by default) and reuses the hero's CTA pill + DetailSection
           treatments so every panel reads as the same component. */}
       {venue.imagePanels && venue.imagePanels.length > 0 && (
-        <section className="bg-bg pb-[120px]">
-          <div className="max-w-7xl mx-auto px-10 flex flex-col" style={{ gap: '120px' }}>
-            {venue.imagePanels.map((panel, idx) => {
-              const imageOnLeft = (panel.imagePosition ?? (idx % 2 === 0 ? 'left' : 'right')) === 'left';
-              // By default the image stays pinned near the top of the viewport
-              // while a long text column scrolls past. Pass `slideWithText` on
-              // the panel to opt back into the row's normal flow.
-              const stick = !panel.slideWithText;
-              const imgEl = (
-                <div className="lg:w-[52%] shrink-0">
-                  <div className={stick ? 'lg:sticky lg:top-[120px]' : ''}>
-                    <div className="overflow-hidden">
-                      <img
-                        src={panel.image}
-                        alt={panel.imageAlt ?? panel.heading}
-                        className="w-full h-auto object-cover"
-                      />
-                    </div>
-                  </div>
-                </div>
-              );
-              const textEl = (
-                <div className="flex flex-col flex-1" style={{ gap: '32px' }}>
-                  <h2
-                    className="font-heading text-primary"
-                    style={{
-                      fontSize: '38.4px',
-                      fontWeight: 300,
-                      fontStyle: 'italic',
-                      letterSpacing: '-1.152px',
-                      lineHeight: '42.24px',
-                    }}
-                  >
-                    {panel.heading}
-                  </h2>
-
-                  {(() => {
-                    // Accept both the multi-CTA `ctas` and the legacy single `cta`
-                    // (static subpages fallback still uses the latter).
-                    const panelCtas = panel.ctas?.length ? panel.ctas : panel.cta ? [panel.cta] : [];
-                    return panelCtas.length > 0 ? (
-                      <div className="flex flex-wrap items-center" style={{ gap: '12px' }}>
-                        {panelCtas.map((cta, ci) => (
-                          <CtaButton key={`${cta.label}-${ci}`} cta={cta} />
-                        ))}
-                      </div>
-                    ) : null;
-                  })()}
-
-                  {panel.body && (
-                    <p
-                      className="text-text-dark"
-                      style={{ fontSize: '19.2px', fontWeight: 400, lineHeight: '26.88px' }}
-                    >
-                      {panel.body}
-                    </p>
-                  )}
-
-                  {panel.subheading && (() => {
-                    // Prefer clock when the subsection carries scheduled hours;
-                    // otherwise pick the closest semantic icon by title.
-                    const subIcon = panel.operatingHours && panel.operatingHours.length > 0
-                      ? 'clock'
-                      : resolveIcon(panel.subheading);
-                    return (
-                      <DetailSection icon={subIcon} title={panel.subheading}>
-                        <div className="flex flex-col" style={{ gap: '20px' }}>
-                          {panel.bullets && panel.bullets.length > 0 && (
-                            <ul className="list-disc pl-6 flex flex-col" style={{ gap: '8px' }}>
-                              {panel.bullets.map((b, i) => (
-                                <li
-                                  key={i}
-                                  className="text-text-dark"
-                                  style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
-                                >
-                                  {b}
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                          {panel.operatingHours && panel.operatingHours.length > 0 && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
-                              {panel.operatingHours.map((block, i) => (
-                                <div key={i} className="flex flex-col gap-1">
-                                  <p
-                                    className="text-text-dark"
-                                    style={{ fontSize: '17.6px', fontWeight: 700, lineHeight: '24.64px' }}
-                                  >
-                                    {block.title}
-                                  </p>
-                                  {block.rows.map((row, j) => (
-                                    <p
-                                      key={j}
-                                      className="text-text-dark"
-                                      style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
-                                    >
-                                      {row}
-                                    </p>
-                                  ))}
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </DetailSection>
-                    );
-                  })()}
-
-                  {/* If there's no subheading, bullets/operatingHours still render unwrapped. */}
-                  {!panel.subheading && panel.bullets && panel.bullets.length > 0 && (
-                    <ul className="list-disc pl-6 flex flex-col" style={{ gap: '8px' }}>
-                      {panel.bullets.map((b, i) => (
-                        <li
-                          key={i}
-                          className="text-text-dark"
-                          style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
-                        >
-                          {b}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  {!panel.subheading && panel.operatingHours && panel.operatingHours.length > 0 && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
-                      {panel.operatingHours.map((block, i) => (
-                        <div key={i} className="flex flex-col gap-1">
-                          <p
-                            className="text-text-dark"
-                            style={{ fontSize: '17.6px', fontWeight: 700, lineHeight: '24.64px' }}
-                          >
-                            {block.title}
-                          </p>
-                          {block.rows.map((row, j) => (
-                            <p
-                              key={j}
-                              className="text-text-dark"
-                              style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
-                            >
-                              {row}
-                            </p>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {panel.extraSections && panel.extraSections.length > 0 && (
-                    <div className="flex flex-col" style={{ gap: '24px' }}>
-                      {panel.extraSections.map((extra, ei) => (
-                        <div key={ei} className="flex flex-col" style={{ gap: '12px' }}>
-                          <h3 className="text-primary" style={{ fontSize: '21px', fontWeight: 700, lineHeight: '28px' }}>
-                            {extra.title}
-                          </h3>
-                          {extra.content && <Markdown compact>{extra.content}</Markdown>}
-                          {Array.isArray(extra.bullets) && extra.bullets.length > 0 && (
-                            <ul className="list-disc pl-6 flex flex-col" style={{ gap: '6px' }}>
-                              {extra.bullets.map((b, bi) => (
-                                <li key={bi} className="text-text-dark" style={{ fontSize: '17.6px', lineHeight: '25.6px' }}>{b}</li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {panel.footnote && (
-                    <p
-                      className="text-text-dark/70 italic"
-                      style={{ fontSize: '15.2px', lineHeight: '22px' }}
-                    >
-                      {panel.footnote}
-                    </p>
-                  )}
-                </div>
-              );
-              return (
-                <div
-                  key={`${panel.heading}-${idx}`}
-                  className="flex flex-col lg:flex-row items-start"
-                  style={{ gap: '60px' }}
-                >
-                  {imageOnLeft ? (
-                    <>
-                      {imgEl}
-                      {textEl}
-                    </>
-                  ) : (
-                    <>
-                      {textEl}
-                      {imgEl}
-                    </>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </section>
+        <ImageTextPanels panels={venue.imagePanels} />
       )}
 
       {/* ── Promo Cards ──

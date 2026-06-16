@@ -6,6 +6,8 @@ import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
 import { DetailSection } from '../components/detail/DetailSection';
 import { CtaButton } from '../components/shared/CtaButton';
 import { type CtaIconName } from '../components/shared/CtaIcon';
+import { ImageTextPanels } from '../components/detail/ImageTextPanels';
+import { mapImagePanels } from '../lib/imagePanels';
 
 interface StrapiLink {
   label?: string;
@@ -39,6 +41,8 @@ interface ReciprocalData {
   secondaryHeading?: string;
   secondaryBody?: string;
   secondaryCta?: StrapiLink;
+  /** Raw `shared.image-text-panel` array from Strapi; normalised via mapImagePanels. */
+  imagePanels?: unknown;
   operatingHoursSections?: OperatingHoursSection[];
   notesHeading?: string;
   notes?: string;
@@ -94,6 +98,7 @@ export default function ReciprocalClubsPage() {
   }
 
   const ctas = (data.ctas ?? []).filter((c) => c.label && c.href);
+  const imagePanels = mapImagePanels(data.imagePanels);
   const parentLabel = data.parentLabel ?? 'Membership';
   const parentHref = data.parentHref ?? '/membership';
   const secondaryCta =
@@ -245,6 +250,9 @@ export default function ReciprocalClubsPage() {
           </div>
         </section>
       )}
+
+      {/* ── Image + text panels (e.g. Local Reciprocity) ── */}
+      <ImageTextPanels panels={imagePanels} />
 
       {/* ── Back link ── */}
       <section className="py-10 bg-bg">
