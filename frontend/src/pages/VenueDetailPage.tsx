@@ -123,11 +123,14 @@ interface VenueData {
     imagePosition?: 'left' | 'right';
     slideWithText?: boolean;
     heading: string;
+    ctas?: { label: string; href: string; isExternal?: boolean }[];
+    /** @deprecated single-CTA shape from before imagePanels supported multiple; read as fallback. */
     cta?: { label: string; href: string; isExternal?: boolean };
     subheading?: string;
     body?: string;
     bullets?: string[];
     operatingHours?: { title: string; rows: string[] }[];
+    extraSections?: { title: string; content?: string; bullets?: string[] }[];
     footnote?: string;
   }[];
   faq?: { question: string; answer: string }[];
@@ -510,9 +513,11 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
         // imagePanels (fitness, e.g. Tennis) — image/cta/bullets one level, plus the
         // nested operatingHours.rows (text-line) two levels down.
         'populate[imagePanels][populate][image]': 'true',
+        'populate[imagePanels][populate][ctas]': 'true',
         'populate[imagePanels][populate][cta]': 'true',
         'populate[imagePanels][populate][bullets]': 'true',
         'populate[imagePanels][populate][operatingHours][populate]': '*',
+        'populate[imagePanels][populate][extraSections]': 'true',
         // quotes / Member Testimonials (e.g. kids camps) — the component stores
         // items as { quote, author, role }; mapped to { text, attribution } below.
         'populate[quotes][populate]': '*',
@@ -557,6 +562,9 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
         const apiPanels = api.imagePanels?.map((p) => ({
           ...p,
           image: imgSrc(p.image) as string,
+          // Normalise to the multi-CTA shape: prefer `ctas`, fall back to the
+          // legacy single `cta` so panels seeded before the change still render.
+          ctas: p.ctas?.length ? p.ctas : p.cta ? [p.cta] : undefined,
           bullets: toStrings(p.bullets) ?? p.bullets,
           operatingHours: Array.isArray(p.operatingHours)
             ? p.operatingHours.map((h) => ({ title: h.title, rows: toStrings(h.rows) ?? [] }))
@@ -1687,37 +1695,47 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                     {panel.heading}
                   </h2>
 
-                  {panel.cta && (() => {
-                    const linkClass =
-                      'inline-flex items-center gap-2 bg-white rounded-full text-primary uppercase hover:shadow-md transition-shadow self-start';
-                    const linkStyle = {
-                      padding: '12px 16px 12px 24px',
-                      fontSize: '13.6px',
-                      fontWeight: 700,
-                      letterSpacing: '0.04em',
-                      boxShadow: 'rgba(32, 99, 171, 0.07) 0px 20px 19px -12px',
-                    } as const;
-                    const inner = (
-                      <>
-                        {panel.cta.label}
-                        <CtaIcon name="arrow" size={20} className="text-accent" />
-                      </>
-                    );
-                    return isHardLink(panel.cta.href, panel.cta.isExternal) ? (
-                      <a
-                        href={panel.cta.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={linkClass}
-                        style={linkStyle}
-                      >
-                        {inner}
-                      </a>
-                    ) : (
-                      <Link to={panel.cta.href} className={linkClass} style={linkStyle}>
-                        {inner}
-                      </Link>
-                    );
+                  {(() => {
+                    // Accept both the multi-CTA `ctas` and the legacy single `cta`
+                    // (static subpages fallback still uses the latter).
+                    const panelCtas = panel.ctas?.length ? panel.ctas : panel.cta ? [panel.cta] : [];
+                    return panelCtas.length > 0 ? (
+                    <div className="flex flex-wrap items-center" style={{ gap: '12px' }}>
+                      {panelCtas.map((cta, ci) => {
+                        const linkClass =
+                          'inline-flex items-center gap-2 bg-white rounded-full text-primary uppercase hover:shadow-md transition-shadow self-start';
+                        const linkStyle = {
+                          padding: '12px 16px 12px 24px',
+                          fontSize: '13.6px',
+                          fontWeight: 700,
+                          letterSpacing: '0.04em',
+                          boxShadow: 'rgba(32, 99, 171, 0.07) 0px 20px 19px -12px',
+                        } as const;
+                        const inner = (
+                          <>
+                            {cta.label}
+                            <CtaIcon name="arrow" size={20} className="text-accent" />
+                          </>
+                        );
+                        return isHardLink(cta.href, cta.isExternal) ? (
+                          <a
+                            key={ci}
+                            href={cta.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={linkClass}
+                            style={linkStyle}
+                          >
+                            {inner}
+                          </a>
+                        ) : (
+                          <Link key={ci} to={cta.href} className={linkClass} style={linkStyle}>
+                            {inner}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                    ) : null;
                   })()}
 
                   {panel.body && (
@@ -1812,6 +1830,60 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                               {row}
                             </p>
                           ))}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {panel.extraSections && panel.extraSections.length > 0 && (
+                    <div className="flex flex-col" style={{ gap: '24px' }}>
+                      {panel.extraSections.map((extra, ei) => (
+                        <div key={ei} className="flex flex-col" style={{ gap: '12px' }}>
+                          <h3 className="text-primary" style={{ fontSize: '21px', fontWeight: 700, lineHeight: '28px' }}>
+                            {extra.title}
+                          </h3>
+                          {extra.content && (
+                            <ReactMarkdown
+                              remarkPlugins={[remarkBreaks]}
+                              rehypePlugins={[rehypeRaw]}
+                              components={{
+                                p: ({ children }) => (
+                                  <p className="text-text-dark" style={{ fontSize: '17.6px', lineHeight: '25.6px' }}>{children}</p>
+                                ),
+                                a: ({ href, children }) => {
+                                  const external = isHardLink(href);
+                                  return (
+                                    <a
+                                      href={href}
+                                      target={external ? '_blank' : undefined}
+                                      rel={external ? 'noopener noreferrer' : undefined}
+                                      className="text-accent underline underline-offset-2 hover:no-underline"
+                                    >
+                                      {children}
+                                    </a>
+                                  );
+                                },
+                                ul: ({ children }) => (
+                                  <ul className="list-disc pl-6 flex flex-col" style={{ gap: '6px' }}>{children}</ul>
+                                ),
+                                ol: ({ children }) => (
+                                  <ol className="list-decimal pl-6 flex flex-col" style={{ gap: '6px' }}>{children}</ol>
+                                ),
+                                li: ({ children }) => (
+                                  <li className="text-text-dark" style={{ fontSize: '17.6px', lineHeight: '25.6px' }}>{children}</li>
+                                ),
+                              }}
+                            >
+                              {extra.content}
+                            </ReactMarkdown>
+                          )}
+                          {Array.isArray(extra.bullets) && extra.bullets.length > 0 && (
+                            <ul className="list-disc pl-6 flex flex-col" style={{ gap: '6px' }}>
+                              {extra.bullets.map((b, bi) => (
+                                <li key={bi} className="text-text-dark" style={{ fontSize: '17.6px', lineHeight: '25.6px' }}>{b}</li>
+                              ))}
+                            </ul>
+                          )}
                         </div>
                       ))}
                     </div>

@@ -28,8 +28,12 @@ const lines = (...xs) => xs.map((text) => ({ text }));
   console.log(`Patch target: ${ctx.BASE}`);
   const existing = await findOneBySlug(ctx, 'fitness-facilities', SLUG);
   if (!existing) { console.log(`  ! ${SLUG} not found`); return; }
-  if (Array.isArray(existing.imagePanels) && existing.imagePanels.length) {
-    console.log(`  ✓ ${SLUG} already has imagePanels — set-only-if-empty, skipping`);
+  // Set-only-if-empty, but also re-seed when panels predate the multi-CTA
+  // migration (first panel has no `ctas`) so the single-`cta` shape is upgraded.
+  const panels = Array.isArray(existing.imagePanels) ? existing.imagePanels : [];
+  const alreadyMigrated = panels.length > 0 && Array.isArray(panels[0]?.ctas) && panels[0].ctas.length > 0;
+  if (alreadyMigrated) {
+    console.log(`  ✓ ${SLUG} already has imagePanels with ctas — skipping`);
     return;
   }
   if (DRY) { console.log('  [dry] upload 2 panel images; PUT imagePanels onto tennis'); return; }
@@ -43,7 +47,7 @@ const lines = (...xs) => xs.map((text) => ({ text }));
       imageAlt: 'Tennis Programs at The American Club',
       imagePosition: 'left',
       heading: 'Tennis Programs',
-      cta: { label: 'Summer Term 2026 Schedule', href: '/uploads/documents/fitness/tennis_summer_term_schedule_2026.pdf', isExternal: true },
+      ctas: [{ label: 'Summer Term 2026 Schedule', href: '/uploads/documents/fitness/tennis_summer_term_schedule_2026.pdf', isExternal: true }],
       subheading: 'Tennis Socials',
       body:
         'Join our Tennis Socials and keep fit while making new friends! Socials are open to players of all levels and played in 30-minute intervals. Participants may arrive anytime during the duration of the socials.',

@@ -3,7 +3,7 @@
   "info": {
     "displayName": "Image Text Panel",
     "icon": "layout",
-    "description": "Alternating image + text panel: heading, subheading, body, optional bullets, schedule groups, CTA and footnote (e.g. Tennis Programs / Tennis Etiquette)."
+    "description": "Alternating image + text panel: heading, subheading, body, optional bullets, schedule groups, up to 4 CTAs and footnote (e.g. Tennis Programs / Tennis Etiquette)."
   },
   "attributes": {
     "image": {
@@ -21,9 +21,10 @@
     "subheading": { "type": "string" },
     "body": { "type": "text" },
     "footnote": { "type": "text" },
-    "cta": {
+    "ctas": {
       "type": "component",
-      "repeatable": false,
+      "repeatable": true,
+      "max": 4,
       "component": "shared.link"
     },
     "bullets": {
@@ -35,6 +36,11 @@
       "type": "component",
       "repeatable": true,
       "component": "shared.panel-hours"
+    },
+    "extraSections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.extra-section"
     }
   }
 }
