@@ -15,7 +15,8 @@ import { FaqAccordion } from '../components/blocks/FaqAccordion';
 import { MarqueeGallery } from '../components/detail/MarqueeGallery';
 import { KidsPartyPackages } from '../components/kids/KidsPartyPackages';
 import { Testimonials } from '../components/blocks/Testimonials';
-import { CtaIcon, type CtaIconName } from '../components/shared/CtaIcon';
+import { CtaIcon } from '../components/shared/CtaIcon';
+import { CtaButton, type CtaLink } from '../components/shared/CtaButton';
 
 interface ScheduleRow {
   dayRange: string;
@@ -65,7 +66,7 @@ interface VenueData {
   menuUrl?: string;
   category?: string;
   capacity?: string;
-  ctas?: { label: string; href: string; isExternal?: boolean; icon?: CtaIconName | null }[];
+  ctas?: CtaLink[];
   extraSections?: {
     title: string;
     content?: string;
@@ -106,7 +107,7 @@ interface VenueData {
   }[];
   teamHeading?: string;
   teamLayout?: 'circle' | 'card';
-  bottomCtas?: { label: string; href: string; isExternal?: boolean }[];
+  bottomCtas?: CtaLink[];
   cardSections?: {
     heading?: string;
     subheading?: string;
@@ -124,9 +125,9 @@ interface VenueData {
     imagePosition?: 'left' | 'right';
     slideWithText?: boolean;
     heading: string;
-    ctas?: { label: string; href: string; isExternal?: boolean }[];
+    ctas?: CtaLink[];
     /** @deprecated single-CTA shape from before imagePanels supported multiple; read as fallback. */
-    cta?: { label: string; href: string; isExternal?: boolean };
+    cta?: CtaLink;
     subheading?: string;
     body?: string;
     bullets?: string[];
@@ -824,42 +825,12 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                 );
               })()}
 
-              {/* CTA buttons — up to 3, white pill with selectable icon */}
+              {/* CTA buttons — up to 3; style follows each CTA's CMS variant */}
               {venue.ctas && venue.ctas.length > 0 && (
                 <div className="flex flex-wrap gap-3">
-                  {venue.ctas.slice(0, 3).map((cta) => {
-                    const linkClass =
-                      'inline-flex items-center gap-2 bg-white rounded-full text-primary uppercase hover:shadow-md transition-shadow';
-                    const linkStyle = {
-                      padding: '12px 16px 12px 24px',
-                      fontSize: '13.6px',
-                      fontWeight: 700,
-                      letterSpacing: '0.04em',
-                      boxShadow: 'rgba(32, 99, 171, 0.07) 0px 20px 19px -12px',
-                    } as const;
-                    const inner = (
-                      <>
-                        {cta.label}
-                        <CtaIcon name={cta.icon ?? 'arrow'} size={20} className="text-accent" />
-                      </>
-                    );
-                    return isHardLink(cta.href, cta.isExternal) ? (
-                      <a
-                        key={cta.label}
-                        href={cta.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={linkClass}
-                        style={linkStyle}
-                      >
-                        {inner}
-                      </a>
-                    ) : (
-                      <Link key={cta.label} to={cta.href} className={linkClass} style={linkStyle}>
-                        {inner}
-                      </Link>
-                    );
-                  })}
+                  {venue.ctas.slice(0, 3).map((cta, i) => (
+                    <CtaButton key={`${cta.label}-${i}`} cta={cta} />
+                  ))}
                 </div>
               )}
 
@@ -1694,41 +1665,11 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                     // (static subpages fallback still uses the latter).
                     const panelCtas = panel.ctas?.length ? panel.ctas : panel.cta ? [panel.cta] : [];
                     return panelCtas.length > 0 ? (
-                    <div className="flex flex-wrap items-center" style={{ gap: '12px' }}>
-                      {panelCtas.map((cta, ci) => {
-                        const linkClass =
-                          'inline-flex items-center gap-2 bg-white rounded-full text-primary uppercase hover:shadow-md transition-shadow self-start';
-                        const linkStyle = {
-                          padding: '12px 16px 12px 24px',
-                          fontSize: '13.6px',
-                          fontWeight: 700,
-                          letterSpacing: '0.04em',
-                          boxShadow: 'rgba(32, 99, 171, 0.07) 0px 20px 19px -12px',
-                        } as const;
-                        const inner = (
-                          <>
-                            {cta.label}
-                            <CtaIcon name="arrow" size={20} className="text-accent" />
-                          </>
-                        );
-                        return isHardLink(cta.href, cta.isExternal) ? (
-                          <a
-                            key={ci}
-                            href={cta.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={linkClass}
-                            style={linkStyle}
-                          >
-                            {inner}
-                          </a>
-                        ) : (
-                          <Link key={ci} to={cta.href} className={linkClass} style={linkStyle}>
-                            {inner}
-                          </Link>
-                        );
-                      })}
-                    </div>
+                      <div className="flex flex-wrap items-center" style={{ gap: '12px' }}>
+                        {panelCtas.map((cta, ci) => (
+                          <CtaButton key={`${cta.label}-${ci}`} cta={cta} />
+                        ))}
+                      </div>
                     ) : null;
                   })()}
 
@@ -2289,39 +2230,9 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
       {venue.bottomCtas && venue.bottomCtas.length > 0 && (
         <section className="py-12 bg-white">
           <div className="max-w-7xl mx-auto px-10 flex flex-wrap justify-center gap-3">
-            {venue.bottomCtas.map((cta) => {
-              const linkClass =
-                'inline-flex items-center gap-2 bg-white rounded-full text-primary uppercase hover:shadow-md transition-shadow border border-primary/10';
-              const linkStyle = {
-                padding: '12px 16px 12px 24px',
-                fontSize: '13.6px',
-                fontWeight: 700,
-                letterSpacing: '0.04em',
-                boxShadow: 'rgba(32, 99, 171, 0.07) 0px 20px 19px -12px',
-              } as const;
-              const inner = (
-                <>
-                  {cta.label}
-                  <CtaIcon name="arrow" size={20} className="text-accent" />
-                </>
-              );
-              return isHardLink(cta.href, cta.isExternal) ? (
-                <a
-                  key={cta.label}
-                  href={cta.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={linkClass}
-                  style={linkStyle}
-                >
-                  {inner}
-                </a>
-              ) : (
-                <Link key={cta.label} to={cta.href} className={linkClass} style={linkStyle}>
-                  {inner}
-                </Link>
-              );
-            })}
+            {venue.bottomCtas.map((cta, i) => (
+              <CtaButton key={`${cta.label}-${i}`} cta={cta} />
+            ))}
           </div>
         </section>
       )}
