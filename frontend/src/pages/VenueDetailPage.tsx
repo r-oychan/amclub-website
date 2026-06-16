@@ -130,6 +130,7 @@ interface VenueData {
     body?: string;
     bullets?: string[];
     operatingHours?: { title: string; rows: string[] }[];
+    extraSections?: { title: string; content?: string; bullets?: string[] }[];
     footnote?: string;
   }[];
   faq?: { question: string; answer: string }[];
@@ -516,6 +517,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
         'populate[imagePanels][populate][cta]': 'true',
         'populate[imagePanels][populate][bullets]': 'true',
         'populate[imagePanels][populate][operatingHours][populate]': '*',
+        'populate[imagePanels][populate][extraSections]': 'true',
         // quotes / Member Testimonials (e.g. kids camps) — the component stores
         // items as { quote, author, role }; mapped to { text, attribution } below.
         'populate[quotes][populate]': '*',
@@ -1828,6 +1830,60 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                               {row}
                             </p>
                           ))}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {panel.extraSections && panel.extraSections.length > 0 && (
+                    <div className="flex flex-col" style={{ gap: '24px' }}>
+                      {panel.extraSections.map((extra, ei) => (
+                        <div key={ei} className="flex flex-col" style={{ gap: '12px' }}>
+                          <h3 className="text-primary" style={{ fontSize: '21px', fontWeight: 700, lineHeight: '28px' }}>
+                            {extra.title}
+                          </h3>
+                          {extra.content && (
+                            <ReactMarkdown
+                              remarkPlugins={[remarkBreaks]}
+                              rehypePlugins={[rehypeRaw]}
+                              components={{
+                                p: ({ children }) => (
+                                  <p className="text-text-dark" style={{ fontSize: '17.6px', lineHeight: '25.6px' }}>{children}</p>
+                                ),
+                                a: ({ href, children }) => {
+                                  const external = isHardLink(href);
+                                  return (
+                                    <a
+                                      href={href}
+                                      target={external ? '_blank' : undefined}
+                                      rel={external ? 'noopener noreferrer' : undefined}
+                                      className="text-accent underline underline-offset-2 hover:no-underline"
+                                    >
+                                      {children}
+                                    </a>
+                                  );
+                                },
+                                ul: ({ children }) => (
+                                  <ul className="list-disc pl-6 flex flex-col" style={{ gap: '6px' }}>{children}</ul>
+                                ),
+                                ol: ({ children }) => (
+                                  <ol className="list-decimal pl-6 flex flex-col" style={{ gap: '6px' }}>{children}</ol>
+                                ),
+                                li: ({ children }) => (
+                                  <li className="text-text-dark" style={{ fontSize: '17.6px', lineHeight: '25.6px' }}>{children}</li>
+                                ),
+                              }}
+                            >
+                              {extra.content}
+                            </ReactMarkdown>
+                          )}
+                          {Array.isArray(extra.bullets) && extra.bullets.length > 0 && (
+                            <ul className="list-disc pl-6 flex flex-col" style={{ gap: '6px' }}>
+                              {extra.bullets.map((b, bi) => (
+                                <li key={bi} className="text-text-dark" style={{ fontSize: '17.6px', lineHeight: '25.6px' }}>{b}</li>
+                              ))}
+                            </ul>
+                          )}
                         </div>
                       ))}
                     </div>

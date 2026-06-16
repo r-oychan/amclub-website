@@ -58,6 +58,11 @@
       "repeatable": true,
       "component": "blocks.extra-section"
     },
+    "imagePanels": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.image-text-panel"
+    },
     "locationContact": {
       "type": "component",
       "repeatable": false,

@@ -36,6 +36,11 @@
       "type": "component",
       "repeatable": true,
       "component": "shared.panel-hours"
+    },
+    "extraSections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.extra-section"
     }
   }
 }

@@ -1382,12 +1382,8 @@ export const kidsSubpages: SubpageData[] = [
       { label: 'Summer Camp 2026', href: '/uploads/documents/kids/summer_camp_2026_3b8664d380.pdf', isExternal: true },
       { label: 'Cancellation Policy', href: '/uploads/documents/kids/camp_cancellation_policy_8b69a97769.pdf', isExternal: true },
     ],
-    bottomCtas: [
-      { label: '4 – 7 Years Schedule', href: '/uploads/documents/kids/4_7_camp_schedule_e9fb709433.pdf', isExternal: true },
-      { label: '4 – 7 Years Registration', href: 'https://forms.office.com/pages/responsepage.aspx?id=tNI3gQWbQ0ue5Ad0V1MxKig5SVI1jCxHmIfXpkheevZUQVhSUTFDVlY2QzEyREJDTVpVVTg3OE44TSQlQCN0PWcu&route=shorturl', isExternal: true },
-      { label: '8 Years & Above Schedule', href: '/uploads/documents/kids/8_12_camp_schedule_fdefa5d461.pdf', isExternal: true },
-      { label: '8 Years & Above Registration', href: 'https://forms.office.com/pages/responsepage.aspx?id=tNI3gQWbQ0ue5Ad0V1MxKig5SVI1jCxHmIfXpkheevZUQVBNREpQRUc1TUdIR1RYUk1IRUFPRDMyUyQlQCN0PWcu&route=shorturl', isExternal: true },
-    ],
+    // bottomCtas intentionally omitted — camps is CMS-managed; the static
+    // fallback was masking an empty CMS list (clearing in /admin had no effect).
     extraSections: [
       {
         title: 'Upcoming Camps',
