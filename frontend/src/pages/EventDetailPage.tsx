@@ -1,10 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router';
-import ReactMarkdown from 'react-markdown';
-import remarkBreaks from 'remark-breaks';
-import rehypeRaw from 'rehype-raw';
 import { fetchAPI, STRAPI_URL } from '../lib/api';
-import { isHardLink } from '../lib/links';
+import { Markdown } from '../components/shared/Markdown';
 import { EVENT_PLACEHOLDER_IMAGE, normalizeAmPm } from '../lib/events';
 import { PageFade } from '../components/shared/PageFade';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
@@ -244,37 +241,7 @@ export default function EventDetailPage() {
               )}
 
               {descriptionParas.length > 0 && (
-                <div className="flex flex-col" style={{ gap: '20px' }}>
-                  <ReactMarkdown
-                    remarkPlugins={[remarkBreaks]}
-                    rehypePlugins={[rehypeRaw]}
-                    components={{
-                      p: ({ children }) => (
-                        <p
-                          className="text-text-dark"
-                          style={{ fontSize: '19.2px', fontWeight: 400, lineHeight: '26.88px' }}
-                        >
-                          {children}
-                        </p>
-                      ),
-                      a: ({ href, children }) => {
-                        const external = isHardLink(href);
-                        return (
-                          <a
-                            href={href}
-                            target={external ? '_blank' : undefined}
-                            rel={external ? 'noopener noreferrer' : undefined}
-                            className="text-accent underline underline-offset-2 hover:no-underline"
-                          >
-                            {children}
-                          </a>
-                        );
-                      },
-                    }}
-                  >
-                    {normalizeAmPm(event.longDescription ?? event.description ?? '')}
-                  </ReactMarkdown>
-                </div>
+                <Markdown>{normalizeAmPm(event.longDescription ?? event.description ?? '')}</Markdown>
               )}
 
               <DetailSection icon="clock" title="Date & Time">
