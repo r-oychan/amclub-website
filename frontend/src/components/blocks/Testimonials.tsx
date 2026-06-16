@@ -78,7 +78,7 @@ export function Testimonials({
           <h2
             className={`font-heading ${heading_color} mx-auto`}
             style={{
-              fontSize: 'clamp(34px, 5vw, 56px)',
+              fontSize: 'clamp(23.8px, 3.5vw, 39.2px)',
               fontWeight: 300,
               fontStyle: 'italic',
               letterSpacing: '-0.02em',
