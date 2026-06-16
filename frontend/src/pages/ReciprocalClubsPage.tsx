@@ -4,13 +4,15 @@ import { fetchAPI } from '../lib/api';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
 import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
 import { DetailSection } from '../components/detail/DetailSection';
-import { Button } from '../components/shared/Button';
-import { CtaIcon, type CtaIconName } from '../components/shared/CtaIcon';
+import { CtaButton } from '../components/shared/CtaButton';
+import { type CtaIconName } from '../components/shared/CtaIcon';
 
 interface StrapiLink {
   label?: string;
   href?: string;
   isExternal?: boolean;
+  variant?: 'primary' | 'secondary' | 'accent' | 'outline' | 'text' | null;
+  bordered?: boolean;
   icon?: CtaIconName | null;
 }
 
@@ -139,13 +141,7 @@ export default function ReciprocalClubsPage() {
               {ctas.length > 0 && (
                 <div className="flex flex-wrap gap-4">
                   {ctas.map((c, i) => (
-                    <Button
-                      key={i}
-                      label={c.label!}
-                      href={c.href!}
-                      iconRight={c.icon ? <CtaIcon name={c.icon} /> : null}
-                      variant={i === 0 ? 'primary' : 'secondary'}
-                    />
+                    <CtaButton key={i} cta={{ ...c, label: c.label!, href: c.href! }} />
                   ))}
                 </div>
               )}
@@ -200,12 +196,7 @@ export default function ReciprocalClubsPage() {
                 )}
                 {secondaryCta && (
                   <div>
-                    <Button
-                      label={secondaryCta.label!}
-                      href={secondaryCta.href!}
-                      iconRight={secondaryCta.icon ? <CtaIcon name={secondaryCta.icon} /> : null}
-                      variant="primary"
-                    />
+                    <CtaButton cta={{ ...secondaryCta, label: secondaryCta.label!, href: secondaryCta.href! }} />
                   </div>
                 )}
                 {data.secondaryBody && (

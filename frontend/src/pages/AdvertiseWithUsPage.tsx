@@ -3,14 +3,16 @@ import { Link } from 'react-router';
 import { fetchAPI } from '../lib/api';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
 import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
-import { Button } from '../components/shared/Button';
-import { CtaIcon, type CtaIconName } from '../components/shared/CtaIcon';
+import { CtaButton } from '../components/shared/CtaButton';
+import { type CtaIconName } from '../components/shared/CtaIcon';
 import { Markdown } from '../components/shared/Markdown';
 
 interface StrapiLink {
   label?: string;
   href?: string;
   isExternal?: boolean;
+  variant?: 'primary' | 'secondary' | 'accent' | 'outline' | 'text' | null;
+  bordered?: boolean;
   icon?: CtaIconName | null;
 }
 
@@ -127,13 +129,7 @@ export default function AdvertiseWithUsPage() {
               {ctas.length > 0 && (
                 <div className="flex flex-wrap gap-4">
                   {ctas.map((c, i) => (
-                    <Button
-                      key={i}
-                      label={c.label!}
-                      href={c.href!}
-                      iconRight={c.icon ? <CtaIcon name={c.icon} /> : null}
-                      variant={i === 0 ? 'primary' : 'secondary'}
-                    />
+                    <CtaButton key={i} cta={{ ...c, label: c.label!, href: c.href! }} />
                   ))}
                 </div>
               )}
