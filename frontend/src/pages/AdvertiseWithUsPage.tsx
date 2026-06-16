@@ -6,6 +6,9 @@ import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
 import { CtaButton } from '../components/shared/CtaButton';
 import { type CtaIconName } from '../components/shared/CtaIcon';
 import { Markdown } from '../components/shared/Markdown';
+import { DetailSection } from '../components/detail/DetailSection';
+import { ContactRow } from '../components/detail/ContactRow';
+import { resolveIcon, type DetailIconName } from '../lib/detailIcons';
 
 interface StrapiLink {
   label?: string;
@@ -31,8 +34,9 @@ interface AdvertiseData {
   ctas?: StrapiLink[];
   phone?: string;
   email?: string;
+  locationContact?: { locationLevel?: string; phone?: string; email?: string } | null;
   body?: AdvertiseBlock[];
-  extraSections?: { title?: string; content?: string; bullets?: string[] }[];
+  extraSections?: { title?: string; content?: string; bullets?: string[]; icon?: DetailIconName | null }[];
   parentLabel?: string;
   parentHref?: string;
 }
@@ -87,6 +91,11 @@ export default function AdvertiseWithUsPage() {
   const parentHref = data.parentHref ?? '/home';
   const textBlocks = (data.body ?? []).filter((b) => b.__component === 'blocks.text-block');
   const extraSections = data.extraSections ?? [];
+  // Optional Location & Contact module (same shape as dining). When filled it
+  // renders the dining-style section; otherwise we fall back to the legacy
+  // top-level phone/email so existing content keeps showing.
+  const lc = data.locationContact;
+  const locationContact = lc && (lc.locationLevel || lc.phone || lc.email) ? lc : null;
 
   return (
     <>
@@ -164,29 +173,53 @@ export default function AdvertiseWithUsPage() {
                 </div>
               ))}
 
-              {/* Extra Sections (CMS-editable titled blocks with markdown content) */}
+              {/* Extra Sections — rendered with the facilities-style icon + title
+                  subheader (DetailSection). The icon is CMS-editable; when unset
+                  it's inferred from the title (e.g. "Sponsorship" → heart). */}
               {extraSections.map((ex, idx) => (
-                <div key={`ex-${idx}`} className="flex flex-col" style={{ gap: '20px' }}>
-                  {ex.title && (
-                    <h2
-                      className="font-heading text-primary"
-                      style={{ fontSize: '28px', fontWeight: 300, fontStyle: 'italic', lineHeight: 1.15 }}
-                    >
-                      {ex.title}
-                    </h2>
-                  )}
-                  {ex.content && <Markdown compact>{ex.content}</Markdown>}
-                  {Array.isArray(ex.bullets) && ex.bullets.length > 0 && (
-                    <ul className="list-disc pl-6 flex flex-col font-body text-text-dark/85" style={{ gap: '8px', fontSize: '17px', lineHeight: 1.55 }}>
-                      {ex.bullets.map((b, k) => (
-                        <li key={k}>{b}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
+                <DetailSection
+                  key={`ex-${idx}`}
+                  icon={ex.icon ?? resolveIcon(ex.title ?? '')}
+                  title={ex.title ?? ''}
+                >
+                  <div className="flex flex-col" style={{ gap: '16px' }}>
+                    {ex.content && <Markdown compact>{ex.content}</Markdown>}
+                    {Array.isArray(ex.bullets) && ex.bullets.length > 0 && (
+                      <ul className="list-disc pl-6 flex flex-col font-body text-text-dark/85" style={{ gap: '8px', fontSize: '17px', lineHeight: 1.55 }}>
+                        {ex.bullets.map((b, k) => (
+                          <li key={k}>{b}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </DetailSection>
               ))}
 
-              {(data.phone || data.email) && (
+              {/* Location & Contact — dining-style module from the CMS
+                  `locationContact` component; falls back to top-level phone/email. */}
+              {locationContact ? (
+                <DetailSection icon="location" title="Location & Contact">
+                  <div className="flex flex-col" style={{ gap: '16px' }}>
+                    {locationContact.locationLevel && (
+                      <ContactRow icon="pin" text={locationContact.locationLevel} />
+                    )}
+                    {locationContact.phone && (
+                      <ContactRow
+                        icon="phone"
+                        text={locationContact.phone}
+                        href={`tel:${locationContact.phone.replace(/\s+/g, '')}`}
+                      />
+                    )}
+                    {locationContact.email && (
+                      <ContactRow
+                        icon="email"
+                        text={locationContact.email}
+                        href={`mailto:${locationContact.email}`}
+                      />
+                    )}
+                  </div>
+                </DetailSection>
+              ) : (data.phone || data.email) ? (
                 <dl
                   className="grid grid-cols-[120px_1fr] gap-x-4 gap-y-2 font-body text-text-dark/85 pt-2"
                   style={{ fontSize: '16px', lineHeight: 1.5 }}
@@ -212,7 +245,7 @@ export default function AdvertiseWithUsPage() {
                     </>
                   )}
                 </dl>
-              )}
+              ) : null}
             </div>
           </div>
         </div>

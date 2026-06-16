@@ -1,7 +1,7 @@
 import { Markdown } from '../shared/Markdown';
 import { DetailSection } from './DetailSection';
 import { CtaButton, type CtaLink } from '../shared/CtaButton';
-import { resolveIcon } from '../../lib/detailIcons';
+import { resolveIcon, type DetailIconName } from '../../lib/detailIcons';
 
 /**
  * One alternating image + text panel (the `shared.image-text-panel` CMS
@@ -22,7 +22,7 @@ export interface ImageTextPanel {
   body?: string;
   bullets?: string[];
   operatingHours?: { title: string; rows: string[] }[];
-  extraSections?: { title: string; content?: string; bullets?: string[] }[];
+  extraSections?: { title: string; icon?: DetailIconName | null; content?: string; bullets?: string[] }[];
   footnote?: string;
 }
 
@@ -185,19 +185,18 @@ export function ImageTextPanels({ panels }: { panels?: ImageTextPanel[] }) {
               {panel.extraSections && panel.extraSections.length > 0 && (
                 <div className="flex flex-col" style={{ gap: '24px' }}>
                   {panel.extraSections.map((extra, ei) => (
-                    <div key={ei} className="flex flex-col" style={{ gap: '12px' }}>
-                      <h3 className="text-primary" style={{ fontSize: '21px', fontWeight: 700, lineHeight: '28px' }}>
-                        {extra.title}
-                      </h3>
-                      {extra.content && <Markdown compact>{extra.content}</Markdown>}
-                      {Array.isArray(extra.bullets) && extra.bullets.length > 0 && (
-                        <ul className="list-disc pl-6 flex flex-col" style={{ gap: '6px' }}>
-                          {extra.bullets.map((b, bi) => (
-                            <li key={bi} className="text-text-dark" style={{ fontSize: '17.6px', lineHeight: '25.6px' }}>{b}</li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
+                    <DetailSection key={ei} icon={extra.icon ?? resolveIcon(extra.title)} title={extra.title}>
+                      <div className="flex flex-col" style={{ gap: '12px' }}>
+                        {extra.content && <Markdown compact>{extra.content}</Markdown>}
+                        {Array.isArray(extra.bullets) && extra.bullets.length > 0 && (
+                          <ul className="list-disc pl-6 flex flex-col" style={{ gap: '6px' }}>
+                            {extra.bullets.map((b, bi) => (
+                              <li key={bi} className="text-text-dark" style={{ fontSize: '17.6px', lineHeight: '25.6px' }}>{b}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    </DetailSection>
                   ))}
                 </div>
               )}

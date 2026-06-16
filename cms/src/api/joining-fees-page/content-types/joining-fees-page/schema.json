@@ -61,7 +61,7 @@
       "type": "string"
     },
     "supplementarySubheading": {
-      "type": "text"
+      "type": "richtext"
     },
     "supplementaryCards": {
       "type": "component",
