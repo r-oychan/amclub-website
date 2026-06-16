@@ -90,20 +90,9 @@ export function Testimonials({
           </h2>
         )}
 
-        {/* Decorative opening quotation mark — typographic glyph in the serif
-            heading font (the prior SVG read as a literal "99"). */}
-        <div aria-hidden="true" className="mt-12 mb-4 flex justify-center text-accent">
-          <span
-            className="font-heading select-none leading-none"
-            style={{ fontSize: '88px', lineHeight: 1 }}
-          >
-            &ldquo;
-          </span>
-        </div>
-
         <div
           className="relative mx-auto"
-          style={{ maxWidth: '900px', minHeight: '220px' }}
+          style={{ maxWidth: '900px', minHeight: '220px', marginTop: '64px' }}
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
         >
