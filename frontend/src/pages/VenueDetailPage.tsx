@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkBreaks from 'remark-breaks';
 import rehypeRaw from 'rehype-raw';
 import { fetchAPI } from '../lib/api';
+import { isHardLink } from '../lib/links';
 import { getSubpage } from '../data/subpages';
 import { Button } from '../components/shared/Button';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
@@ -227,13 +228,6 @@ const imgSrc = (img: unknown): string | undefined =>
  * file-extension path must therefore render as a hard anchor. CMS `isExternal`
  * still forces a hard link too.
  */
-const FILE_HREF_RE = /\.(pdf|jpe?g|png|gif|webp|svg|docx?|xlsx?|pptx?|csv|txt|zip)$/i;
-const isHardLink = (href?: string, isExternal?: boolean): boolean =>
-  !!href &&
-  (isExternal === true ||
-    /^(https?:|mailto:|tel:)/i.test(href) ||
-    href.startsWith('/uploads/') ||
-    FILE_HREF_RE.test(href));
 
 const SECTION_MAP: Record<string, { apiPath: string; parentLabel: string; parentHref: string }> = {
   dining: { apiPath: '/restaurants', parentLabel: 'Dining & Retail', parentHref: '/dining' },
