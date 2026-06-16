@@ -64,7 +64,7 @@ export function Testimonials({
   const chevron_color = dark ? 'text-white/80 hover:text-white' : 'text-primary/70 hover:text-primary';
 
   return (
-    <section className={`${bg} relative overflow-hidden`} style={{ paddingTop: '80px', paddingBottom: '96px' }}>
+    <section className={`${bg} relative overflow-hidden`} style={{ paddingTop: '32px', paddingBottom: '32px' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 text-center">
         {label && (
           <p
@@ -92,7 +92,7 @@ export function Testimonials({
 
         <div
           className="relative mx-auto"
-          style={{ maxWidth: '900px', minHeight: '220px', marginTop: '64px' }}
+          style={{ maxWidth: '900px', minHeight: '220px', marginTop: '24px' }}
           onTouchStart={onTouchStart}
           onTouchEnd={onTouchEnd}
         >
@@ -163,7 +163,7 @@ export function Testimonials({
         </div>
 
         {hasMultiple && (
-          <div className="mt-12 flex items-center justify-center gap-3" aria-label="Testimonial pagination">
+          <div className="mt-6 flex items-center justify-center gap-3" aria-label="Testimonial pagination">
             {items.map((_, i) => (
               <button
                 key={i}
@@ -183,30 +183,35 @@ export function Testimonials({
       </div>
 
       {hasMultiple && (
-        <>
-          <button
-            type="button"
-            onClick={prev}
-            aria-label="Previous testimonial"
-            className={`hidden sm:flex absolute left-6 lg:left-10 top-1/2 -translate-y-1/2 ${chevron_color} transition-colors`}
-            style={{ padding: '12px' }}
-          >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
-          </button>
-          <button
-            type="button"
-            onClick={next}
-            aria-label="Next testimonial"
-            className={`hidden sm:flex absolute right-6 lg:right-10 top-1/2 -translate-y-1/2 ${chevron_color} transition-colors`}
-            style={{ padding: '12px' }}
-          >
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <polyline points="9 18 15 12 9 6" />
-            </svg>
-          </button>
-        </>
+        // Arrows track the centered page container (max-w-7xl) rather than the
+        // screen edges, so they sit just outside the content column instead of
+        // way out at the viewport margins on wide screens.
+        <div className="hidden sm:block pointer-events-none absolute inset-0">
+          <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
+            <button
+              type="button"
+              onClick={prev}
+              aria-label="Previous testimonial"
+              className={`pointer-events-auto flex absolute left-0 top-1/2 -translate-y-1/2 ${chevron_color} transition-colors`}
+              style={{ padding: '12px' }}
+            >
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={next}
+              aria-label="Next testimonial"
+              className={`pointer-events-auto flex absolute right-0 top-1/2 -translate-y-1/2 ${chevron_color} transition-colors`}
+              style={{ padding: '12px' }}
+            >
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          </div>
+        </div>
       )}
     </section>
   );
