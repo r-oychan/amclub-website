@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkBreaks from 'remark-breaks';
 import rehypeRaw from 'rehype-raw';
 import { fetchAPI, STRAPI_URL } from '../lib/api';
+import { isHardLink } from '../lib/links';
 import { EVENT_PLACEHOLDER_IMAGE, normalizeAmPm } from '../lib/events';
 import { PageFade } from '../components/shared/PageFade';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
@@ -257,7 +258,7 @@ export default function EventDetailPage() {
                         </p>
                       ),
                       a: ({ href, children }) => {
-                        const external = href?.startsWith('http');
+                        const external = isHardLink(href);
                         return (
                           <a
                             href={href}

@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkBreaks from 'remark-breaks';
 import rehypeRaw from 'rehype-raw';
 import { fetchAPI } from '../lib/api';
+import { isHardLink } from '../lib/links';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
 import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
 import { CtaIcon } from '../components/shared/CtaIcon';
@@ -288,7 +289,7 @@ function SupplementaryCardView({ card }: { card: SupplementaryCard }) {
               p: ({ children }) => <p>{children}</p>,
               strong: ({ children }) => <strong className="text-primary">{children}</strong>,
               a: ({ href, children }) => {
-                const external = href?.startsWith('http');
+                const external = isHardLink(href);
                 return (
                   <a
                     href={href}
