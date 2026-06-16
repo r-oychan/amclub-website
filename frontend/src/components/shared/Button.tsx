@@ -1,4 +1,5 @@
 import { Link } from 'react-router';
+import { isExternalHref } from '../../lib/links';
 
 export function Button({
   label,
@@ -30,7 +31,7 @@ export function Button({
     </>
   );
 
-  if (href && (href.startsWith('http') || href.startsWith('#'))) {
+  if (href && (isExternalHref(href) || href.startsWith('#'))) {
     return (
       <a href={href} className={cls}>
         {content}

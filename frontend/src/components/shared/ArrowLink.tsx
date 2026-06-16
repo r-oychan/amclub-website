@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { CtaIcon, type CtaIconName } from './CtaIcon';
+import { isExternalHref } from '../../lib/links';
 
 export interface ArrowLinkProps {
   label: string;
@@ -34,7 +35,9 @@ export function ArrowLink({
   const iconClass = iconColorClass ?? (dark ? 'text-secondary' : 'text-accent');
   const trailing = <CtaIcon name={icon} size={iconSize} className={iconClass} />;
 
-  if (isExternal) {
+  // Auto-detect uploads/absolute URLs so CTAs still leave the SPA even when
+  // the CMS "external" toggle was left unchecked.
+  if (isExternal || isExternalHref(href)) {
     return (
       <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
         {label}
@@ -78,7 +81,7 @@ export function BorderedArrowLink({
       <CtaIcon name={icon} size={24} className={dark ? 'text-secondary' : 'text-accent'} />
     </>
   );
-  if (isExternal) {
+  if (isExternal || isExternalHref(href)) {
     return (
       <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
         {inner}

@@ -260,7 +260,7 @@ All four detail-page collection types + the membership singletons share one dyna
 
 | Component | Fields | Used In |
 |---|---|---|
-| `shared.link` | label, href, isExternal, variant (primary/secondary/outline/text) | CTAs everywhere |
+| `shared.link` | label, href, isExternal, variant (primary/secondary/outline/text) | CTAs everywhere. `isExternal` is a **manual override**; `frontend/src/lib/links.ts` `isExternalHref()` auto-detects absolute URLs, `mailto:`/`tel:`, Strapi `/uploads/` media, and file downloads (pdf/doc/img/…) so those open as real navigations even when the toggle is left unchecked. |
 | `shared.seo` | metaTitle, metaDescription, metaImage, canonicalURL | All page types |
 | `shared.nav-item` | label, href, dropdown (nav-dropdown) | header |
 | `shared.nav-dropdown` | label, href, columns (nav-column[]) | header nav |

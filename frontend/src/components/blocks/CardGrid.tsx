@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 import type { CardItem, CtaButton } from '../../lib/types';
 import { SectionHeader } from '../shared/SectionHeader';
 import { Button } from '../shared/Button';
+import { isExternalHref } from '../../lib/links';
 
 export function CardGrid({
   label,
@@ -241,6 +242,19 @@ function EventCard({ item }: { item: CardItem }) {
     </div>
   );
   if (!item.href) return inner;
+  if (isExternalHref(item.href)) {
+    return (
+      <a
+        href={item.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        draggable={false}
+        className="block"
+      >
+        {inner}
+      </a>
+    );
+  }
   return (
     <Link to={item.href} draggable={false} className="block">
       {inner}
