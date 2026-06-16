@@ -1,10 +1,8 @@
 import { useParams, useLocation, Link } from 'react-router';
 import { useEffect, useState, type ReactNode } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkBreaks from 'remark-breaks';
-import rehypeRaw from 'rehype-raw';
 import { fetchAPI } from '../lib/api';
 import { isHardLink } from '../lib/links';
+import { Markdown } from '../components/shared/Markdown';
 import { getSubpage } from '../data/subpages';
 import { Button } from '../components/shared/Button';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
@@ -832,46 +830,8 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                 </div>
               )}
 
-              {/* Description — Lato 19.2px / 400, line-height 26.88px. Markdown for inline [text](url) links (mailto, http, relative). */}
-              <div className="flex flex-col" style={{ gap: '20px' }}>
-                <ReactMarkdown
-                  remarkPlugins={[remarkBreaks]}
-                  rehypePlugins={[rehypeRaw]}
-                  components={{
-                    p: ({ children }) => (
-                      <p
-                        className="text-text-dark"
-                        style={{ fontSize: '19.2px', fontWeight: 400, lineHeight: '26.88px' }}
-                      >
-                        {children}
-                      </p>
-                    ),
-                    a: ({ href, children }) => {
-                      const external = isHardLink(href);
-                      return (
-                        <a
-                          href={href}
-                          target={external ? '_blank' : undefined}
-                          rel={external ? 'noopener noreferrer' : undefined}
-                          className="text-accent underline underline-offset-2 hover:no-underline"
-                        >
-                          {children}
-                        </a>
-                      );
-                    },
-                    ol: ({ children }) => (
-                      <ol className="list-decimal pl-6 flex flex-col" style={{ gap: '8px' }}>{children}</ol>
-                    ),
-                    li: ({ children }) => (
-                      <li className="text-text-dark" style={{ fontSize: '19.2px', lineHeight: '26.88px' }}>
-                        {children}
-                      </li>
-                    ),
-                  }}
-                >
-                  {venue.description}
-                </ReactMarkdown>
-              </div>
+              {/* Description — shared Markdown renderer (consistent formatting across pages) */}
+              <Markdown>{venue.description}</Markdown>
 
               {/* ── Operating Hours ──
                   Single-section venues use the section's own title as the
@@ -980,45 +940,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
               {venue.extraSections?.map((extra, i) => (
                 <DetailSection key={i} icon={resolveIcon(extra.title)} title={extra.title}>
                   <div className="flex flex-col" style={{ gap: '16px' }}>
-                    {extra.content && (
-                      <ReactMarkdown
-                        remarkPlugins={[remarkBreaks]}
-                        rehypePlugins={[rehypeRaw]}
-                        components={{
-                          p: ({ children }) => (
-                            <p className="text-text-dark" style={{ fontSize: '19.2px', lineHeight: '26.88px' }}>
-                              {children}
-                            </p>
-                          ),
-                          a: ({ href, children }) => {
-                            const external = isHardLink(href);
-                            return (
-                              <a
-                                href={href}
-                                target={external ? '_blank' : undefined}
-                                rel={external ? 'noopener noreferrer' : undefined}
-                                className="text-accent underline underline-offset-2 hover:no-underline"
-                              >
-                                {children}
-                              </a>
-                            );
-                          },
-                          ul: ({ children }) => (
-                            <ul className="list-disc pl-6 flex flex-col" style={{ gap: '8px' }}>{children}</ul>
-                          ),
-                          ol: ({ children }) => (
-                            <ol className="list-decimal pl-6 flex flex-col" style={{ gap: '8px' }}>{children}</ol>
-                          ),
-                          li: ({ children }) => (
-                            <li className="text-text-dark" style={{ fontSize: '19.2px', lineHeight: '26.88px' }}>
-                              {children}
-                            </li>
-                          ),
-                        }}
-                      >
-                        {extra.content}
-                      </ReactMarkdown>
-                    )}
+                    {extra.content && <Markdown>{extra.content}</Markdown>}
                     {extra.bullets && extra.bullets.length > 0 && (
                       <ul className="list-disc pl-6 flex flex-col" style={{ gap: '8px' }}>
                         {extra.bullets.map((bullet, k) => (
@@ -1775,41 +1697,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                           <h3 className="text-primary" style={{ fontSize: '21px', fontWeight: 700, lineHeight: '28px' }}>
                             {extra.title}
                           </h3>
-                          {extra.content && (
-                            <ReactMarkdown
-                              remarkPlugins={[remarkBreaks]}
-                              rehypePlugins={[rehypeRaw]}
-                              components={{
-                                p: ({ children }) => (
-                                  <p className="text-text-dark" style={{ fontSize: '17.6px', lineHeight: '25.6px' }}>{children}</p>
-                                ),
-                                a: ({ href, children }) => {
-                                  const external = isHardLink(href);
-                                  return (
-                                    <a
-                                      href={href}
-                                      target={external ? '_blank' : undefined}
-                                      rel={external ? 'noopener noreferrer' : undefined}
-                                      className="text-accent underline underline-offset-2 hover:no-underline"
-                                    >
-                                      {children}
-                                    </a>
-                                  );
-                                },
-                                ul: ({ children }) => (
-                                  <ul className="list-disc pl-6 flex flex-col" style={{ gap: '6px' }}>{children}</ul>
-                                ),
-                                ol: ({ children }) => (
-                                  <ol className="list-decimal pl-6 flex flex-col" style={{ gap: '6px' }}>{children}</ol>
-                                ),
-                                li: ({ children }) => (
-                                  <li className="text-text-dark" style={{ fontSize: '17.6px', lineHeight: '25.6px' }}>{children}</li>
-                                ),
-                              }}
-                            >
-                              {extra.content}
-                            </ReactMarkdown>
-                          )}
+                          {extra.content && <Markdown compact>{extra.content}</Markdown>}
                           {Array.isArray(extra.bullets) && extra.bullets.length > 0 && (
                             <ul className="list-disc pl-6 flex flex-col" style={{ gap: '6px' }}>
                               {extra.bullets.map((b, bi) => (
