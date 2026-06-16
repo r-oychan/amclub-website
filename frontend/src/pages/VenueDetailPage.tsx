@@ -828,7 +828,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
               {/* CTA buttons — up to 3; style follows each CTA's CMS variant */}
               {venue.ctas && venue.ctas.length > 0 && (
                 <div className="flex flex-wrap gap-3">
-                  {venue.ctas.slice(0, 3).map((cta, i) => (
+                  {venue.ctas.slice(0, 5).map((cta, i) => (
                     <CtaButton key={`${cta.label}-${i}`} cta={cta} />
                   ))}
                 </div>

@@ -24,7 +24,7 @@
     "ctas": {
       "type": "component",
       "repeatable": true,
-      "max": 4,
+      "max": 5,
       "component": "shared.link"
     },
     "bullets": {

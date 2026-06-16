@@ -206,7 +206,7 @@ export default function EventDetailPage() {
 
               {ctas.length > 0 && (
                 <div className="flex flex-wrap gap-3">
-                  {ctas.slice(0, 3).map((cta) => {
+                  {ctas.slice(0, 5).map((cta) => {
                     const href = cta.href ?? '#';
                     const linkClass =
                       'inline-flex items-center gap-2 bg-white rounded-full text-primary uppercase hover:shadow-md transition-shadow';
