@@ -91,7 +91,7 @@ Each row lists, for one route: the React page file, the React components it comp
 | `/membership` | `MembershipPage.tsx` | `blocks/Hero` `blocks/CtaBanner` `blocks/FeatureGrid` `blocks/OverlaySection` `blocks/MembershipCommunityCollage` `blocks/MembershipPrograms` `shared/PageFade` | 🟢 single-type `membership-page` (with nested `hero` `joinCta` `joinCommunityImages` `intro` `benefits` `benefitIcons` `findRightCta` `findMembershipImage` `programs` `faq` `beginJourneyCta`) |
 | `/membership/joining-fees` | `JoiningFeesPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `shared/CtaIcon` | 🟢 single-type `joining-fees-page` |
 | `/membership/referal` | `ReferralPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `shared/CtaIcon` | 🟢 single-type `referral-page` |
-| `/membership/reciprocal-clubs` | `ReciprocalClubsPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `detail/DetailSection` `blocks/ImagePanelSlideshow` `shared/CtaIcon` | ❌ static — uses inline content + `frontend/src/data/subpages.ts` (PR-2 follow-up to migrate to its own `reciprocal-clubs-page` single-type) |
+| `/membership/reciprocal-clubs` | `ReciprocalClubsPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `detail/DetailSection` `detail/ImageTextPanels` `shared/CtaButton` | ✅ 2026-06-16 — fetches `reciprocal-clubs-page` singleton; CTAs render via `CtaButton` (CMS variant); `imagePanels` (Local Reciprocity) render via the shared `detail/ImageTextPanels` (reused from `VenueDetailPage`, supports nested `extraSections`) |
 | `/membership/niche-group-membership` | `VenueDetailPage.tsx` (singleton override) | same as dining detail — tier cards keep the prod gradient layout; CMS photo replaces a tile only when set; bullets have an editor-selectable `bulletStyle` | 🟢 single-type `niche-group-membership-page` mapped into the layout (copy, hero, tier images/bullets editable; patch-2026-06-12-niche-group-images) |
 | `/membership/:slug` | `VenueDetailPage.tsx` (section=membership) | same as dining detail | 🟢 collection `facility` (section=membership) — subpages like `start-application` and the legacy detail pages |
 | `/whats-on` | `WhatsOnPage.tsx` | `blocks/Hero` `blocks/CtaBanner` `shared/PageFade` | 🟢 single-type `whats-on-page`; 🟢 collection `event` (with `category` → `event-category`); 🟢 collection `event-category` (for category filter bar) |
@@ -138,7 +138,7 @@ Each row lists, for one route: the React page file, the React components it comp
 
 | Single type | Used by | Key fields |
 |---|---|---|
-| `reciprocal-clubs-page` | `/membership/reciprocal-clubs` | title, hero, heading/intro, ctas, bottomCtas, **body (dynamiczone)**, seo |
+| `reciprocal-clubs-page` | `/membership/reciprocal-clubs` | title, hero, heading/intro, ctas (variant-aware via `CtaButton`), bottomCtas, secondary block, **`imagePanels` (`shared.image-text-panel`, e.g. Local Reciprocity — multi-CTA + nested `extraSections`)**, **body (dynamiczone)**, seo |
 | `start-application-page` | `/membership/start-application` _(new route)_ | same skeleton |
 | `niche-group-membership-page` | `/membership/niche-group-membership` | same skeleton |
 | `advertise-with-us-page` | `/membership/advertise-with-us` _(currently routed under `/home-sub`; consolidated to `/membership`)_ | same skeleton |
