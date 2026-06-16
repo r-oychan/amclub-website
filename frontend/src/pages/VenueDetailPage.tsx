@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkBreaks from 'remark-breaks';
 import rehypeRaw from 'rehype-raw';
 import { fetchAPI } from '../lib/api';
+import { isExternalHref } from '../lib/links';
 import { getSubpage } from '../data/subpages';
 import { Button } from '../components/shared/Button';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
@@ -484,6 +485,10 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
         'filters[slug][$eq]': lookupSlug,
         'populate[image]': 'true',
         'populate[ctas]': 'true',
+        // bottomCtas must be populated explicitly, otherwise Strapi v5 omits
+        // the component and the page silently falls back to the static
+        // subpages.ts copy — making CMS edits (incl. removals) invisible.
+        'populate[bottomCtas]': 'true',
         'populate[locationContact]': 'true',
         'populate[operatingHoursSections][populate]': '*',
         'populate[teamMembers][populate]': '*',
@@ -530,7 +535,11 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           promoCards: api.promoCards ?? fallback?.promoCards,
           teamMembers: apiTeam?.length ? apiTeam : fallback?.teamMembers,
           teamHeading: api.teamHeading ?? fallback?.teamHeading,
-          bottomCtas: api.bottomCtas?.length ? api.bottomCtas : fallback?.bottomCtas,
+          // Now that bottomCtas is populated, an empty array means the editor
+          // intentionally cleared the CTAs — honour that (hide the section)
+          // instead of resurrecting the static fallback. Only fall back when
+          // the field is genuinely absent (`undefined`).
+          bottomCtas: api.bottomCtas ?? fallback?.bottomCtas,
           imagePanels: api.imagePanels?.length ? api.imagePanels : fallback?.imagePanels,
           cardSections: api.cardSections?.length ? api.cardSections : fallback?.cardSections,
           faq: api.faq?.length ? api.faq : fallback?.faq,
@@ -736,7 +745,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                         <CtaIcon name={cta.icon ?? 'arrow'} size={20} className="text-accent" />
                       </>
                     );
-                    return cta.isExternal ? (
+                    return cta.isExternal || isExternalHref(cta.href) ? (
                       <a
                         key={cta.label}
                         href={cta.href}
@@ -771,7 +780,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                       </p>
                     ),
                     a: ({ href, children }) => {
-                      const external = href?.startsWith('http');
+                      const external = isExternalHref(href);
                       return (
                         <a
                           href={href}
@@ -1041,12 +1050,14 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
               {venue.downloads && venue.downloads.items.length > 0 && (
                 <DetailSection icon="menu" title={venue.downloads.heading ?? "Forms You'll Need"}>
                   <ul className="flex flex-col" style={{ gap: '8px' }}>
-                    {venue.downloads.items.map((item) => (
+                    {venue.downloads.items.map((item) => {
+                      const external = item.isExternal || isExternalHref(item.href);
+                      return (
                       <li key={item.label}>
                         <a
                           href={item.href}
-                          target={item.isExternal ? '_blank' : undefined}
-                          rel={item.isExternal ? 'noopener noreferrer' : undefined}
+                          target={external ? '_blank' : undefined}
+                          rel={external ? 'noopener noreferrer' : undefined}
                           className="inline-flex items-center gap-3 text-accent hover:underline"
                           style={{ fontSize: '17.6px', lineHeight: '26.4px', fontWeight: 400 }}
                         >
@@ -1066,7 +1077,8 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                           {item.label}
                         </a>
                       </li>
-                    ))}
+                      );
+                    })}
                   </ul>
                 </DetailSection>
               )}
@@ -1274,7 +1286,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                     );
                     const key = `${card.heading}-${cIdx}`;
                     if (!card.cta) return <div key={key}>{inner}</div>;
-                    return card.cta.isExternal ? (
+                    return card.cta.isExternal || isExternalHref(card.cta.href) ? (
                       <a
                         key={key}
                         href={card.cta.href}
@@ -1560,7 +1572,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                         <CtaIcon name="arrow" size={20} className="text-accent" />
                       </>
                     );
-                    return panel.cta.isExternal ? (
+                    return panel.cta.isExternal || isExternalHref(panel.cta.href) ? (
                       <a
                         href={panel.cta.href}
                         target="_blank"
@@ -2063,7 +2075,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                   <CtaIcon name="arrow" size={20} className="text-accent" />
                 </>
               );
-              return cta.isExternal ? (
+              return cta.isExternal || isExternalHref(cta.href) ? (
                 <a
                   key={cta.label}
                   href={cta.href}
