@@ -502,6 +502,10 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
         // quotes / Member Testimonials (e.g. kids camps) — the component stores
         // items as { quote, author, role }; mapped to { text, attribution } below.
         'populate[quotes][populate]': '*',
+        // marquee (e.g. kids experiences) — component holds repeatable `rows`,
+        // each row holding multiple `images` (two levels deep). Without this the
+        // marquee never loads and the page renders the hardcoded 2-row fallback.
+        'populate[marquee][populate][rows][populate]': '*',
         'populate[bottomCtas]': 'true',
       };
       const items = await fetchAPI<VenueData[]>(config.apiPath, params);
