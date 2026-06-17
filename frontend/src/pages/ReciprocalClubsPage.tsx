@@ -204,18 +204,18 @@ export default function ReciprocalClubsPage() {
                 {data.secondaryBody && <Markdown>{data.secondaryBody}</Markdown>}
                 {(data.operatingHoursSections ?? []).map((section, idx) => (
                   <DetailSection key={idx} icon="clock" title={section.title ?? ''}>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
                       {(section.rows ?? []).map((row, j) => (
                         <div key={j} className="flex flex-col gap-1">
                           {row.dayRange && (
-                            <div className="font-body font-semibold text-primary" style={{ fontSize: '14px' }}>
+                            <p className="text-text-dark" style={{ fontSize: '17.6px', fontWeight: 700, lineHeight: '24.64px' }}>
                               {row.dayRange}
-                            </div>
+                            </p>
                           )}
                           {row.time && (
-                            <div className="font-body text-text-dark/85 whitespace-pre-line" style={{ fontSize: '14px' }}>
+                            <p className="text-text-dark whitespace-pre-line" style={{ fontSize: '17.6px', lineHeight: '26.4px' }}>
                               {row.time}
-                            </div>
+                            </p>
                           )}
                         </div>
                       ))}
