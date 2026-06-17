@@ -224,16 +224,13 @@ export default function ReciprocalClubsPage() {
                 ))}
                 {data.notes && (
                   <DetailSection icon="reservation" title={data.notesHeading ?? 'Important things to note'}>
-                    <ul className="flex flex-col gap-2 text-text-dark" style={{ fontSize: '19.2px', lineHeight: '26.88px' }}>
+                    <ul className="list-disc pl-6 flex flex-col gap-2 text-text-dark marker:text-accent" style={{ fontSize: '19.2px', lineHeight: '26.88px' }}>
                       {data.notes
                         .split('\n')
                         .map((line) => line.replace(/^•\s*/, '').trim())
                         .filter(Boolean)
                         .map((line, i) => (
-                          <li key={i} className="flex gap-2">
-                            <span className="text-accent">•</span>
-                            <span>{line}</span>
-                          </li>
+                          <li key={i}>{line}</li>
                         ))}
                     </ul>
                   </DetailSection>
