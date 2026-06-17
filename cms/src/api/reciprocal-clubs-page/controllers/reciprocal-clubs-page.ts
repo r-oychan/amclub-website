@@ -5,6 +5,18 @@ const POPULATE = {
   ...HEADER_POPULATE,
   secondaryImage: true,
   secondaryCta: true,
+  // Alternating image+text panels (e.g. "Local Reciprocity"). Without the
+  // explicit nested populate the field is stored but never returned, so the
+  // frontend renders nothing. Mirrors the fitness-facility imagePanels map.
+  imagePanels: {
+    populate: {
+      image: true,
+      ctas: true,
+      bullets: true,
+      operatingHours: { populate: { rows: true } },
+      extraSections: true,
+    },
+  },
   body: BODY_POPULATE,
 };
 

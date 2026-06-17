@@ -12,6 +12,16 @@ const POPULATE = {
   locationContact: true,
   operatingHoursSections: { populate: { rows: true } },
   extraSections: true,
+  // Image+text panels (same as fitness facilities) — multi-CTA + nested extraSections.
+  imagePanels: {
+    populate: {
+      image: true,
+      ctas: true,
+      bullets: true,
+      operatingHours: { populate: { rows: true } },
+      extraSections: true,
+    },
+  },
   downloads: { populate: { items: true } },
   faq: true,
   quotes: { populate: { items: { populate: { image: true } } } },

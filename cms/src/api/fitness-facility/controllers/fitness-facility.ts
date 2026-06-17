@@ -12,6 +12,18 @@ const POPULATE = {
   locationContact: true,
   operatingHoursSections: { populate: { rows: true } },
   extraSections: true,
+  // Alternating image+text panels (e.g. Tennis Programs / Tennis Etiquette).
+  // Added 2026-06: without this the field is stored but never returned, so the
+  // frontend silently falls back to the hardcoded subpages.ts copy.
+  imagePanels: {
+    populate: { image: true, ctas: true, bullets: true, operatingHours: { populate: { rows: true } }, extraSections: true },
+  },
+  // FAQ pairs, card sections, and promo grid — flat fields the frontend renders
+  // directly (VenueData.faq / .cardSections / .promoCards). Must be enumerated
+  // here or the API drops them and the page falls back to subpages.ts copy.
+  faq: true,
+  cardSections: { populate: { cards: { populate: { image: true, cta: true } } } },
+  promoCards: { populate: { cards: { populate: { image: true, cta: true } } } },
   downloads: { populate: { items: true } },
   parent: { fields: ['slug', 'name'] },
   children: { fields: ['slug', 'name', 'order'] },

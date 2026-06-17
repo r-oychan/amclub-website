@@ -39,6 +39,11 @@
     "intro": {
       "type": "text"
     },
+    "extraSections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.extra-section"
+    },
     "locationLevel": {
       "type": "string"
     },
@@ -67,13 +72,13 @@
       "type": "component",
       "repeatable": true,
       "component": "shared.link",
-      "max": 4
+      "max": 5
     },
     "bottomCtas": {
       "type": "component",
       "repeatable": true,
       "component": "shared.link",
-      "max": 4
+      "max": 5
     },
     "body": {
       "type": "dynamiczone",

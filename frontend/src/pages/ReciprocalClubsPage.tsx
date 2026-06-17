@@ -4,13 +4,17 @@ import { fetchAPI } from '../lib/api';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
 import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
 import { DetailSection } from '../components/detail/DetailSection';
-import { Button } from '../components/shared/Button';
-import { CtaIcon, type CtaIconName } from '../components/shared/CtaIcon';
+import { CtaButton } from '../components/shared/CtaButton';
+import { type CtaIconName } from '../components/shared/CtaIcon';
+import { ImageTextPanels } from '../components/detail/ImageTextPanels';
+import { mapImagePanels } from '../lib/imagePanels';
 
 interface StrapiLink {
   label?: string;
   href?: string;
   isExternal?: boolean;
+  variant?: 'primary' | 'secondary' | 'accent' | 'outline' | 'text' | null;
+  bordered?: boolean;
   icon?: CtaIconName | null;
 }
 
@@ -37,6 +41,8 @@ interface ReciprocalData {
   secondaryHeading?: string;
   secondaryBody?: string;
   secondaryCta?: StrapiLink;
+  /** Raw `shared.image-text-panel` array from Strapi; normalised via mapImagePanels. */
+  imagePanels?: unknown;
   operatingHoursSections?: OperatingHoursSection[];
   notesHeading?: string;
   notes?: string;
@@ -92,6 +98,7 @@ export default function ReciprocalClubsPage() {
   }
 
   const ctas = (data.ctas ?? []).filter((c) => c.label && c.href);
+  const imagePanels = mapImagePanels(data.imagePanels);
   const parentLabel = data.parentLabel ?? 'Membership';
   const parentHref = data.parentHref ?? '/membership';
   const secondaryCta =
@@ -139,13 +146,7 @@ export default function ReciprocalClubsPage() {
               {ctas.length > 0 && (
                 <div className="flex flex-wrap gap-4">
                   {ctas.map((c, i) => (
-                    <Button
-                      key={i}
-                      label={c.label!}
-                      href={c.href!}
-                      iconRight={c.icon ? <CtaIcon name={c.icon} /> : null}
-                      variant={i === 0 ? 'primary' : 'secondary'}
-                    />
+                    <CtaButton key={i} cta={{ ...c, label: c.label!, href: c.href! }} />
                   ))}
                 </div>
               )}
@@ -200,12 +201,7 @@ export default function ReciprocalClubsPage() {
                 )}
                 {secondaryCta && (
                   <div>
-                    <Button
-                      label={secondaryCta.label!}
-                      href={secondaryCta.href!}
-                      iconRight={secondaryCta.icon ? <CtaIcon name={secondaryCta.icon} /> : null}
-                      variant="primary"
-                    />
+                    <CtaButton cta={{ ...secondaryCta, label: secondaryCta.label!, href: secondaryCta.href! }} />
                   </div>
                 )}
                 {data.secondaryBody && (
@@ -254,6 +250,9 @@ export default function ReciprocalClubsPage() {
           </div>
         </section>
       )}
+
+      {/* ── Image + text panels (e.g. Local Reciprocity) ── */}
+      <ImageTextPanels panels={imagePanels} />
 
       {/* ── Back link ── */}
       <section className="py-10 bg-bg">

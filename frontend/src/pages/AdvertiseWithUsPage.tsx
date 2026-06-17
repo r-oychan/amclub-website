@@ -3,13 +3,19 @@ import { Link } from 'react-router';
 import { fetchAPI } from '../lib/api';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
 import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
-import { Button } from '../components/shared/Button';
-import { CtaIcon, type CtaIconName } from '../components/shared/CtaIcon';
+import { CtaButton } from '../components/shared/CtaButton';
+import { type CtaIconName } from '../components/shared/CtaIcon';
+import { Markdown } from '../components/shared/Markdown';
+import { DetailSection } from '../components/detail/DetailSection';
+import { ContactRow } from '../components/detail/ContactRow';
+import { resolveIcon, type DetailIconName } from '../lib/detailIcons';
 
 interface StrapiLink {
   label?: string;
   href?: string;
   isExternal?: boolean;
+  variant?: 'primary' | 'secondary' | 'accent' | 'outline' | 'text' | null;
+  bordered?: boolean;
   icon?: CtaIconName | null;
 }
 
@@ -28,6 +34,8 @@ interface AdvertiseData {
   ctas?: StrapiLink[];
   phone?: string;
   email?: string;
+  locationContact?: { locationLevel?: string; phone?: string; email?: string } | null;
+  extraSections?: { title?: string; content?: string; bullets?: string[]; icon?: DetailIconName | null }[];
   body?: AdvertiseBlock[];
   parentLabel?: string;
   parentHref?: string;
@@ -81,7 +89,21 @@ export default function AdvertiseWithUsPage() {
   const ctas = (data.ctas ?? []).filter((c) => c.label && c.href);
   const parentLabel = data.parentLabel ?? 'The American Club';
   const parentHref = data.parentHref ?? '/home';
-  const textBlocks = (data.body ?? []).filter((b) => b.__component === 'blocks.text-block');
+  const extraSections = data.extraSections ?? [];
+  // Legacy titled sections lived in the `body` dynamiczone as text-blocks.
+  // Extra Sections superseded them (icon subheader + editable icon). Render the
+  // body text-blocks only as a fallback when no Extra Sections exist, so
+  // environments not yet migrated to Extra Sections (e.g. prod) still show the
+  // content while migrated ones (UAT) don't duplicate it.
+  const textBlocks =
+    extraSections.length === 0
+      ? (data.body ?? []).filter((b) => b.__component === 'blocks.text-block')
+      : [];
+  // Optional Location & Contact module (same shape as dining). When filled it
+  // renders the dining-style section; otherwise we fall back to the legacy
+  // top-level phone/email so existing content keeps showing.
+  const lc = data.locationContact;
+  const locationContact = lc && (lc.locationLevel || lc.phone || lc.email) ? lc : null;
 
   return (
     <>
@@ -124,13 +146,7 @@ export default function AdvertiseWithUsPage() {
               {ctas.length > 0 && (
                 <div className="flex flex-wrap gap-4">
                   {ctas.map((c, i) => (
-                    <Button
-                      key={i}
-                      label={c.label!}
-                      href={c.href!}
-                      iconRight={c.icon ? <CtaIcon name={c.icon} /> : null}
-                      variant={i === 0 ? 'primary' : 'secondary'}
-                    />
+                    <CtaButton key={i} cta={{ ...c, label: c.label!, href: c.href! }} />
                   ))}
                 </div>
               )}
@@ -143,9 +159,10 @@ export default function AdvertiseWithUsPage() {
                 </div>
               )}
 
-              {/* Sub-sections (text-blocks rendered inline inside the right column) */}
+              {/* Legacy body text-blocks — fallback only (rendered when there are
+                  no Extra Sections; see `textBlocks` above). */}
               {textBlocks.map((b, idx) => (
-                <div key={idx} className="flex flex-col" style={{ gap: '20px' }}>
+                <div key={`tb-${idx}`} className="flex flex-col" style={{ gap: '20px' }}>
                   {b.heading && (
                     <h2
                       className="font-heading text-primary"
@@ -165,7 +182,53 @@ export default function AdvertiseWithUsPage() {
                 </div>
               ))}
 
-              {(data.phone || data.email) && (
+              {/* Extra Sections — rendered with the facilities-style icon + title
+                  subheader (DetailSection). The icon is CMS-editable; when unset
+                  it's inferred from the title (e.g. "Sponsorship" → heart). */}
+              {extraSections.map((ex, idx) => (
+                <DetailSection
+                  key={`ex-${idx}`}
+                  icon={ex.icon ?? resolveIcon(ex.title ?? '')}
+                  title={ex.title ?? ''}
+                >
+                  <div className="flex flex-col" style={{ gap: '16px' }}>
+                    {ex.content && <Markdown compact>{ex.content}</Markdown>}
+                    {Array.isArray(ex.bullets) && ex.bullets.length > 0 && (
+                      <ul className="list-disc pl-6 flex flex-col font-body text-text-dark/85" style={{ gap: '8px', fontSize: '17px', lineHeight: 1.55 }}>
+                        {ex.bullets.map((b, k) => (
+                          <li key={k}>{b}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </DetailSection>
+              ))}
+
+              {/* Location & Contact — dining-style module from the CMS
+                  `locationContact` component; falls back to top-level phone/email. */}
+              {locationContact ? (
+                <DetailSection icon="location" title="Location & Contact">
+                  <div className="flex flex-col" style={{ gap: '16px' }}>
+                    {locationContact.locationLevel && (
+                      <ContactRow icon="pin" text={locationContact.locationLevel} />
+                    )}
+                    {locationContact.phone && (
+                      <ContactRow
+                        icon="phone"
+                        text={locationContact.phone}
+                        href={`tel:${locationContact.phone.replace(/\s+/g, '')}`}
+                      />
+                    )}
+                    {locationContact.email && (
+                      <ContactRow
+                        icon="email"
+                        text={locationContact.email}
+                        href={`mailto:${locationContact.email}`}
+                      />
+                    )}
+                  </div>
+                </DetailSection>
+              ) : (data.phone || data.email) ? (
                 <dl
                   className="grid grid-cols-[120px_1fr] gap-x-4 gap-y-2 font-body text-text-dark/85 pt-2"
                   style={{ fontSize: '16px', lineHeight: 1.5 }}
@@ -191,7 +254,7 @@ export default function AdvertiseWithUsPage() {
                     </>
                   )}
                 </dl>
-              )}
+              ) : null}
             </div>
           </div>
         </div>

@@ -33,6 +33,16 @@ The blob's stored `Content-Type` is set by whatever the upload provider sends. `
 
 The bootstrap in `cms/src/index.ts → backfillUploadMimes` fixes the DB row's mime column for legacy uploads, but doesn't touch the blob's stored Content-Type header. CSP-side fix is already configured in `cms/config/middlewares.ts` — adds `STORAGE_HOST` to `img-src` so the admin can request the blob host at all.
 
+**Fix 3 — CSP missing the PUBLIC media host (PROD-ONLY www/apex split):**
+
+**Symptom:** A specific entry's media thumbnail is blank in the Content Manager *on prod only* — dev/uat are fine. The blob/thumbnail returns `200 image/jpeg` with `Access-Control-Allow-Origin: *` (so it's neither 404, mime, nor CORS), yet the admin won't render it.
+
+**Cause:** The upload provider rewrites media URLs to the PUBLIC host (`STORAGE_CDN_URL`/`PUBLIC_SITE_URL`, e.g. `https://amclub.org.sg/uploads/...`), **not** the raw blob host. On dev/uat the admin and media share a host (`dev.amclub.org.sg`) so CSP `'self'` covers it. On **prod the admin is served from `www.amclub.org.sg` but media resolve on the apex `amclub.org.sg`** — a different CSP origin not in `img-src` (which only had `'self'` + the blob host) → browser blocks every thumbnail.
+
+**Diagnosis:** `curl -sD - -o /dev/null https://www.amclub.org.sg/admin | grep -i content-security-policy` → check `img-src` lists the apex media host. Compare against the media `url` host returned by the content API.
+
+**Fix:** `cms/config/middlewares.ts` now derives `CDN_HOST` from `STORAGE_CDN_URL || PUBLIC_SITE_URL` and adds it to both `img-src` and `media-src` (per-env). Requires a CMS rebuild + redeploy.
+
 ### Files show under "API Uploads" in admin even though blob path looks right
 
 **Symptom:** Admin Media Library has a tree (Dining, Fitness, etc.) with the right folders, but all files appear under a flat "API Uploads" bucket. Folders are empty.
@@ -262,3 +272,35 @@ Update memory files in `~/.claude/projects/.../memory/` when reality diverges fr
 **Cause:** Container Apps revision swap lag — the request hit the *old* revision, whose Strapi doesn't know the new field yet (input validation rejects unknown keys). Seen twice on `patch-2026-06-12-benefits-text.mjs` (dev and uat).
 
 **Fix:** wait ~30–60 s after the new revision shows 100 % traffic (`az containerapp revision list`), or just re-run the patch — all content patches in `scripts/` are idempotent by design.
+
+## A newly-added field appears empty on the site even though it was seeded (custom controller POPULATE map drift)
+
+**Symptom:** you add a field to a detail content type (e.g. `fitness-facility.imagePanels`, `restaurant.promoCards`), seed it, and the public page still shows the old hardcoded `subpages.ts` fallback. Reading back via the REST API (`GET /api/<plural>?...&populate[field][populate]=*`) returns the field **empty**, so it *looks* like the write didn't persist.
+
+**The trap:** these detail types use a **custom `find`/`findOne` controller** with a **hardcoded `POPULATE` map** (see `cms/src/api/fitness-facility/controllers/fitness-facility.ts`, `restaurant`, and `cms/src/lib/detail-page-populate.ts`). The controllers **ignore the `populate` query param entirely** and always use their internal map. So:
+- Any field **missing from that map is never returned** — no matter what `populate=…` you pass. The frontend therefore never receives it and falls back to `subpages.ts`.
+- This masquerades as "the write didn't persist." It did — you just can't see it through the custom read path.
+
+**Confirm the write actually persisted** (bypass the custom `find` controller — the default `update` route *does* honour query populate):
+
+```js
+// PUT with populate in the URL returns the populated entity from the default update controller
+const r = await api(ctx, `/fitness-facilities/${docId}?populate[imagePanels][populate]=*`,
+  { method: 'PUT', body: { data: {} } });           // empty data = no-op write, just read back
+console.log(r.data.imagePanels);                      // populated → the data is there
+```
+
+If that shows the data but the normal `GET` doesn't, it's the controller map — **not** the DB.
+
+**Fix:** add the field (with the nested populate the frontend needs) to the controller's `POPULATE` constant, e.g.:
+
+```ts
+// fitness-facility controller
+imagePanels: { populate: { image: true, cta: true, bullets: true, operatingHours: { populate: { rows: true } } } },
+// restaurant controller
+promoCards: { populate: { cards: { populate: { image: true, cta: true } } } },
+```
+
+Then `cd cms && npm run build`, commit, deploy. **Rule of thumb:** every time you add a component/relation field to `fitness-facility`, `restaurant`, `kids-experience`, `event-space`, or any type with a custom controller, **update its `POPULATE` map in the same commit** — the schema and the controller's read map drift apart silently otherwise. Discovered 2026‑06‑16: commit `22c7ccf` added `imagePanels`/`promoCards` but left both controllers' maps untouched, so the content was invisible despite being stored.
+
+> Earlier misdiagnosis (recorded so nobody repeats it): this was first mistaken for a missing-DB-table / schema-sync problem. It is **not** — the component tables exist and the writes persist. `TRUNCATE strapi_database_schema` + restart does nothing for this; only the controller `POPULATE` map fix does.

@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
 import { fetchAPI } from '../../lib/api';
 
-// Google Analytics 4 (gtag.js) loader. The Measurement ID is editable in the
-// CMS (`Global: Site Configuration` single type → googleAnalyticsId). An
-// optional build-time `VITE_GA_ID` acts as a fallback so analytics can run
-// before the CMS entry is seeded; the CMS value always takes precedence.
-// Nothing loads when no valid `G-XXXX` id is configured, so dev/preview stay
-// untracked unless explicitly set.
+// Google tag loader. The Tag ID is editable in the CMS
+// (`Global: Site Configuration` single type → googleTagId) and accepts either:
+//   • a Google tag (gtag.js): G-XXXX (GA4), GT-XXXX (Google tag), AW-XXXX (Ads)
+//   • a Google Tag Manager container: GTM-XXXX (gtm.js)
+// The correct snippet is chosen automatically from the prefix. An optional
+// build-time `VITE_GA_ID` acts as a fallback so analytics can run before the CMS
+// entry is seeded; the CMS value always takes precedence. Nothing loads when no
+// valid id is configured, so dev/preview stay untracked unless explicitly set.
 
 declare global {
   interface Window {
@@ -17,11 +19,18 @@ declare global {
 }
 
 interface SiteConfig {
+  googleTagId?: string;
+  /** @deprecated previous field name; read as fallback during the rename. */
   googleAnalyticsId?: string;
 }
 
-const GA_ID_RE = /^G-[A-Z0-9]+$/;
-const ENV_GA_ID = (import.meta.env.VITE_GA_ID as string | undefined)?.trim() ?? '';
+const GTAG_RE = /^(G|GT|AW)-[A-Z0-9]+$/; // gtag.js
+const GTM_RE = /^GTM-[A-Z0-9]+$/; // Google Tag Manager
+const ENV_ID = (import.meta.env.VITE_GA_ID as string | undefined)?.trim() ?? '';
+
+type Mode = 'gtag' | 'gtm';
+const modeFor = (id: string): Mode | null =>
+  GTAG_RE.test(id) ? 'gtag' : GTM_RE.test(id) ? 'gtm' : null;
 
 let injected = false;
 
@@ -31,8 +40,6 @@ function injectGtag(id: string): void {
 
   window.dataLayer = window.dataLayer || [];
   window.gtag = function gtag() {
-    // gtag.js reads the raw `arguments` object off the dataLayer, so push it
-    // verbatim (not a rest-array) to match Google's official snippet.
     // eslint-disable-next-line prefer-rest-params
     window.dataLayer!.push(arguments);
   };
@@ -48,35 +55,67 @@ function injectGtag(id: string): void {
   document.head.appendChild(script);
 }
 
+function injectGtm(id: string): void {
+  if (injected || document.getElementById('gtm-src')) return;
+  injected = true;
+
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+
+  const script = document.createElement('script');
+  script.id = 'gtm-src';
+  script.async = true;
+  script.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(id)}`;
+  document.head.appendChild(script);
+
+  // <noscript> fallback iframe, per Google's GTM snippet.
+  const noscript = document.createElement('noscript');
+  const iframe = document.createElement('iframe');
+  iframe.src = `https://www.googletagmanager.com/ns.html?id=${encodeURIComponent(id)}`;
+  iframe.height = '0';
+  iframe.width = '0';
+  iframe.style.display = 'none';
+  iframe.style.visibility = 'hidden';
+  noscript.appendChild(iframe);
+  document.body.insertBefore(noscript, document.body.firstChild);
+}
+
 export function Analytics() {
   const location = useLocation();
-  const [gaId, setGaId] = useState<string>('');
+  const [active, setActive] = useState<{ id: string; mode: Mode } | null>(null);
 
-  // Resolve the active Measurement ID once (CMS first, env fallback).
+  // Resolve the active Tag ID once (CMS first, env fallback).
   useEffect(() => {
     let cancelled = false;
     fetchAPI<SiteConfig>('/site-config').then((cfg) => {
       if (cancelled) return;
-      const fromCms = (cfg?.googleAnalyticsId ?? '').trim();
-      const id = GA_ID_RE.test(fromCms) ? fromCms : GA_ID_RE.test(ENV_GA_ID) ? ENV_GA_ID : '';
-      if (!id) return;
-      injectGtag(id);
-      setGaId(id);
+      const fromCms = (cfg?.googleTagId ?? cfg?.googleAnalyticsId ?? '').trim();
+      const id = modeFor(fromCms) ? fromCms : modeFor(ENV_ID) ? ENV_ID : '';
+      const mode = modeFor(id);
+      if (!id || !mode) return;
+      if (mode === 'gtm') injectGtm(id);
+      else injectGtag(id);
+      setActive({ id, mode });
     });
     return () => {
       cancelled = true;
     };
   }, []);
 
-  // Emit a page_view on first load (once gaId is known) and on every route change.
+  // Emit a page_view on first load (once active) and on every route change.
+  // gtag fires the GA event directly; GTM gets a dataLayer push that a
+  // History-Change / page_view trigger in the container can act on.
   useEffect(() => {
-    if (!gaId || typeof window.gtag !== 'function') return;
-    window.gtag('event', 'page_view', {
-      page_path: location.pathname + location.search,
-      page_location: window.location.href,
-      page_title: document.title,
-    });
-  }, [gaId, location.pathname, location.search]);
+    if (!active) return;
+    const page_path = location.pathname + location.search;
+    const page_location = window.location.href;
+    const page_title = document.title;
+    if (active.mode === 'gtag' && typeof window.gtag === 'function') {
+      window.gtag('event', 'page_view', { page_path, page_location, page_title });
+    } else if (active.mode === 'gtm' && Array.isArray(window.dataLayer)) {
+      window.dataLayer.push({ event: 'page_view', page_path, page_location, page_title });
+    }
+  }, [active, location.pathname, location.search]);
 
   return null;
 }

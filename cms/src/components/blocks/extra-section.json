@@ -3,11 +3,15 @@
   "info": {
     "displayName": "Extra Section",
     "icon": "doc",
-    "description": "Free-form titled section on a venue detail page (e.g. 'Reservation Policy', 'Court Booking', 'Tennis Etiquette'). Title + optional prose body + optional bullet list."
+    "description": "Free-form titled section on a venue detail page (e.g. 'Reservation Policy', 'Court Booking', 'Tennis Etiquette'). Renders with an icon + title subheader (like the facilities' 'Opening Hours' section) + optional prose body + optional bullet list."
   },
   "attributes": {
     "title": { "type": "string", "required": true },
-    "content": { "type": "text" },
+    "icon": {
+      "type": "enumeration",
+      "enum": ["clock", "location", "reservation", "dresscode", "capacity", "menu", "sponsorship"]
+    },
+    "content": { "type": "richtext" },
     "bullets": { "type": "json" }
   }
 }

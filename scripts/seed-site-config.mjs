@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // Seed the `site-config` single type (Global: Site Configuration).
 // Creates and publishes the entry so the public `/api/site-config`
-// endpoint resolves. `googleAnalyticsId` is intentionally left blank —
-// each environment's GA4 Measurement ID is entered in /admin by the
-// client (analytics stays off until a valid G-XXXX id is set).
+// endpoint resolves. `googleTagId` is intentionally left blank — each
+// environment's Google Tag ID (G-/GT-/AW- gtag or GTM- container) is entered
+// in /admin by the client (analytics stays off until a valid id is set).
 //
 // Usage:
 //   SEED_ENV=dev node scripts/seed-site-config.mjs --dry-run
@@ -18,7 +18,7 @@ const ctx = initEnv();
   console.log(`Seed target: ${ctx.BASE}`);
 
   const payload = {
-    googleAnalyticsId: '',
+    googleTagId: '',
     publishedAt: new Date().toISOString(),
   };
 

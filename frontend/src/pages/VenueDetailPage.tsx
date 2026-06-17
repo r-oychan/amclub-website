@@ -1,9 +1,8 @@
 import { useParams, useLocation, Link } from 'react-router';
 import { useEffect, useState, type ReactNode } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkBreaks from 'remark-breaks';
-import rehypeRaw from 'rehype-raw';
 import { fetchAPI } from '../lib/api';
+import { isHardLink } from '../lib/links';
+import { Markdown } from '../components/shared/Markdown';
 import { getSubpage } from '../data/subpages';
 import { Button } from '../components/shared/Button';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
@@ -14,7 +13,11 @@ import { FaqAccordion } from '../components/blocks/FaqAccordion';
 import { MarqueeGallery } from '../components/detail/MarqueeGallery';
 import { KidsPartyPackages } from '../components/kids/KidsPartyPackages';
 import { Testimonials } from '../components/blocks/Testimonials';
-import { CtaIcon, type CtaIconName } from '../components/shared/CtaIcon';
+import { CtaIcon } from '../components/shared/CtaIcon';
+import { CtaButton, type CtaLink } from '../components/shared/CtaButton';
+import { ImageTextPanels } from '../components/detail/ImageTextPanels';
+import { mapImagePanels } from '../lib/imagePanels';
+import { resolveIcon, type DetailIconName } from '../lib/detailIcons';
 
 interface ScheduleRow {
   dayRange: string;
@@ -42,8 +45,6 @@ interface VenueData {
   parentSection?: string;
   parentHref?: string;
   description: string;
-  detailedDescription?: unknown[];
-  openingHours?: unknown[];
   operatingHoursSections?: OperatingHoursSection[];
   locationContact?: LocationContact | null;
   locationLevel?: string;
@@ -64,9 +65,10 @@ interface VenueData {
   menuUrl?: string;
   category?: string;
   capacity?: string;
-  ctas?: { label: string; href: string; isExternal?: boolean; icon?: CtaIconName | null }[];
+  ctas?: CtaLink[];
   extraSections?: {
     title: string;
+    icon?: DetailIconName | null;
     content?: string;
     bullets?: string[];
     contactRows?: { label: string; value: string }[];
@@ -86,7 +88,7 @@ interface VenueData {
       title: string;
       subtitle?: string;
       image: string;
-      cta: { label: string; href: string };
+      cta: { label: string; href: string; isExternal?: boolean };
     }[];
   };
   teamMembers?: {
@@ -105,7 +107,7 @@ interface VenueData {
   }[];
   teamHeading?: string;
   teamLayout?: 'circle' | 'card';
-  bottomCtas?: { label: string; href: string; isExternal?: boolean }[];
+  bottomCtas?: CtaLink[];
   cardSections?: {
     heading?: string;
     subheading?: string;
@@ -123,11 +125,14 @@ interface VenueData {
     imagePosition?: 'left' | 'right';
     slideWithText?: boolean;
     heading: string;
-    cta?: { label: string; href: string; isExternal?: boolean };
+    ctas?: CtaLink[];
+    /** @deprecated single-CTA shape from before imagePanels supported multiple; read as fallback. */
+    cta?: CtaLink;
     subheading?: string;
     body?: string;
     bullets?: string[];
     operatingHours?: { title: string; rows: string[] }[];
+    extraSections?: { title: string; content?: string; bullets?: string[] }[];
     footnote?: string;
   }[];
   faq?: { question: string; answer: string }[];
@@ -214,6 +219,16 @@ interface VenueData {
  */
 const imgSrc = (img: unknown): string | undefined =>
   typeof img === 'string' ? img : (img as { url?: string } | null | undefined)?.url;
+
+/**
+ * Whether an href must be a real browser navigation (a plain `<a>`) rather than
+ * a client-side React Router `<Link>`. Router intercepts `<Link>` clicks, so a
+ * link to a static asset (`/uploads/...pdf`) or a non-route path silently does
+ * nothing on a direct click — only "open in new tab" (a real navigation hitting
+ * nginx) works. Absolute URLs, mailto/tel, anything under `/uploads/`, and any
+ * file-extension path must therefore render as a hard anchor. CMS `isExternal`
+ * still forces a hard link too.
+ */
 
 const SECTION_MAP: Record<string, { apiPath: string; parentLabel: string; parentHref: string }> = {
   dining: { apiPath: '/restaurants', parentLabel: 'Dining & Retail', parentHref: '/dining' },
@@ -380,20 +395,6 @@ function resolveMarquee(api: VenueData, fallback: VenueData | null): VenueData['
 }
 
 /* Map extra section titles to DetailSection icon names */
-function resolveIcon(
-  title: string
-): 'clock' | 'location' | 'reservation' | 'dresscode' | 'capacity' | 'menu' | 'sponsorship' {
-  const lower = title.toLowerCase();
-  if (lower.includes('sponsor') || lower.includes('partner')) return 'sponsorship';
-  if (lower.includes('reserv') || lower.includes('book')) return 'reservation';
-  if (lower.includes('menu') || lower.includes('food') || lower.includes('cuisine')) return 'menu';
-  if (lower.includes('hour') || lower.includes('time')) return 'clock';
-  if (lower.includes('location') || lower.includes('contact')) return 'location';
-  if (lower.includes('dress') || lower.includes('attire')) return 'dresscode';
-  if (lower.includes('capac') || lower.includes('seat')) return 'capacity';
-  return 'reservation';
-}
-
 /** Extract a YouTube video ID from a watch URL, youtu.be URL, embed URL, or raw ID. */
 function youtubeEmbedUrl(input: string): string | null {
   if (!input) return null;
@@ -488,6 +489,20 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
         'populate[operatingHoursSections][populate]': '*',
         'populate[teamMembers][populate]': '*',
         'populate[downloads][populate]': '*',
+        // promoCards (restaurants, e.g. The Gourmet Pantry) — grid + its image cards.
+        'populate[promoCards][populate][cards][populate]': '*',
+        // imagePanels (fitness, e.g. Tennis) — image/cta/bullets one level, plus the
+        // nested operatingHours.rows (text-line) two levels down.
+        'populate[imagePanels][populate][image]': 'true',
+        'populate[imagePanels][populate][ctas]': 'true',
+        'populate[imagePanels][populate][cta]': 'true',
+        'populate[imagePanels][populate][bullets]': 'true',
+        'populate[imagePanels][populate][operatingHours][populate]': '*',
+        'populate[imagePanels][populate][extraSections]': 'true',
+        // quotes / Member Testimonials (e.g. kids camps) — the component stores
+        // items as { quote, author, role }; mapped to { text, attribution } below.
+        'populate[quotes][populate]': '*',
+        'populate[bottomCtas]': 'true',
       };
       const items = await fetchAPI<VenueData[]>(config.apiPath, params);
       const fallback = staticFallback(section, lookupSlug);
@@ -503,6 +518,67 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
               ? m.bioImage
               : (m.bioImage as { url?: string } | undefined)?.url,
         }));
+        // quotes: CMS quote-item uses { quote, author, role }; Testimonials reads
+        // { text, attribution, role }. Map field names (fallback subpages already
+        // uses text/attribution, so this no-ops on that shape).
+        const rawQuotes = api.quotes as
+          | { heading?: string; items?: { text?: string; quote?: string; attribution?: string; author?: string; role?: string }[] }
+          | undefined;
+        const apiQuotes = rawQuotes?.items?.length
+          ? {
+              heading: rawQuotes.heading,
+              items: rawQuotes.items
+                .map((q) => ({ text: q.text ?? q.quote ?? '', attribution: q.attribution ?? q.author, role: q.role }))
+                .filter((q) => q.text),
+            }
+          : undefined;
+        const apiPanels = mapImagePanels(api.imagePanels);
+        // ── Team grid from the per-discipline coach collection ──
+        // Fitness facilities have no `teamMembers` field; the team is sourced
+        // from the dedicated coach collection (looked up by discipline = slug),
+        // falling back to the static subpages team only if the collection is empty.
+        const COACH_COLLECTIONS: Record<string, string> = {
+          tennis: 'tennis-coaches',
+          gym: 'gym-trainers',
+          pilates: 'pilates-instructors',
+          aquatics: 'aquatics-coaches',
+        };
+        let coachTeam: VenueData['teamMembers'] | undefined;
+        const coachCollection = COACH_COLLECTIONS[lookupSlug];
+        if (coachCollection) {
+          try {
+            const coaches = await fetchAPI<
+              Array<{
+                name: string;
+                role?: string;
+                slug: string;
+                shortBio?: string;
+                photo?: unknown;
+                bioImage?: unknown;
+                imageOffsetX?: number;
+                imageOffsetY?: number;
+                imageZoom?: number;
+              }>
+            >(`/${coachCollection}`, {
+              sort: 'order:asc',
+              'populate[photo]': 'true',
+              'populate[bioImage]': 'true',
+            });
+            coachTeam = coaches?.map((c) => ({
+              name: c.name,
+              role: c.role ?? '',
+              bio: c.shortBio,
+              image: imgSrc(c.photo),
+              bioImage: imgSrc(c.bioImage),
+              imageOffsetX: c.imageOffsetX ?? undefined,
+              imageOffsetY: c.imageOffsetY ?? undefined,
+              imageZoom: c.imageZoom ?? undefined,
+              coachLink: `/coaches/${lookupSlug}/${c.slug}`,
+            }));
+          } catch {
+            /* fall back to the static subpages team */
+          }
+        }
         // Enrich with static fallback for fields missing from CMS
         setVenue({
           ...fallback,
@@ -528,15 +604,15 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           ctas: api.ctas?.length ? api.ctas : fallback?.ctas,
           extraSections: api.extraSections?.length ? api.extraSections : fallback?.extraSections,
           promoCards: api.promoCards ?? fallback?.promoCards,
-          teamMembers: apiTeam?.length ? apiTeam : fallback?.teamMembers,
-          teamHeading: api.teamHeading ?? fallback?.teamHeading,
+          teamMembers: coachTeam?.length ? coachTeam : apiTeam?.length ? apiTeam : fallback?.teamMembers,
+          teamHeading: api.teamHeading ?? fallback?.teamHeading ?? (coachTeam?.length ? 'Meet Our Team' : undefined),
           bottomCtas: api.bottomCtas?.length ? api.bottomCtas : fallback?.bottomCtas,
-          imagePanels: api.imagePanels?.length ? api.imagePanels : fallback?.imagePanels,
+          imagePanels: apiPanels?.length ? apiPanels : fallback?.imagePanels,
           cardSections: api.cardSections?.length ? api.cardSections : fallback?.cardSections,
           faq: api.faq?.length ? api.faq : fallback?.faq,
           gallery: resolveMarquee(api, fallback),
           partyPackages: api.partyPackages ?? fallback?.partyPackages,
-          quotes: api.quotes ?? fallback?.quotes,
+          quotes: apiQuotes?.items?.length ? apiQuotes : fallback?.quotes,
           downloads: api.downloads ?? fallback?.downloads,
           tierCards: api.tierCards ?? fallback?.tierCards,
           venueCards: api.venueCards ?? fallback?.venueCards,
@@ -717,77 +793,17 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                 );
               })()}
 
-              {/* CTA buttons — up to 3, white pill with selectable icon */}
+              {/* CTA buttons — up to 3; style follows each CTA's CMS variant */}
               {venue.ctas && venue.ctas.length > 0 && (
                 <div className="flex flex-wrap gap-3">
-                  {venue.ctas.slice(0, 3).map((cta) => {
-                    const linkClass =
-                      'inline-flex items-center gap-2 bg-white rounded-full text-primary uppercase hover:shadow-md transition-shadow';
-                    const linkStyle = {
-                      padding: '12px 16px 12px 24px',
-                      fontSize: '13.6px',
-                      fontWeight: 700,
-                      letterSpacing: '0.04em',
-                      boxShadow: 'rgba(32, 99, 171, 0.07) 0px 20px 19px -12px',
-                    } as const;
-                    const inner = (
-                      <>
-                        {cta.label}
-                        <CtaIcon name={cta.icon ?? 'arrow'} size={20} className="text-accent" />
-                      </>
-                    );
-                    return cta.isExternal ? (
-                      <a
-                        key={cta.label}
-                        href={cta.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={linkClass}
-                        style={linkStyle}
-                      >
-                        {inner}
-                      </a>
-                    ) : (
-                      <Link key={cta.label} to={cta.href} className={linkClass} style={linkStyle}>
-                        {inner}
-                      </Link>
-                    );
-                  })}
+                  {venue.ctas.slice(0, 5).map((cta, i) => (
+                    <CtaButton key={`${cta.label}-${i}`} cta={cta} />
+                  ))}
                 </div>
               )}
 
-              {/* Description — Lato 19.2px / 400, line-height 26.88px. Markdown for inline [text](url) links (mailto, http, relative). */}
-              <div className="flex flex-col" style={{ gap: '20px' }}>
-                <ReactMarkdown
-                  remarkPlugins={[remarkBreaks]}
-                  rehypePlugins={[rehypeRaw]}
-                  components={{
-                    p: ({ children }) => (
-                      <p
-                        className="text-text-dark"
-                        style={{ fontSize: '19.2px', fontWeight: 400, lineHeight: '26.88px' }}
-                      >
-                        {children}
-                      </p>
-                    ),
-                    a: ({ href, children }) => {
-                      const external = href?.startsWith('http');
-                      return (
-                        <a
-                          href={href}
-                          target={external ? '_blank' : undefined}
-                          rel={external ? 'noopener noreferrer' : undefined}
-                          className="text-accent underline underline-offset-2 hover:no-underline"
-                        >
-                          {children}
-                        </a>
-                      );
-                    },
-                  }}
-                >
-                  {venue.description}
-                </ReactMarkdown>
-              </div>
+              {/* Description — shared Markdown renderer (consistent formatting across pages) */}
+              <Markdown>{venue.description}</Markdown>
 
               {/* ── Operating Hours ──
                   Single-section venues use the section's own title as the
@@ -894,17 +910,9 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
 
               {/* ── Extra Sections (Reservation, etc.) ── */}
               {venue.extraSections?.map((extra, i) => (
-                <DetailSection key={i} icon={resolveIcon(extra.title)} title={extra.title}>
+                <DetailSection key={i} icon={extra.icon ?? resolveIcon(extra.title)} title={extra.title}>
                   <div className="flex flex-col" style={{ gap: '16px' }}>
-                    {extra.content?.split('\n').filter(Boolean).map((line, j) => (
-                      <p
-                        key={j}
-                        className="text-text-dark"
-                        style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
-                      >
-                        {line}
-                      </p>
-                    ))}
+                    {extra.content && <Markdown>{extra.content}</Markdown>}
                     {extra.bullets && extra.bullets.length > 0 && (
                       <ul className="list-disc pl-6 flex flex-col" style={{ gap: '8px' }}>
                         {extra.bullets.map((bullet, k) => (
@@ -1045,8 +1053,8 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                       <li key={item.label}>
                         <a
                           href={item.href}
-                          target={item.isExternal ? '_blank' : undefined}
-                          rel={item.isExternal ? 'noopener noreferrer' : undefined}
+                          target={isHardLink(item.href, item.isExternal) ? '_blank' : undefined}
+                          rel={isHardLink(item.href, item.isExternal) ? 'noopener noreferrer' : undefined}
                           className="inline-flex items-center gap-3 text-accent hover:underline"
                           style={{ fontSize: '17.6px', lineHeight: '26.4px', fontWeight: 400 }}
                         >
@@ -1274,7 +1282,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                     );
                     const key = `${card.heading}-${cIdx}`;
                     if (!card.cta) return <div key={key}>{inner}</div>;
-                    return card.cta.isExternal ? (
+                    return isHardLink(card.cta.href, card.cta.isExternal) ? (
                       <a
                         key={key}
                         href={card.cta.href}
@@ -1508,204 +1516,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
           sticky image by default) and reuses the hero's CTA pill + DetailSection
           treatments so every panel reads as the same component. */}
       {venue.imagePanels && venue.imagePanels.length > 0 && (
-        <section className="bg-bg pb-[120px]">
-          <div className="max-w-7xl mx-auto px-10 flex flex-col" style={{ gap: '120px' }}>
-            {venue.imagePanels.map((panel, idx) => {
-              const imageOnLeft = (panel.imagePosition ?? (idx % 2 === 0 ? 'left' : 'right')) === 'left';
-              // By default the image stays pinned near the top of the viewport
-              // while a long text column scrolls past. Pass `slideWithText` on
-              // the panel to opt back into the row's normal flow.
-              const stick = !panel.slideWithText;
-              const imgEl = (
-                <div className="lg:w-[52%] shrink-0">
-                  <div className={stick ? 'lg:sticky lg:top-[120px]' : ''}>
-                    <div className="overflow-hidden">
-                      <img
-                        src={panel.image}
-                        alt={panel.imageAlt ?? panel.heading}
-                        className="w-full h-auto object-cover"
-                      />
-                    </div>
-                  </div>
-                </div>
-              );
-              const textEl = (
-                <div className="flex flex-col flex-1" style={{ gap: '32px' }}>
-                  <h2
-                    className="font-heading text-primary"
-                    style={{
-                      fontSize: '38.4px',
-                      fontWeight: 300,
-                      fontStyle: 'italic',
-                      letterSpacing: '-1.152px',
-                      lineHeight: '42.24px',
-                    }}
-                  >
-                    {panel.heading}
-                  </h2>
-
-                  {panel.cta && (() => {
-                    const linkClass =
-                      'inline-flex items-center gap-2 bg-white rounded-full text-primary uppercase hover:shadow-md transition-shadow self-start';
-                    const linkStyle = {
-                      padding: '12px 16px 12px 24px',
-                      fontSize: '13.6px',
-                      fontWeight: 700,
-                      letterSpacing: '0.04em',
-                      boxShadow: 'rgba(32, 99, 171, 0.07) 0px 20px 19px -12px',
-                    } as const;
-                    const inner = (
-                      <>
-                        {panel.cta.label}
-                        <CtaIcon name="arrow" size={20} className="text-accent" />
-                      </>
-                    );
-                    return panel.cta.isExternal ? (
-                      <a
-                        href={panel.cta.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={linkClass}
-                        style={linkStyle}
-                      >
-                        {inner}
-                      </a>
-                    ) : (
-                      <Link to={panel.cta.href} className={linkClass} style={linkStyle}>
-                        {inner}
-                      </Link>
-                    );
-                  })()}
-
-                  {panel.body && (
-                    <p
-                      className="text-text-dark"
-                      style={{ fontSize: '19.2px', fontWeight: 400, lineHeight: '26.88px' }}
-                    >
-                      {panel.body}
-                    </p>
-                  )}
-
-                  {panel.subheading && (() => {
-                    // Prefer clock when the subsection carries scheduled hours;
-                    // otherwise pick the closest semantic icon by title.
-                    const subIcon = panel.operatingHours && panel.operatingHours.length > 0
-                      ? 'clock'
-                      : resolveIcon(panel.subheading);
-                    return (
-                      <DetailSection icon={subIcon} title={panel.subheading}>
-                        <div className="flex flex-col" style={{ gap: '20px' }}>
-                          {panel.bullets && panel.bullets.length > 0 && (
-                            <ul className="list-disc pl-6 flex flex-col" style={{ gap: '8px' }}>
-                              {panel.bullets.map((b, i) => (
-                                <li
-                                  key={i}
-                                  className="text-text-dark"
-                                  style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
-                                >
-                                  {b}
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                          {panel.operatingHours && panel.operatingHours.length > 0 && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
-                              {panel.operatingHours.map((block, i) => (
-                                <div key={i} className="flex flex-col gap-1">
-                                  <p
-                                    className="text-text-dark"
-                                    style={{ fontSize: '17.6px', fontWeight: 700, lineHeight: '24.64px' }}
-                                  >
-                                    {block.title}
-                                  </p>
-                                  {block.rows.map((row, j) => (
-                                    <p
-                                      key={j}
-                                      className="text-text-dark"
-                                      style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
-                                    >
-                                      {row}
-                                    </p>
-                                  ))}
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </DetailSection>
-                    );
-                  })()}
-
-                  {/* If there's no subheading, bullets/operatingHours still render unwrapped. */}
-                  {!panel.subheading && panel.bullets && panel.bullets.length > 0 && (
-                    <ul className="list-disc pl-6 flex flex-col" style={{ gap: '8px' }}>
-                      {panel.bullets.map((b, i) => (
-                        <li
-                          key={i}
-                          className="text-text-dark"
-                          style={{ fontSize: '19.2px', lineHeight: '26.88px' }}
-                        >
-                          {b}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                  {!panel.subheading && panel.operatingHours && panel.operatingHours.length > 0 && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
-                      {panel.operatingHours.map((block, i) => (
-                        <div key={i} className="flex flex-col gap-1">
-                          <p
-                            className="text-text-dark"
-                            style={{ fontSize: '17.6px', fontWeight: 700, lineHeight: '24.64px' }}
-                          >
-                            {block.title}
-                          </p>
-                          {block.rows.map((row, j) => (
-                            <p
-                              key={j}
-                              className="text-text-dark"
-                              style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
-                            >
-                              {row}
-                            </p>
-                          ))}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-
-                  {panel.footnote && (
-                    <p
-                      className="text-text-dark/70 italic"
-                      style={{ fontSize: '15.2px', lineHeight: '22px' }}
-                    >
-                      {panel.footnote}
-                    </p>
-                  )}
-                </div>
-              );
-              return (
-                <div
-                  key={`${panel.heading}-${idx}`}
-                  className="flex flex-col lg:flex-row items-start"
-                  style={{ gap: '60px' }}
-                >
-                  {imageOnLeft ? (
-                    <>
-                      {imgEl}
-                      {textEl}
-                    </>
-                  ) : (
-                    <>
-                      {textEl}
-                      {imgEl}
-                    </>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </section>
+        <ImageTextPanels panels={venue.imagePanels} />
       )}
 
       {/* ── Promo Cards ──
@@ -1804,17 +1615,29 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                       </div>
                     );
                     const key = `${card.title}-${i}`;
-                    return card.cta ? (
+                    if (!card.cta) return <div key={key}>{inner}</div>;
+                    const cardLinkClass =
+                      'block focus:outline-none focus-visible:ring-2 focus-visible:ring-accent';
+                    return isHardLink(card.cta.href, card.cta.isExternal) ? (
+                      <a
+                        key={key}
+                        href={card.cta.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={cardLinkClass}
+                        aria-label={`${card.title} — ${card.cta.label}`}
+                      >
+                        {inner}
+                      </a>
+                    ) : (
                       <Link
                         key={key}
                         to={card.cta.href}
-                        className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                        className={cardLinkClass}
                         aria-label={`${card.title} — ${card.cta.label}`}
                       >
                         {inner}
                       </Link>
-                    ) : (
-                      <div key={key}>{inner}</div>
                     );
                   }
                   // Default card variant
@@ -1840,24 +1663,45 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
                         >
                           {card.title}
                         </h3>
-                        {card.cta && (
-                          <Link
-                            to={card.cta.href}
-                            className="inline-flex items-center gap-2 text-primary uppercase hover:text-accent transition-colors"
-                            style={{ fontSize: '13.6px', fontWeight: 700, letterSpacing: '0.544px' }}
-                          >
-                            {card.cta.label}
-                            <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
-                              <path
-                                d="M1 13L13 1M13 1H3M13 1V11"
-                                stroke="#DF4661"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </Link>
-                        )}
+                        {card.cta &&
+                          (() => {
+                            const ctaClass =
+                              'inline-flex items-center gap-2 text-primary uppercase hover:text-accent transition-colors';
+                            const ctaStyle = {
+                              fontSize: '13.6px',
+                              fontWeight: 700,
+                              letterSpacing: '0.544px',
+                            } as const;
+                            const ctaInner = (
+                              <>
+                                {card.cta.label}
+                                <svg width="16" height="16" viewBox="0 0 14 14" fill="none">
+                                  <path
+                                    d="M1 13L13 1M13 1H3M13 1V11"
+                                    stroke="#DF4661"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                  />
+                                </svg>
+                              </>
+                            );
+                            return isHardLink(card.cta.href, card.cta.isExternal) ? (
+                              <a
+                                href={card.cta.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={ctaClass}
+                                style={ctaStyle}
+                              >
+                                {ctaInner}
+                              </a>
+                            ) : (
+                              <Link to={card.cta.href} className={ctaClass} style={ctaStyle}>
+                                {ctaInner}
+                              </Link>
+                            );
+                          })()}
                       </div>
                     </div>
                   );
@@ -2047,39 +1891,9 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
       {venue.bottomCtas && venue.bottomCtas.length > 0 && (
         <section className="py-12 bg-white">
           <div className="max-w-7xl mx-auto px-10 flex flex-wrap justify-center gap-3">
-            {venue.bottomCtas.map((cta) => {
-              const linkClass =
-                'inline-flex items-center gap-2 bg-white rounded-full text-primary uppercase hover:shadow-md transition-shadow border border-primary/10';
-              const linkStyle = {
-                padding: '12px 16px 12px 24px',
-                fontSize: '13.6px',
-                fontWeight: 700,
-                letterSpacing: '0.04em',
-                boxShadow: 'rgba(32, 99, 171, 0.07) 0px 20px 19px -12px',
-              } as const;
-              const inner = (
-                <>
-                  {cta.label}
-                  <CtaIcon name="arrow" size={20} className="text-accent" />
-                </>
-              );
-              return cta.isExternal ? (
-                <a
-                  key={cta.label}
-                  href={cta.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={linkClass}
-                  style={linkStyle}
-                >
-                  {inner}
-                </a>
-              ) : (
-                <Link key={cta.label} to={cta.href} className={linkClass} style={linkStyle}>
-                  {inner}
-                </Link>
-              );
-            })}
+            {venue.bottomCtas.map((cta, i) => (
+              <CtaButton key={`${cta.label}-${i}`} cta={cta} />
+            ))}
           </div>
         </section>
       )}
@@ -2095,7 +1909,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
 
       {/* ── Quotes / Testimonials ── */}
       {venue.quotes && venue.quotes.items.length > 0 && (
-        <Testimonials heading={venue.quotes.heading} items={venue.quotes.items} />
+        <Testimonials heading={venue.quotes.heading} items={venue.quotes.items} dark={false} />
       )}
 
       {/* ── Marquee Gallery ── */}

@@ -1,0 +1,46 @@
+{
+  "collectionName": "components_shared_image_text_panels",
+  "info": {
+    "displayName": "Image Text Panel",
+    "icon": "layout",
+    "description": "Alternating image + text panel: heading, subheading, body, optional bullets, schedule groups, up to 4 CTAs and footnote (e.g. Tennis Programs / Tennis Etiquette)."
+  },
+  "attributes": {
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "imageAlt": { "type": "string" },
+    "imagePosition": {
+      "type": "enumeration",
+      "enum": ["left", "right"]
+    },
+    "slideWithText": { "type": "boolean", "default": false },
+    "heading": { "type": "string", "required": true },
+    "subheading": { "type": "string" },
+    "body": { "type": "text" },
+    "footnote": { "type": "text" },
+    "ctas": {
+      "type": "component",
+      "repeatable": true,
+      "max": 5,
+      "component": "shared.link"
+    },
+    "bullets": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.text-line"
+    },
+    "operatingHours": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.panel-hours"
+    },
+    "extraSections": {
+      "type": "component",
+      "repeatable": true,
+      "component": "blocks.extra-section"
+    }
+  }
+}

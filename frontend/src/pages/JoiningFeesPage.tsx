@@ -4,9 +4,11 @@ import ReactMarkdown from 'react-markdown';
 import remarkBreaks from 'remark-breaks';
 import rehypeRaw from 'rehype-raw';
 import { fetchAPI } from '../lib/api';
+import { isHardLink } from '../lib/links';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
 import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
 import { CtaIcon } from '../components/shared/CtaIcon';
+import { Markdown } from '../components/shared/Markdown';
 import {
   JOINING_FEES_FALLBACK,
   type JoiningFeesData,
@@ -288,7 +290,7 @@ function SupplementaryCardView({ card }: { card: SupplementaryCard }) {
               p: ({ children }) => <p>{children}</p>,
               strong: ({ children }) => <strong className="text-primary">{children}</strong>,
               a: ({ href, children }) => {
-                const external = href?.startsWith('http');
+                const external = isHardLink(href);
                 return (
                   <a
                     href={href}
@@ -547,12 +549,9 @@ export function JoiningFeesView({ data }: { data: JoiningFeesData }) {
                 {data.supplementaryHeading}
               </h2>
               {data.supplementarySubheading && (
-                <p
-                  className="text-text-dark/70 max-w-2xl mx-auto"
-                  style={{ fontSize: '17.6px', lineHeight: '26.4px' }}
-                >
-                  {data.supplementarySubheading}
-                </p>
+                <div className="max-w-2xl mx-auto text-center [&_p]:!text-text-dark/70">
+                  <Markdown compact>{data.supplementarySubheading}</Markdown>
+                </div>
               )}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">

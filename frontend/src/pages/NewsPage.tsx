@@ -4,6 +4,7 @@ import { fetchAPI, STRAPI_URL } from '../lib/api';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
 import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
 import { PageFade } from '../components/shared/PageFade';
+import { useSiteCopy } from '../hooks/useSiteCopy';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 
@@ -35,6 +36,7 @@ export default function NewsPage() {
   const [articles, setArticles] = useState<StrapiNewsArticle[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [visibleCount, setVisibleCount] = useState(6);
+  const { loadMoreLabel, readMoreLabel } = useSiteCopy();
 
   useEffect(() => {
     let cancelled = false;
@@ -100,7 +102,7 @@ export default function NewsPage() {
                   </h3>
                   {a.excerpt && <p className="text-text-dark/70 text-sm">{a.excerpt}</p>}
                   <span className="inline-flex items-center gap-1.5 text-primary uppercase group-hover:text-accent transition-colors mt-auto pt-2" style={{ fontSize: '12.8px', fontWeight: 700, letterSpacing: '0.512px' }}>
-                    Read More
+                    {readMoreLabel}
                     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                       <path d="M1 13L13 1M13 1H3M13 1V11" stroke="#DF4661" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
@@ -117,7 +119,7 @@ export default function NewsPage() {
                 onClick={() => setVisibleCount((c) => c + 3)}
                 className="inline-block px-6 py-3 rounded-full font-body font-bold text-sm tracking-wide bg-primary text-white hover:bg-primary-dark transition-all duration-200 cursor-pointer"
               >
-                Load More
+                {loadMoreLabel}
               </button>
             </div>
           )}

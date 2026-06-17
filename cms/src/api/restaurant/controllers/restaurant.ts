@@ -13,6 +13,10 @@ const POPULATE = {
   operatingHoursSections: { populate: { rows: true } },
   gallery: true,
   extraSections: true,
+  // Promo card grid (e.g. The Gourmet Pantry "From Our Cellar to Your Home").
+  // Added 2026-06: without this the field is stored but never returned, so the
+  // frontend silently falls back to the hardcoded subpages.ts copy.
+  promoCards: { populate: { cards: { populate: { image: true, cta: true } } } },
   body: BODY_POPULATE,
   seo: { populate: { metaImage: true } },
 };

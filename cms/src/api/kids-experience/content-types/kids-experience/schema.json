@@ -21,7 +21,7 @@
       "required": true
     },
     "description": {
-      "type": "text"
+      "type": "richtext"
     },
     "heroImage": {
       "type": "media",
@@ -58,6 +58,11 @@
       "repeatable": true,
       "component": "blocks.extra-section"
     },
+    "imagePanels": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.image-text-panel"
+    },
     "locationContact": {
       "type": "component",
       "repeatable": false,
@@ -67,13 +72,13 @@
       "type": "component",
       "repeatable": true,
       "component": "shared.link",
-      "max": 4
+      "max": 5
     },
     "bottomCtas": {
       "type": "component",
       "repeatable": true,
       "component": "shared.link",
-      "max": 4
+      "max": 5
     },
     "downloads": {
       "type": "component",

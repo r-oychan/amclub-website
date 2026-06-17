@@ -45,6 +45,16 @@
       "repeatable": false,
       "component": "blocks.feature-grid"
     },
+    "quadSection": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.card-section"
+    },
+    "childSafety": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.child-safety"
+    },
     "finalCta": {
       "type": "component",
       "repeatable": false,

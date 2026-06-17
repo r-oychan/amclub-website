@@ -31,7 +31,7 @@
       "default": false
     },
     "description": {
-      "type": "text",
+      "type": "richtext",
       "required": true
     },
     "image": {
@@ -62,10 +62,7 @@
       "type": "component",
       "repeatable": true,
       "component": "shared.link",
-      "max": 3
-    },
-    "openingHours": {
-      "type": "blocks"
+      "max": 5
     },
     "operatingHoursSections": {
       "type": "component",
@@ -86,9 +83,6 @@
     "email": {
       "type": "email"
     },
-    "detailedDescription": {
-      "type": "blocks"
-    },
     "gallery": {
       "type": "media",
       "multiple": true,
@@ -100,7 +94,7 @@
       "type": "component",
       "repeatable": true,
       "component": "shared.link",
-      "max": 4
+      "max": 5
     },
     "body": {
       "type": "dynamiczone",
@@ -124,6 +118,11 @@
       "type": "component",
       "repeatable": true,
       "component": "blocks.extra-section"
+    },
+    "promoCards": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.promo-card-grid"
     },
     "seo": {
       "type": "component",
