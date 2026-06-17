@@ -19,6 +19,12 @@ interface StrapiLink {
   icon?: CtaIconName | null;
 }
 
+interface AdvertiseBlock {
+  __component: string;
+  heading?: string;
+  body?: string;
+}
+
 interface AdvertiseData {
   title?: string;
   label?: string;
@@ -30,6 +36,7 @@ interface AdvertiseData {
   email?: string;
   locationContact?: { locationLevel?: string; phone?: string; email?: string } | null;
   extraSections?: { title?: string; content?: string; bullets?: string[]; icon?: DetailIconName | null }[];
+  body?: AdvertiseBlock[];
   parentLabel?: string;
   parentHref?: string;
 }
@@ -83,6 +90,15 @@ export default function AdvertiseWithUsPage() {
   const parentLabel = data.parentLabel ?? 'The American Club';
   const parentHref = data.parentHref ?? '/home';
   const extraSections = data.extraSections ?? [];
+  // Legacy titled sections lived in the `body` dynamiczone as text-blocks.
+  // Extra Sections superseded them (icon subheader + editable icon). Render the
+  // body text-blocks only as a fallback when no Extra Sections exist, so
+  // environments not yet migrated to Extra Sections (e.g. prod) still show the
+  // content while migrated ones (UAT) don't duplicate it.
+  const textBlocks =
+    extraSections.length === 0
+      ? (data.body ?? []).filter((b) => b.__component === 'blocks.text-block')
+      : [];
   // Optional Location & Contact module (same shape as dining). When filled it
   // renders the dining-style section; otherwise we fall back to the legacy
   // top-level phone/email so existing content keeps showing.
@@ -142,6 +158,29 @@ export default function AdvertiseWithUsPage() {
                   {data.description}
                 </div>
               )}
+
+              {/* Legacy body text-blocks — fallback only (rendered when there are
+                  no Extra Sections; see `textBlocks` above). */}
+              {textBlocks.map((b, idx) => (
+                <div key={`tb-${idx}`} className="flex flex-col" style={{ gap: '20px' }}>
+                  {b.heading && (
+                    <h2
+                      className="font-heading text-primary"
+                      style={{ fontSize: '28px', fontWeight: 300, fontStyle: 'italic', lineHeight: 1.15 }}
+                    >
+                      {b.heading}
+                    </h2>
+                  )}
+                  {b.body && (
+                    <div
+                      className="font-body text-text-dark/85 whitespace-pre-line"
+                      style={{ fontSize: '17px', lineHeight: 1.55 }}
+                    >
+                      {b.body}
+                    </div>
+                  )}
+                </div>
+              ))}
 
               {/* Extra Sections — rendered with the facilities-style icon + title
                   subheader (DetailSection). The icon is CMS-editable; when unset
