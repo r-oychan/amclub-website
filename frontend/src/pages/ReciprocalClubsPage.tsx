@@ -8,6 +8,7 @@ import { CtaButton } from '../components/shared/CtaButton';
 import { type CtaIconName } from '../components/shared/CtaIcon';
 import { ImageTextPanels } from '../components/detail/ImageTextPanels';
 import { mapImagePanels } from '../lib/imagePanels';
+import { Markdown } from '../components/shared/Markdown';
 
 interface StrapiLink {
   label?: string;
@@ -150,11 +151,7 @@ export default function ReciprocalClubsPage() {
                   ))}
                 </div>
               )}
-              {data.description && (
-                <div className="font-body text-text-dark/85 whitespace-pre-line" style={{ fontSize: '17px', lineHeight: 1.55 }}>
-                  {data.description}
-                </div>
-              )}
+              {data.description && <Markdown>{data.description}</Markdown>}
             </div>
           </div>
         </div>
@@ -204,11 +201,7 @@ export default function ReciprocalClubsPage() {
                     <CtaButton cta={{ ...secondaryCta, label: secondaryCta.label!, href: secondaryCta.href! }} />
                   </div>
                 )}
-                {data.secondaryBody && (
-                  <div className="font-body text-text-dark/85 whitespace-pre-line" style={{ fontSize: '17px', lineHeight: 1.55 }}>
-                    {data.secondaryBody}
-                  </div>
-                )}
+                {data.secondaryBody && <Markdown>{data.secondaryBody}</Markdown>}
                 {(data.operatingHoursSections ?? []).map((section, idx) => (
                   <DetailSection key={idx} icon="clock" title={section.title ?? ''}>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
