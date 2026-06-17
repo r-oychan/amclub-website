@@ -224,7 +224,7 @@ export default function ReciprocalClubsPage() {
                 ))}
                 {data.notes && (
                   <DetailSection icon="reservation" title={data.notesHeading ?? 'Important things to note'}>
-                    <ul className="flex flex-col gap-3 font-body text-text-dark/85" style={{ fontSize: '15px', lineHeight: 1.55 }}>
+                    <ul className="flex flex-col gap-2 text-text-dark" style={{ fontSize: '19.2px', lineHeight: '26.88px' }}>
                       {data.notes
                         .split('\n')
                         .map((line) => line.replace(/^•\s*/, '').trim())
