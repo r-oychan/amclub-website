@@ -8,6 +8,7 @@ import { CtaButton } from '../components/shared/CtaButton';
 import { type CtaIconName } from '../components/shared/CtaIcon';
 import { ImageTextPanels } from '../components/detail/ImageTextPanels';
 import { mapImagePanels } from '../lib/imagePanels';
+import { Markdown } from '../components/shared/Markdown';
 
 interface StrapiLink {
   label?: string;
@@ -150,11 +151,7 @@ export default function ReciprocalClubsPage() {
                   ))}
                 </div>
               )}
-              {data.description && (
-                <div className="font-body text-text-dark/85 whitespace-pre-line" style={{ fontSize: '17px', lineHeight: 1.55 }}>
-                  {data.description}
-                </div>
-              )}
+              {data.description && <Markdown>{data.description}</Markdown>}
             </div>
           </div>
         </div>
@@ -204,25 +201,21 @@ export default function ReciprocalClubsPage() {
                     <CtaButton cta={{ ...secondaryCta, label: secondaryCta.label!, href: secondaryCta.href! }} />
                   </div>
                 )}
-                {data.secondaryBody && (
-                  <div className="font-body text-text-dark/85 whitespace-pre-line" style={{ fontSize: '17px', lineHeight: 1.55 }}>
-                    {data.secondaryBody}
-                  </div>
-                )}
+                {data.secondaryBody && <Markdown>{data.secondaryBody}</Markdown>}
                 {(data.operatingHoursSections ?? []).map((section, idx) => (
                   <DetailSection key={idx} icon="clock" title={section.title ?? ''}>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-5">
                       {(section.rows ?? []).map((row, j) => (
                         <div key={j} className="flex flex-col gap-1">
                           {row.dayRange && (
-                            <div className="font-body font-semibold text-primary" style={{ fontSize: '14px' }}>
+                            <p className="text-text-dark" style={{ fontSize: '17.6px', fontWeight: 700, lineHeight: '24.64px' }}>
                               {row.dayRange}
-                            </div>
+                            </p>
                           )}
                           {row.time && (
-                            <div className="font-body text-text-dark/85 whitespace-pre-line" style={{ fontSize: '14px' }}>
+                            <p className="text-text-dark whitespace-pre-line" style={{ fontSize: '17.6px', lineHeight: '26.4px' }}>
                               {row.time}
-                            </div>
+                            </p>
                           )}
                         </div>
                       ))}
@@ -231,16 +224,13 @@ export default function ReciprocalClubsPage() {
                 ))}
                 {data.notes && (
                   <DetailSection icon="reservation" title={data.notesHeading ?? 'Important things to note'}>
-                    <ul className="flex flex-col gap-3 font-body text-text-dark/85" style={{ fontSize: '15px', lineHeight: 1.55 }}>
+                    <ul className="list-disc pl-6 flex flex-col gap-2 text-text-dark marker:text-accent" style={{ fontSize: '19.2px', lineHeight: '26.88px' }}>
                       {data.notes
                         .split('\n')
                         .map((line) => line.replace(/^•\s*/, '').trim())
                         .filter(Boolean)
                         .map((line, i) => (
-                          <li key={i} className="flex gap-2">
-                            <span className="text-accent">•</span>
-                            <span>{line}</span>
-                          </li>
+                          <li key={i}>{line}</li>
                         ))}
                     </ul>
                   </DetailSection>
