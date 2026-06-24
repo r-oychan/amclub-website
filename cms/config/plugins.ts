@@ -23,6 +23,12 @@ const DEFAULT_ELEVENLABS_CONTENT_TYPES = [
   'api::faq-item.faq-item',
   'api::testimonial.testimonial',
   'api::gallery-album.gallery-album',
+  // Footer carries the Club Constitution + By-laws (legalLinks) plus the
+  // Club's address/phone/email — none of which live on a page. Syncing it
+  // harvests those PDFs into the KB and gives the chatbot contact info.
+  // (Header is intentionally omitted: it links the same two PDFs, so adding
+  // it would just create duplicate file docs.)
+  'api::footer.footer',
 ];
 
 // Plugin config — values flow from process.env (set by Pulumi → Container App
