@@ -219,10 +219,27 @@ const renderGeneric: RendererFn = (a) => {
     if (key === 'heading' || key === 'subheading' || key === 'body' || key === 'label') continue;
     if (typeof value === 'string' && value.length > 20) {
       lines.push(`**${humanise(key)}:** ${value}`);
+    } else if (Array.isArray(value) && value.length > 0 && isLinkArray(value)) {
+      // shared.link[] (e.g. governance.links, misc ctas) — emit the labels +
+      // hrefs so the chatbot can hand back the URL, even when the host
+      // component has no dedicated renderer.
+      const list = linksList(value as LinkAttrs[]);
+      if (list) lines.push(list);
     }
   }
   return lines.filter(Boolean).join('\n');
 };
+
+// An array is a link list when every item is an object carrying a string
+// label + href. Distinguishes shared.link[] from stats[] (label/value), etc.
+const isLinkArray = (value: unknown[]): boolean =>
+  value.every(
+    (v) =>
+      v != null &&
+      typeof v === 'object' &&
+      typeof (v as LinkAttrs).label === 'string' &&
+      typeof (v as LinkAttrs).href === 'string',
+  );
 
 const humanise = (camel: string): string =>
   camel

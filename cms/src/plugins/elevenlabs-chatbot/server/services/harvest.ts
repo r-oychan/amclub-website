@@ -18,6 +18,11 @@ export const KB_DOC_MIMES = new Set([
   'application/epub+zip',
 ]);
 
+// Doc-ish extensions used to pre-filter string URLs before a DB lookup. The
+// authoritative gate is still KB_DOC_MIMES on the resolved upload row; this
+// just avoids a query for every random string (e.g. image hrefs).
+const KB_DOC_EXTENSIONS = /\.(pdf|docx?|txt|html?|epub)(?:$|\?)/i;
+
 export interface HarvestedFile {
   id: number;
   url: string;
@@ -50,18 +55,26 @@ export async function harvestFiles(
   entry: Record<string, unknown>,
 ): Promise<HarvestedFile[]> {
   const found = new Map<number, HarvestedFile>();
+  // String URLs that look like uploaded docs, collected from anywhere in the
+  // entry (link hrefs, body copy, configured paths). Resolved to upload rows
+  // in one async pass below so walkForMedia can stay synchronous.
+  const urlCandidates = new Set<string>();
 
   const schema = strapi.contentTypes[uid];
-  if (schema) walkForMedia(strapi, schema.attributes, entry, found);
+  if (schema) walkForMedia(strapi, schema.attributes, entry, found, urlCandidates);
 
+  // Explicit dot-paths from config (kept as a belt-and-braces fallback; the
+  // structural walk above already catches most upload hrefs on its own).
   const cfg = getPluginConfig(strapi as never);
   for (const path of cfg.mediaUrlPaths) {
-    const urls = resolvePath(entry, path);
-    for (const url of urls) {
-      if (typeof url !== 'string') continue;
-      const file = await lookupUploadByUrl(strapi, url);
-      if (file && KB_DOC_MIMES.has(file.mime)) found.set(file.id, toHarvested(file));
+    for (const url of resolvePath(entry, path)) {
+      if (typeof url === 'string') urlCandidates.add(url);
     }
+  }
+
+  for (const url of urlCandidates) {
+    const file = await lookupUploadByUrl(strapi, url);
+    if (file && KB_DOC_MIMES.has(file.mime)) found.set(file.id, toHarvested(file));
   }
 
   return Array.from(found.values()).sort((a, b) => a.id - b.id);
@@ -72,6 +85,7 @@ function walkForMedia(
   attrs: Record<string, { type: string; component?: string }>,
   data: Record<string, unknown>,
   found: Map<number, HarvestedFile>,
+  urlCandidates: Set<string>,
 ): void {
   for (const [name, attr] of Object.entries(attrs)) {
     const val = data[name];
@@ -88,15 +102,20 @@ function walkForMedia(
       const comp = strapi.components[attr.component];
       if (!comp) continue;
       const items = Array.isArray(val) ? (val as Array<Record<string, unknown>>) : [val as Record<string, unknown>];
-      for (const item of items) walkForMedia(strapi, comp.attributes, item, found);
+      for (const item of items) walkForMedia(strapi, comp.attributes, item, found, urlCandidates);
     } else if (attr.type === 'dynamiczone' && Array.isArray(val)) {
       for (const item of val as Array<Record<string, unknown>>) {
         const componentName = item.__component as string | undefined;
         if (!componentName) continue;
         const comp = strapi.components[componentName];
         if (!comp) continue;
-        walkForMedia(strapi, comp.attributes, item, found);
+        walkForMedia(strapi, comp.attributes, item, found, urlCandidates);
       }
+    } else if (typeof val === 'string' && val.includes('/uploads/') && KB_DOC_EXTENSIONS.test(val)) {
+      // A plain string field (e.g. a link `href`) pointing at an uploaded
+      // doc. Strapi stores these as strings, not media relations, so the
+      // branches above never see them — collect for resolution.
+      urlCandidates.add(val);
     }
   }
 }
