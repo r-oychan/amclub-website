@@ -141,8 +141,22 @@ function resolvePath(root: unknown, path: string): unknown[] {
 
 async function lookupUploadByUrl(strapi: Strapi, url: string): Promise<UploadRow | null> {
   const cleaned = url.split('?')[0] ?? url;
-  if (!cleaned.includes('/uploads/')) return null;
-  const row = (await strapi.db.query('plugin::upload.file').findOne({ where: { url: cleaned } })) as UploadRow | null;
+  const idx = cleaned.indexOf('/uploads/');
+  if (idx === -1) return null;
+  // The /uploads/... tail (host-agnostic). Entry hrefs are stored relative
+  // (e.g. /uploads/documents/x.pdf) but the deployed Azure/CDN provider
+  // stores the upload row's `url` ABSOLUTE (https://<host>/uploads/...). An
+  // exact match misses across that boundary, so normalise to the tail and
+  // try, in order: exact, relative-path, then a suffix match.
+  const relPath = cleaned.slice(idx);
+  const q = strapi.db.query('plugin::upload.file');
+  let row = (await q.findOne({ where: { url: cleaned } })) as UploadRow | null;
+  if (!row && relPath !== cleaned) {
+    row = (await q.findOne({ where: { url: relPath } })) as UploadRow | null;
+  }
+  if (!row) {
+    row = (await q.findOne({ where: { url: { $endsWith: relPath } } })) as UploadRow | null;
+  }
   return row ?? null;
 }
 
