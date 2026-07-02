@@ -7,6 +7,8 @@ import { OverlaySection } from '../components/blocks/OverlaySection';
 import { MembershipCommunityCollage } from '../components/blocks/MembershipCommunityCollage';
 import { MembershipPrograms } from '../components/blocks/MembershipPrograms';
 import { PageFade } from '../components/shared/PageFade';
+import { usePageSeo } from '../hooks/usePageSeo';
+import type { PageSeo } from '../lib/seo';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string };
@@ -36,6 +38,7 @@ interface StrapiMembershipPage {
   findMembershipImage?: StrapiMedia;
   programs?: { heading?: string; cards?: StrapiFeatureItem[] };
   beginJourneyCta?: StrapiCtaBanner;
+  seo?: PageSeo | null;
 }
 
 const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
@@ -50,6 +53,7 @@ const linksOf = (ls?: StrapiLink[]) =>
 export default function MembershipPage() {
   const [data, setData] = useState<StrapiMembershipPage | null>(null);
   const [loaded, setLoaded] = useState(false);
+  usePageSeo(data?.seo ?? null);
 
   useEffect(() => {
     let cancelled = false;

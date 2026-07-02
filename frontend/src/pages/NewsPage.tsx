@@ -5,6 +5,8 @@ import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
 import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
 import { PageFade } from '../components/shared/PageFade';
 import { useSiteCopy } from '../hooks/useSiteCopy';
+import { usePageSeo } from '../hooks/usePageSeo';
+import type { PageSeo } from '../lib/seo';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 
@@ -23,6 +25,7 @@ interface StrapiNewsPage {
   introHeading?: string;
   introBody?: string;
   heroImage?: StrapiMedia;
+  seo?: PageSeo | null;
 }
 
 const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
@@ -37,6 +40,7 @@ export default function NewsPage() {
   const [loaded, setLoaded] = useState(false);
   const [visibleCount, setVisibleCount] = useState(6);
   const { loadMoreLabel, readMoreLabel } = useSiteCopy();
+  usePageSeo(data?.seo ?? null);
 
   useEffect(() => {
     let cancelled = false;

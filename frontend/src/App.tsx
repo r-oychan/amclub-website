@@ -4,6 +4,7 @@ import { Footer } from './components/layout/Footer';
 import { ChatbotWidget } from './components/shared/ChatbotWidget';
 import { ScrollToTop } from './components/shared/ScrollToTop';
 import { Analytics } from './components/shared/Analytics';
+import { SeoManager } from './components/shared/SeoManager';
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import DiningPage from './pages/DiningPage';
@@ -32,6 +33,7 @@ export default function App() {
     <BrowserRouter>
       <ScrollToTop />
       <Analytics />
+      <SeoManager />
       <div className="min-h-screen flex flex-col">
         <Header />
         <main className="flex-1">

@@ -8,6 +8,8 @@ import { QuadSection } from '../components/kids/QuadSection';
 import { ChildSafetySection } from '../components/kids/ChildSafetySection';
 import { KidsPartyPackages } from '../components/kids/KidsPartyPackages';
 import { PageFade } from '../components/shared/PageFade';
+import { usePageSeo } from '../hooks/usePageSeo';
+import type { PageSeo } from '../lib/seo';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string };
@@ -59,6 +61,7 @@ interface StrapiKidsPage {
     backgroundImage?: StrapiMedia;
     features?: { text?: string }[];
   };
+  seo?: PageSeo | null;
 }
 
 const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
@@ -104,6 +107,7 @@ const overlayProps = (s?: StrapiOverlaySection) => {
 export default function KidsPage() {
   const [data, setData] = useState<StrapiKidsPage | null>(null);
   const [loaded, setLoaded] = useState(false);
+  usePageSeo(data?.seo ?? null);
 
   useEffect(() => {
     let cancelled = false;

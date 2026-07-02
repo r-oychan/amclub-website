@@ -515,7 +515,7 @@ export interface ApiAdvertiseWithUsPageAdvertiseWithUsPage
     bottomCtas: Schema.Attribute.Component<'shared.link', true> &
       Schema.Attribute.SetMinMax<
         {
-          max: 4;
+          max: 5;
         },
         number
       >;
@@ -525,13 +525,14 @@ export interface ApiAdvertiseWithUsPageAdvertiseWithUsPage
     ctas: Schema.Attribute.Component<'shared.link', true> &
       Schema.Attribute.SetMinMax<
         {
-          max: 4;
+          max: 5;
         },
         number
       >;
     description: Schema.Attribute.Text;
     downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
     email: Schema.Attribute.Email;
+    extraSections: Schema.Attribute.Component<'blocks.extra-section', true>;
     heading: Schema.Attribute.String;
     heroImage: Schema.Attribute.Media<'images'>;
     intro: Schema.Attribute.Text;
@@ -799,7 +800,7 @@ export interface ApiDiningPromotionDiningPromotion
     ctas: Schema.Attribute.Component<'shared.link', true> &
       Schema.Attribute.SetMinMax<
         {
-          max: 2;
+          max: 5;
         },
         number
       >;
@@ -970,7 +971,7 @@ export interface ApiEventSpaceEventSpace extends Struct.CollectionTypeSchema {
     bottomCtas: Schema.Attribute.Component<'shared.link', true> &
       Schema.Attribute.SetMinMax<
         {
-          max: 4;
+          max: 5;
         },
         number
       >;
@@ -981,11 +982,11 @@ export interface ApiEventSpaceEventSpace extends Struct.CollectionTypeSchema {
     ctas: Schema.Attribute.Component<'shared.link', true> &
       Schema.Attribute.SetMinMax<
         {
-          max: 4;
+          max: 5;
         },
         number
       >;
-    description: Schema.Attribute.Text;
+    description: Schema.Attribute.RichText;
     downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
     email: Schema.Attribute.Email;
     extraSections: Schema.Attribute.Component<'blocks.extra-section', true>;
@@ -1320,10 +1321,11 @@ export interface ApiFitnessFacilityFitnessFacility
     bottomCtas: Schema.Attribute.Component<'shared.link', true> &
       Schema.Attribute.SetMinMax<
         {
-          max: 4;
+          max: 5;
         },
         number
       >;
+    cardSections: Schema.Attribute.Component<'shared.card-section', true>;
     children: Schema.Attribute.Relation<
       'oneToMany',
       'api::fitness-facility.fitness-facility'
@@ -1334,18 +1336,20 @@ export interface ApiFitnessFacilityFitnessFacility
     ctas: Schema.Attribute.Component<'shared.link', true> &
       Schema.Attribute.SetMinMax<
         {
-          max: 4;
+          max: 5;
         },
         number
       >;
-    description: Schema.Attribute.Text;
+    description: Schema.Attribute.RichText;
     downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
     dressCode: Schema.Attribute.String;
     email: Schema.Attribute.Email;
     extraSections: Schema.Attribute.Component<'blocks.extra-section', true>;
+    faq: Schema.Attribute.Component<'shared.faq-pair', true>;
     gallery: Schema.Attribute.Media<'images', true>;
     heroImage: Schema.Attribute.Media<'images'>;
     heroVideo: Schema.Attribute.String;
+    imagePanels: Schema.Attribute.Component<'shared.image-text-panel', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1370,6 +1374,7 @@ export interface ApiFitnessFacilityFitnessFacility
     parentHref: Schema.Attribute.String;
     parentLabel: Schema.Attribute.String;
     phone: Schema.Attribute.String;
+    promoCards: Schema.Attribute.Component<'blocks.promo-card-grid', false>;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
@@ -1720,7 +1725,7 @@ export interface ApiJoiningFeesPageJoiningFeesPage
     seo: Schema.Attribute.Component<'shared.seo', false>;
     supplementaryCards: Schema.Attribute.Component<'shared.priced-card', true>;
     supplementaryHeading: Schema.Attribute.String;
-    supplementarySubheading: Schema.Attribute.Text;
+    supplementarySubheading: Schema.Attribute.RichText;
     title: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -1744,7 +1749,7 @@ export interface ApiKidsExperienceKidsExperience
     bottomCtas: Schema.Attribute.Component<'shared.link', true> &
       Schema.Attribute.SetMinMax<
         {
-          max: 4;
+          max: 5;
         },
         number
       >;
@@ -1758,11 +1763,11 @@ export interface ApiKidsExperienceKidsExperience
     ctas: Schema.Attribute.Component<'shared.link', true> &
       Schema.Attribute.SetMinMax<
         {
-          max: 4;
+          max: 5;
         },
         number
       >;
-    description: Schema.Attribute.Text;
+    description: Schema.Attribute.RichText;
     downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
     email: Schema.Attribute.Email;
     extraSections: Schema.Attribute.Component<'blocks.extra-section', true>;
@@ -1770,6 +1775,7 @@ export interface ApiKidsExperienceKidsExperience
     gallery: Schema.Attribute.Media<'images', true>;
     heroImage: Schema.Attribute.Media<'images'>;
     heroVideo: Schema.Attribute.String;
+    imagePanels: Schema.Attribute.Component<'shared.image-text-panel', true>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -1781,6 +1787,7 @@ export interface ApiKidsExperienceKidsExperience
       false
     >;
     locationLevel: Schema.Attribute.String;
+    marquee: Schema.Attribute.Component<'blocks.marquee-gallery', false>;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     operatingHoursSections: Schema.Attribute.Component<
       'blocks.operating-hours-section',
@@ -1817,6 +1824,7 @@ export interface ApiKidsPageKidsPage extends Struct.SingleTypeSchema {
     draftAndPublish: true;
   };
   attributes: {
+    childSafety: Schema.Attribute.Component<'shared.child-safety', false>;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1833,6 +1841,7 @@ export interface ApiKidsPageKidsPage extends Struct.SingleTypeSchema {
     parties: Schema.Attribute.Component<'blocks.overlay-section', false>;
     partyPackages: Schema.Attribute.Component<'blocks.party-packages', false>;
     publishedAt: Schema.Attribute.DateTime;
+    quadSection: Schema.Attribute.Component<'shared.card-section', false>;
     safety: Schema.Attribute.Component<'blocks.feature-grid', false>;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
@@ -1987,7 +1996,7 @@ export interface ApiNicheGroupMembershipPageNicheGroupMembershipPage
     bottomCtas: Schema.Attribute.Component<'shared.link', true> &
       Schema.Attribute.SetMinMax<
         {
-          max: 4;
+          max: 5;
         },
         number
       >;
@@ -1997,7 +2006,7 @@ export interface ApiNicheGroupMembershipPageNicheGroupMembershipPage
     ctas: Schema.Attribute.Component<'shared.link', true> &
       Schema.Attribute.SetMinMax<
         {
-          max: 4;
+          max: 5;
         },
         number
       >;
@@ -2138,7 +2147,7 @@ export interface ApiReciprocalClubsPageReciprocalClubsPage
     bottomCtas: Schema.Attribute.Component<'shared.link', true> &
       Schema.Attribute.SetMinMax<
         {
-          max: 4;
+          max: 5;
         },
         number
       >;
@@ -2148,7 +2157,7 @@ export interface ApiReciprocalClubsPageReciprocalClubsPage
     ctas: Schema.Attribute.Component<'shared.link', true> &
       Schema.Attribute.SetMinMax<
         {
-          max: 4;
+          max: 5;
         },
         number
       >;
@@ -2157,6 +2166,7 @@ export interface ApiReciprocalClubsPageReciprocalClubsPage
     email: Schema.Attribute.Email;
     heading: Schema.Attribute.String;
     heroImage: Schema.Attribute.Media<'images'>;
+    imagePanels: Schema.Attribute.Component<'shared.image-text-panel', true>;
     intro: Schema.Attribute.Text;
     label: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
@@ -2267,7 +2277,7 @@ export interface ApiRestaurantRestaurant extends Struct.CollectionTypeSchema {
     bottomCtas: Schema.Attribute.Component<'shared.link', true> &
       Schema.Attribute.SetMinMax<
         {
-          max: 4;
+          max: 5;
         },
         number
       >;
@@ -2277,14 +2287,13 @@ export interface ApiRestaurantRestaurant extends Struct.CollectionTypeSchema {
     ctas: Schema.Attribute.Component<'shared.link', true> &
       Schema.Attribute.SetMinMax<
         {
-          max: 3;
+          max: 5;
         },
         number
       >;
     cuisineIconSlug: Schema.Attribute.String;
     cuisineType: Schema.Attribute.String;
-    description: Schema.Attribute.Text & Schema.Attribute.Required;
-    detailedDescription: Schema.Attribute.Blocks;
+    description: Schema.Attribute.RichText & Schema.Attribute.Required;
     dressCode: Schema.Attribute.String;
     email: Schema.Attribute.Email;
     extraSections: Schema.Attribute.Component<'blocks.extra-section', true>;
@@ -2304,13 +2313,13 @@ export interface ApiRestaurantRestaurant extends Struct.CollectionTypeSchema {
     logo: Schema.Attribute.Media<'images'>;
     menuUrl: Schema.Attribute.String;
     name: Schema.Attribute.String & Schema.Attribute.Required;
-    openingHours: Schema.Attribute.Blocks;
     operatingHoursSections: Schema.Attribute.Component<
       'blocks.operating-hours-section',
       true
     >;
     order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     phone: Schema.Attribute.String;
+    promoCards: Schema.Attribute.Component<'blocks.promo-card-grid', false>;
     publishedAt: Schema.Attribute.DateTime;
     seo: Schema.Attribute.Component<'shared.seo', false>;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
@@ -2336,7 +2345,10 @@ export interface ApiSiteConfigSiteConfig extends Struct.SingleTypeSchema {
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    googleAnalyticsId: Schema.Attribute.String;
+    defaultSeo: Schema.Attribute.Component<'shared.seo', false>;
+    googleTagId: Schema.Attribute.String;
+    loadMoreLabel: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Load More'>;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -2344,9 +2356,15 @@ export interface ApiSiteConfigSiteConfig extends Struct.SingleTypeSchema {
     > &
       Schema.Attribute.Private;
     publishedAt: Schema.Attribute.DateTime;
+    readMoreLabel: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Read More'>;
+    siteName: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'The American Club Singapore'>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    viewAlbumLabel: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'View Album'>;
   };
 }
 
@@ -2414,7 +2432,7 @@ export interface ApiStartApplicationPageStartApplicationPage
     bottomCtas: Schema.Attribute.Component<'shared.link', true> &
       Schema.Attribute.SetMinMax<
         {
-          max: 4;
+          max: 5;
         },
         number
       >;
@@ -2424,7 +2442,7 @@ export interface ApiStartApplicationPageStartApplicationPage
     ctas: Schema.Attribute.Component<'shared.link', true> &
       Schema.Attribute.SetMinMax<
         {
-          max: 4;
+          max: 5;
         },
         number
       >;

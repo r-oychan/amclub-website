@@ -5,6 +5,8 @@ import { CtaBanner } from '../components/blocks/CtaBanner';
 import { PageFade } from '../components/shared/PageFade';
 
 import type { CtaIconName } from '../components/shared/CtaIcon';
+import { usePageSeo } from '../hooks/usePageSeo';
+import type { PageSeo } from '../lib/seo';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = {
@@ -51,6 +53,7 @@ interface StrapiDiningPromotionsPage {
   promotionsHeading?: string;
   promotionsIntro?: string;
   finalCta?: { heading: string; body?: string; variant?: 'default' | 'light' | 'dark' | 'accent'; ctas?: StrapiLink[] };
+  seo?: PageSeo | null;
 }
 
 /** Derive the URL-anchor key for a promo from its CMS data. */
@@ -250,6 +253,7 @@ export default function DiningPromotionsPage() {
   // Hash-driven seed runs after promos load (we need availableTags to validate
   // the hash slug), so init to null here and let the post-load effect set it.
   const [activeTag, setActiveTag] = useState<Tag | null>(null);
+  usePageSeo(data?.seo ?? null);
   const sectionRefs = useRef<Map<Tag, HTMLElement>>(new Map());
 
   useEffect(() => {

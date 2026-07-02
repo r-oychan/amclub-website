@@ -5,6 +5,8 @@ import { EVENT_PLACEHOLDER_IMAGE } from '../lib/events';
 import { Hero } from '../components/blocks/Hero';
 import { CtaBanner } from '../components/blocks/CtaBanner';
 import { PageFade } from '../components/shared/PageFade';
+import { usePageSeo } from '../hooks/usePageSeo';
+import type { PageSeo } from '../lib/seo';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string };
@@ -14,6 +16,7 @@ interface StrapiWhatsOnPage {
   hero?: { heading: string; subheading?: string; variant?: 'full' | 'compact'; backgroundImage?: StrapiMedia };
   eventsSection?: { heading?: string; cta?: StrapiLink; maxItems?: number };
   finalCta?: { heading: string; body?: string; variant?: 'default' | 'light' | 'dark' | 'accent'; ctas?: StrapiLink[] };
+  seo?: PageSeo | null;
 }
 
 interface StrapiCategory {
@@ -78,6 +81,7 @@ export default function WhatsOnPage() {
   const [categories, setCategories] = useState<StrapiCategory[]>([]);
   const [activeSlug, setActiveSlug] = useState<string | null>(readHashSlug);
   const [loaded, setLoaded] = useState(false);
+  usePageSeo(data?.seo ?? null);
 
   useEffect(() => {
     let cancelled = false;

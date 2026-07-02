@@ -5,6 +5,8 @@ import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
 import { PageFade } from '../components/shared/PageFade';
 import { FaqAccordion } from '../components/blocks/FaqAccordion';
 import { FaqAnswerBlocks, type AnswerBlock } from '../components/blocks/FaqAnswerBlocks';
+import { usePageSeo } from '../hooks/usePageSeo';
+import type { PageSeo } from '../lib/seo';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 
@@ -13,6 +15,7 @@ interface StrapiFaqPage {
   introHeading?: string;
   introBody?: string;
   heroImage?: StrapiMedia;
+  seo?: PageSeo | null;
 }
 
 interface StrapiFaqCategory {
@@ -65,6 +68,7 @@ export default function FaqPage() {
   const [categories, setCategories] = useState<StrapiFaqCategory[]>([]);
   const [items, setItems] = useState<StrapiFaqItem[]>([]);
   const [loaded, setLoaded] = useState(false);
+  usePageSeo(page?.seo ?? null);
 
   useEffect(() => {
     let cancelled = false;
