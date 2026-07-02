@@ -69,7 +69,7 @@ export function RestaurantCard({
           <img
             src={logo}
             alt={`${name} logo`}
-            className="pointer-events-none absolute right-6 md:right-10 bottom-0 translate-y-1/2 h-[100px] w-[100px] md:h-[124px] md:w-[124px] object-contain z-10"
+            className="pointer-events-none absolute right-6 md:right-8 xl:right-10 bottom-0 translate-y-1/2 md:translate-y-1/4 xl:translate-y-1/2 h-[100px] w-[100px] md:h-20 md:w-20 xl:h-[124px] xl:w-[124px] object-contain z-10"
           />
         )}
       </div>
