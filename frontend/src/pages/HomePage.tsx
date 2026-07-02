@@ -9,6 +9,8 @@ import { TestimonialSlider } from '../components/blocks/TestimonialSlider';
 import { FaqAccordion } from '../components/blocks/FaqAccordion';
 import { PageFade } from '../components/shared/PageFade';
 import { EVENT_PLACEHOLDER_IMAGE } from '../lib/events';
+import { usePageSeo } from '../hooks/usePageSeo';
+import type { PageSeo } from '../lib/seo';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string };
@@ -31,6 +33,7 @@ type StrapiHero = {
   cta?: StrapiLink;
   backgroundImage?: StrapiMedia;
   slides?: StrapiHeroSlide[];
+  mobileFitMedia?: boolean;
 };
 type StrapiAboutSection = {
   label?: string;
@@ -101,6 +104,7 @@ interface StrapiHomePage {
   experience?: StrapiTabsSection;
   moments?: StrapiTestimonialSlider;
   faq?: StrapiFaqSection;
+  seo?: PageSeo | null;
 }
 
 interface StrapiEvent {
@@ -144,6 +148,7 @@ export default function HomePage() {
   const [data, setData] = useState<StrapiHomePage | null>(null);
   const [events, setEvents] = useState<StrapiEvent[] | null>(null);
   const [loaded, setLoaded] = useState(false);
+  usePageSeo(data?.seo ?? null);
 
   useEffect(() => {
     let cancelled = false;
@@ -257,6 +262,7 @@ export default function HomePage() {
           titlePosition={hero.titlePosition}
           subtitlePosition={hero.subtitlePosition}
           slides={heroSlides.length ? heroSlides : undefined}
+          mobileFitMedia={hero.mobileFitMedia}
         />
       )}
 

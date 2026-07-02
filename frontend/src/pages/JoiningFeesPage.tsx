@@ -9,6 +9,8 @@ import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
 import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
 import { CtaIcon } from '../components/shared/CtaIcon';
 import { Markdown } from '../components/shared/Markdown';
+import { usePageSeo } from '../hooks/usePageSeo';
+import type { PageSeo } from '../lib/seo';
 import {
   JOINING_FEES_FALLBACK,
   type JoiningFeesData,
@@ -61,6 +63,7 @@ interface StrapiJoiningFeesPage {
   refundBody?: string;
   additionalNotesHeading?: string;
   additionalNotes?: { text: string }[];
+  seo?: PageSeo | null;
 }
 
 function normalizeIndividualCards(
@@ -641,12 +644,15 @@ export function JoiningFeesView({ data }: { data: JoiningFeesData }) {
 
 export default function JoiningFeesPage() {
   const [data, setData] = useState<JoiningFeesData>(JOINING_FEES_FALLBACK);
+  const [seo, setSeo] = useState<PageSeo | null>(null);
+  usePageSeo(seo);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       const api = await fetchAPI<StrapiJoiningFeesPage>('/joining-fees-page');
       if (cancelled || !api) return;
+      setSeo(api.seo ?? null);
       const fb = JOINING_FEES_FALLBACK;
       setData({
         individualHeading: pickStr(api.individualHeading, fb.individualHeading),

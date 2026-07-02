@@ -4,6 +4,8 @@ import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
 import { PageFade } from '../components/shared/PageFade';
 import { Lightbox, type LightboxImage } from '../components/shared/Lightbox';
 import { useSiteCopy } from '../hooks/useSiteCopy';
+import { usePageSeo } from '../hooks/usePageSeo';
+import type { PageSeo } from '../lib/seo';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 
@@ -23,6 +25,7 @@ interface StrapiGalleryPage {
   introHeading?: string;
   introBody?: string;
   heroImage?: StrapiMedia;
+  seo?: PageSeo | null;
 }
 
 const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
@@ -47,6 +50,7 @@ export default function GalleryPage() {
   const [visibleCount, setVisibleCount] = useState(8);
   const { loadMoreLabel, viewAlbumLabel } = useSiteCopy();
   const [activeAlbumSlug, setActiveAlbumSlug] = useState<string | null>(null);
+  usePageSeo(data?.seo ?? null);
 
   useEffect(() => {
     let cancelled = false;

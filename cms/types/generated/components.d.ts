@@ -134,13 +134,24 @@ export interface BlocksEventListing extends Struct.ComponentSchema {
 export interface BlocksExtraSection extends Struct.ComponentSchema {
   collectionName: 'components_blocks_extra_sections';
   info: {
-    description: "Free-form titled section on a venue detail page (e.g. 'Reservation Policy', 'Court Booking', 'Tennis Etiquette'). Title + optional prose body + optional bullet list.";
+    description: "Free-form titled section on a venue detail page (e.g. 'Reservation Policy', 'Court Booking', 'Tennis Etiquette'). Renders with an icon + title subheader (like the facilities' 'Opening Hours' section) + optional prose body + optional bullet list.";
     displayName: 'Extra Section';
     icon: 'doc';
   };
   attributes: {
     bullets: Schema.Attribute.JSON;
-    content: Schema.Attribute.Text;
+    content: Schema.Attribute.RichText;
+    icon: Schema.Attribute.Enumeration<
+      [
+        'clock',
+        'location',
+        'reservation',
+        'dresscode',
+        'capacity',
+        'menu',
+        'sponsorship',
+      ]
+    >;
     title: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
@@ -228,6 +239,8 @@ export interface BlocksHero extends Struct.ComponentSchema {
     backgroundImage: Schema.Attribute.Media<'images'>;
     cta: Schema.Attribute.Component<'shared.link', false>;
     heading: Schema.Attribute.String & Schema.Attribute.Required;
+    mobileFitMedia: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
     slides: Schema.Attribute.Component<'shared.hero-slide', true>;
     subheading: Schema.Attribute.Text;
     subtitlePosition: Schema.Attribute.Enumeration<
@@ -285,6 +298,41 @@ export interface BlocksManagementSlider extends Struct.ComponentSchema {
       Schema.Attribute.DefaultTo<'management'>;
     heading: Schema.Attribute.String & Schema.Attribute.Required;
     watermark: Schema.Attribute.Media<'images'>;
+  };
+}
+
+export interface BlocksMarqueeGallery extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_marquee_galleries';
+  info: {
+    description: 'Auto-scrolling image marquee with per-row direction and an on/off toggle';
+    displayName: 'Marquee Gallery';
+    icon: 'picture';
+  };
+  attributes: {
+    enabled: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    heading: Schema.Attribute.String;
+    rows: Schema.Attribute.Component<'blocks.marquee-row', true>;
+  };
+}
+
+export interface BlocksMarqueeRow extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_marquee_rows';
+  info: {
+    description: 'One scrolling strip of the marquee gallery';
+    displayName: 'Marquee Row';
+    icon: 'arrowRight';
+  };
+  attributes: {
+    direction: Schema.Attribute.Enumeration<['rtl', 'ltr']> &
+      Schema.Attribute.DefaultTo<'rtl'>;
+    durationSec: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 5;
+        },
+        number
+      >;
+    images: Schema.Attribute.Media<'images', true>;
   };
 }
 
@@ -432,6 +480,30 @@ export interface BlocksPrivateEventPackages extends Struct.ComponentSchema {
     heading: Schema.Attribute.String;
     items: Schema.Attribute.Component<'shared.event-package-item', true>;
     subheading: Schema.Attribute.Text;
+  };
+}
+
+export interface BlocksPromoCardGrid extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_promo_card_grids';
+  info: {
+    description: "Heading + description over a grid of image promo cards (card or overlay variant). e.g. 'From Our Cellar to Your Home'.";
+    displayName: 'Promo Card Grid';
+    icon: 'grid';
+  };
+  attributes: {
+    cards: Schema.Attribute.Component<'shared.promo-card', true>;
+    columns: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 5;
+          min: 1;
+        },
+        number
+      >;
+    description: Schema.Attribute.Text;
+    heading: Schema.Attribute.String;
+    variant: Schema.Attribute.Enumeration<['card', 'overlay']> &
+      Schema.Attribute.DefaultTo<'card'>;
   };
 }
 
@@ -601,6 +673,20 @@ export interface SharedAwardItem extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedCardSection extends Struct.ComponentSchema {
+  collectionName: 'components_shared_card_sections';
+  info: {
+    description: "Optional heading/subheading + a row of image cards (e.g. Gym 'Equipment & Zones', Pilates 'Our Studios').";
+    displayName: 'Card Section';
+    icon: 'grid';
+  };
+  attributes: {
+    cards: Schema.Attribute.Component<'shared.three-col-item', true>;
+    heading: Schema.Attribute.String;
+    subheading: Schema.Attribute.Text;
+  };
+}
+
 export interface SharedCateringPillar extends Struct.ComponentSchema {
   collectionName: 'components_shared_catering_pillars';
   info: {
@@ -628,6 +714,23 @@ export interface SharedCateringSubBanner extends Struct.ComponentSchema {
     cta: Schema.Attribute.Component<'shared.link', false>;
     heading: Schema.Attribute.String;
     image: Schema.Attribute.Media<'images'>;
+  };
+}
+
+export interface SharedChildSafety extends Struct.ComponentSchema {
+  collectionName: 'components_shared_child_safeties';
+  info: {
+    description: 'Kids safety band: badge + heading + body + feature labels (decorative SVG icons stay inline, mapped by order) over a background image.';
+    displayName: 'Child Safety Section';
+    icon: 'shield';
+  };
+  attributes: {
+    backgroundImage: Schema.Attribute.Media<'images'>;
+    badgeLabel: Schema.Attribute.String;
+    badgeLogo: Schema.Attribute.Media<'images'>;
+    body: Schema.Attribute.Text;
+    features: Schema.Attribute.Component<'shared.text-line', true>;
+    heading: Schema.Attribute.String;
   };
 }
 
@@ -768,6 +871,35 @@ export interface SharedImagePanelSlide extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedImageTextPanel extends Struct.ComponentSchema {
+  collectionName: 'components_shared_image_text_panels';
+  info: {
+    description: 'Alternating image + text panel: heading, subheading, body, optional bullets, schedule groups, up to 4 CTAs and footnote (e.g. Tennis Programs / Tennis Etiquette).';
+    displayName: 'Image Text Panel';
+    icon: 'layout';
+  };
+  attributes: {
+    body: Schema.Attribute.Text;
+    bullets: Schema.Attribute.Component<'shared.text-line', true>;
+    ctas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 5;
+        },
+        number
+      >;
+    extraSections: Schema.Attribute.Component<'blocks.extra-section', true>;
+    footnote: Schema.Attribute.Text;
+    heading: Schema.Attribute.String & Schema.Attribute.Required;
+    image: Schema.Attribute.Media<'images'>;
+    imageAlt: Schema.Attribute.String;
+    imagePosition: Schema.Attribute.Enumeration<['left', 'right']>;
+    operatingHours: Schema.Attribute.Component<'shared.panel-hours', true>;
+    slideWithText: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    subheading: Schema.Attribute.String;
+  };
+}
+
 export interface SharedLink extends Struct.ComponentSchema {
   collectionName: 'components_shared_links';
   info: {
@@ -862,6 +994,19 @@ export interface SharedPackageCard extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedPanelHours extends Struct.ComponentSchema {
+  collectionName: 'components_shared_panel_hours';
+  info: {
+    description: 'A titled group of schedule lines inside an image-text panel (e.g. "Men\'s Social" \u2192 its time rows).';
+    displayName: 'Panel Hours';
+    icon: 'clock';
+  };
+  attributes: {
+    rows: Schema.Attribute.Component<'shared.text-line', true>;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface SharedPartnerGroup extends Struct.ComponentSchema {
   collectionName: 'components_shared_partner_groups';
   info: {
@@ -915,8 +1060,13 @@ export interface SharedPricedCard extends Struct.ComponentSchema {
     badge: Schema.Attribute.String;
     badgeTone: Schema.Attribute.Enumeration<['positive', 'negative']> &
       Schema.Attribute.DefaultTo<'positive'>;
+    benefitsText: Schema.Attribute.Text;
     breakdown: Schema.Attribute.Text;
     bullets: Schema.Attribute.Component<'shared.text-line', true>;
+    bulletStyle: Schema.Attribute.Enumeration<
+      ['check', 'dot', 'dash', 'none']
+    > &
+      Schema.Attribute.DefaultTo<'check'>;
     cta: Schema.Attribute.Component<'shared.link', false>;
     description: Schema.Attribute.Text;
     feeAmount: Schema.Attribute.String;
@@ -925,6 +1075,21 @@ export interface SharedPricedCard extends Struct.ComponentSchema {
     name: Schema.Attribute.String & Schema.Attribute.Required;
     secondaryCta: Schema.Attribute.Component<'shared.link', false>;
     subheading: Schema.Attribute.String;
+  };
+}
+
+export interface SharedPromoCard extends Struct.ComponentSchema {
+  collectionName: 'components_shared_promo_cards';
+  info: {
+    description: "Image card with title, subtitle and a CTA \u2014 used in promo-card-grid blocks (e.g. The Gourmet Pantry 'From Our Cellar to Your Home').";
+    displayName: 'Promo Card';
+    icon: 'image';
+  };
+  attributes: {
+    cta: Schema.Attribute.Component<'shared.link', false>;
+    image: Schema.Attribute.Media<'images'>;
+    subtitle: Schema.Attribute.String;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
   };
 }
 
@@ -1200,6 +1365,8 @@ declare module '@strapi/strapi' {
       'blocks.image-panel-slideshow': BlocksImagePanelSlideshow;
       'blocks.location-contact': BlocksLocationContact;
       'blocks.management-slider': BlocksManagementSlider;
+      'blocks.marquee-gallery': BlocksMarqueeGallery;
+      'blocks.marquee-row': BlocksMarqueeRow;
       'blocks.offsite-catering-services': BlocksOffsiteCateringServices;
       'blocks.operating-hours-section': BlocksOperatingHoursSection;
       'blocks.overlay-section': BlocksOverlaySection;
@@ -1208,6 +1375,7 @@ declare module '@strapi/strapi' {
       'blocks.party-packages': BlocksPartyPackages;
       'blocks.priced-card-grid': BlocksPricedCardGrid;
       'blocks.private-event-packages': BlocksPrivateEventPackages;
+      'blocks.promo-card-grid': BlocksPromoCardGrid;
       'blocks.quotes-block': BlocksQuotesBlock;
       'blocks.stats-counter': BlocksStatsCounter;
       'blocks.tabs-section': BlocksTabsSection;
@@ -1218,8 +1386,10 @@ declare module '@strapi/strapi' {
       'blocks.venue-card-grid': BlocksVenueCardGrid;
       'blocks.vision-mission': BlocksVisionMission;
       'shared.award-item': SharedAwardItem;
+      'shared.card-section': SharedCardSection;
       'shared.catering-pillar': SharedCateringPillar;
       'shared.catering-sub-banner': SharedCateringSubBanner;
+      'shared.child-safety': SharedChildSafety;
       'shared.corporate-class-card': SharedCorporateClassCard;
       'shared.event-package-item': SharedEventPackageItem;
       'shared.faq-pair': SharedFaqPair;
@@ -1228,15 +1398,18 @@ declare module '@strapi/strapi' {
       'shared.hero-slide': SharedHeroSlide;
       'shared.html-block': SharedHtmlBlock;
       'shared.image-panel-slide': SharedImagePanelSlide;
+      'shared.image-text-panel': SharedImageTextPanel;
       'shared.link': SharedLink;
       'shared.nav-column': SharedNavColumn;
       'shared.nav-dropdown': SharedNavDropdown;
       'shared.nav-item': SharedNavItem;
       'shared.package-card': SharedPackageCard;
+      'shared.panel-hours': SharedPanelHours;
       'shared.partner-group': SharedPartnerGroup;
       'shared.partner-logo': SharedPartnerLogo;
       'shared.party-package-item': SharedPartyPackageItem;
       'shared.priced-card': SharedPricedCard;
+      'shared.promo-card': SharedPromoCard;
       'shared.quote-item': SharedQuoteItem;
       'shared.referral-column-headings': SharedReferralColumnHeadings;
       'shared.referral-row': SharedReferralRow;

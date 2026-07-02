@@ -9,6 +9,8 @@ import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
 import { DetailSection } from '../components/detail/DetailSection';
 import { CtaIcon, type CtaIconName } from '../components/shared/CtaIcon';
 import { Button } from '../components/shared/Button';
+import { usePageSeo } from '../hooks/usePageSeo';
+import type { PageSeo } from '../lib/seo';
 
 type StrapiMedia = { id?: number; url: string; alternativeText?: string | null };
 type StrapiCategory = { documentId: string; name: string; slug: string };
@@ -35,6 +37,7 @@ interface StrapiEvent {
   image?: StrapiMedia;
   category?: StrapiCategory | null;
   ctas?: StrapiLink[];
+  seo?: PageSeo | null;
 }
 
 const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
@@ -76,6 +79,7 @@ export default function EventDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const [event, setEvent] = useState<StrapiEvent | null>(null);
   const [loading, setLoading] = useState(true);
+  usePageSeo(event ? (event.seo ?? { metaTitle: event.title }) : null);
 
   useEffect(() => {
     if (!slug) return;

@@ -7,6 +7,8 @@ import { OutletOperatingHours } from '../components/contact/OutletOperatingHours
 import { TalkToUsBanner } from '../components/contact/TalkToUsBanner';
 import type { ContactInfo, OutletGroup } from '../data/contactUs';
 import { PageFade } from '../components/shared/PageFade';
+import { usePageSeo } from '../hooks/usePageSeo';
+import type { PageSeo } from '../lib/seo';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string };
@@ -21,6 +23,7 @@ interface StrapiContactUsPage {
   mapEmbedSrc?: string;
   outletGroups?: OutletGroup[];
   talkToUsCta?: { heading?: string; body?: string; variant?: string; ctas?: StrapiLink[] };
+  seo?: PageSeo | null;
 }
 
 const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
@@ -32,6 +35,7 @@ const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
 export default function ContactUsPage() {
   const [data, setData] = useState<StrapiContactUsPage | null>(null);
   const [loaded, setLoaded] = useState(false);
+  usePageSeo(data?.seo ?? null);
 
   useEffect(() => {
     let cancelled = false;

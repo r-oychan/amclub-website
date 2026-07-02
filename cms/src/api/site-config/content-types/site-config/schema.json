@@ -11,6 +11,17 @@
     "draftAndPublish": true
   },
   "attributes": {
+    "siteName": {
+      "type": "string",
+      "default": "The American Club Singapore",
+      "description": "Site name used as the browser-title suffix and og:site_name. Blank falls back to \"The American Club Singapore\"."
+    },
+    "defaultSeo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo",
+      "description": "Site-wide fallback metadata (title, description, share image). Any page whose own SEO fields are blank inherits these."
+    },
     "googleTagId": {
       "type": "string",
       "regex": "^((G|GT|AW|GTM)-[A-Z0-9]+)?$",

@@ -12,6 +12,8 @@ import { GovernanceBlock } from '../components/blocks/GovernanceBlock';
 import { ManagementSlider } from '../components/blocks/ManagementSlider';
 import { CollageGallery } from '../components/blocks/CollageGallery';
 import { PageFade } from '../components/shared/PageFade';
+import { usePageSeo } from '../hooks/usePageSeo';
+import type { PageSeo } from '../lib/seo';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string; caption?: string };
@@ -47,6 +49,7 @@ interface StrapiAboutPage {
   };
   awards?: { heading?: string; items?: { title: string; issuer?: string; image?: StrapiMedia }[] };
   ctaBanner?: { heading: string; body?: string; ctas?: StrapiLink[]; variant?: string };
+  seo?: PageSeo | null;
 }
 
 interface StrapiCommitteeMember {
@@ -73,6 +76,7 @@ export default function AboutPage() {
   const [gc, setGc] = useState<StrapiCommitteeMember[]>([]);
   const [mgmt, setMgmt] = useState<StrapiCommitteeMember[]>([]);
   const [loaded, setLoaded] = useState(false);
+  usePageSeo(data?.seo ?? null);
 
   useEffect(() => {
     let cancelled = false;

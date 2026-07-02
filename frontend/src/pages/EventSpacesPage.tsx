@@ -6,6 +6,8 @@ import { PrivateEventPackages } from '../components/event-spaces/PrivateEventPac
 import { DistinctiveEventSpaces } from '../components/event-spaces/DistinctiveEventSpaces';
 import { OffsiteCateringServices } from '../components/event-spaces/OffsiteCateringServices';
 import { PageFade } from '../components/shared/PageFade';
+import { usePageSeo } from '../hooks/usePageSeo';
+import type { PageSeo } from '../lib/seo';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string };
@@ -29,6 +31,7 @@ interface StrapiEventSpacesPage {
     subBanner?: { heading?: string; body?: string; image?: StrapiMedia; cta?: StrapiLink };
   };
   finalCta?: { heading: string; body?: string; variant?: 'default' | 'light' | 'dark' | 'accent'; ctas?: StrapiLink[] };
+  seo?: PageSeo | null;
 }
 
 const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
@@ -45,6 +48,7 @@ const linksOf = (ls?: StrapiLink[]) =>
 export default function EventSpacesPage() {
   const [data, setData] = useState<StrapiEventSpacesPage | null>(null);
   const [loaded, setLoaded] = useState(false);
+  usePageSeo(data?.seo ?? null);
 
   useEffect(() => {
     let cancelled = false;

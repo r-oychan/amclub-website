@@ -5,6 +5,8 @@ import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
 import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
 import { CtaIcon } from '../components/shared/CtaIcon';
 import { REFERRAL_FALLBACK, type ReferralData, type ReferralRow } from '../data/referral';
+import { usePageSeo } from '../hooks/usePageSeo';
+import type { PageSeo } from '../lib/seo';
 
 interface StrapiReferralPage {
   title?: string;
@@ -16,6 +18,7 @@ interface StrapiReferralPage {
   columnHeadings?: { type?: string; referrer?: string; newMember?: string };
   rows?: ReferralRow[];
   footnote?: string;
+  seo?: PageSeo | null;
 }
 
 function pickStr(api: string | undefined, fb: string): string {
@@ -220,12 +223,15 @@ export function ReferralView({ data }: { data: ReferralData }) {
 
 export default function ReferralPage() {
   const [data, setData] = useState<ReferralData>(REFERRAL_FALLBACK);
+  const [seo, setSeo] = useState<PageSeo | null>(null);
+  usePageSeo(seo);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       const api = await fetchAPI<StrapiReferralPage>('/referral-page');
       if (cancelled || !api) return;
+      setSeo(api.seo ?? null);
       const fb = REFERRAL_FALLBACK;
       setData({
         heading: pickStr(api.heading, fb.heading),
