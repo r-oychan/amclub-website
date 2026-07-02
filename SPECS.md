@@ -159,7 +159,7 @@ All four detail-page collection types + the membership singletons share one dyna
 | React Component | Strapi Block Component | Notes |
 |---|---|---|
 | `Hero.tsx` | `blocks.hero` | Single image, heading, subheading, CTA, variant field |
-| `HeroCarousel.tsx` | `blocks.hero` (slides) | Uses `slides` repeatable + `autoPlayInterval` |
+| `HeroCarousel.tsx` | `blocks.hero` (slides) | Uses `slides` repeatable + `autoPlayInterval`. `mobileFitMedia` (boolean, default false): on mobile (<768px) shows each slide's media in full — capped to viewport width/height, letterboxed on brand navy, title/CTA/dots flow below the image — instead of full-screen cover-crop. Desktop is unaffected. |
 | `CardGrid.tsx` | `blocks.card-grid` | label, heading, cards array, optional CTA |
 | `FeatureGrid.tsx` | `blocks.feature-grid` | Feature items with icon/image |
 | `ThreeColGrid.tsx` | `blocks.card-grid` | 3-column layout variant of card-grid |

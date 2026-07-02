@@ -31,6 +31,7 @@ type StrapiHero = {
   cta?: StrapiLink;
   backgroundImage?: StrapiMedia;
   slides?: StrapiHeroSlide[];
+  mobileFitMedia?: boolean;
 };
 type StrapiAboutSection = {
   label?: string;
@@ -257,6 +258,7 @@ export default function HomePage() {
           titlePosition={hero.titlePosition}
           subtitlePosition={hero.subtitlePosition}
           slides={heroSlides.length ? heroSlides : undefined}
+          mobileFitMedia={hero.mobileFitMedia}
         />
       )}
 

@@ -30,6 +30,9 @@ export interface HeroContent {
   autoPlayInterval?: number;
   titlePosition?: HeroZone;
   subtitlePosition?: HeroZone;
+  /** When true, mobile (<768px) shows the slide media fully — capped to viewport
+      width/height (letterboxed on brand background) — instead of cover-cropping. */
+  mobileFitMedia?: boolean;
 }
 
 export interface StatItem {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback, useSyncExternalStore } from 'react';
 import { Link } from 'react-router';
 import type { HeroSlide, HeroZone } from '../../lib/types';
 import { Button } from '../shared/Button';
@@ -8,6 +8,22 @@ interface HeroCarouselProps {
   autoPlayInterval?: number;
   titlePosition?: HeroZone;
   subtitlePosition?: HeroZone;
+  /** CMS toggle: on mobile, show each slide's media in full (capped to viewport
+      width/height, letterboxed on brand background) instead of cover-cropping. */
+  mobileFitMedia?: boolean;
+}
+
+/** Tracks a CSS media query so the carousel can switch layout modes on resize. */
+function useMediaQuery(query: string): boolean {
+  const subscribe = useCallback(
+    (onChange: () => void) => {
+      const mql = window.matchMedia(query);
+      mql.addEventListener('change', onChange);
+      return () => mql.removeEventListener('change', onChange);
+    },
+    [query],
+  );
+  return useSyncExternalStore(subscribe, () => window.matchMedia(query).matches);
 }
 
 const ZONE_CLASSES: Record<HeroZone, string> = {
@@ -22,7 +38,13 @@ export function HeroCarousel({
   autoPlayInterval = 8000,
   titlePosition = 'bottom-left',
   subtitlePosition = 'bottom-right',
+  mobileFitMedia = false,
 }: HeroCarouselProps) {
+  const isMobile = useMediaQuery('(max-width: 767px)');
+  // Fit mode: mobile only. Media renders as an <img>/<video> at natural aspect,
+  // capped at 100% width and 100svh height, so nothing is cropped. Desktop keeps
+  // the immersive full-screen cover layout regardless of the toggle.
+  const fit = mobileFitMedia && isMobile;
   const [current, setCurrent] = useState(0);
   // 0..1 fraction of how far through the active slide we are. Drives the pink
   // countdown bar — read from video.currentTime/duration on video slides, or
@@ -120,7 +142,7 @@ export function HeroCarousel({
 
   return (
     <section
-      className="relative w-full h-screen max-h-screen overflow-hidden"
+      className={`relative w-full overflow-hidden ${fit ? 'bg-primary' : 'h-screen max-h-screen'}`}
     >
       {/* Slides */}
       <div
@@ -134,12 +156,60 @@ export function HeroCarousel({
 
           const isVideo = !!slide.backgroundVideo;
 
+          const hasMobileContent = !!(slide.title || slide.subtitle || slide.cta);
+          // Shared mobile stack (title → subtitle → CTA). Rendered as an overlay in
+          // cover mode, or as an in-flow strip below the media in fit mode so it
+          // never covers a banner's baked-in artwork.
+          const mobileSlideContent = (
+            <>
+              {slide.title && (
+                <h1
+                  className="font-heading italic text-[2.5rem] leading-none tracking-[-0.04em] text-bg mb-4"
+                  style={{
+                    fontWeight: 600,
+                    fontFeatureSettings: '"cv01", "cv05", "cv09", "cv11", "ss03"',
+                    ...(slide.titleColor ? { color: slide.titleColor } : {}),
+                  }}
+                >
+                  {slide.title}
+                </h1>
+              )}
+              {slide.subtitle && (
+                slide.subtitleLink ? (
+                  <Link
+                    to={slide.subtitleLink}
+                    className="font-body text-[1.05rem] leading-[1.4] mb-6 underline-offset-4 hover:underline"
+                    style={{ fontWeight: 400, color: slide.subtitleColor ?? '#FFFFFF' }}
+                  >
+                    {slide.subtitle}
+                  </Link>
+                ) : (
+                  <p
+                    className="font-body text-[1.05rem] leading-[1.4] mb-6"
+                    style={{ fontWeight: 400, color: slide.subtitleColor ?? '#FFFFFF' }}
+                  >
+                    {slide.subtitle}
+                  </p>
+                )
+              )}
+              {slide.cta && (
+                <Button
+                  label={slide.cta.label}
+                  href={slide.cta.href}
+                  variant="white"
+                  className="uppercase tracking-[0.1em] text-[13.6px] self-start"
+                  iconRight={<HeroArrowIcon />}
+                />
+              )}
+            </>
+          );
+
           return (
             <div
               key={i}
-              className="relative flex-shrink-0 w-full h-full bg-primary"
+              className={`relative flex-shrink-0 w-full bg-primary ${fit ? 'flex flex-col justify-center' : 'h-full'}`}
               style={
-                !isVideo && slide.backgroundImage
+                !fit && !isVideo && slide.backgroundImage
                   ? {
                       backgroundImage: `url(${slide.backgroundImage})`,
                       backgroundSize: 'cover',
@@ -148,6 +218,15 @@ export function HeroCarousel({
                   : undefined
               }
             >
+              {/* Fit mode: real <img> at natural aspect ratio, capped to viewport
+                  width/height so the whole banner (incl. baked-in text) is visible. */}
+              {fit && !isVideo && slide.backgroundImage && (
+                <img
+                  src={slide.backgroundImage}
+                  alt={slide.title || ''}
+                  className="block w-full max-h-svh object-contain"
+                />
+              )}
               {isVideo && (
                 <video
                   ref={(el) => { videoRefs.current[i] = el; }}
@@ -159,7 +238,11 @@ export function HeroCarousel({
                   playsInline
                   preload="metadata"
                   onEnded={() => handleVideoEnded(i)}
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className={
+                    fit
+                      ? 'block w-full max-h-svh object-contain'
+                      : 'absolute inset-0 w-full h-full object-cover'
+                  }
                 />
               )}
 
@@ -171,51 +254,22 @@ export function HeroCarousel({
                 />
               )}
 
+              {/* Fit mode: content flows below the media on the brand background so
+                  it never covers the banner artwork. Cover mode keeps the overlay. */}
+              {fit && hasMobileContent && (
+                <div className="relative z-10 px-6 pt-5 pb-2 flex flex-col items-start text-left">
+                  {mobileSlideContent}
+                </div>
+              )}
+
               {/* Centered 1560px overlay container with 60px horizontal padding */}
+              {!fit && (
               <div className="absolute inset-0 z-10 mx-auto w-full max-w-[1560px] px-6 sm:px-10 lg:px-[60px]">
                 <div className="relative w-full h-full">
                   {/* Mobile (<md): always stack title → subtitle → CTA in the lower
                       half so the dual-zone CMS layout never overlaps on small screens. */}
                   <div className="md:hidden absolute bottom-0 left-0 right-0 pb-24 flex flex-col items-start text-left">
-                    {slide.title && (
-                      <h1
-                        className="font-heading italic text-[2.5rem] leading-none tracking-[-0.04em] text-bg mb-4"
-                        style={{
-                          fontWeight: 600,
-                          fontFeatureSettings: '"cv01", "cv05", "cv09", "cv11", "ss03"',
-                          ...(slide.titleColor ? { color: slide.titleColor } : {}),
-                        }}
-                      >
-                        {slide.title}
-                      </h1>
-                    )}
-                    {slide.subtitle && (
-                      slide.subtitleLink ? (
-                        <Link
-                          to={slide.subtitleLink}
-                          className="font-body text-[1.05rem] leading-[1.4] mb-6 underline-offset-4 hover:underline"
-                          style={{ fontWeight: 400, color: slide.subtitleColor ?? '#FFFFFF' }}
-                        >
-                          {slide.subtitle}
-                        </Link>
-                      ) : (
-                        <p
-                          className="font-body text-[1.05rem] leading-[1.4] mb-6"
-                          style={{ fontWeight: 400, color: slide.subtitleColor ?? '#FFFFFF' }}
-                        >
-                          {slide.subtitle}
-                        </p>
-                      )
-                    )}
-                    {slide.cta && (
-                      <Button
-                        label={slide.cta.label}
-                        href={slide.cta.href}
-                        variant="white"
-                        className="uppercase tracking-[0.1em] text-[13.6px] self-start"
-                        iconRight={<HeroArrowIcon />}
-                      />
-                    )}
+                    {mobileSlideContent}
                   </div>
 
                   {/* Desktop (md+): respect CMS-configured title/subtitle zones. */}
@@ -328,14 +382,22 @@ export function HeroCarousel({
                   </div>
                 </div>
               </div>
+              )}
             </div>
           );
         })}
       </div>
 
-      {/* Dot indicators */}
+      {/* Dot indicators — overlaid in cover mode; in-flow on the brand background
+          in fit mode so they never sit on top of the banner artwork. */}
       {slides.length > 1 && (
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20">
+        <div
+          className={
+            fit
+              ? 'relative z-20 flex items-center justify-center gap-2 pt-3 pb-5'
+              : 'absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20'
+          }
+        >
           {slides.map((_, i) => {
             const isActive = i === current;
             return (
