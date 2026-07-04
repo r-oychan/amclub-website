@@ -9,6 +9,8 @@ import { PromoCell } from '../components/dining/PromoCell';
 import { PageFade } from '../components/shared/PageFade';
 
 import type { CtaIconName } from '../components/shared/CtaIcon';
+import { usePageSeo } from '../hooks/usePageSeo';
+import type { PageSeo } from '../lib/seo';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = {
@@ -56,6 +58,7 @@ interface StrapiDiningPage {
   };
   essentials?: StrapiOverlay;
   finalCta?: { heading: string; body?: string; variant?: 'default' | 'light' | 'dark' | 'accent'; ctas?: StrapiLink[] };
+  seo?: PageSeo | null;
 }
 
 const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
@@ -76,6 +79,7 @@ export default function DiningPage() {
   const [data, setData] = useState<StrapiDiningPage | null>(null);
   const [restaurants, setRestaurants] = useState<StrapiRestaurant[]>([]);
   const [loaded, setLoaded] = useState(false);
+  usePageSeo(data?.seo ?? null);
 
   useEffect(() => {
     let cancelled = false;

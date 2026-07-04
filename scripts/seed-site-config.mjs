@@ -19,6 +19,14 @@ const ctx = initEnv();
 
   const payload = {
     googleTagId: '',
+    siteName: 'The American Club Singapore',
+    // Site-wide SEO fallbacks — any page whose own shared.seo fields are blank
+    // inherits these (per-field). metaImage is left for editors to pick in /admin.
+    defaultSeo: {
+      metaTitle: 'The American Club Singapore',
+      metaDescription:
+        'A home away from home in the heart of Singapore — dining, fitness, family and community with a unique American and Canadian culture.',
+    },
     publishedAt: new Date().toISOString(),
   };
 

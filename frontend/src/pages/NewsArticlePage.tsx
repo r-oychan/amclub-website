@@ -4,6 +4,8 @@ import { fetchAPI, STRAPI_URL } from '../lib/api';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
 import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
 import { PageFade } from '../components/shared/PageFade';
+import { usePageSeo } from '../hooks/usePageSeo';
+import type { PageSeo } from '../lib/seo';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 
@@ -16,6 +18,7 @@ interface StrapiNewsArticle {
   category?: string;
   image?: StrapiMedia;
   htmlBody?: { html?: string } | null;
+  seo?: PageSeo | null;
 }
 
 const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
@@ -28,6 +31,7 @@ export default function NewsArticlePage() {
   const { slug } = useParams<{ slug: string }>();
   const [article, setArticle] = useState<StrapiNewsArticle | null>(null);
   const [loaded, setLoaded] = useState(false);
+  usePageSeo(article ? (article.seo ?? { metaTitle: article.title }) : null);
 
   useEffect(() => {
     if (!slug) return;

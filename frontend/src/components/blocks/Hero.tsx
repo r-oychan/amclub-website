@@ -2,9 +2,9 @@ import type { HeroContent } from '../../lib/types';
 import { Button } from '../shared/Button';
 import { HeroCarousel } from './HeroCarousel';
 
-export function Hero({ heading, subheading, cta, backgroundImage, slides, variant = 'full', autoPlayInterval, titlePosition = 'bottom-left', subtitlePosition = 'bottom-right' }: HeroContent) {
+export function Hero({ heading, subheading, cta, backgroundImage, slides, variant = 'full', autoPlayInterval, titlePosition = 'bottom-left', subtitlePosition = 'bottom-right', mobileFitMedia }: HeroContent) {
   if (slides && slides.length > 1) {
-    return <HeroCarousel slides={slides} autoPlayInterval={autoPlayInterval} titlePosition={titlePosition} subtitlePosition={subtitlePosition} />;
+    return <HeroCarousel slides={slides} autoPlayInterval={autoPlayInterval} titlePosition={titlePosition} subtitlePosition={subtitlePosition} mobileFitMedia={mobileFitMedia} />;
   }
 
   const isCompact = variant === 'compact';

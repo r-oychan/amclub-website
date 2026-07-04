@@ -266,6 +266,9 @@ async function upsertHomePage({ media, eventsCat, testimonialIds, faqIds }) {
       titlePosition: 'bottom-left',
       subtitlePosition: 'bottom-right',
       autoPlayInterval: 5000,
+      // Off by default: seeded slides are full-bleed photos that suit cover-crop.
+      // Editors flip this on when slides are baked-text banners that must not crop on mobile.
+      mobileFitMedia: false,
       cta: { label: 'Request for a Club Tour', href: 'https://amclub.jotform.com/260813837273966?parentURL=https%3A%2F%2Famclub.org.sg%2Fmembership-enquiry-form%2F&jsForm=true', isExternal: true, variant: 'primary' },
       slides: [
         {

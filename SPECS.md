@@ -159,7 +159,7 @@ All four detail-page collection types + the membership singletons share one dyna
 | React Component | Strapi Block Component | Notes |
 |---|---|---|
 | `Hero.tsx` | `blocks.hero` | Single image, heading, subheading, CTA, variant field |
-| `HeroCarousel.tsx` | `blocks.hero` (slides) | Uses `slides` repeatable + `autoPlayInterval` |
+| `HeroCarousel.tsx` | `blocks.hero` (slides) | Uses `slides` repeatable + `autoPlayInterval`. `mobileFitMedia` (boolean, default false): on mobile (<768px) shows each slide's media in full — capped to viewport width/height, letterboxed on brand navy, title/CTA/dots flow below the image — instead of full-screen cover-crop. Desktop is unaffected. |
 | `CardGrid.tsx` | `blocks.card-grid` | label, heading, cards array, optional CTA |
 | `FeatureGrid.tsx` | `blocks.feature-grid` | Feature items with icon/image |
 | `ThreeColGrid.tsx` | `blocks.card-grid` | 3-column layout variant of card-grid |
@@ -238,7 +238,7 @@ All four detail-page collection types + the membership singletons share one dyna
 | faq-page | `faq-page` | title, introHeading, introBody, heroImage, seo |
 | header | `header` | logo, navItems (nav-item[]), cta (shared.link) |
 | footer | `footer` | contact (address, phone, email), columns (footer-column[]), logo |
-| site-config | `site-config` | **googleAnalyticsId** (GA4 Measurement ID `G-XXXX`, editable in CMS). Read site-wide by `frontend/src/components/shared/Analytics.tsx`, which injects gtag.js on every route and emits SPA `page_view` events. Empty = analytics disabled. Optional `VITE_GA_ID` build-time fallback. Seeded blank by `scripts/seed-site-config.mjs`. |
+| site-config | `site-config` | **googleAnalyticsId** (GA4 Measurement ID `G-XXXX`, editable in CMS). Read site-wide by `frontend/src/components/shared/Analytics.tsx`, which injects gtag.js on every route and emits SPA `page_view` events. Empty = analytics disabled. Optional `VITE_GA_ID` build-time fallback. **siteName** (browser-title suffix + og:site_name) and **defaultSeo** (`shared.seo` — site-wide fallback metaTitle/metaDescription/metaImage). SEO flow: `SeoManager` applies the defaults on every route change; pages with a populated `seo` component override per-field via `usePageSeo()` (`frontend/src/lib/seo.ts` writes title/description/canonical/OG/Twitter tags). The site-config controller populates `defaultSeo.metaImage` in every `find`. Seeded by `scripts/seed-site-config.mjs`. |
 
 ### Collections (multiple records)
 | Name | API ID | Key Fields |
@@ -262,7 +262,7 @@ All four detail-page collection types + the membership singletons share one dyna
 | Component | Fields | Used In |
 |---|---|---|
 | `shared.link` | label, href, isExternal, variant (primary/secondary/outline/text) | CTAs everywhere |
-| `shared.seo` | metaTitle, metaDescription, metaImage, canonicalURL | All page types |
+| `shared.seo` | metaTitle, metaDescription, metaImage, canonicalURL | All page types + `site-config.defaultSeo` (site-wide fallback; page fields override per-field via `usePageSeo`) |
 | `shared.nav-item` | label, href, dropdown (nav-dropdown) | header |
 | `shared.nav-dropdown` | label, href, columns (nav-column[]) | header nav |
 | `shared.nav-column` | heading, links (shared.link[]), image, imageLink | header dropdown |

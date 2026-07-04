@@ -18,6 +18,8 @@ import { CtaButton, type CtaLink } from '../components/shared/CtaButton';
 import { ImageTextPanels } from '../components/detail/ImageTextPanels';
 import { mapImagePanels } from '../lib/imagePanels';
 import { resolveIcon, type DetailIconName } from '../lib/detailIcons';
+import { usePageSeo } from '../hooks/usePageSeo';
+import type { PageSeo } from '../lib/seo';
 
 interface ScheduleRow {
   dayRange: string;
@@ -41,6 +43,7 @@ interface VenueData {
   id?: number;
   name: string;
   slug: string;
+  seo?: PageSeo | null;
   /** Optional override of the section's default parent label/href (used by nested entries like aquatics programs). */
   parentSection?: string;
   parentHref?: string;
@@ -426,6 +429,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
   const [venue, setVenue] = useState<VenueData | null>(null);
   const [loading, setLoading] = useState(true);
   const [bioModal, setBioModal] = useState<{ image: string; name: string } | null>(null);
+  usePageSeo(venue ? (venue.seo ?? { metaTitle: venue.name }) : null);
   const location = useLocation();
 
   // Close bio modal on Esc; lock background scroll while open.

@@ -25,6 +25,7 @@
     },
     "slides": { "type": "component", "repeatable": true, "component": "shared.hero-slide" },
     "variant": { "type": "enumeration", "enum": ["full", "compact"], "default": "full" },
+    "mobileFitMedia": { "type": "boolean", "default": false },
     "autoPlayInterval": { "type": "integer", "default": 5000 },
     "titlePosition": {
       "type": "enumeration",
