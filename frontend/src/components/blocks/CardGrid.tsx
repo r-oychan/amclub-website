@@ -109,18 +109,19 @@ function EventMarquee({ items }: { items: CardItem[] }) {
       speedRef.current += (targetRef.current - speedRef.current) * k;
       // Seamless wrap: content is duplicated, so one full set === half the width.
       const half = el.scrollWidth / 2;
-      if (!draggingRef.current) {
-        if (Math.abs(speedRef.current) > 0.05) {
-          posRef.current += speedRef.current * dt;
-        }
+      if (!draggingRef.current && Math.abs(speedRef.current) > 0.05) {
+        // Cruising: integrate in the float accumulator and drive scrollLeft.
+        posRef.current += speedRef.current * dt;
         if (half > 0) {
           if (posRef.current >= half) posRef.current -= half;
           else if (posRef.current < 0) posRef.current += half;
         }
         el.scrollLeft = posRef.current;
       } else if (half > 0) {
-        // While dragging, scrollLeft is driven by the pointer — keep it wrapped
-        // and mirror it into the float accumulator.
+        // Paused, mouse-dragging, or being scrolled natively (touch pan /
+        // trackpad momentum): scrollLeft is the source of truth. Keep it
+        // wrapped and mirror it into the accumulator — never write it, or
+        // we'd cancel the browser's native scroll/momentum.
         if (el.scrollLeft >= half) el.scrollLeft -= half;
         else if (el.scrollLeft < 0) el.scrollLeft += half;
         posRef.current = el.scrollLeft;
@@ -155,6 +156,15 @@ function EventMarquee({ items }: { items: CardItem[] }) {
   const handlePointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
     const el = viewportRef.current;
     if (!el) return;
+    // Mouse-only: touch swipes use the container's native horizontal scroll
+    // (mobile browsers pointercancel scripted drags as soon as a swipe has any
+    // vertical component, which made the marquee feel un-swipeable on phones).
+    if (e.pointerType !== 'mouse') {
+      clearResume();
+      targetRef.current = 0;
+      speedRef.current = 0;
+      return;
+    }
     draggingRef.current = true;
     movedRef.current = false;
     targetRef.current = 0;
@@ -199,7 +209,7 @@ function EventMarquee({ items }: { items: CardItem[] }) {
   return (
     <div
       ref={viewportRef}
-      className="relative w-full overflow-hidden mt-4 group cursor-grab touch-pan-y select-none active:cursor-grabbing"
+      className="relative w-full overflow-x-auto overflow-y-hidden mt-4 group cursor-grab select-none active:cursor-grabbing [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       onPointerEnter={handlePointerEnter}
       onPointerLeave={handlePointerLeave}
       onPointerDown={handlePointerDown}
