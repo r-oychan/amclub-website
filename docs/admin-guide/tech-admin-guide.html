@@ -141,7 +141,7 @@
   </figure>
 
   <h3>Request routing (inside the container)</h3>
-  <p><code>docker/nginx.conf</code> routes <code>/</code> → built SPA, <code>/api/*</code> → Strapi (:1337),
+  <p><code>infra/docker/nginx.conf</code> routes <code>/</code> → built SPA, <code>/api/*</code> → Strapi (:1337),
      <code>/admin/*</code> → Strapi admin, <code>/strapi-plugin-sso/*</code> → SSO endpoints,
      <code>/uploads/*</code> → Azure Blob container. The deployed frontend
      always talks to <em>its own origin</em> (<code>/api</code>) — never a hardcoded Strapi URL.</p>
@@ -250,7 +250,7 @@ git log --oneline origin/main..origin/uat   # ready for PROD</code></pre>
 ├── cms/                  Strapi v5 project (APIs, plugins, providers, config)
 ├── frontend/             React + Vite + Tailwind SPA
 ├── infra/                Pulumi IaC (index.ts, Pulumi.&lt;env&gt;.yaml, README.md)
-├── docker/               Dockerfile entrypoint + nginx.conf
+├── infra/docker/         Container entrypoint.sh + nginx.conf (Dockerfile is at repo root)
 ├── scripts/              seed-*.mjs / patch-*.mjs content scripts + seed-helpers.mjs
 ├── media/                ALL source assets, mirroring site structure (media/about/, media/dining/…)
 ├── content-updates/      Audit log of manual prod content edits (for replay)
@@ -503,8 +503,16 @@ curl -sS "$BASE/api/upload/files?pagination[pageSize]=1" &gt; /dev/null</code></
     <li>Builds the all-in-one Docker image (multi-stage: cms-builder → frontend-builder → runtime;
         <code>cms/providers/</code> copied in both CMS stages).</li>
     <li>Runs <code>pulumi up</code> against the matching stack with
-        <code>PUBLIC_SITE_URL</code> auto-set per branch, plus ElevenLabs + Entra SSO vars.</li>
+        <code>PUBLIC_SITE_URL</code> auto-set per branch, plus ElevenLabs + Entra SSO vars. The image is built
+        <em>inside</em> <code>pulumi up</code> (<code>@pulumi/docker-build</code>) and pushed to the env's ACR as
+        <code>amclub-app:latest</code>.</li>
   </ol>
+  <div class="callout note">
+    <span class="label">Docker build cache is deliberately OFF</span>
+    <p>The image builds with <code>noCache: true</code> (see <code>infra/index.ts</code>) — deploys are slower but
+       guaranteed fresh, after a stale-layer bug once shipped a frozen admin bundle. <code>CMS_BUILD_NONCE</code>
+       (= commit SHA) is kept in the Dockerfile so caching can be re-enabled safely later.</p>
+  </div>
   <table>
     <thead><tr><th>Secret / var</th><th>Purpose</th></tr></thead>
     <tbody>
@@ -536,7 +544,9 @@ curl -sS "$BASE/api/upload/files?pagination[pageSize]=1" &gt; /dev/null</code></
       <tr><td>Container registry</td><td><code>amclub&lt;env&gt;acr</code></td><td>Basic SKU</td></tr>
       <tr><td>PostgreSQL Flexible Server</td><td><code>amclub-&lt;env&gt;-pg</code></td><td>PG16, Standard_B1ms, 32 GB, 7-day backups</td></tr>
       <tr><td>Storage account</td><td><code>amclub&lt;env&gt;data</code></td><td>Blob container <code>media</code> (public Blob read) + legacy file share</td></tr>
-      <tr><td>Container App</td><td><code>amclub-&lt;env&gt;-app</code></td><td>0.5 vCPU / 1 GB, min 1 replica (keep ≥1 to avoid cold-start seed failures)</td></tr>
+      <tr><td>Container App</td><td><code>amclub-&lt;env&gt;-app</code></td><td>0.5 vCPU / 1 GB, scaling <strong>fixed at min=max=1</strong> — the container is stateful
+          (Strapi + nginx in one image, uploads on an Azure Files volume at <code>/data</code>), so it must not scale
+          horizontally. Keep ≥1 to avoid cold-start seed failures.</td></tr>
       <tr><td>Container Apps env + Log Analytics</td><td><code>amclub-&lt;env&gt;-env</code></td><td>30-day log retention</td></tr>
     </tbody>
   </table>
@@ -956,7 +966,7 @@ npm run test          # root: runs all of the above</code></pre>
       <tr><td>Infra entry point</td><td><code>infra/index.ts</code> (+ <code>infra/README.md</code>)</td></tr>
       <tr><td>Custom-domain / cert binding</td><td><code>infra/Pulumi.&lt;env&gt;.yaml</code> (<code>customDomains</code>) · <code>infra/index.ts</code> (binding + <code>containerEnvStaticIp</code>/<code>customDomainVerificationId</code> outputs)</td></tr>
       <tr><td>Seed helpers</td><td><code>scripts/seed-helpers.mjs</code></td></tr>
-      <tr><td>Docker</td><td><code>Dockerfile</code>, <code>docker/entrypoint.sh</code>, <code>docker/nginx.conf</code></td></tr>
+      <tr><td>Docker</td><td><code>Dockerfile</code> (root), <code>infra/docker/entrypoint.sh</code>, <code>infra/docker/nginx.conf</code></td></tr>
       <tr><td>Deep-dive docs</td><td><code>docs/media-storage.md</code> · <code>docs/strapi-patterns.md</code> · <code>docs/troubleshooting.md</code></td></tr>
       <tr><td>Design tokens / page specs</td><td><code>DESIGN.md</code> · <code>SPECS.md</code></td></tr>
     </tbody>
