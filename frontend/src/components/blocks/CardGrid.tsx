@@ -67,8 +67,8 @@ export function CardGrid({
 // on the duplicated item set. The container stays the `group`, so hovering any
 // card still lights up every title at once (matching the Framer prototype).
 const MARQUEE_CRUISE_SPEED = 45; // px per second when auto-scrolling
-const MARQUEE_EASE_RATE = 2.4; // velocity easing (frame-rate independent)
-const MARQUEE_RESUME_DELAY_MS = 1400; // pause after the pointer leaves before resuming
+const MARQUEE_EASE_RATE = 6; // velocity easing (frame-rate independent) — snappy but still smooth
+const MARQUEE_RESUME_DELAY_MS = 500; // pause after the pointer leaves before resuming
 const MARQUEE_DRAG_THRESHOLD = 5; // px of movement before a press counts as a drag
 
 function EventMarquee({ items }: { items: CardItem[] }) {
@@ -78,6 +78,11 @@ function EventMarquee({ items }: { items: CardItem[] }) {
 
   const speedRef = useRef(0); // current velocity (px/sec), eased toward target
   const targetRef = useRef(MARQUEE_CRUISE_SPEED); // desired velocity
+  // Float source of truth for the scroll position. Mobile browsers truncate
+  // scrollLeft to whole pixels, so accumulating sub-pixel increments directly
+  // on scrollLeft (45px/s ≈ 0.75px/frame) rounds to zero and the marquee never
+  // moves. We integrate here and assign the rounded value each frame instead.
+  const posRef = useRef(0);
   const draggingRef = useRef(false);
   const movedRef = useRef(false); // did the current press move past the threshold?
   const dragStartXRef = useRef(0);
@@ -102,14 +107,23 @@ function EventMarquee({ items }: { items: CardItem[] }) {
       // Ease current speed toward the target (exponential smoothing → ease in/out).
       const k = 1 - Math.exp(-MARQUEE_EASE_RATE * dt);
       speedRef.current += (targetRef.current - speedRef.current) * k;
-      if (!draggingRef.current && Math.abs(speedRef.current) > 0.05) {
-        el.scrollLeft += speedRef.current * dt;
-      }
       // Seamless wrap: content is duplicated, so one full set === half the width.
       const half = el.scrollWidth / 2;
-      if (half > 0) {
+      if (!draggingRef.current) {
+        if (Math.abs(speedRef.current) > 0.05) {
+          posRef.current += speedRef.current * dt;
+        }
+        if (half > 0) {
+          if (posRef.current >= half) posRef.current -= half;
+          else if (posRef.current < 0) posRef.current += half;
+        }
+        el.scrollLeft = posRef.current;
+      } else if (half > 0) {
+        // While dragging, scrollLeft is driven by the pointer — keep it wrapped
+        // and mirror it into the float accumulator.
         if (el.scrollLeft >= half) el.scrollLeft -= half;
         else if (el.scrollLeft < 0) el.scrollLeft += half;
+        posRef.current = el.scrollLeft;
       }
       raf = requestAnimationFrame(tick);
     };

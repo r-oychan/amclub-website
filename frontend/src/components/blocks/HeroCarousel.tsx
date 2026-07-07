@@ -53,11 +53,31 @@ export function HeroCarousel({
   const videoRefs = useRef<Record<number, HTMLVideoElement | null>>({});
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const rafRef = useRef<number | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   const goTo = (index: number) => {
     const next = ((index % slides.length) + slides.length) % slides.length;
     setProgress(0);
     setCurrent(next);
+  };
+
+  // Touch swipe: a mostly-horizontal swipe of 50px+ moves to the next/previous
+  // slide. Vertical pans fall through to normal page scrolling, and taps stay
+  // taps (links/CTAs keep working) since we never preventDefault.
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0];
+    touchStartRef.current = { x: t.clientX, y: t.clientY };
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const start = touchStartRef.current;
+    touchStartRef.current = null;
+    if (!start || slides.length <= 1) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+      goTo(current + (dx < 0 ? 1 : -1));
+    }
   };
 
   const advance = () => {
@@ -143,6 +163,8 @@ export function HeroCarousel({
   return (
     <section
       className={`relative w-full overflow-hidden ${fit ? 'bg-primary' : 'h-screen max-h-screen'}`}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       {/* Slides */}
       <div
