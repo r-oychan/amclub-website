@@ -122,8 +122,25 @@ async function refreshAgentKnowledgeBase(strapi: Strapi): Promise<void> {
     type: r.elDocType,
     usage_mode: 'auto',
   }));
-  await client.setAgentKnowledgeBase(strapi as never, agentId, locators);
-  strapi.log.info(`[${PLUGIN_ID}] agent ${agentId} now references ${locators.length} doc(s)`);
+  // Docs attached to the agent outside this plugin (no doc-name prefix, e.g.
+  // the master FAQ repository) are not in the sync log — carry them over so
+  // a sync doesn't silently detach them.
+  const manual = await listManualAttachments(strapi, agentId, locators);
+  await client.setAgentKnowledgeBase(strapi as never, agentId, [...manual, ...locators]);
+  strapi.log.info(
+    `[${PLUGIN_ID}] agent ${agentId} now references ${locators.length} synced + ${manual.length} manual doc(s)`,
+  );
+}
+
+async function listManualAttachments(
+  strapi: Strapi,
+  agentId: string,
+  synced: client.KnowledgeBaseLocator[],
+): Promise<client.KnowledgeBaseLocator[]> {
+  const prefix = docPrefix(strapi);
+  const agent = await client.getAgent(strapi as never, agentId);
+  const attached = agent.conversation_config?.agent?.prompt?.knowledge_base ?? [];
+  return attached.filter((d) => !d.name.startsWith(prefix) && !synced.some((l) => l.id === d.id));
 }
 
 // ── Single-entry sync ────────────────────────────────────────────────
@@ -374,8 +391,10 @@ export async function clearAll(strapi: Strapi): Promise<{ deleted: number }> {
   for (const r of rows) await deleteLogRow(strapi, r.id);
   const agentId = getResolvedAgentId(strapi as never);
   if (agentId) {
-    try { await client.setAgentKnowledgeBase(strapi as never, agentId, []); }
-    catch (err) { strapi.log.warn(`[${PLUGIN_ID}] failed to clear agent KB: ${(err as Error).message}`); }
+    try {
+      const manual = await listManualAttachments(strapi, agentId, []);
+      await client.setAgentKnowledgeBase(strapi as never, agentId, manual);
+    } catch (err) { strapi.log.warn(`[${PLUGIN_ID}] failed to clear agent KB: ${(err as Error).message}`); }
   }
   return { deleted };
 }
