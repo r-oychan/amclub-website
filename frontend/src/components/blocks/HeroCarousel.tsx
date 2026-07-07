@@ -327,7 +327,12 @@ export function HeroCarousel({
                     /* Title and subtitle in different zones */
                     <>
                       {slide.title && (
-                        <div className={`absolute flex flex-col max-w-2xl lg:max-w-3xl ${ZONE_CLASSES[slideTitlePos]}`}>
+                        /* Cap the title at 50% of the container until 2xl (1440) so it
+                           wraps instead of running into the opposite-zone subtitle —
+                           the 90px font kicks in at xl (1200) but max-w-3xl + max-w-md
+                           only fit side by side from ~1440 up. Mirrors Framer, which
+                           holds the hero title to ~50% width at these breakpoints. */
+                        <div className={`absolute flex flex-col max-w-2xl lg:max-w-[50%] 2xl:max-w-3xl ${ZONE_CLASSES[slideTitlePos]}`}>
                           <h1
                             className="font-heading italic text-[2.5rem] xl:text-[90px] leading-none tracking-[-0.04em] text-bg"
                             style={{
