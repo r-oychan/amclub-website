@@ -53,11 +53,31 @@ export function HeroCarousel({
   const videoRefs = useRef<Record<number, HTMLVideoElement | null>>({});
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const rafRef = useRef<number | null>(null);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   const goTo = (index: number) => {
     const next = ((index % slides.length) + slides.length) % slides.length;
     setProgress(0);
     setCurrent(next);
+  };
+
+  // Touch swipe: a mostly-horizontal swipe of 50px+ moves to the next/previous
+  // slide. Vertical pans fall through to normal page scrolling, and taps stay
+  // taps (links/CTAs keep working) since we never preventDefault.
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const t = e.touches[0];
+    touchStartRef.current = { x: t.clientX, y: t.clientY };
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const start = touchStartRef.current;
+    touchStartRef.current = null;
+    if (!start || slides.length <= 1) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - start.x;
+    const dy = t.clientY - start.y;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+      goTo(current + (dx < 0 ? 1 : -1));
+    }
   };
 
   const advance = () => {
@@ -143,6 +163,8 @@ export function HeroCarousel({
   return (
     <section
       className={`relative w-full overflow-hidden ${fit ? 'bg-primary' : 'h-screen max-h-screen'}`}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       {/* Slides */}
       <div
@@ -327,7 +349,12 @@ export function HeroCarousel({
                     /* Title and subtitle in different zones */
                     <>
                       {slide.title && (
-                        <div className={`absolute flex flex-col max-w-2xl lg:max-w-3xl ${ZONE_CLASSES[slideTitlePos]}`}>
+                        /* Cap the title at 50% of the container until 2xl (1440) so it
+                           wraps instead of running into the opposite-zone subtitle —
+                           the 90px font kicks in at xl (1200) but max-w-3xl + max-w-md
+                           only fit side by side from ~1440 up. Mirrors Framer, which
+                           holds the hero title to ~50% width at these breakpoints. */
+                        <div className={`absolute flex flex-col max-w-2xl lg:max-w-[50%] 2xl:max-w-3xl ${ZONE_CLASSES[slideTitlePos]}`}>
                           <h1
                             className="font-heading italic text-[2.5rem] xl:text-[90px] leading-none tracking-[-0.04em] text-bg"
                             style={{
