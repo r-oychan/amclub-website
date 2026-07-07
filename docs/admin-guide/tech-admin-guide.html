@@ -28,6 +28,7 @@
       <ol>
         <li><a href="#content-types">Content types</a></li>
         <li><a href="#plugins">Plugins &amp; customisations</a></li>
+        <li><a href="#elevenlabs">ElevenLabs chatbot sync</a></li>
       </ol>
     </li>
     <li><a href="#users-sso">5. Admin Users, Roles &amp; SSO</a></li>
@@ -36,10 +37,11 @@
     <li><a href="#media">8. Media Storage</a></li>
     <li><a href="#cicd">9. CI/CD</a></li>
     <li><a href="#infra">10. Infrastructure (Pulumi/Azure)</a></li>
-    <li><a href="#frontend">11. Frontend Integration</a></li>
-    <li><a href="#verification">12. Verification Commands</a></li>
-    <li><a href="#troubleshooting">13. Troubleshooting</a></li>
-    <li><a href="#reference">14. Key File Reference</a></li>
+    <li><a href="#dns">11. DNS &amp; Custom Domains (Cloudflare)</a></li>
+    <li><a href="#frontend">12. Frontend Integration</a></li>
+    <li><a href="#verification">13. Verification Commands</a></li>
+    <li><a href="#troubleshooting">14. Troubleshooting</a></li>
+    <li><a href="#reference">15. Key File Reference</a></li>
   </ol>
 </aside>
 
@@ -51,7 +53,7 @@
   <p>Architecture, environments, deployment, CMS internals, content seeding, and operations runbook for the
      amclub-website monorepo. For day-to-day content editing, hand editors the
      <a href="cms-user-guide.html" style="color:#f0b9bd">CMS User Guide</a>.</p>
-  <p class="meta">Last updated 8 June 2026 · Sources: repo <code>docs/</code>, <code>SPECS.md</code>, <code>infra/</code>,
+  <p class="meta">Last updated 8 July 2026 · Sources: repo <code>docs/</code>, <code>SPECS.md</code>, <code>infra/</code>,
      workflows · Screenshots from UAT admin</p>
 </div>
 
@@ -71,9 +73,77 @@
       <tr><td>Chatbot</td><td>ElevenLabs agent fed by a custom Strapi plugin syncing published content to its knowledge base</td></tr>
     </tbody>
   </table>
+  <figure class="diagram">
+    <svg viewBox="0 0 940 430" role="img" aria-labelledby="arch-title arch-desc" xmlns="http://www.w3.org/2000/svg">
+      <title id="arch-title">Runtime request flow</title>
+      <desc id="arch-desc">Member browsers and content editors reach the site through Cloudflare DNS and proxy, which
+        forwards to an Azure Container App. Inside the container, nginx routes requests to the React single-page app or
+        to Strapi. Strapi reads and writes PostgreSQL and Azure Blob Storage, and syncs published content to the
+        ElevenLabs chatbot knowledge base.</desc>
+      <defs>
+        <marker id="arrN" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="#14213d"/>
+        </marker>
+      </defs>
+      <!-- actors -->
+      <rect x="16" y="60" width="132" height="60" rx="9" fill="#e9f0fa" stroke="#1d4f91"/>
+      <text x="82" y="86" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#14213d">Member</text>
+      <text x="82" y="104" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#5c6470">browser</text>
+      <rect x="16" y="300" width="132" height="60" rx="9" fill="#e9f0fa" stroke="#1d4f91"/>
+      <text x="82" y="326" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#14213d">Content editor</text>
+      <text x="82" y="344" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#5c6470">/admin</text>
+      <!-- cloudflare -->
+      <rect x="176" y="146" width="150" height="128" rx="10" fill="#fdf3e0" stroke="#8a5800"/>
+      <text x="251" y="196" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#14213d">Cloudflare</text>
+      <text x="251" y="216" text-anchor="middle" font-family="sans-serif" font-size="11.5" fill="#5c6470">DNS · proxy · TLS</text>
+      <text x="251" y="232" text-anchor="middle" font-family="sans-serif" font-size="11.5" fill="#5c6470">§11</text>
+      <line x1="148" y1="92" x2="176" y2="172" stroke="#14213d" stroke-width="2" marker-end="url(#arrN)"/>
+      <line x1="148" y1="330" x2="176" y2="248" stroke="#14213d" stroke-width="2" marker-end="url(#arrN)"/>
+      <!-- azure boundary -->
+      <rect x="350" y="24" width="574" height="300" rx="12" fill="none" stroke="#1d4f91" stroke-width="1.5" stroke-dasharray="6 5"/>
+      <text x="366" y="44" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#1d4f91">Microsoft Azure · Container Apps Environment (southeastasia) — amclub-&lt;env&gt;-env</text>
+      <!-- container app -->
+      <rect x="366" y="58" width="300" height="252" rx="10" fill="#f7f8fa" stroke="#14213d"/>
+      <text x="382" y="78" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#14213d">Container App — amclub-&lt;env&gt;-app (1 replica)</text>
+      <rect x="382" y="92" width="120" height="58" rx="8" fill="#fff" stroke="#5c6470"/>
+      <text x="442" y="116" text-anchor="middle" font-family="sans-serif" font-size="12.5" font-weight="700" fill="#14213d">nginx :80</text>
+      <text x="442" y="133" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#5c6470">routes</text>
+      <rect x="382" y="170" width="120" height="118" rx="8" fill="#e3f5ec" stroke="#1a7a4c"/>
+      <text x="442" y="220" text-anchor="middle" font-family="sans-serif" font-size="12.5" font-weight="700" fill="#14213d">React SPA</text>
+      <text x="442" y="238" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#5c6470">/  (static)</text>
+      <rect x="524" y="92" width="128" height="196" rx="8" fill="#efeafb" stroke="#5b3fb0"/>
+      <text x="588" y="170" text-anchor="middle" font-family="sans-serif" font-size="12.5" font-weight="700" fill="#14213d">Strapi :1337</text>
+      <text x="588" y="188" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#5c6470">/api · /admin</text>
+      <text x="588" y="204" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#5c6470">/strapi-plugin-sso</text>
+      <line x1="502" y1="138" x2="524" y2="150" stroke="#14213d" stroke-width="1.8" marker-end="url(#arrN)"/>
+      <line x1="442" y1="150" x2="442" y2="170" stroke="#14213d" stroke-width="1.8" marker-end="url(#arrN)"/>
+      <!-- cloudflare to ingress -->
+      <line x1="326" y1="206" x2="382" y2="120" stroke="#14213d" stroke-width="2" marker-end="url(#arrN)"/>
+      <!-- data stores -->
+      <rect x="698" y="76" width="210" height="58" rx="9" fill="#e9f0fa" stroke="#1d4f91"/>
+      <text x="803" y="100" text-anchor="middle" font-family="sans-serif" font-size="12.5" font-weight="700" fill="#14213d">PostgreSQL 16</text>
+      <text x="803" y="118" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#5c6470">amclub-&lt;env&gt;-pg · :5432 SSL</text>
+      <rect x="698" y="152" width="210" height="58" rx="9" fill="#e9f0fa" stroke="#1d4f91"/>
+      <text x="803" y="176" text-anchor="middle" font-family="sans-serif" font-size="12.5" font-weight="700" fill="#14213d">Blob Storage</text>
+      <text x="803" y="194" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#5c6470">amclub&lt;env&gt;data / media</text>
+      <line x1="652" y1="150" x2="698" y2="110" stroke="#14213d" stroke-width="1.8" marker-end="url(#arrN)"/>
+      <line x1="652" y1="186" x2="698" y2="184" stroke="#14213d" stroke-width="1.8" marker-end="url(#arrN)"/>
+      <!-- elevenlabs external -->
+      <rect x="698" y="344" width="210" height="60" rx="9" fill="#efeafb" stroke="#5b3fb0"/>
+      <text x="803" y="370" text-anchor="middle" font-family="sans-serif" font-size="12.5" font-weight="700" fill="#14213d">ElevenLabs API</text>
+      <text x="803" y="388" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#5c6470">chatbot knowledge base</text>
+      <path d="M600 288 C 640 360 680 374 698 374" fill="none" stroke="#5b3fb0" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#arrN)"/>
+      <text x="612" y="350" font-family="sans-serif" font-size="10" fill="#5b3fb0">on publish</text>
+    </svg>
+    <figcaption>Runtime request flow. One all-in-one container per environment; the deployed SPA always calls its own
+      origin (<code>/api</code>). <code>/uploads/*</code> is reverse-proxied by nginx to the blob container, so media
+      serves from the site origin, not the raw blob host. DNS &amp; TLS termination details are in <a href="#dns">§11</a>.</figcaption>
+  </figure>
+
   <h3>Request routing (inside the container)</h3>
   <p><code>docker/nginx.conf</code> routes <code>/</code> → built SPA, <code>/api/*</code> → Strapi (:1337),
-     <code>/admin/*</code> → Strapi admin, <code>/strapi-plugin-sso/*</code> → SSO endpoints. The deployed frontend
+     <code>/admin/*</code> → Strapi admin, <code>/strapi-plugin-sso/*</code> → SSO endpoints,
+     <code>/uploads/*</code> → Azure Blob container. The deployed frontend
      always talks to <em>its own origin</em> (<code>/api</code>) — never a hardcoded Strapi URL.</p>
   <div class="callout note">
     <span class="label">Design &amp; spec sources of truth</span>
@@ -114,6 +184,49 @@
       </tr>
     </tbody>
   </table>
+  <figure class="diagram">
+    <svg viewBox="0 0 880 240" role="img" aria-labelledby="promo-title promo-desc" xmlns="http://www.w3.org/2000/svg">
+      <title id="promo-title">Branch to environment promotion</title>
+      <desc id="promo-desc">All work commits to the dev branch, which deploys to the dev environment. Changes promote
+        by pull request from dev to uat to main; each branch deploys to its matching environment automatically.</desc>
+      <defs>
+        <marker id="arrP" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="#14213d"/>
+        </marker>
+      </defs>
+      <!-- branches -->
+      <rect x="40" y="34" width="170" height="50" rx="9" fill="#e9f0fa" stroke="#1d4f91"/>
+      <text x="125" y="64" text-anchor="middle" font-family="monospace" font-size="15" font-weight="700" fill="#14213d">dev</text>
+      <rect x="355" y="34" width="170" height="50" rx="9" fill="#fdf3e0" stroke="#8a5800"/>
+      <text x="440" y="64" text-anchor="middle" font-family="monospace" font-size="15" font-weight="700" fill="#14213d">uat</text>
+      <rect x="670" y="34" width="170" height="50" rx="9" fill="#fbeaec" stroke="#9c1f28"/>
+      <text x="755" y="64" text-anchor="middle" font-family="monospace" font-size="15" font-weight="700" fill="#14213d">main</text>
+      <line x1="210" y1="59" x2="353" y2="59" stroke="#14213d" stroke-width="2" marker-end="url(#arrP)"/>
+      <text x="281" y="49" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#5c6470">PR promote</text>
+      <line x1="525" y1="59" x2="668" y2="59" stroke="#14213d" stroke-width="2" marker-end="url(#arrP)"/>
+      <text x="596" y="49" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#5c6470">PR promote</text>
+      <!-- deploy arrows -->
+      <line x1="125" y1="84" x2="125" y2="140" stroke="#14213d" stroke-width="1.8" marker-end="url(#arrP)"/>
+      <line x1="440" y1="84" x2="440" y2="140" stroke="#14213d" stroke-width="1.8" marker-end="url(#arrP)"/>
+      <line x1="755" y1="84" x2="755" y2="140" stroke="#14213d" stroke-width="1.8" marker-end="url(#arrP)"/>
+      <text x="138" y="118" font-family="sans-serif" font-size="10" fill="#5c6470">CI deploys</text>
+      <!-- env boxes -->
+      <rect x="40" y="142" width="170" height="64" rx="9" fill="#fff" stroke="#1d4f91"/>
+      <text x="125" y="166" text-anchor="middle" font-family="sans-serif" font-size="12.5" font-weight="700" fill="#14213d">DEV env</text>
+      <text x="125" y="184" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#5c6470">dev.amclub.org.sg</text>
+      <text x="125" y="198" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#1a7a4c">commit here first</text>
+      <rect x="355" y="142" width="170" height="64" rx="9" fill="#fff" stroke="#8a5800"/>
+      <text x="440" y="166" text-anchor="middle" font-family="sans-serif" font-size="12.5" font-weight="700" fill="#14213d">UAT env</text>
+      <text x="440" y="184" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#5c6470">uat.amclub.org.sg</text>
+      <text x="440" y="198" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#9c1f28">no direct push</text>
+      <rect x="670" y="142" width="170" height="64" rx="9" fill="#fff" stroke="#9c1f28"/>
+      <text x="755" y="166" text-anchor="middle" font-family="sans-serif" font-size="12.5" font-weight="700" fill="#14213d">PROD env</text>
+      <text x="755" y="184" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#5c6470">amclub.org.sg</text>
+      <text x="755" y="198" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#9c1f28">no direct push</text>
+    </svg>
+    <figcaption>Three long-lived branches, three environments. Pushing to a branch triggers CI → deploy for that env
+      (<a href="#cicd">§9</a>); promotion between environments is by pull request only. Never force-push <code>uat</code>/<code>main</code>.</figcaption>
+  </figure>
   <p>Check what's queued for promotion:</p>
   <pre><code>git log --oneline origin/uat..origin/dev    # ready for UAT
 git log --oneline origin/main..origin/uat   # ready for PROD</code></pre>
@@ -220,6 +333,62 @@ git log --oneline origin/main..origin/uat   # ready for PROD</code></pre>
     <p>Media fields <em>newly added</em> to existing single types/components don't persist via REST PUT on this
        project's local DB (e.g. <code>header.menuIcon</code>). Frontend fallbacks are used until proper migrations land —
        see <code>docs/strapi-patterns.md</code>.</p>
+  </div>
+
+  <h3 id="elevenlabs">ElevenLabs chatbot sync</h3>
+  <p>The on-site assistant is an <strong>ElevenLabs Conversational AI agent</strong>. Its answers are grounded in a
+     <em>knowledge base</em> (KB) that the local <code>elevenlabs-chatbot</code> plugin keeps in step with published CMS
+     content. The plugin lives in <code>cms/src/plugins/elevenlabs-chatbot/</code>; host config is in
+     <code>cms/config/plugins.ts</code>.</p>
+  <table>
+    <thead><tr><th>Mechanism</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>Publish-time sync</td>
+          <td><code>autoSyncOnPublish: true</code> (env <code>ELEVENLABS_AUTOSYNC</code>). A lifecycle hook subscribes to
+              <em>all</em> <code>api::*</code> models and, on publish/update of an <strong>allow-listed</strong> type,
+              renders the entry to Markdown and upserts it as a KB document.</td></tr>
+      <tr><td>Allow-list</td>
+          <td><code>DEFAULT_ELEVENLABS_CONTENT_TYPES</code> in <code>cms/config/plugins.ts</code> (all page singletons +
+              events, news, restaurants, venues, facilities, committee members, FAQ items, testimonials, gallery albums).
+              The plugin <strong>Settings page</strong> in <code>/admin</code> overrides this allow-list at runtime once saved.</td></tr>
+      <tr><td>Document naming</td>
+          <td>KB docs are prefixed <code>am-club:</code> (<code>ELEVENLABS_DOC_PREFIX</code>) so the sweep can identify
+              and prune documents it owns without touching manually-added KB entries.</td></tr>
+      <tr><td>Expiry sweep (cron)</td>
+          <td><code>0 * * * *</code> hourly job (<code>expiryKbSweep</code> in <code>cms/src/index.ts</code>) unsyncs
+              entries whose <code>expiredAt</code>/<code>date</code> has passed — keeps the bot from citing stale events.</td></tr>
+      <tr><td>Manual re-sync</td>
+          <td>The <strong>"Sync to ElevenLabs"</strong> panel on a published entry (<code>EditViewSidePanel</code>) forces an
+              immediate upsert. Bulk re-sync is available from the plugin Settings page.</td></tr>
+      <tr><td>Widget config</td>
+          <td>The public widget reads agent/config from the plugin's <code>public-config</code> endpoint;
+              <code>ELEVENLABS_AGENT_ID</code> is public, <code>ELEVENLABS_API_KEY</code> is a Container App secret.</td></tr>
+    </tbody>
+  </table>
+  <div class="callout note">
+    <span class="label">Required env vars</span>
+    <p><code>ELEVENLABS_API_KEY</code> (secret) + <code>ELEVENLABS_AGENT_ID</code> (GitHub environment
+       <em>variable</em>) per environment → injected by Pulumi. If unset, the plugin no-ops gracefully (no sync, no
+       widget) — useful for local dev. Each environment points at its <em>own</em> ElevenLabs agent so UAT edits don't
+       pollute the prod KB.</p>
+  </div>
+  <div class="callout warn">
+    <span class="label">Account topology (since July 2026) — two ElevenLabs accounts</span>
+    <p><strong>dev</strong> uses the agency's original ElevenLabs account (agent <em>American Club Agent - Dev</em>,
+       <code>agent_2501kr…</code>) for internal testing. <strong>uat</strong> and <strong>prod</strong> use the
+       <em>Club's own</em> ElevenLabs account (agents <em>amclub.org.sg - uat</em> <code>agent_6001kv…</code> and
+       <em>amclub.org.sg - prod</em> <code>agent_8501kw…</code>) — so the two environments need the Club account's
+       API key, and dev needs the old one. Keep this in mind when rotating <code>ELEVENLABS_API_KEY</code>: it is a
+       <em>different key</em> for dev vs uat/prod. Prod's KB is the single source of truth; UAT may lag behind it.</p>
+  </div>
+  <div class="callout note">
+    <span class="label">Agent prompt &amp; tone</span>
+    <p>The agent system prompt is versioned at <code>agent/prompt.md</code> — datetime-aware (the widget injects live
+       Singapore date/time as dynamic variables each session), grounded-in-KB rules, department contacts, and tone
+       aligned with <code>reference/TAC_Master_FAQ_Repository.xlsx</code>. Apply prompt changes to <em>all</em> agents
+       via the ElevenLabs API/console after editing the file. Manually attached KB docs (no <code>am-club:</code>
+       prefix, e.g. <code>manual:faq-master-repository</code>) are preserved by the sync — it only manages docs it
+       owns.</p>
   </div>
 </section>
 
@@ -351,7 +520,7 @@ curl -sS "$BASE/api/upload/files?pagination[pageSize]=1" &gt; /dev/null</code></
     <span class="label">"Deploy succeeded" but the site looks stale?</span>
     <p>The new Container App revision may have failed its probes and traffic stayed on the old one. Check
        <code>az containerapp revision list</code> / <code>az containerapp logs show</code> —
-       recipe in <a href="#troubleshooting">§13</a>.</p>
+       recipe in <a href="#troubleshooting">§14</a>.</p>
   </div>
 </section>
 
@@ -383,8 +552,269 @@ curl -sS "$BASE/api/upload/files?pagination[pageSize]=1" &gt; /dev/null</code></
 </section>
 
 <!-- ============================================================ -->
+<section class="card" id="dns">
+  <h2>11. DNS &amp; Custom Domains (Cloudflare → Azure)</h2>
+  <p>DNS for <code>amclub.org.sg</code> is hosted at <strong>Cloudflare</strong>. Cloudflare resolves each hostname to
+     the Azure <strong>Container Apps Environment static IP</strong> and (optionally) proxies the traffic. Azure
+     terminates TLS at the Container App ingress with a <strong>managed certificate per hostname</strong>, bound via
+     Pulumi. There is no separate web server or load balancer to manage.</p>
+
+  <figure class="diagram">
+    <svg viewBox="0 0 900 250" role="img" aria-labelledby="dns-title dns-desc" xmlns="http://www.w3.org/2000/svg">
+      <title id="dns-title">DNS and TLS path from Cloudflare to Azure</title>
+      <desc id="dns-desc">A visitor resolves the hostname via Cloudflare DNS, which returns an A record pointing to the
+        Azure Container Apps Environment static IP. Cloudflare proxies the request over TLS to the Azure ingress, which
+        presents an Azure-managed certificate bound by SNI. Domain ownership is proven with an asuid TXT record.</desc>
+      <defs>
+        <marker id="arrD" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="#14213d"/>
+        </marker>
+      </defs>
+      <rect x="16" y="92" width="120" height="60" rx="9" fill="#e9f0fa" stroke="#1d4f91"/>
+      <text x="76" y="118" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#14213d">Visitor</text>
+      <text x="76" y="136" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#5c6470">browser</text>
+      <line x1="136" y1="122" x2="186" y2="122" stroke="#14213d" stroke-width="2" marker-end="url(#arrD)"/>
+      <!-- cloudflare -->
+      <rect x="188" y="56" width="230" height="132" rx="10" fill="#fdf3e0" stroke="#8a5800"/>
+      <text x="303" y="80" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#14213d">Cloudflare</text>
+      <text x="303" y="102" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#5c6470">DNS zone amclub.org.sg</text>
+      <text x="303" y="120" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#5c6470">A record → Azure static IP</text>
+      <text x="303" y="138" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#5c6470">asuid TXT → verification id</text>
+      <text x="303" y="160" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#8a5800">proxy + edge TLS · SSL: Full (Strict)</text>
+      <line x1="418" y1="122" x2="468" y2="122" stroke="#14213d" stroke-width="2" marker-end="url(#arrD)"/>
+      <!-- azure -->
+      <rect x="470" y="56" width="240" height="132" rx="10" fill="#e9f0fa" stroke="#1d4f91"/>
+      <text x="590" y="80" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#14213d">Azure Container Apps Env</text>
+      <text x="590" y="102" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#5c6470">static IP (stable for env life)</text>
+      <text x="590" y="120" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#5c6470">ingress :443 · SNI binding</text>
+      <text x="590" y="138" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#5c6470">managed cert per hostname</text>
+      <text x="590" y="160" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#1d4f91">bound via Pulumi customDomains</text>
+      <line x1="710" y1="122" x2="760" y2="122" stroke="#14213d" stroke-width="2" marker-end="url(#arrD)"/>
+      <rect x="762" y="92" width="124" height="60" rx="9" fill="#efeafb" stroke="#5b3fb0"/>
+      <text x="824" y="118" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="700" fill="#14213d">Container App</text>
+      <text x="824" y="136" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#5c6470">amclub-&lt;env&gt;-app</text>
+      <text x="303" y="216" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#5c6470">A record (not CNAME) avoids Cloudflare CNAME-flattening issues at the apex with the proxy on</text>
+    </svg>
+    <figcaption>DNS &amp; TLS path. Cloudflare resolves the hostname to Azure's environment static IP; Azure presents the
+      managed cert. Use an <strong>A record</strong> (not CNAME) — see <code>infra/index.ts</code> note on
+      <code>containerEnvStaticIp</code>.</figcaption>
+  </figure>
+
+  <h3>DNS records in Cloudflare</h3>
+  <p>Per hostname there are two records — an address record and an Azure ownership-verification record:</p>
+  <table>
+    <thead><tr><th>Type</th><th>Name</th><th>Value</th><th>Proxy</th></tr></thead>
+    <tbody>
+      <tr><td><code>A</code></td><td><code>amclub.org.sg</code> / <code>www</code> / <code>uat</code> / <code>dev</code></td>
+          <td>Container Apps Environment static IP — Pulumi output <code>containerEnvStaticIp</code></td>
+          <td>Proxied (orange) in steady state; <strong>DNS-only (grey) during cert issuance</strong></td></tr>
+      <tr><td><code>TXT</code></td><td><code>asuid.&lt;host&gt;</code> (e.g. <code>asuid.uat</code>, <code>asuid</code> for apex)</td>
+          <td>Pulumi output <code>customDomainVerificationId</code> for that environment</td>
+          <td>n/a</td></tr>
+    </tbody>
+  </table>
+  <pre><code># pull the two values Cloudflare needs, per environment
+pulumi stack select &lt;dev|uat|prod&gt;
+pulumi stack output containerEnvStaticIp        # → A record value
+pulumi stack output customDomainVerificationId  # → asuid TXT value</code></pre>
+
+  <h3 id="dns-live-map">Live hostname → IP map</h3>
+  <p>The zone's nameservers are <code>hunts.ns.cloudflare.com</code> / <code>tori.ns.cloudflare.com</code>.
+     Current bindings (verified July 2026 — always re-check with <code>pulumi stack output</code> or
+     <code>dig</code> before relying on these):</p>
+  <table>
+    <thead><tr><th>Env</th><th>Public hostname</th><th>A record → static IP</th><th>Container App ingress FQDN</th><th>Storage account</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge env-prod">prod</span></td><td><code>amclub.org.sg</code>, <code>www.amclub.org.sg</code></td><td><code>20.195.32.232</code></td>
+          <td><code>amclub-prod-app.ambitiouscliff-0c553c6f<wbr>.southeastasia.azurecontainerapps.io</code></td><td><code>amclubproddata</code></td></tr>
+      <tr><td><span class="badge env-uat">uat</span></td><td><code>uat.amclub.org.sg</code></td><td><code>20.43.173.85</code></td>
+          <td><code>amclub-uat-app.greenglacier-d9f69a0a<wbr>.southeastasia.azurecontainerapps.io</code></td><td><code>amclubuatdata</code></td></tr>
+      <tr><td><span class="badge env-dev">dev</span></td><td><code>dev.amclub.org.sg</code></td><td><code>104.43.55.4</code></td>
+          <td><code>amclub-dev-app.mangorock-5b6aa4c0<wbr>.southeastasia.azurecontainerapps.io</code></td><td><code>amclubdevdata</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout danger">
+    <span class="label">Gotcha — the Club's internal network does NOT use Cloudflare</span>
+    <p>The American Club's internal office network resolves <code>amclub.org.sg</code> hostnames through the Club's
+       <strong>own internal DNS servers</strong>, where the records were duplicated during the Cloudflare migration.
+       Changes made in Cloudflare <strong>do not propagate</strong> to that internal DNS. If a static IP ever changes
+       (an environment is recreated, moved to another subscription/region, or re-provisioned by Pulumi), the Club's IT
+       team must <strong>manually update the internal DNS records</strong> — otherwise devices on the Club network keep
+       resolving the old IP while the public internet works fine. Classic symptom: <em>"the site works on mobile data
+       but not on Club Wi-Fi."</em> After any IP change: update Cloudflare, then notify Club IT with the new IP(s) from
+       the table above.</p>
+  </div>
+
+  <figure class="diagram">
+    <svg viewBox="0 0 960 700" role="img" aria-labelledby="topo-title topo-desc" xmlns="http://www.w3.org/2000/svg">
+      <title id="topo-title">Deployment topology and domain map</title>
+      <desc id="topo-desc">Cloudflare DNS resolves amclub.org.sg hostnames to three Azure Container Apps environments —
+        prod, uat and dev — each with its own static IP, container app, storage account and PostgreSQL server. Inside
+        every container app one Docker image runs nginx, which serves the React SPA, proxies API and admin traffic to
+        Strapi on localhost port 1337, and reverse-proxies uploaded media from the environment's Azure Blob Storage
+        container.</desc>
+      <defs>
+        <marker id="arrT" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="#14213d"/>
+        </marker>
+      </defs>
+
+      <!-- Cloudflare zone -->
+      <rect x="20" y="14" width="920" height="96" rx="10" fill="#fdf3e0" stroke="#8a5800"/>
+      <text x="480" y="38" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#14213d">Cloudflare DNS — zone amclub.org.sg</text>
+      <text x="480" y="56" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#5c6470">NS: hunts.ns.cloudflare.com · tori.ns.cloudflare.com</text>
+      <text x="480" y="76" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#14213d">A  amclub.org.sg / www → 20.195.32.232&#160;&#160;·&#160;&#160;A  uat → 20.43.173.85&#160;&#160;·&#160;&#160;A  dev → 104.43.55.4</text>
+      <text x="480" y="94" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#8a5800">+ asuid.&lt;host&gt; TXT verification records · proxy + edge TLS · SSL Full (Strict)</text>
+
+      <!-- arrows to columns -->
+      <line x1="180" y1="110" x2="180" y2="140" stroke="#14213d" stroke-width="2" marker-end="url(#arrT)"/>
+      <line x1="480" y1="110" x2="480" y2="140" stroke="#14213d" stroke-width="2" marker-end="url(#arrT)"/>
+      <line x1="780" y1="110" x2="780" y2="140" stroke="#14213d" stroke-width="2" marker-end="url(#arrT)"/>
+
+      <!-- PROD column -->
+      <rect x="24" y="142" width="300" height="288" rx="10" fill="none" stroke="#1d4f91" stroke-width="1.5" stroke-dasharray="6 5"/>
+      <text x="40" y="164" font-family="sans-serif" font-size="12" font-weight="700" fill="#1d4f91">PROD — amclub-prod-env</text>
+      <text x="40" y="181" font-family="sans-serif" font-size="10.5" fill="#5c6470">static IP 20.195.32.232 · Website subscription</text>
+      <rect x="40" y="192" width="268" height="120" rx="8" fill="#e9f0fa" stroke="#1d4f91"/>
+      <text x="174" y="214" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#14213d">Container App — amclub-prod-app</text>
+      <text x="174" y="234" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#14213d">amclub.org.sg · www.amclub.org.sg</text>
+      <text x="174" y="254" text-anchor="middle" font-family="sans-serif" font-size="8.5" fill="#5c6470">amclub-prod-app.ambitiouscliff-0c553c6f</text>
+      <text x="174" y="266" text-anchor="middle" font-family="sans-serif" font-size="8.5" fill="#5c6470">.southeastasia.azurecontainerapps.io</text>
+      <text x="174" y="290" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#1d4f91">ingress :443 → docker :80 (see below)</text>
+      <rect x="40" y="326" width="268" height="42" rx="8" fill="#fff" stroke="#5c6470"/>
+      <text x="174" y="344" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#14213d">Blob — amclubproddata / media</text>
+      <text x="174" y="360" text-anchor="middle" font-family="sans-serif" font-size="9.5" fill="#5c6470">amclubproddata.blob.core.windows.net</text>
+      <rect x="40" y="376" width="268" height="42" rx="8" fill="#fff" stroke="#5c6470"/>
+      <text x="174" y="394" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#14213d">PostgreSQL 16 — amclub-prod-pg</text>
+      <text x="174" y="410" text-anchor="middle" font-family="sans-serif" font-size="9.5" fill="#5c6470">:5432 SSL · flexible server</text>
+
+      <!-- UAT column -->
+      <rect x="330" y="142" width="300" height="288" rx="10" fill="none" stroke="#1d4f91" stroke-width="1.5" stroke-dasharray="6 5"/>
+      <text x="346" y="164" font-family="sans-serif" font-size="12" font-weight="700" fill="#1d4f91">UAT — amclub-uat-env</text>
+      <text x="346" y="181" font-family="sans-serif" font-size="10.5" fill="#5c6470">static IP 20.43.173.85 · Website subscription</text>
+      <rect x="346" y="192" width="268" height="120" rx="8" fill="#e9f0fa" stroke="#1d4f91"/>
+      <text x="480" y="214" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#14213d">Container App — amclub-uat-app</text>
+      <text x="480" y="234" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#14213d">uat.amclub.org.sg</text>
+      <text x="480" y="254" text-anchor="middle" font-family="sans-serif" font-size="8.5" fill="#5c6470">amclub-uat-app.greenglacier-d9f69a0a</text>
+      <text x="480" y="266" text-anchor="middle" font-family="sans-serif" font-size="8.5" fill="#5c6470">.southeastasia.azurecontainerapps.io</text>
+      <text x="480" y="290" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#1d4f91">ingress :443 → docker :80 (see below)</text>
+      <rect x="346" y="326" width="268" height="42" rx="8" fill="#fff" stroke="#5c6470"/>
+      <text x="480" y="344" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#14213d">Blob — amclubuatdata / media</text>
+      <text x="480" y="360" text-anchor="middle" font-family="sans-serif" font-size="9.5" fill="#5c6470">amclubuatdata.blob.core.windows.net</text>
+      <rect x="346" y="376" width="268" height="42" rx="8" fill="#fff" stroke="#5c6470"/>
+      <text x="480" y="394" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#14213d">PostgreSQL 16 — amclub-uat-pg</text>
+      <text x="480" y="410" text-anchor="middle" font-family="sans-serif" font-size="9.5" fill="#5c6470">:5432 SSL · flexible server</text>
+
+      <!-- DEV column -->
+      <rect x="636" y="142" width="300" height="288" rx="10" fill="none" stroke="#1d4f91" stroke-width="1.5" stroke-dasharray="6 5"/>
+      <text x="652" y="164" font-family="sans-serif" font-size="12" font-weight="700" fill="#1d4f91">DEV — amclub-dev-env</text>
+      <text x="652" y="181" font-family="sans-serif" font-size="10.5" fill="#5c6470">static IP 104.43.55.4 · Prefix subscription</text>
+      <rect x="652" y="192" width="268" height="120" rx="8" fill="#e9f0fa" stroke="#1d4f91"/>
+      <text x="786" y="214" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#14213d">Container App — amclub-dev-app</text>
+      <text x="786" y="234" text-anchor="middle" font-family="sans-serif" font-size="10.5" fill="#14213d">dev.amclub.org.sg</text>
+      <text x="786" y="254" text-anchor="middle" font-family="sans-serif" font-size="8.5" fill="#5c6470">amclub-dev-app.mangorock-5b6aa4c0</text>
+      <text x="786" y="266" text-anchor="middle" font-family="sans-serif" font-size="8.5" fill="#5c6470">.southeastasia.azurecontainerapps.io</text>
+      <text x="786" y="290" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#1d4f91">ingress :443 → docker :80 (see below)</text>
+      <rect x="652" y="326" width="268" height="42" rx="8" fill="#fff" stroke="#5c6470"/>
+      <text x="786" y="344" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#14213d">Blob — amclubdevdata / media</text>
+      <text x="786" y="360" text-anchor="middle" font-family="sans-serif" font-size="9.5" fill="#5c6470">amclubdevdata.blob.core.windows.net</text>
+      <rect x="652" y="376" width="268" height="42" rx="8" fill="#fff" stroke="#5c6470"/>
+      <text x="786" y="394" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#14213d">PostgreSQL 16 — amclub-dev-pg</text>
+      <text x="786" y="410" text-anchor="middle" font-family="sans-serif" font-size="9.5" fill="#5c6470">:5432 SSL · flexible server</text>
+
+      <!-- docker detail lane -->
+      <line x1="480" y1="430" x2="480" y2="456" stroke="#14213d" stroke-width="2" marker-end="url(#arrT)"/>
+      <rect x="24" y="458" width="912" height="228" rx="10" fill="#f7f8fa" stroke="#14213d"/>
+      <text x="40" y="482" font-family="sans-serif" font-size="12" font-weight="700" fill="#14213d">Inside every Container App — one all-in-one Docker image (infra/docker/)</text>
+      <rect x="40" y="498" width="170" height="150" rx="8" fill="#fff" stroke="#5c6470"/>
+      <text x="125" y="524" text-anchor="middle" font-family="sans-serif" font-size="12.5" font-weight="700" fill="#14213d">nginx :80</text>
+      <text x="125" y="544" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#5c6470">infra/docker/nginx.conf</text>
+      <text x="125" y="562" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#5c6470">routes by path prefix</text>
+      <rect x="284" y="498" width="240" height="64" rx="8" fill="#e3f5ec" stroke="#1a7a4c"/>
+      <text x="404" y="522" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#14213d">React SPA (static files)</text>
+      <text x="404" y="540" text-anchor="middle" font-family="sans-serif" font-size="10" fill="#5c6470">/&#160;&#160;→ try_files → index.html</text>
+      <rect x="284" y="584" width="240" height="64" rx="8" fill="#efeafb" stroke="#5b3fb0"/>
+      <text x="404" y="608" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#14213d">Strapi :1337 (localhost)</text>
+      <text x="404" y="626" text-anchor="middle" font-family="sans-serif" font-size="9.5" fill="#5c6470">/api · /admin · /upload · /strapi-plugin-sso …</text>
+      <rect x="592" y="530" width="330" height="88" rx="8" fill="#e9f0fa" stroke="#1d4f91"/>
+      <text x="757" y="554" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#14213d">Azure Blob (this env's storage account)</text>
+      <text x="757" y="574" text-anchor="middle" font-family="sans-serif" font-size="9.5" fill="#5c6470">/uploads/* → https://&lt;account&gt;.blob.core.windows.net</text>
+      <text x="757" y="588" text-anchor="middle" font-family="sans-serif" font-size="9.5" fill="#5c6470">/media/uploads/… (static proxy_pass, envsubst at start)</text>
+      <text x="757" y="606" text-anchor="middle" font-family="sans-serif" font-size="9.5" fill="#1d4f91">media serves from the site origin, 7-day cache</text>
+      <line x1="210" y1="530" x2="284" y2="530" stroke="#14213d" stroke-width="1.8" marker-end="url(#arrT)"/>
+      <line x1="210" y1="616" x2="284" y2="616" stroke="#14213d" stroke-width="1.8" marker-end="url(#arrT)"/>
+      <line x1="210" y1="574" x2="592" y2="574" stroke="#14213d" stroke-width="1.8" marker-end="url(#arrT)"/>
+      <text x="240" y="522" font-family="sans-serif" font-size="9.5" fill="#5c6470">/</text>
+      <text x="222" y="566" font-family="sans-serif" font-size="9.5" fill="#5c6470">/uploads/*</text>
+      <text x="216" y="608" font-family="sans-serif" font-size="9.5" fill="#5c6470">/api /admin …</text>
+    </svg>
+    <figcaption>Deployment topology &amp; domain map (values verified July 2026). Every environment is the same shape:
+      Cloudflare A record → Container Apps Environment static IP → one all-in-one container where nginx serves the SPA,
+      proxies <code>/api</code>+<code>/admin</code> to Strapi on localhost, and reverse-proxies <code>/uploads/*</code>
+      from that environment's blob storage account. dev lives in the Prefix subscription; uat and prod in the Club's
+      Website subscription.</figcaption>
+  </figure>
+
+  <h3>How the binding is wired (Pulumi)</h3>
+  <p>Custom domains are declared in each stack's config and bound to the Container App ingress in
+     <code>infra/index.ts</code> (SNI-enabled, referencing a managed certificate <em>by name</em>):</p>
+  <pre><code># infra/Pulumi.prod.yaml
+amclub-website:customDomains:
+  - name: amclub.org.sg
+    certName: amclub.org.sg-amclub-p-260518090805
+  - name: www.amclub.org.sg
+    certName: www.amclub.org.sg-amclub-p-260519065509</code></pre>
+  <div class="callout danger">
+    <span class="label">Why customDomains MUST live in stack config</span>
+    <p>Azure Container Apps ingress uses <strong>PUT</strong> (full-replace) semantics, not PATCH. If a hostname isn't in
+       the desired-state body, <em>every <code>pulumi up</code> strips it</em> — the site loses its custom domain mid-deploy.
+       Always add a new hostname to <code>Pulumi.&lt;env&gt;.yaml</code> <strong>before</strong> deploying; never bind domains
+       only in the portal. (A prior <code>ignoreChanges</code> workaround failed — see <code>infra/index.ts</code> history.)</p>
+  </div>
+
+  <h3>Managed TLS certificates</h3>
+  <ul>
+    <li>One Azure-managed certificate <strong>per hostname</strong>, created in the Container Apps Environment.
+        Naming pattern <code>&lt;host&gt;-amclub-&lt;env-initial&gt;-&lt;timestamp&gt;</code>.</li>
+    <li>List / look up the <code>certName</code> to put in stack config:
+        <pre><code>az containerapp env certificate list -g amclub-&lt;env&gt;-rg -n amclub-&lt;env&gt;-env -o table</code></pre></li>
+    <li>Azure auto-renews managed certs. Renewal keeps the same cert resource, so <code>certName</code> in stack config
+        does <em>not</em> change on renewal.</li>
+  </ul>
+
+  <h3>Runbook — add a new hostname (e.g. a vanity subdomain)</h3>
+  <ol>
+    <li>In Cloudflare, add the <code>A</code> record (→ <code>containerEnvStaticIp</code>) and the
+        <code>asuid.&lt;host&gt;</code> <code>TXT</code> (→ <code>customDomainVerificationId</code>). Set the A record
+        <strong>DNS-only (grey cloud)</strong> for now so Azure's validation reaches the origin.</li>
+    <li>Create the managed cert + add the hostname in Azure (portal: Container Apps Environment → Certificates, or via
+        <code>az containerapp hostname add</code> then <code>az containerapp env certificate create</code>). Wait for
+        validation to succeed.</li>
+    <li>Add <code>{ name, certName }</code> to <code>infra/Pulumi.&lt;env&gt;.yaml</code> → <code>customDomains</code>,
+        commit to <code>dev</code>, promote as usual so the binding is captured in IaC.</li>
+    <li>Run the deploy (or <code>pulumi up</code>) and confirm the SNI binding.</li>
+    <li>Re-enable the Cloudflare <strong>proxy (orange cloud)</strong> and set <strong>SSL/TLS mode → Full (Strict)</strong>
+        (Azure presents a valid public cert, so Strict is correct).</li>
+  </ol>
+  <div class="callout warn">
+    <span class="label">Cloudflare proxy vs. Azure cert validation</span>
+    <p>Azure's managed-cert issuance/renewal validates over HTTP/TLS to the hostname. With the Cloudflare proxy on,
+       validation can fail because Cloudflare intercepts the request. If a new cert won't issue, temporarily switch the
+       record to <strong>DNS-only (grey)</strong>, let Azure validate, then re-proxy. Renewals of <em>existing</em> certs
+       are usually fine proxied, but keep this in mind if a renewal stalls.</p>
+  </div>
+  <div class="callout note">
+    <span class="label">Cloudflare settings that matter</span>
+    <p><strong>SSL/TLS:</strong> Full (Strict). <strong>Always Use HTTPS:</strong> on. <strong>Apex:</strong> use an A
+       record to the static IP (not CNAME flattening). Keep Cloudflare caching conservative for <code>/admin</code> and
+       <code>/api</code> (bypass) so CMS editing and API responses aren't cached; static SPA assets are safe to cache.</p>
+  </div>
+</section>
+
+<!-- ============================================================ -->
 <section class="card" id="frontend">
-  <h2>11. Frontend Integration</h2>
+  <h2>12. Frontend Integration</h2>
   <ul>
     <li><strong>API client:</strong> <code>frontend/src/lib/api.ts</code> — <code>fetchAPI&lt;T&gt;()</code> wrapper reading
         <code>VITE_API_URL</code> (defaults to same-origin <code>/api</code> in deployed builds). Strapi v5 populate
@@ -396,6 +826,14 @@ curl -sS "$BASE/api/upload/files?pagination[pageSize]=1" &gt; /dev/null</code></
         (zero hardcoded copy) → fetches via <code>fetchAPI</code> with loading/empty states → a published entry renders
         on the deployed URL. Track <code>cms-wired</code> status per page in <code>SPECS.md</code>.</li>
     <li><strong>Breakpoints:</strong> mobile &lt;768, tablet 768–1199, desktop 1200–1439, desktop XL 1440+.</li>
+    <li><strong>SEO:</strong> <code>frontend/src/lib/seo.ts</code> + <code>SeoManager</code> apply site-wide defaults
+        (<code>site-config.siteName</code> + <code>defaultSeo</code>) on every route change; a page's own
+        <code>shared.seo</code> component overrides <em>per field</em> (title, description, canonical, OpenGraph,
+        Twitter). Pages call <code>usePageSeo(data?.seo)</code>. Defaults are seeded by
+        <code>scripts/seed-site-config.mjs</code>.</li>
+    <li><strong>Analytics:</strong> <code>shared/Analytics.tsx</code> reads <code>site-config.googleTagId</code>
+        (supports gtag <code>G-</code>/<code>GT-</code>/<code>AW-</code> and GTM <code>GTM-</code> IDs), injects the tag
+        site-wide and emits SPA <code>page_view</code> events on route change. Empty field = analytics off.</li>
   </ul>
   <div class="callout danger">
     <span class="label">Hard rule</span>
@@ -406,7 +844,7 @@ curl -sS "$BASE/api/upload/files?pagination[pageSize]=1" &gt; /dev/null</code></
 
 <!-- ============================================================ -->
 <section class="card" id="verification">
-  <h2>12. Verification Commands</h2>
+  <h2>13. Verification Commands</h2>
   <pre><code>cd frontend &amp;&amp; npm run typecheck &amp;&amp; npm run lint &amp;&amp; npm run build
 cd cms &amp;&amp; npm run build
 cd infra &amp;&amp; npx tsc --noEmit
@@ -417,11 +855,17 @@ npm run test          # root: runs all of the above</code></pre>
 
 <!-- ============================================================ -->
 <section class="card" id="troubleshooting">
-  <h2>13. Troubleshooting</h2>
+  <h2>14. Troubleshooting</h2>
   <p>Condensed from <code>docs/troubleshooting.md</code> — read that file for full symptom→cause→fix detail.</p>
   <table>
     <thead><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr></thead>
     <tbody>
+      <tr>
+        <td>Site works on mobile data but <strong>not on Club Wi-Fi</strong></td>
+        <td>The Club's internal DNS still holds an old IP — it does not follow Cloudflare (see <a href="#dns">§11</a>)</td>
+        <td>Ask Club IT to update the internal DNS records to the current static IPs
+            (<code>pulumi stack output containerEnvStaticIp</code> per env)</td>
+      </tr>
       <tr>
         <td>Broken thumbnails in admin Media Library</td>
         <td>Missing CORS rule on the blob service</td>
@@ -462,6 +906,22 @@ npm run test          # root: runs all of the above</code></pre>
             <code>nslookup &lt;account&gt;.blob.core.windows.net</code> and <code>infra/Pulumi.&lt;env&gt;.yaml</code></td>
       </tr>
       <tr>
+        <td>Custom domain dropped / site on the <code>*.azurecontainerapps.io</code> URL after a deploy</td>
+        <td>Hostname missing from <code>Pulumi.&lt;env&gt;.yaml</code> <code>customDomains</code>; PUT semantics stripped it</td>
+        <td>Add the <code>{ name, certName }</code> back to stack config and redeploy. See <a href="#dns">§11</a></td>
+      </tr>
+      <tr>
+        <td>New managed cert won't validate / stuck "Pending"</td>
+        <td>Cloudflare proxy intercepting Azure's HTTP validation, or <code>asuid</code> TXT missing/wrong</td>
+        <td>Set the A record to <strong>DNS-only (grey)</strong>, confirm <code>asuid.&lt;host&gt;</code> TXT =
+            <code>customDomainVerificationId</code>, retry, then re-proxy</td>
+      </tr>
+      <tr>
+        <td>Browser shows a TLS/SSL error on the custom domain</td>
+        <td>Cloudflare SSL mode mismatch or cert not yet bound</td>
+        <td>Set Cloudflare SSL/TLS to <strong>Full (Strict)</strong>; verify the SNI binding exists on the Container App ingress</td>
+      </tr>
+      <tr>
         <td>Editor reports change not visible</td>
         <td>Usually workflow, not infra</td>
         <td>Walk them through the <a href="cms-user-guide.html#troubleshooting">CMS User Guide §14</a> first
@@ -478,7 +938,7 @@ npm run test          # root: runs all of the above</code></pre>
 
 <!-- ============================================================ -->
 <section class="card" id="reference">
-  <h2>14. Key File Reference</h2>
+  <h2>15. Key File Reference</h2>
   <table>
     <thead><tr><th>Purpose</th><th>Path</th></tr></thead>
     <tbody>
@@ -494,6 +954,7 @@ npm run test          # root: runs all of the above</code></pre>
       <tr><td>Cron (KB sweep)</td><td><code>cms/src/index.ts</code></td></tr>
       <tr><td>Local plugins</td><td><code>cms/src/plugins/elevenlabs-chatbot/</code>, <code>cms/src/plugins/clone-entry/</code></td></tr>
       <tr><td>Infra entry point</td><td><code>infra/index.ts</code> (+ <code>infra/README.md</code>)</td></tr>
+      <tr><td>Custom-domain / cert binding</td><td><code>infra/Pulumi.&lt;env&gt;.yaml</code> (<code>customDomains</code>) · <code>infra/index.ts</code> (binding + <code>containerEnvStaticIp</code>/<code>customDomainVerificationId</code> outputs)</td></tr>
       <tr><td>Seed helpers</td><td><code>scripts/seed-helpers.mjs</code></td></tr>
       <tr><td>Docker</td><td><code>Dockerfile</code>, <code>docker/entrypoint.sh</code>, <code>docker/nginx.conf</code></td></tr>
       <tr><td>Deep-dive docs</td><td><code>docs/media-storage.md</code> · <code>docs/strapi-patterns.md</code> · <code>docs/troubleshooting.md</code></td></tr>
