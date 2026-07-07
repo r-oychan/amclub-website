@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useNavigate } from 'react-router';
 import { ConversationProvider, useConversation } from '@elevenlabs/react';
 
 interface ChatbotConfig {
@@ -63,6 +64,132 @@ function linkifyMessage(text: string, onUser: boolean): ReactNode[] {
   return nodes;
 }
 
+// ── Agent-message footnote citations ──────────────────────────────────
+// Agent replies cite sources ("More details: <url>" lines and inline URLs).
+// Instead of printing raw URLs we lift them out as numbered footnotes: a
+// superscript marker in the text plus a source chip under the bubble.
+// Internal links (this site or amclub.org.sg) open in the page BEHIND the
+// chat panel — the widget lives outside <Routes>, so it stays open.
+
+interface ChatSource { href: string; label: string }
+
+const SOURCE_LINE_RE =
+  /^\s*(?:>\s*)?(?:more details?|more info(?:rmation)?|sources?|read more|learn more|details)\s*[:\-–—]\s*(\S.*)$/i;
+const BARE_URL_RE = /https?:\/\/[^\s<>()]*[^\s<>().,;:!?'"]/;
+
+function toInternalPath(href: string): string | null {
+  if (href.startsWith('/') && !href.startsWith('//')) return href;
+  try {
+    const u = new URL(href);
+    if (u.protocol !== 'http:' && u.protocol !== 'https:') return null;
+    if (u.hostname === window.location.hostname || u.hostname === 'amclub.org.sg' || u.hostname.endsWith('.amclub.org.sg')) {
+      return u.pathname + u.search + u.hash;
+    }
+  } catch { /* not a URL */ }
+  return null;
+}
+
+function sourceChipLabel(href: string): string {
+  const internal = toInternalPath(href);
+  if (internal) return internal === '/' ? 'Home' : internal;
+  try { return new URL(href).hostname; } catch { return href; }
+}
+
+function ArrowOutIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"
+         strokeLinejoin="round" className="w-3 h-3 shrink-0" aria-hidden>
+      <path d="M7 17L17 7M9 7h8v8" />
+    </svg>
+  );
+}
+
+function AgentMessage({ text, onOpen }: { text: string; onOpen: (href: string) => void }) {
+  const sources: ChatSource[] = [];
+  const refNumber = (href: string, label?: string): number => {
+    let idx = sources.findIndex((s) => s.href === href);
+    if (idx === -1) {
+      sources.push({ href, label: label ?? sourceChipLabel(href) });
+      idx = sources.length - 1;
+    }
+    return idx + 1;
+  };
+
+  // 1. Lift dedicated source lines ("More details: <url>") out of the body.
+  const kept: string[] = [];
+  for (const line of text.split('\n')) {
+    const m = line.match(SOURCE_LINE_RE);
+    const url = m?.[1].match(BARE_URL_RE);
+    if (m && url) { refNumber(url[0]); continue; }
+    kept.push(line);
+  }
+  const body = kept.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+
+  // 2. Tokenize the remaining text: emails stay inline; markdown links and
+  //    bare URLs become footnotes with a superscript marker.
+  const nodes: ReactNode[] = [];
+  let last = 0;
+  let key = 0;
+  const sup = (href: string) => {
+    // "…on our page: ¹" reads badly — drop a trailing colon before the marker.
+    const prev = nodes[nodes.length - 1];
+    if (typeof prev === 'string') nodes[nodes.length - 1] = prev.replace(/[\s:]+$/, '');
+    nodes.push(
+      <sup key={key++}>
+        <button onClick={() => onOpen(href)} aria-label={`Open source ${refNumber(href)}`}
+                className="text-accent font-bold cursor-pointer hover:underline px-0.5">
+          {refNumber(href)}
+        </button>
+      </sup>,
+    );
+  };
+  LINKIFY_PATTERN.lastIndex = 0;
+  for (let m = LINKIFY_PATTERN.exec(body); m; m = LINKIFY_PATTERN.exec(body)) {
+    if (m.index > last) nodes.push(body.slice(last, m.index));
+    const [, mdLabel, mdTarget, bareUrl, email] = m;
+    if (mdLabel && mdTarget) {
+      if (/^[\w.+-]+@[\w-]+(?:\.[\w-]+)+$/.test(mdTarget) || mdTarget.startsWith('mailto:')) {
+        const addr = mdTarget.replace(/^mailto:/, '');
+        nodes.push(<MessageLink key={key++} href={`mailto:${addr}`} label={mdLabel} onUser={false} />);
+      } else {
+        nodes.push(
+          <button key={key++} onClick={() => onOpen(mdTarget)}
+                  className="text-accent underline underline-offset-2 hover:no-underline cursor-pointer text-left">
+            {mdLabel}
+          </button>,
+        );
+        sup(mdTarget);
+      }
+    } else if (bareUrl) {
+      sup(bareUrl);
+    } else if (email) {
+      nodes.push(<MessageLink key={key++} href={`mailto:${email}`} label={email} onUser={false} />);
+    }
+    last = m.index + m[0].length;
+  }
+  if (last < body.length) nodes.push(body.slice(last));
+
+  return (
+    <>
+      <span>{nodes}</span>
+      {sources.length > 0 && (
+        <span className="mt-2 pt-2 border-t border-neutral-200 flex flex-col gap-1">
+          {sources.map((s, i) => (
+            <button key={s.href} onClick={() => onOpen(s.href)}
+                    className="flex items-center gap-1.5 text-xs text-accent hover:underline cursor-pointer text-left max-w-full">
+              <span className="shrink-0 w-4 h-4 rounded-full bg-accent/10 text-accent text-[10px] font-bold flex items-center justify-center">
+                {i + 1}
+              </span>
+              <span className="truncate">{s.label}</span>
+              <ArrowOutIcon />
+            </button>
+          ))}
+        </span>
+      )}
+    </>
+  );
+}
+
 function ChatbotPanel({
   cfg,
   positionClasses,
@@ -78,6 +205,19 @@ function ChatbotPanel({
   const [mode, setMode] = useState<Mode>('text');
   const messageIdRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+
+  // Citation chips: internal pages open BEHIND the chat panel (SPA navigation
+  // keeps the widget mounted and open); external links open a new tab.
+  const openSource = (href: string) => {
+    if (href.startsWith('mailto:')) {
+      window.location.href = href;
+      return;
+    }
+    const internal = toInternalPath(href);
+    if (internal) navigate(internal);
+    else window.open(href, '_blank', 'noopener,noreferrer');
+  };
 
   const conversation = useConversation({
     textOnly: mode === 'text',
@@ -219,7 +359,9 @@ function ChatbotPanel({
                 : 'mr-auto bg-white text-neutral-800 border border-neutral-200 rounded-bl-sm'
             }`}
           >
-            {linkifyMessage(m.text, m.role === 'user')}
+            {m.role === 'user'
+              ? linkifyMessage(m.text, true)
+              : <AgentMessage text={m.text} onOpen={openSource} />}
           </div>
         ))}
         {error && <p className="text-xs text-accent text-center py-2">{error}</p>}
