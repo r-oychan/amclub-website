@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { ConversationProvider, useConversation } from '@elevenlabs/react';
 
 interface ChatbotConfig {
@@ -17,6 +17,51 @@ type Message = {
 };
 
 type Mode = 'text' | 'voice';
+
+// Matches, in order: markdown links [label](target), bare http(s) URLs
+// (trimmed so trailing sentence punctuation stays outside the link), and
+// email addresses. Agent replies cite knowledge-base sources as links —
+// render all three as tappable anchors instead of plain text.
+const LINKIFY_PATTERN =
+  /\[([^\]]+)\]\(([^)\s]+)\)|(https?:\/\/[^\s<>()]*[^\s<>().,;:!?'"])|([\w.+-]+@[\w-]+(?:\.[\w-]+)+)/g;
+
+function MessageLink({ href, label, onUser }: { href: string; label: string; onUser: boolean }) {
+  const isMailto = href.startsWith('mailto:');
+  const external = !isMailto && !href.startsWith('/');
+  return (
+    <a
+      href={href}
+      target={external ? '_blank' : undefined}
+      rel={external ? 'noopener noreferrer' : undefined}
+      className={`underline underline-offset-2 break-all hover:no-underline ${
+        onUser ? 'text-white' : 'text-accent'
+      }`}
+    >
+      {label}
+    </a>
+  );
+}
+
+function linkifyMessage(text: string, onUser: boolean): ReactNode[] {
+  const nodes: ReactNode[] = [];
+  let last = 0;
+  let key = 0;
+  LINKIFY_PATTERN.lastIndex = 0;
+  for (let m = LINKIFY_PATTERN.exec(text); m; m = LINKIFY_PATTERN.exec(text)) {
+    if (m.index > last) nodes.push(text.slice(last, m.index));
+    if (m[1] && m[2]) {
+      const target = /^[\w.+-]+@[\w-]+(?:\.[\w-]+)+$/.test(m[2]) ? `mailto:${m[2]}` : m[2];
+      nodes.push(<MessageLink key={key++} href={target} label={m[1]} onUser={onUser} />);
+    } else if (m[3]) {
+      nodes.push(<MessageLink key={key++} href={m[3]} label={m[3]} onUser={onUser} />);
+    } else if (m[4]) {
+      nodes.push(<MessageLink key={key++} href={`mailto:${m[4]}`} label={m[4]} onUser={onUser} />);
+    }
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) nodes.push(text.slice(last));
+  return nodes;
+}
 
 function ChatbotPanel({
   cfg,
@@ -120,7 +165,9 @@ function ChatbotPanel({
 
   return (
     <div
-      className={`fixed ${positionClasses.panel} bottom-24 z-50 w-[380px] max-w-[calc(100vw-2rem)] h-[560px] max-h-[calc(100vh-8rem)] bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden border border-black/5`}
+      className={`fixed z-50 bg-white shadow-2xl flex flex-col overflow-hidden border border-black/5
+        inset-x-0 bottom-0 w-full h-[min(85dvh,640px)] rounded-t-2xl
+        md:inset-x-auto ${positionClasses.panel} md:bottom-24 md:w-[380px] md:h-[560px] md:max-h-[calc(100vh-8rem)] md:rounded-2xl`}
     >
       <div className="flex items-center justify-between px-4 py-3 bg-primary text-white">
         <div className="flex items-center gap-2">
@@ -166,19 +213,19 @@ function ChatbotPanel({
           <div
             key={m.id}
             style={m.role === 'user' ? { backgroundColor: accent } : undefined}
-            className={`max-w-[85%] px-3 py-2 rounded-2xl text-sm ${
+            className={`max-w-[85%] px-3 py-2 rounded-2xl text-sm whitespace-pre-wrap break-words ${
               m.role === 'user'
                 ? 'ml-auto text-white rounded-br-sm'
                 : 'mr-auto bg-white text-neutral-800 border border-neutral-200 rounded-bl-sm'
             }`}
           >
-            {m.text}
+            {linkifyMessage(m.text, m.role === 'user')}
           </div>
         ))}
         {error && <p className="text-xs text-accent text-center py-2">{error}</p>}
       </div>
 
-      <div className="border-t border-neutral-200 p-3 space-y-2 bg-white">
+      <div className="border-t border-neutral-200 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] md:pb-3 space-y-2 bg-white">
         {isConnected ? (
           <>
             <div className="flex gap-2">
@@ -192,7 +239,7 @@ function ChatbotPanel({
                   }
                 }}
                 placeholder="Type a message…"
-                className="flex-1 text-sm px-3 py-2 border border-neutral-300 rounded-full focus:outline-none focus:border-primary"
+                className="flex-1 min-w-0 text-base md:text-sm px-3 py-2 border border-neutral-300 rounded-full focus:outline-none focus:border-primary"
               />
               <button
                 onClick={handleSend}
@@ -338,7 +385,7 @@ function FloatingButton({
       onClick={onOpen}
       aria-label="Open chatbot"
       style={{ backgroundColor: cfg.accentColor }}
-      className={`fixed ${positionClasses.button} bottom-4 z-50 w-14 h-14 rounded-full text-white shadow-lg hover:scale-105 active:scale-95 transition-transform cursor-pointer flex items-center justify-center`}
+      className={`fixed ${positionClasses.button} bottom-[max(1rem,env(safe-area-inset-bottom))] z-50 w-14 h-14 rounded-full text-white shadow-lg hover:scale-105 active:scale-95 transition-transform cursor-pointer flex items-center justify-center`}
     >
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6" aria-hidden>
         <path d="M12 3C6.48 3 2 6.91 2 11.7c0 2.36 1.13 4.5 2.95 6.06L4 22l4.5-2.05c1.07.31 2.22.48 3.5.48 5.52 0 10-3.91 10-8.73S17.52 3 12 3z" />
@@ -386,8 +433,8 @@ export function ChatbotWidget() {
 
   const positionClasses =
     cfg.bubblePosition === 'bottom-left'
-      ? { button: 'left-4', panel: 'left-4' }
-      : { button: 'right-4', panel: 'right-4' };
+      ? { button: 'left-4', panel: 'md:left-4' }
+      : { button: 'right-4', panel: 'md:right-4' };
 
   return (
     <ConversationProvider>
