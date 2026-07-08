@@ -22,7 +22,6 @@ interface LifecycleEvent {
 
 type Strapi = {
   db: {
-    transaction: <T>(cb: () => Promise<T>) => Promise<T>;
     lifecycles: {
       subscribe: (sub: {
         models?: string[];
@@ -41,16 +40,40 @@ type Strapi = {
   contentTypes: Record<string, unknown>;
 };
 
-function fireAndForget(strapi: Strapi, label: string, fn: () => Promise<unknown>): void {
-  // Lifecycle events fire inside the request's DB transaction, which commits
-  // before this async work finishes — queries then die with "Transaction query
-  // already complete" and sync-log rows are silently lost. Opening a fresh
-  // transaction scope detaches the sync from the completed one.
-  void strapi.db
-    .transaction(async () => fn())
-    .catch((err) => {
-      strapi.log.warn(`[${PLUGIN_ID}] ${label}: ${(err as Error).message}`);
-    });
+// Lifecycle events fire inside the request's DB transaction, which commits
+// before an async sync finishes — queries then die with "Transaction query
+// already complete" and sync-log rows are silently lost. (Wrapping in
+// strapi.db.transaction doesn't help: a nested call JOINS the completed
+// parent.) The escape: queue jobs and drain them from a setInterval worker.
+// Timer callbacks run with the async context captured at REGISTRATION —
+// bootstrap, outside any request — so queued syncs get a clean DB context.
+// The queue also serializes syncs, ending the concurrent-upsert races that
+// duplicated KB docs.
+
+interface SyncJob {
+  uid: string;
+  documentId?: string;
+  label: string;
+}
+
+const pendingJobs = new Map<string, SyncJob>();
+let draining = false;
+
+function enqueueSync(uid: string, label: string, documentId?: string): void {
+  pendingJobs.set(`${uid}:${documentId ?? ''}`, { uid, documentId, label });
+}
+
+async function drainQueue(strapi: Strapi): Promise<void> {
+  while (pendingJobs.size > 0) {
+    const next = pendingJobs.entries().next().value as [string, SyncJob];
+    pendingJobs.delete(next[0]);
+    const job = next[1];
+    try {
+      await syncEntry(strapi as never, job.uid, job.documentId);
+    } catch (err) {
+      strapi.log.warn(`[${PLUGIN_ID}] ${job.label}: ${(err as Error).message}`);
+    }
+  }
 }
 
 function isPublished(entry: Record<string, unknown> | null | undefined): boolean {
@@ -83,7 +106,7 @@ export async function registerLifecycleHooks(strapi: Strapi): Promise<void> {
       if (!allow.includes(uid)) return;
       const entry = event.result;
       if (!isPublished(entry)) return;
-      fireAndForget(strapi, `${uid} create`, () => syncEntry(strapi as never, uid, getDocumentId(entry)));
+      enqueueSync(uid, `${uid} create`, getDocumentId(entry));
     },
     async afterUpdate(event) {
       const uid = event.model.uid;
@@ -91,20 +114,25 @@ export async function registerLifecycleHooks(strapi: Strapi): Promise<void> {
       if (!allow.includes(uid)) return;
       const entry = event.result;
       const documentId = getDocumentId(entry);
-      if (isPublished(entry)) {
-        fireAndForget(strapi, `${uid} update`, () => syncEntry(strapi as never, uid, documentId));
-      } else {
-        fireAndForget(strapi, `${uid} unpublish`, () => syncEntry(strapi as never, uid, documentId));
-      }
+      enqueueSync(uid, `${uid} ${isPublished(entry) ? 'update' : 'unpublish'}`, documentId);
     },
     async afterDelete(event) {
       const uid = event.model.uid;
       const allow = await getEffectiveAllowList(strapi as never);
       if (!allow.includes(uid)) return;
-      const documentId = getDocumentId(event.result);
-      fireAndForget(strapi, `${uid} delete`, () => syncEntry(strapi as never, uid, documentId));
+      enqueueSync(uid, `${uid} delete`, getDocumentId(event.result));
     },
   });
+
+  // Registered at bootstrap → callbacks run outside request transactions.
+  const timer = setInterval(() => {
+    if (draining || pendingJobs.size === 0) return;
+    draining = true;
+    void drainQueue(strapi).finally(() => {
+      draining = false;
+    });
+  }, 1000);
+  timer.unref?.();
 
   strapi.log.info(`[${PLUGIN_ID}] lifecycle hooks armed across ${allModels.length} api content type(s)`);
 }
