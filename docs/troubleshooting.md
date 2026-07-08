@@ -320,10 +320,14 @@ doesn't know. Container logs show two warnings from `[elevenlabs-chatbot]`:
 - `Transaction query already complete` — lifecycle-triggered syncs ran inside the
   request's committed DB transaction, losing sync-log upserts (→ duplicate docs).
 
-**Fix (landed July 2026):** `refreshAgentKnowledgeBase` now validates log rows
-against the live remote docs and drops dead rows; `fireAndForget` opens a fresh
-`strapi.db.transaction` scope. If you see this on an older build, redeploy, then
-re-publish entries (or admin → Sync All) to rebuild the log and attachments.
+**Fix (landed July 2026):** the agent attach now tries the PATCH first and, only
+on failure, verifies each sync-log row with a **direct GET** and drops true
+404s (the knowledge-base *search* endpoint's index lags doc creation — using
+it for validation wrongly deletes rows for docs created seconds earlier).
+Lifecycle syncs are queued and drained by a bootstrap-scoped worker (a nested
+`strapi.db.transaction` JOINS the completed parent — it does not escape it).
+If you see this on an older build, redeploy, then re-publish entries (or
+admin → Sync All) to rebuild the log and attachments.
 
 **Related:** RAG indexes are NOT computed automatically for newly attached docs —
 `POST /v1/convai/knowledge-base/{id}/rag-index` per doc, or the agent retrieves
