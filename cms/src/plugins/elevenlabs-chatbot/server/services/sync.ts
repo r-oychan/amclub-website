@@ -337,11 +337,33 @@ function buildFileDocName(strapi: Strapi, ownerUid: string, entry: Record<string
   return `${docPrefix(strapi)}${short}:${slug}:file:${baseName}`;
 }
 
+// Real SPA routes (frontend/src/App.tsx). The old guessed pattern
+// (`/${type}/${slug}`) produced Source links to routes that don't exist —
+// citation chips then navigated to a blank page.
+const COLLECTION_ROUTES: Record<string, (slug: string) => string> = {
+  restaurant: (s) => `/dining/${s}`,
+  event: (s) => `/whats-on/${s}`,
+  'news-article': (s) => `/home-sub/club-news/${s}`,
+  'gallery-album': () => '/home-sub/gallery',
+  'faq-item': () => '/faq',
+  'committee-member': () => '/about',
+  testimonial: () => '/home',
+};
+const SINGLETON_ROUTES: Record<string, string> = {
+  'contact-us-page': '/home-sub/contact-us',
+  'gallery-page': '/home-sub/gallery',
+  'news-page': '/home-sub/news',
+  footer: '/home',
+};
+
 function buildPublicUrl(strapi: Strapi, uid: string, entry: Record<string, unknown>): string {
   const base = getSiteUrl(strapi as never);
   const slug = entry.slug as string | undefined;
   const short = uid.replace(/^api::/, '').split('.')[0];
+  if (SINGLETON_ROUTES[short]) return `${base}${SINGLETON_ROUTES[short]}`;
   if (uid.endsWith('-page.' + uid.split('.').pop())) return `${base}/${short.replace(/-page$/, '')}`;
+  const route = COLLECTION_ROUTES[short];
+  if (route && slug) return `${base}${route(slug)}`;
   if (slug) return `${base}/${short}/${slug}`;
   return `${base}/${short}`;
 }
