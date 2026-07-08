@@ -116,17 +116,40 @@ async function refreshAgentKnowledgeBase(strapi: Strapi): Promise<void> {
     return;
   }
   const allRows = (await strapi.db.query(SYNC_LOG_UID).findMany({})) as SyncLogRow[];
-  const locators: client.KnowledgeBaseLocator[] = allRows.map((r) => ({
+  const toLocator = (r: SyncLogRow): client.KnowledgeBaseLocator => ({
     id: r.elDocumentId,
     name: r.documentName,
     type: r.elDocType,
     usage_mode: 'auto',
-  }));
+  });
+  let locators = allRows.map(toLocator);
   // Docs attached to the agent outside this plugin (no doc-name prefix, e.g.
   // the master FAQ repository) are not in the sync log — carry them over so
   // a sync doesn't silently detach them.
   const manual = await listManualAttachments(strapi, agentId, locators);
-  await client.setAgentKnowledgeBase(strapi as never, agentId, [...manual, ...locators]);
+  try {
+    await client.setAgentKnowledgeBase(strapi as never, agentId, [...manual, ...locators]);
+  } catch (err) {
+    // A single dead document id makes the whole PATCH 404. Verify each row
+    // with a direct GET (authoritative — never the lagging search index),
+    // drop rows whose doc is truly gone, and retry once with the survivors.
+    strapi.log.warn(
+      `[${PLUGIN_ID}] agent attach failed (${(err as Error).message.slice(0, 120)}) — validating sync-log rows`,
+    );
+    const alive: SyncLogRow[] = [];
+    for (const r of allRows) {
+      if (await client.docExists(strapi as never, r.elDocumentId)) {
+        alive.push(r);
+      } else {
+        strapi.log.warn(
+          `[${PLUGIN_ID}] dropping stale sync-log row "${r.documentName}" — remote doc ${r.elDocumentId} no longer exists`,
+        );
+        await deleteLogRow(strapi, r.id);
+      }
+    }
+    locators = alive.map(toLocator);
+    await client.setAgentKnowledgeBase(strapi as never, agentId, [...manual, ...locators]);
+  }
   strapi.log.info(
     `[${PLUGIN_ID}] agent ${agentId} now references ${locators.length} synced + ${manual.length} manual doc(s)`,
   );

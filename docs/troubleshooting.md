@@ -304,3 +304,31 @@ promoCards: { populate: { cards: { populate: { image: true, cta: true } } } },
 Then `cd cms && npm run build`, commit, deploy. **Rule of thumb:** every time you add a component/relation field to `fitness-facility`, `restaurant`, `kids-experience`, `event-space`, or any type with a custom controller, **update its `POPULATE` map in the same commit** — the schema and the controller's read map drift apart silently otherwise. Discovered 2026‑06‑16: commit `22c7ccf` added `imagePanels`/`promoCards` but left both controllers' maps untouched, so the content was invisible despite being stored.
 
 > Earlier misdiagnosis (recorded so nobody repeats it): this was first mistaken for a missing-DB-table / schema-sync problem. It is **not** — the component tables exist and the writes persist. `TRUNCATE strapi_database_schema` + restart does nothing for this; only the controller `POPULATE` map fix does.
+
+## Chatbot KB syncs "succeed" but the agent never gets the new docs
+
+**Symptom:** publishing entries creates new ElevenLabs KB documents (visible via the
+knowledge-base API, often as accumulating duplicates), but the agent's attached
+`knowledge_base` list never changes; the bot answers from stale content or says it
+doesn't know. Container logs show two warnings from `[elevenlabs-chatbot]`:
+
+- `ElevenLabs PATCH /v1/convai/agents/... failed: 404 ... document_not_found` —
+  the sync-log (`elevenlabs-doc` collection) holds rows whose remote doc was
+  deleted (e.g. by another environment's CMS pointing at the same ElevenLabs
+  account historically, or manual cleanup). One dead id makes the whole agent
+  PATCH fail, so **no** attachment update ever lands.
+- `Transaction query already complete` — lifecycle-triggered syncs ran inside the
+  request's committed DB transaction, losing sync-log upserts (→ duplicate docs).
+
+**Fix (landed July 2026):** the agent attach now tries the PATCH first and, only
+on failure, verifies each sync-log row with a **direct GET** and drops true
+404s (the knowledge-base *search* endpoint's index lags doc creation — using
+it for validation wrongly deletes rows for docs created seconds earlier).
+Lifecycle syncs are queued and drained by a bootstrap-scoped worker (a nested
+`strapi.db.transaction` JOINS the completed parent — it does not escape it).
+If you see this on an older build, redeploy, then re-publish entries (or
+admin → Sync All) to rebuild the log and attachments.
+
+**Related:** RAG indexes are NOT computed automatically for newly attached docs —
+`POST /v1/convai/knowledge-base/{id}/rag-index` per doc, or the agent retrieves
+nothing and falls back to "I don't have that in my knowledge base".
