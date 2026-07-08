@@ -115,7 +115,15 @@ export function renderEntryMarkdown({ strapi, uid, entry, publicUrl }: RenderInp
     }
   }
 
-  return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  let md = lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  // RAG retrieves CHUNKS, so a Source line only at the top of the doc never
+  // reaches the model for content further down — and the agent then can't
+  // cite the page. Repeat the Source line at the end of every section (and
+  // the doc) so any retrieved chunk carries a citable URL.
+  if (publicUrl) {
+    md = md.replace(/\n(## )/g, `\n\nSource: ${publicUrl}\n\n$1`) + `\n\nSource: ${publicUrl}`;
+  }
+  return md;
 }
 
 function flattenRichBlocks(nodes: Array<Record<string, unknown>>): string {
