@@ -22,6 +22,7 @@ interface LifecycleEvent {
 
 type Strapi = {
   db: {
+    transaction: <T>(cb: () => Promise<T>) => Promise<T>;
     lifecycles: {
       subscribe: (sub: {
         models?: string[];
@@ -41,9 +42,15 @@ type Strapi = {
 };
 
 function fireAndForget(strapi: Strapi, label: string, fn: () => Promise<unknown>): void {
-  void fn().catch((err) => {
-    strapi.log.warn(`[${PLUGIN_ID}] ${label}: ${(err as Error).message}`);
-  });
+  // Lifecycle events fire inside the request's DB transaction, which commits
+  // before this async work finishes — queries then die with "Transaction query
+  // already complete" and sync-log rows are silently lost. Opening a fresh
+  // transaction scope detaches the sync from the completed one.
+  void strapi.db
+    .transaction(async () => fn())
+    .catch((err) => {
+      strapi.log.warn(`[${PLUGIN_ID}] ${label}: ${(err as Error).message}`);
+    });
 }
 
 function isPublished(entry: Record<string, unknown> | null | undefined): boolean {

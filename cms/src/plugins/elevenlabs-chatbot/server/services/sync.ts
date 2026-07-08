@@ -116,12 +116,24 @@ async function refreshAgentKnowledgeBase(strapi: Strapi): Promise<void> {
     return;
   }
   const allRows = (await strapi.db.query(SYNC_LOG_UID).findMany({})) as SyncLogRow[];
-  const locators: client.KnowledgeBaseLocator[] = allRows.map((r) => ({
-    id: r.elDocumentId,
-    name: r.documentName,
-    type: r.elDocType,
-    usage_mode: 'auto',
-  }));
+  // Validate log rows against the docs that actually exist remotely: a single
+  // dead document id makes the agent PATCH fail with 404 and blocks EVERY
+  // attachment update. Dead rows are dropped so the next entry sync recreates
+  // the doc cleanly.
+  const live = new Set(
+    (await client.listDocsByPrefix(strapi as never, docPrefix(strapi))).map((d) => d.id),
+  );
+  const locators: client.KnowledgeBaseLocator[] = [];
+  for (const r of allRows) {
+    if (live.has(r.elDocumentId)) {
+      locators.push({ id: r.elDocumentId, name: r.documentName, type: r.elDocType, usage_mode: 'auto' });
+    } else {
+      strapi.log.warn(
+        `[${PLUGIN_ID}] dropping stale sync-log row "${r.documentName}" — remote doc ${r.elDocumentId} no longer exists`,
+      );
+      await deleteLogRow(strapi, r.id);
+    }
+  }
   // Docs attached to the agent outside this plugin (no doc-name prefix, e.g.
   // the master FAQ repository) are not in the sync log — carry them over so
   // a sync doesn't silently detach them.
