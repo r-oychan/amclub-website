@@ -51,6 +51,8 @@ export function renderEntryMarkdown({ strapi, uid, entry, publicUrl }: RenderInp
     'dressCode',
     'category',
     'location',
+    'locationLevel',
+    'capacity',
     'website',
     'phone',
     'email',
@@ -101,9 +103,11 @@ export function renderEntryMarkdown({ strapi, uid, entry, publicUrl }: RenderInp
       continue;
     }
 
-    // Long scalar text fields included verbatim if substantial.
+    // Long scalar text fields included verbatim if substantial. richtext is
+    // Strapi's markdown-string field (event-space/venue descriptions use it) —
+    // dropping it lost the most information-dense field on those types.
     if (
-      (attr.type === 'string' || attr.type === 'text') &&
+      (attr.type === 'string' || attr.type === 'text' || attr.type === 'richtext') &&
       typeof value === 'string' &&
       value.trim().length > 30 &&
       !SUMMARY_SCALAR_FIELDS.has(name)
