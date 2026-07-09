@@ -76,6 +76,8 @@ interface ChatSource { href: string; label: string }
 const SOURCE_LINE_RE =
   /^\s*(?:>\s*)?(?:more details?|more info(?:rmation)?|sources?|read more|learn more|details)\s*[:\-–—]\s*(\S.*)$/i;
 const BARE_URL_RE = /https?:\/\/[^\s<>()]*[^\s<>().,;:!?'"]/;
+// KB Source lines are titled markdown links: "More details: [The 2nd Floor](https://…)".
+const SOURCE_MD_LINK_RE = /\[([^\]]+)\]\(\s*(https?:\/\/[^\s)]+|\/[^\s)]*)\s*\)/;
 
 function toInternalPath(href: string): string | null {
   if (href.startsWith('/') && !href.startsWith('//')) return href;
@@ -90,8 +92,18 @@ function toInternalPath(href: string): string | null {
 }
 
 function sourceChipLabel(href: string): string {
+  // Fallback when the agent cited a bare URL: humanize the last path segment
+  // ("/dining/the-2nd-floor" → "The 2nd Floor"). Titled citations from the KB
+  // override this via refNumber's label argument.
   const internal = toInternalPath(href);
-  if (internal) return internal === '/' ? 'Home' : internal;
+  if (internal) {
+    const seg = internal.split(/[?#]/)[0].split('/').filter(Boolean).pop();
+    if (!seg) return 'Home';
+    return seg
+      .split('-')
+      .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w))
+      .join(' ');
+  }
   try { return new URL(href).hostname; } catch { return href; }
 }
 
@@ -111,6 +123,9 @@ function AgentMessage({ text, onOpen }: { text: string; onOpen: (href: string) =
     if (idx === -1) {
       sources.push({ href, label: label ?? sourceChipLabel(href) });
       idx = sources.length - 1;
+    } else if (label && sources[idx].label === sourceChipLabel(href)) {
+      // Upgrade an auto-derived label with the real page title once we see one.
+      sources[idx] = { ...sources[idx], label };
     }
     return idx + 1;
   };
@@ -119,8 +134,12 @@ function AgentMessage({ text, onOpen }: { text: string; onOpen: (href: string) =
   const kept: string[] = [];
   for (const line of text.split('\n')) {
     const m = line.match(SOURCE_LINE_RE);
-    const url = m?.[1].match(BARE_URL_RE);
-    if (m && url) { refNumber(url[0]); continue; }
+    if (m) {
+      const md = m[1].match(SOURCE_MD_LINK_RE);
+      if (md) { refNumber(md[2], md[1]); continue; }
+      const url = m[1].match(BARE_URL_RE);
+      if (url) { refNumber(url[0]); continue; }
+    }
     kept.push(line);
   }
   const body = kept.join('\n').replace(/\n{3,}/g, '\n\n').trim();
@@ -130,15 +149,15 @@ function AgentMessage({ text, onOpen }: { text: string; onOpen: (href: string) =
   const nodes: ReactNode[] = [];
   let last = 0;
   let key = 0;
-  const sup = (href: string) => {
+  const sup = (href: string, label?: string) => {
     // "…on our page: ¹" reads badly — drop a trailing colon before the marker.
     const prev = nodes[nodes.length - 1];
     if (typeof prev === 'string') nodes[nodes.length - 1] = prev.replace(/[\s:]+$/, '');
     nodes.push(
       <sup key={key++}>
-        <button onClick={() => onOpen(href)} aria-label={`Open source ${refNumber(href)}`}
+        <button onClick={() => onOpen(href)} aria-label={`Open source ${refNumber(href, label)}`}
                 className="text-accent font-bold cursor-pointer hover:underline px-0.5">
-          {refNumber(href)}
+          {refNumber(href, label)}
         </button>
       </sup>,
     );
@@ -158,7 +177,7 @@ function AgentMessage({ text, onOpen }: { text: string; onOpen: (href: string) =
             {mdLabel}
           </button>,
         );
-        sup(mdTarget);
+        sup(mdTarget, mdLabel);
       }
     } else if (bareUrl) {
       sup(bareUrl);
