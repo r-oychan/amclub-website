@@ -31,9 +31,14 @@ export function renderEntryMarkdown({ strapi, uid, entry, publicUrl }: RenderInp
   if (!schema) throw new Error(`Unknown content type: ${uid}`);
 
   const title = (entry.title ?? entry.name ?? schema.info?.displayName ?? uid) as string;
+  // Source lines carry the page title as a markdown link so the agent (and
+  // the chat widget's citation chips) can show "The 2nd Floor" instead of a
+  // raw URL. Strip brackets from the title so it can't break the link syntax.
+  const sourceLabel = String(title).replace(/[[\]]/g, '').trim();
+  const sourceLine = publicUrl ? `Source: [${sourceLabel}](${publicUrl})` : null;
   const lines: string[] = [`# ${title}`, ''];
-  if (publicUrl) {
-    lines.push(`> Source: ${publicUrl}`);
+  if (sourceLine) {
+    lines.push(`> ${sourceLine}`);
     lines.push('');
   }
 
@@ -120,8 +125,8 @@ export function renderEntryMarkdown({ strapi, uid, entry, publicUrl }: RenderInp
   // reaches the model for content further down — and the agent then can't
   // cite the page. Repeat the Source line at the end of every section (and
   // the doc) so any retrieved chunk carries a citable URL.
-  if (publicUrl) {
-    md = md.replace(/\n(## )/g, `\n\nSource: ${publicUrl}\n\n$1`) + `\n\nSource: ${publicUrl}`;
+  if (sourceLine) {
+    md = md.replace(/\n(## )/g, `\n\n${sourceLine}\n\n$1`) + `\n\n${sourceLine}`;
   }
   return md;
 }
