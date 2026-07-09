@@ -265,6 +265,7 @@ export async function syncEntry(strapi: Strapi, uid: string, documentId?: string
 async function syncAttachedFiles(strapi: Strapi, ownerUid: string, entry: Record<string, unknown>): Promise<void> {
   const files = await harvestFiles(strapi as never, ownerUid, entry);
   const ownerEntryId = (entry.id as number) ?? null;
+  const ownerDocName = buildDocName(strapi, ownerUid, entry);
   const fileNamesAfter = new Set<string>();
 
   for (const f of files) {
@@ -277,10 +278,14 @@ async function syncAttachedFiles(strapi: Strapi, ownerUid: string, entry: Record
     }
   }
 
+  // Stale-file cleanup matches on the stable doc-name prefix, NOT
+  // ownerEntryId — that column holds the published row id, which changes
+  // on every publish, so prefix matching is what catches prior generations.
   const ownedRows = (await strapi.db.query(SYNC_LOG_UID).findMany({
-    where: { sourceKind: 'media-file', ownerContentType: ownerUid, ownerEntryId },
+    where: { sourceKind: 'media-file', ownerContentType: ownerUid },
   })) as SyncLogRow[];
   for (const row of ownedRows) {
+    if (!row.documentName.startsWith(`${ownerDocName}:file:`)) continue;
     if (fileNamesAfter.has(row.documentName)) continue;
     try { await client.deleteDoc(strapi as never, row.elDocumentId); }
     catch (err) { strapi.log.warn(`[${PLUGIN_ID}] failed to drop orphan ${row.elDocumentId}: ${(err as Error).message}`); }
@@ -336,10 +341,11 @@ async function fetchUploadBuffer(url: string): Promise<Buffer> {
 }
 
 function buildFileDocName(strapi: Strapi, ownerUid: string, entry: Record<string, unknown>, file: HarvestedFile): string {
-  const short = ownerUid.replace(/^api::/, '').split('.')[0];
-  const slug = (entry.slug as string | undefined) ?? `id-${entry.id}`;
+  // Reuse buildDocName so the owner segment keys on slug/documentId —
+  // an inline `id-${entry.id}` fallback here duplicated every attached
+  // PDF on each republish (row ids change per publish).
   const baseName = file.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9-]+/g, '-');
-  return `${docPrefix(strapi)}${short}:${slug}:file:${baseName}`;
+  return `${buildDocName(strapi, ownerUid, entry)}:file:${baseName}`;
 }
 
 // Real SPA routes (frontend/src/App.tsx). The old guessed pattern
