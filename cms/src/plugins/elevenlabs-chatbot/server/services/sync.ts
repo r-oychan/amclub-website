@@ -81,7 +81,12 @@ function buildDocName(strapi: Strapi, uid: string, entry: Record<string, unknown
   const short = uid.replace(/^api::/, '').split('.')[0];
   const prefix = docPrefix(strapi);
   if (!entry) return `${prefix}${short}`;
-  const slug = (entry.slug as string | undefined) ?? `id-${entry.id}`;
+  // Slugless entries (singletons, committee members, …) key on documentId,
+  // which is stable across publishes. entry.id is the published ROW id and
+  // changes on every publish — using it duplicated the doc each time the
+  // entry was republished, and the stale generations stayed attached and
+  // indexed until they exhausted the account's RAG quota.
+  const slug = (entry.slug as string | undefined) ?? (entry.documentId as string | undefined) ?? `id-${entry.id}`;
   return `${prefix}${short}:${slug}`;
 }
 
