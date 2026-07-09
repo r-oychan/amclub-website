@@ -349,6 +349,10 @@ const COLLECTION_ROUTES: Record<string, (slug: string) => string> = {
   restaurant: (s) => `/dining/${s}`,
   event: (s) => `/whats-on/${s}`,
   'news-article': (s) => `/home-sub/club-news/${s}`,
+  'event-space': (s) => `/event-spaces/${s}`,
+  'fitness-facility': (s) => `/fitness/${s}`,
+  'kids-experience': (s) => `/kids/${s}`,
+  'dining-promotion': () => '/dining/dining-promotion',
   'gallery-album': () => '/home-sub/gallery',
   'faq-item': () => '/faq',
   'committee-member': () => '/about',
@@ -358,6 +362,11 @@ const SINGLETON_ROUTES: Record<string, string> = {
   'contact-us-page': '/home-sub/contact-us',
   'gallery-page': '/home-sub/gallery',
   'news-page': '/home-sub/news',
+  'joining-fees-page': '/membership/joining-fees',
+  'reciprocal-clubs-page': '/membership/reciprocal-clubs',
+  'referral-page': '/membership/referal',
+  'start-application-page': '/membership/start-application',
+  'niche-group-membership-page': '/membership/niche-group-membership',
   footer: '/home',
 };
 
