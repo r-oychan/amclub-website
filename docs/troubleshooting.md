@@ -332,3 +332,31 @@ admin → Sync All) to rebuild the log and attachments.
 **Related:** RAG indexes are NOT computed automatically for newly attached docs —
 `POST /v1/convai/knowledge-base/{id}/rag-index` per doc, or the agent retrieves
 nothing and falls back to "I don't have that in my knowledge base".
+
+## Chatbot KB: duplicate docs, quota exhaustion, missing content (July 2026)
+
+- **Symptom:** `rag_limit_exceeded` when indexing; the agent's KB full of
+  `am-club:<type>:id-<n>` docs in multiple generations (e.g. five copies of
+  `footer:id-5..9:file:club-bylaws` holding ~1.2 MB of the ~2 MB account quota).
+  **Cause:** doc names keyed on the published **row id**, which Strapi v5
+  regenerates on every publish — each republish of a slugless entry (singletons,
+  committee members) created a new doc and stranded the old one, still attached
+  and indexed. **Fix (landed 10 Jul 2026):** `buildDocName`/`buildFileDocName`
+  key on slug → `documentId`; stale-file cleanup matches the stable doc-name
+  prefix instead of `ownerEntryId`. Purge any remaining `id-N` docs with
+  `scripts/elevenlabs-purge-stale.py <env>` and re-index with
+  `scripts/elevenlabs-index-kb.py <env>`.
+- **Symptom:** chatbot knows nothing about a whole content type (e.g. event
+  spaces). **Cause:** stale UID in `DEFAULT_ELEVENLABS_CONTENT_TYPES`
+  (`api::venue.venue` survived the rename to `event-space`) — a bad UID fails
+  silently. Keep the allow-list in step with content-type renames.
+- **Symptom:** chatbot can't answer from a field that is clearly on the page
+  (e.g. ballroom size/capacity). **Cause:** the markdown renderer skipped
+  `richtext` fields entirely and dropped short scalars (`capacity`,
+  `locationLevel`) not in its summary set. Both render since 10 Jul 2026 —
+  if a new "invisible field" appears, check `markdown.ts` field handling first.
+- **Symptom:** RAG index status `failed` at 100% progress on multiple accounts
+  for the same doc. **Cause:** corrupt doc content (not quota) — inspect the
+  uploaded text. Status must be polled via **GET**; the POST response reports
+  `new` misleadingly, and an index can only be deleted after the doc is
+  detached from every agent (`rag_index_used`).
