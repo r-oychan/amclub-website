@@ -104,7 +104,21 @@ function sourceChipLabel(href: string): string {
       .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w))
       .join(' ');
   }
-  try { return new URL(href).hostname; } catch { return href; }
+  // Uploaded documents (blob storage / /uploads/ paths): label with the
+  // humanized filename, not the storage hostname.
+  try {
+    const u = new URL(href, window.location.origin);
+    const fileMatch = u.pathname.match(/\/([^/]+)\.(pdf|docx?|xlsx?|pptx?)$/i);
+    if (fileMatch) {
+      const base = fileMatch[1].replace(/[_-][0-9a-f]{8,}$/i, '');
+      const words = base
+        .split(/[_-]+/)
+        .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w))
+        .join(' ');
+      return `${words} (${fileMatch[2].toUpperCase()})`;
+    }
+    return u.hostname;
+  } catch { return href; }
 }
 
 function ArrowOutIcon() {
