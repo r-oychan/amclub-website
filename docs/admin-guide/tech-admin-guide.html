@@ -53,7 +53,7 @@
   <p>Architecture, environments, deployment, CMS internals, content seeding, and operations runbook for the
      amclub-website monorepo. For day-to-day content editing, hand editors the
      <a href="cms-user-guide.html" style="color:#f0b9bd">CMS User Guide</a>.</p>
-  <p class="meta">Last updated 8 July 2026 · Sources: repo <code>docs/</code>, <code>SPECS.md</code>, <code>infra/</code>,
+  <p class="meta">Last updated 10 July 2026 · Sources: repo <code>docs/</code>, <code>SPECS.md</code>, <code>infra/</code>,
      workflows · Screenshots from UAT admin</p>
 </div>
 
@@ -348,12 +348,31 @@ git log --oneline origin/main..origin/uat   # ready for PROD</code></pre>
               <em>all</em> <code>api::*</code> models and, on publish/update of an <strong>allow-listed</strong> type,
               renders the entry to Markdown and upserts it as a KB document.</td></tr>
       <tr><td>Allow-list</td>
-          <td><code>DEFAULT_ELEVENLABS_CONTENT_TYPES</code> in <code>cms/config/plugins.ts</code> (all page singletons +
-              events, news, restaurants, venues, facilities, committee members, FAQ items, testimonials, gallery albums).
-              The plugin <strong>Settings page</strong> in <code>/admin</code> overrides this allow-list at runtime once saved.</td></tr>
+          <td><code>DEFAULT_ELEVENLABS_CONTENT_TYPES</code> in <code>cms/config/plugins.ts</code> (all page singletons
+              incl. the membership sub-pages + events, news, restaurants, <strong>event spaces, fitness facilities,
+              kids experiences, dining promotions</strong>, committee members, FAQ items, testimonials, gallery albums).
+              The plugin <strong>Settings page</strong> in <code>/admin</code> overrides this allow-list at runtime once
+              saved. <em>Keep the list in step with content-type renames</em> — a stale UID (e.g. the old
+              <code>api::venue.venue</code>) fails silently and that type simply never syncs.</td></tr>
       <tr><td>Document naming</td>
           <td>KB docs are prefixed <code>am-club:</code> (<code>ELEVENLABS_DOC_PREFIX</code>) so the sweep can identify
-              and prune documents it owns without touching manually-added KB entries.</td></tr>
+              and prune documents it owns without touching manually-added KB entries. The per-entry key is the
+              <strong>slug, falling back to <code>documentId</code></strong> — never the row <code>id</code>, which
+              Strapi v5 regenerates on every publish (keying on it duplicated singleton docs each republish until fixed
+              on 10 Jul 2026). Attached files become child docs named <code>&lt;owner&gt;:file:&lt;name&gt;</code>.</td></tr>
+      <tr><td>Markdown rendering</td>
+          <td><code>markdown.ts</code> renders each entry with a titled source link
+              (<code>Source: [Page Title](url)</code>) repeated at the end of <em>every</em> section — RAG retrieves
+              chunks, so a single top-of-doc link never reaches the model. Rendered fields: summary scalars
+              (name, capacity, location, phone, email…), <code>string</code>/<code>text</code>/<code>richtext</code>
+              fields over 30 chars, components and dynamic zones. Citation URLs come from real SPA route maps in
+              <code>sync.ts</code> (<code>COLLECTION_ROUTES</code>/<code>SINGLETON_ROUTES</code>).</td></tr>
+      <tr><td>RAG indexing</td>
+          <td>Creating a KB doc is <em>not enough</em> — each doc needs a RAG index
+              (<code>POST /v1/convai/knowledge-base/{id}/rag-index</code>, then poll status via <strong>GET</strong>).
+              Index <em>sequentially</em>; parallel POSTs spawn duplicate attempts. Each ElevenLabs account has a
+              RAG storage quota (~2&nbsp;MB on the current plans) — <code>rag_limit_exceeded</code> means quota, a
+              plain <code>failed</code> at 100% usually means corrupt doc content.</td></tr>
       <tr><td>Expiry sweep (cron)</td>
           <td><code>0 * * * *</code> hourly job (<code>expiryKbSweep</code> in <code>cms/src/index.ts</code>) unsyncs
               entries whose <code>expiredAt</code>/<code>date</code> has passed — keeps the bot from citing stale events.</td></tr>
@@ -390,6 +409,45 @@ git log --oneline origin/main..origin/uat   # ready for PROD</code></pre>
        prefix, e.g. <code>manual:faq-master-repository</code>) are preserved by the sync — it only manages docs it
        owns.</p>
   </div>
+
+  <h4>Citations pipeline (page-title chips)</h4>
+  <p>Three layers cooperate so every factual chatbot answer ends with numbered, page-titled source chips:</p>
+  <ol>
+    <li><strong>KB docs</strong> carry <code>Source: [Page Title](url)</code> lines in every section
+        (<code>markdown.ts</code>; the manual FAQ doc <code>agent/faq-kb.md</code> carries one per Q&amp;A).</li>
+    <li><strong>The prompt</strong> makes the source link a required response-structure step and tells the agent to
+        copy the titled markdown link verbatim (<code>More details: [Types &amp; Joining Fees](…)</code>).</li>
+    <li><strong>The widget</strong> (<code>ChatbotWidget.tsx</code>) lifts those lines into superscript footnote
+        markers + chips labelled with the page title; internal links open <em>behind</em> the chat panel via SPA
+        navigation, uploaded documents get a humanized filename label ("Capacity Chart (PDF)"), external links open a
+        new tab.</li>
+  </ol>
+  <div class="callout warn">
+    <span class="label">Agent LLM — keep it on Claude</span>
+    <p>All three agents run <code>claude-sonnet-4-6</code>. This is deliberate: <code>gemini-2.5-flash</code> drops the
+       per-turn citation rule after the first answer in multi-turn chats <em>regardless of prompt wording</em> (tested
+       1/5 → 2/5 after prompt tightening; Claude holds 5/5). If cost ever matters, trial
+       <code>claude-haiku-4-5</code> before anything else — and re-run the eval
+       (<code>scripts/eval-agent-faq.py</code>) after any model change.</p>
+  </div>
+
+  <h4>Full KB rebuild runbook</h4>
+  <p>Needed after a plugin change that alters rendered markdown (all content hashes change), or when the KB is
+     suspected stale. Order matters:</p>
+  <ol>
+    <li><strong>Sweep</strong> — <em>either</em> the plugin Settings page → "Sync All" (needs an admin session),
+        <em>or</em> a no-op PUT of every allow-listed published entry via the content API with the seed token (fires
+        the publish lifecycle; scripts follow the pattern in <code>scripts/</code> — sweep scripts are env-guarded so a
+        dev script cannot hit UAT).</li>
+    <li><strong>Purge stale generations</strong> — any doc named <code>am-club:*:id-&lt;n&gt;</code> after the sweep
+        is a pre-fix leftover: detach from the agent, then delete. One dead doc id in the agent's KB list makes the
+        whole attach PATCH 404, so the plugin validates per-doc with direct GETs (never the lagging search index).</li>
+    <li><strong>Re-index sequentially</strong> — priority order (restaurants and page singletons first, gallery/news
+        tail last). A changed doc = a <em>new</em> doc = its RAG index must be rebuilt; deleting the old doc frees its
+        quota as you go.</li>
+    <li><strong>Verify live</strong> — ask the deployed chatbot a KB-dependent question ("When is The 2nd Floor open
+        today?") and confirm the answer carries a titled citation chip.</li>
+  </ol>
 </section>
 
 <!-- ============================================================ -->
@@ -875,6 +933,29 @@ npm run test          # root: runs all of the above</code></pre>
         <td>The Club's internal DNS still holds an old IP — it does not follow Cloudflare (see <a href="#dns">§11</a>)</td>
         <td>Ask Club IT to update the internal DNS records to the current static IPs
             (<code>pulumi stack output containerEnvStaticIp</code> per env)</td>
+      </tr>
+      <tr>
+        <td>Chatbot says it has <strong>no information</strong> about something that is on the website</td>
+        <td>Entry unpublished · field type not rendered · content type missing from the allow-list · KB doc exists but
+            was never RAG-indexed</td>
+        <td>Check published + the data is in a real field/PDF; check the type is in
+            <code>DEFAULT_ELEVENLABS_CONTENT_TYPES</code>; then re-sync and check the doc's rag-index status via GET
+            (see §4 "Full KB rebuild runbook")</td>
+      </tr>
+      <tr>
+        <td>Chatbot answers but <strong>without citation chips</strong></td>
+        <td>KB docs lack per-section <code>Source:</code> lines (pre-Jul-2026 render) — or the agent LLM was switched
+            off Claude</td>
+        <td>Rebuild the KB so docs carry titled Source lines; confirm the agent LLM is
+            <code>claude-sonnet-4-6</code> (gemini-flash drops the citation rule after turn 1)</td>
+      </tr>
+      <tr>
+        <td><code>rag_limit_exceeded</code> when indexing KB docs</td>
+        <td>Account RAG storage quota (~2 MB) exhausted — usually by stale duplicate docs
+            (<code>am-club:*:id-N</code> generations) or orphans still holding indexes</td>
+        <td>Purge stale <code>id-N</code> docs (detach → delete), drop indexes of unattached orphans, then re-index
+            priority-first. A plain <code>failed</code> status instead means corrupt doc content — inspect the doc
+            text.</td>
       </tr>
       <tr>
         <td>Broken thumbnails in admin Media Library</td>
