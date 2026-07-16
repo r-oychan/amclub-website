@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router';
 import { ConversationProvider, useConversation } from '@elevenlabs/react';
 
@@ -223,6 +223,78 @@ function AgentMessage({ text, onOpen }: { text: string; onOpen: (href: string) =
   );
 }
 
+// ── Waiting indicator + typewriter reveal ─────────────────────────────
+// The ElevenLabs SDK delivers each agent reply as one complete message, so
+// "streaming" is simulated: a three-dot bubble while waiting, then a
+// word-by-word reveal. Markdown links, URLs and whole source lines are
+// atomic reveal units so raw `[label](url)` syntax never flashes mid-type.
+
+function TypingDots() {
+  return (
+    <span className="flex items-center gap-1 py-1" role="status" aria-label="Assistant is typing">
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className="w-1.5 h-1.5 rounded-full bg-neutral-400 animate-bounce"
+          style={{ animationDelay: `${i * 0.15}s`, animationDuration: '0.9s' }}
+        />
+      ))}
+    </span>
+  );
+}
+
+function revealOffsets(text: string): number[] {
+  const offsets: number[] = [];
+  let pos = 0;
+  for (const line of text.split('\n')) {
+    if (SOURCE_LINE_RE.test(line)) {
+      // A source line converts to a footnote chip — reveal it in one go so
+      // "More details:" never appears as half-typed text.
+      pos += line.length + 1;
+      offsets.push(Math.min(pos, text.length));
+      continue;
+    }
+    const token = /\[[^\]]*\]\([^)\s]*\)|https?:\/\/\S+|\S+/g;
+    for (let m = token.exec(line); m; m = token.exec(line)) {
+      offsets.push(pos + m.index + m[0].length);
+    }
+    pos += line.length + 1;
+  }
+  return offsets.length > 0 ? offsets : [text.length];
+}
+
+const PREFERS_REDUCED_MOTION =
+  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function AnimatedAgentMessage({
+  text,
+  onOpen,
+  onGrow,
+}: {
+  text: string;
+  onOpen: (href: string) => void;
+  onGrow: () => void;
+}) {
+  const offsets = useMemo(() => revealOffsets(text), [text]);
+  const [step, setStep] = useState(PREFERS_REDUCED_MOTION ? offsets.length : 0);
+  const done = step >= offsets.length;
+
+  useEffect(() => {
+    if (done) return;
+    // Scale the per-tick stride so even long replies finish in ~2.5s.
+    const stride = Math.max(1, Math.ceil(offsets.length / 70));
+    const timer = setInterval(() => {
+      setStep((s) => Math.min(s + stride, offsets.length));
+      onGrow();
+    }, 35);
+    return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [done, offsets.length]);
+
+  const visible = done ? text : text.slice(0, step > 0 ? offsets[step - 1] : 0);
+  return <AgentMessage text={visible} onOpen={onOpen} />;
+}
+
 function ChatbotPanel({
   cfg,
   positionClasses,
@@ -236,9 +308,16 @@ function ChatbotPanel({
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [mode, setMode] = useState<Mode>('text');
+  const [awaitingReply, setAwaitingReply] = useState(false);
   const messageIdRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
+  const scrollToBottom = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  };
 
   // Citation chips: internal pages open BEHIND the chat panel (SPA navigation
   // keeps the widget mounted and open); external links open a new tab.
@@ -255,14 +334,16 @@ function ChatbotPanel({
   const conversation = useConversation({
     textOnly: mode === 'text',
     onConnect: () => setError(null),
-    onDisconnect: () => {},
     onError: (err: unknown) => {
       const msg = err instanceof Error ? err.message : String(err);
       console.error('[ChatbotWidget]', err);
       setError(msg || 'Connection error');
+      setAwaitingReply(false);
     },
+    onDisconnect: () => setAwaitingReply(false),
     onMessage: ({ source, message }: { source: 'ai' | 'user'; message: string }) => {
       messageIdRef.current += 1;
+      if (source === 'ai') setAwaitingReply(false);
       setMessages((prev) => [
         ...prev,
         { role: source === 'ai' ? 'agent' : 'user', text: message, id: messageIdRef.current },
@@ -276,10 +357,8 @@ function ChatbotPanel({
   const isVoice = mode === 'voice';
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
+    scrollToBottom();
+  }, [messages, awaitingReply]);
 
   // Cleanup ref so the unmount effect doesn't tear down sessions on every re-render.
   const conversationRef = useRef(conversation);
@@ -328,6 +407,7 @@ function ChatbotPanel({
     messageIdRef.current += 1;
     setMessages((prev) => [...prev, { role: 'user', text, id: messageIdRef.current }]);
     setInput('');
+    setAwaitingReply(true);
   };
 
   const handleToggleMute = () => {
@@ -394,9 +474,14 @@ function ChatbotPanel({
           >
             {m.role === 'user'
               ? linkifyMessage(m.text, true)
-              : <AgentMessage text={m.text} onOpen={openSource} />}
+              : <AnimatedAgentMessage text={m.text} onOpen={openSource} onGrow={scrollToBottom} />}
           </div>
         ))}
+        {awaitingReply && (
+          <div className="max-w-[85%] px-3 py-2 rounded-2xl mr-auto bg-white border border-neutral-200 rounded-bl-sm">
+            <TypingDots />
+          </div>
+        )}
         {error && <p className="text-xs text-accent text-center py-2">{error}</p>}
       </div>
 
