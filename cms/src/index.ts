@@ -20,6 +20,7 @@ const PUBLIC_FIND_TYPES = [
   'api::reciprocal-clubs-page.reciprocal-clubs-page',
   'api::start-application-page.start-application-page',
   'api::advertise-with-us-page.advertise-with-us-page',
+  'api::privacy-statement-page.privacy-statement-page',
   'api::event-spaces-page.event-spaces-page',
   'api::whats-on-page.whats-on-page',
   'api::header.header',

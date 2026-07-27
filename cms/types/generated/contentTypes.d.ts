@@ -2112,6 +2112,40 @@ export interface ApiPilatesInstructorPilatesInstructor
   };
 }
 
+export interface ApiPrivacyStatementPagePrivacyStatementPage
+  extends Struct.SingleTypeSchema {
+  collectionName: 'privacy_statement_pages';
+  info: {
+    description: 'Content for /privacy-statement \u2014 eyebrow label, title, last-revision line and a single markdown body';
+    displayName: 'Privacy Statement Page';
+    pluralName: 'privacy-statement-pages';
+    singularName: 'privacy-statement-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    body: Schema.Attribute.RichText;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    label: Schema.Attribute.String;
+    lastRevision: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::privacy-statement-page.privacy-statement-page'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiReciprocalClubsPageReciprocalClubsPage
   extends Struct.SingleTypeSchema {
   collectionName: 'reciprocal_clubs_pages';
@@ -3276,6 +3310,7 @@ declare module '@strapi/strapi' {
       'api::news-page.news-page': ApiNewsPageNewsPage;
       'api::niche-group-membership-page.niche-group-membership-page': ApiNicheGroupMembershipPageNicheGroupMembershipPage;
       'api::pilates-instructor.pilates-instructor': ApiPilatesInstructorPilatesInstructor;
+      'api::privacy-statement-page.privacy-statement-page': ApiPrivacyStatementPagePrivacyStatementPage;
       'api::reciprocal-clubs-page.reciprocal-clubs-page': ApiReciprocalClubsPageReciprocalClubsPage;
       'api::referral-page.referral-page': ApiReferralPageReferralPage;
       'api::restaurant.restaurant': ApiRestaurantRestaurant;
