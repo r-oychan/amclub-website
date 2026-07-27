@@ -102,7 +102,7 @@ Each row lists, for one route: the React page file, the React components it comp
 | `/home-sub/contact-us` | `ContactUsPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `contact/MapGettingHere` `contact/OutletOperatingHours` `contact/TalkToUsBanner` `shared/PageFade` | 🟢 single-type `contact-us-page` (with `outletGroups[].cards[].blocks[].rows` + `talkToUsCta`) |
 | `/home-sub/:slug` | `VenueDetailPage.tsx` (section=home-sub) | same as dining detail | 🟢 collection `facility` (section=home-sub) — only `advertise-with-us` currently routes here (the news/gallery/contact-us slugs hit their dedicated pages above) |
 | `/faq` | `FaqPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `blocks/FaqAccordion` `blocks/FaqAnswerBlocks` `shared/PageFade` | 🟢 single-type `faq-page`; 🟢 collection `faq-category` (sorted by `displayOrder`); 🟢 collection `faq-item` (grouped by category, sorted by `order`) |
-| `/privacy-statement` | `PrivacyStatementPage.tsx` | `shared/PageFade` | ❌ static — inline copy in component (PR-2 follow-up to migrate to a `privacy-statement-page` single-type) |
+| `/privacy-statement` | `PrivacyStatementPage.tsx` | `shared/PageFade` | 🟢 single-type `privacy-statement-page` (`label`, `title`, `lastRevision`, `body` markdown richtext, `seo`); seeded by `scripts/seed-privacy-statement-page.mjs` from `scripts/data/privacy-statement-body.md` |
 
 ### Layout chrome (every route)
 
