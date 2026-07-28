@@ -301,9 +301,13 @@ interface MembershipSingleton {
   heading?: string;
   description?: string;
   heroImage?: { url?: string; alternativeText?: string } | null;
+  locationLevel?: string;
   phone?: string;
   email?: string;
+  locationContact?: LocationContact | null;
+  operatingHoursSections?: OperatingHoursSection[] | null;
   ctas?: { label: string; href: string; isExternal?: boolean }[];
+  bottomCtas?: { label: string; href: string; isExternal?: boolean }[];
   downloads?: {
     heading?: string;
     items?: { label?: string; href?: string; isExternal?: boolean }[];
@@ -368,8 +372,24 @@ function mapSingletonToVenue(s: MembershipSingleton, fallback: VenueData | null)
             .map((i) => ({ label: i.label!, href: i.href!, isExternal: i.isExternal })),
         }
       : base.downloads,
+    locationLevel: s.locationLevel ?? base.locationLevel,
     phone: s.phone ?? base.phone,
     email: s.email ?? base.email,
+    // The static fallback may carry a hardcoded locationContact component that
+    // would otherwise shadow CMS-edited flat contact fields at render time
+    // (the Location & Contact box prefers the component). Prefer the CMS
+    // component, then CMS flat fields, and only then the fallback's component.
+    locationContact:
+      s.locationContact &&
+      (s.locationContact.locationLevel || s.locationContact.phone || s.locationContact.email)
+        ? s.locationContact
+        : s.locationLevel || s.phone || s.email
+          ? { locationLevel: s.locationLevel, phone: s.phone, email: s.email }
+          : base.locationContact,
+    operatingHoursSections: s.operatingHoursSections?.length
+      ? s.operatingHoursSections
+      : base.operatingHoursSections,
+    bottomCtas: s.bottomCtas?.length ? s.bottomCtas : base.bottomCtas,
     tierCards,
   };
 }

@@ -107,6 +107,21 @@ export async function deleteDoc(strapi: StrapiLike, documentId: string): Promise
   await request<unknown>(strapi, `/v1/convai/knowledge-base/${documentId}?force=true`, { method: 'DELETE' });
 }
 
+/**
+ * Authoritative existence check via direct GET (the search endpoint's index
+ * lags doc creation, so it must NOT be used to decide whether a doc is dead).
+ * Errors other than 404 count as "exists" so flaky responses never trigger
+ * wrongful cleanup.
+ */
+export async function docExists(strapi: StrapiLike, documentId: string): Promise<boolean> {
+  try {
+    await request<unknown>(strapi, `/v1/convai/knowledge-base/${documentId}`, { method: 'GET' });
+    return true;
+  } catch (err) {
+    return !(err as Error).message.includes(' 404 ');
+  }
+}
+
 export async function getAgent(strapi: StrapiLike, agentId: string): Promise<AgentResponse> {
   return request<AgentResponse>(strapi, `/v1/convai/agents/${agentId}`, { method: 'GET' });
 }

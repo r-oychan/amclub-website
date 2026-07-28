@@ -81,7 +81,12 @@ function buildDocName(strapi: Strapi, uid: string, entry: Record<string, unknown
   const short = uid.replace(/^api::/, '').split('.')[0];
   const prefix = docPrefix(strapi);
   if (!entry) return `${prefix}${short}`;
-  const slug = (entry.slug as string | undefined) ?? `id-${entry.id}`;
+  // Slugless entries (singletons, committee members, …) key on documentId,
+  // which is stable across publishes. entry.id is the published ROW id and
+  // changes on every publish — using it duplicated the doc each time the
+  // entry was republished, and the stale generations stayed attached and
+  // indexed until they exhausted the account's RAG quota.
+  const slug = (entry.slug as string | undefined) ?? (entry.documentId as string | undefined) ?? `id-${entry.id}`;
   return `${prefix}${short}:${slug}`;
 }
 
@@ -116,14 +121,54 @@ async function refreshAgentKnowledgeBase(strapi: Strapi): Promise<void> {
     return;
   }
   const allRows = (await strapi.db.query(SYNC_LOG_UID).findMany({})) as SyncLogRow[];
-  const locators: client.KnowledgeBaseLocator[] = allRows.map((r) => ({
+  const toLocator = (r: SyncLogRow): client.KnowledgeBaseLocator => ({
     id: r.elDocumentId,
     name: r.documentName,
     type: r.elDocType,
     usage_mode: 'auto',
-  }));
-  await client.setAgentKnowledgeBase(strapi as never, agentId, locators);
-  strapi.log.info(`[${PLUGIN_ID}] agent ${agentId} now references ${locators.length} doc(s)`);
+  });
+  let locators = allRows.map(toLocator);
+  // Docs attached to the agent outside this plugin (no doc-name prefix, e.g.
+  // the master FAQ repository) are not in the sync log — carry them over so
+  // a sync doesn't silently detach them.
+  const manual = await listManualAttachments(strapi, agentId, locators);
+  try {
+    await client.setAgentKnowledgeBase(strapi as never, agentId, [...manual, ...locators]);
+  } catch (err) {
+    // A single dead document id makes the whole PATCH 404. Verify each row
+    // with a direct GET (authoritative — never the lagging search index),
+    // drop rows whose doc is truly gone, and retry once with the survivors.
+    strapi.log.warn(
+      `[${PLUGIN_ID}] agent attach failed (${(err as Error).message.slice(0, 120)}) — validating sync-log rows`,
+    );
+    const alive: SyncLogRow[] = [];
+    for (const r of allRows) {
+      if (await client.docExists(strapi as never, r.elDocumentId)) {
+        alive.push(r);
+      } else {
+        strapi.log.warn(
+          `[${PLUGIN_ID}] dropping stale sync-log row "${r.documentName}" — remote doc ${r.elDocumentId} no longer exists`,
+        );
+        await deleteLogRow(strapi, r.id);
+      }
+    }
+    locators = alive.map(toLocator);
+    await client.setAgentKnowledgeBase(strapi as never, agentId, [...manual, ...locators]);
+  }
+  strapi.log.info(
+    `[${PLUGIN_ID}] agent ${agentId} now references ${locators.length} synced + ${manual.length} manual doc(s)`,
+  );
+}
+
+async function listManualAttachments(
+  strapi: Strapi,
+  agentId: string,
+  synced: client.KnowledgeBaseLocator[],
+): Promise<client.KnowledgeBaseLocator[]> {
+  const prefix = docPrefix(strapi);
+  const agent = await client.getAgent(strapi as never, agentId);
+  const attached = agent.conversation_config?.agent?.prompt?.knowledge_base ?? [];
+  return attached.filter((d) => !d.name.startsWith(prefix) && !synced.some((l) => l.id === d.id));
 }
 
 // ── Single-entry sync ────────────────────────────────────────────────
@@ -220,6 +265,7 @@ export async function syncEntry(strapi: Strapi, uid: string, documentId?: string
 async function syncAttachedFiles(strapi: Strapi, ownerUid: string, entry: Record<string, unknown>): Promise<void> {
   const files = await harvestFiles(strapi as never, ownerUid, entry);
   const ownerEntryId = (entry.id as number) ?? null;
+  const ownerDocName = buildDocName(strapi, ownerUid, entry);
   const fileNamesAfter = new Set<string>();
 
   for (const f of files) {
@@ -232,10 +278,14 @@ async function syncAttachedFiles(strapi: Strapi, ownerUid: string, entry: Record
     }
   }
 
+  // Stale-file cleanup matches on the stable doc-name prefix, NOT
+  // ownerEntryId — that column holds the published row id, which changes
+  // on every publish, so prefix matching is what catches prior generations.
   const ownedRows = (await strapi.db.query(SYNC_LOG_UID).findMany({
-    where: { sourceKind: 'media-file', ownerContentType: ownerUid, ownerEntryId },
+    where: { sourceKind: 'media-file', ownerContentType: ownerUid },
   })) as SyncLogRow[];
   for (const row of ownedRows) {
+    if (!row.documentName.startsWith(`${ownerDocName}:file:`)) continue;
     if (fileNamesAfter.has(row.documentName)) continue;
     try { await client.deleteDoc(strapi as never, row.elDocumentId); }
     catch (err) { strapi.log.warn(`[${PLUGIN_ID}] failed to drop orphan ${row.elDocumentId}: ${(err as Error).message}`); }
@@ -291,17 +341,49 @@ async function fetchUploadBuffer(url: string): Promise<Buffer> {
 }
 
 function buildFileDocName(strapi: Strapi, ownerUid: string, entry: Record<string, unknown>, file: HarvestedFile): string {
-  const short = ownerUid.replace(/^api::/, '').split('.')[0];
-  const slug = (entry.slug as string | undefined) ?? `id-${entry.id}`;
+  // Reuse buildDocName so the owner segment keys on slug/documentId —
+  // an inline `id-${entry.id}` fallback here duplicated every attached
+  // PDF on each republish (row ids change per publish).
   const baseName = file.name.replace(/\.[^.]+$/, '').toLowerCase().replace(/[^a-z0-9-]+/g, '-');
-  return `${docPrefix(strapi)}${short}:${slug}:file:${baseName}`;
+  return `${buildDocName(strapi, ownerUid, entry)}:file:${baseName}`;
 }
+
+// Real SPA routes (frontend/src/App.tsx). The old guessed pattern
+// (`/${type}/${slug}`) produced Source links to routes that don't exist —
+// citation chips then navigated to a blank page.
+const COLLECTION_ROUTES: Record<string, (slug: string) => string> = {
+  restaurant: (s) => `/dining/${s}`,
+  event: (s) => `/whats-on/${s}`,
+  'news-article': (s) => `/home-sub/club-news/${s}`,
+  'event-space': (s) => `/event-spaces/${s}`,
+  'fitness-facility': (s) => `/fitness/${s}`,
+  'kids-experience': (s) => `/kids/${s}`,
+  'dining-promotion': () => '/dining/dining-promotion',
+  'gallery-album': () => '/home-sub/gallery',
+  'faq-item': () => '/faq',
+  'committee-member': () => '/about',
+  testimonial: () => '/home',
+};
+const SINGLETON_ROUTES: Record<string, string> = {
+  'contact-us-page': '/home-sub/contact-us',
+  'gallery-page': '/home-sub/gallery',
+  'news-page': '/home-sub/news',
+  'joining-fees-page': '/membership/joining-fees',
+  'reciprocal-clubs-page': '/membership/reciprocal-clubs',
+  'referral-page': '/membership/referal',
+  'start-application-page': '/membership/start-application',
+  'niche-group-membership-page': '/membership/niche-group-membership',
+  footer: '/home',
+};
 
 function buildPublicUrl(strapi: Strapi, uid: string, entry: Record<string, unknown>): string {
   const base = getSiteUrl(strapi as never);
   const slug = entry.slug as string | undefined;
   const short = uid.replace(/^api::/, '').split('.')[0];
+  if (SINGLETON_ROUTES[short]) return `${base}${SINGLETON_ROUTES[short]}`;
   if (uid.endsWith('-page.' + uid.split('.').pop())) return `${base}/${short.replace(/-page$/, '')}`;
+  const route = COLLECTION_ROUTES[short];
+  if (route && slug) return `${base}${route(slug)}`;
   if (slug) return `${base}/${short}/${slug}`;
   return `${base}/${short}`;
 }
@@ -374,8 +456,10 @@ export async function clearAll(strapi: Strapi): Promise<{ deleted: number }> {
   for (const r of rows) await deleteLogRow(strapi, r.id);
   const agentId = getResolvedAgentId(strapi as never);
   if (agentId) {
-    try { await client.setAgentKnowledgeBase(strapi as never, agentId, []); }
-    catch (err) { strapi.log.warn(`[${PLUGIN_ID}] failed to clear agent KB: ${(err as Error).message}`); }
+    try {
+      const manual = await listManualAttachments(strapi, agentId, []);
+      await client.setAgentKnowledgeBase(strapi as never, agentId, manual);
+    } catch (err) { strapi.log.warn(`[${PLUGIN_ID}] failed to clear agent KB: ${(err as Error).message}`); }
   }
   return { deleted };
 }

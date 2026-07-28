@@ -71,6 +71,8 @@ export default function App() {
             <Route path="/faq" element={<FaqPage />} />
             <Route path="/privacy-statement" element={<PrivacyStatementPage />} />
             <Route path="/home-sub/:slug" element={<VenueDetailPage section="home-sub" />} />
+            {/* Unknown paths (stale citations, old bookmarks) land on home, never a blank page. */}
+            <Route path="*" element={<Navigate to="/home" replace />} />
           </Routes>
         </main>
         <Footer />

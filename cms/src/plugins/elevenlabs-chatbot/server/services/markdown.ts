@@ -31,9 +31,14 @@ export function renderEntryMarkdown({ strapi, uid, entry, publicUrl }: RenderInp
   if (!schema) throw new Error(`Unknown content type: ${uid}`);
 
   const title = (entry.title ?? entry.name ?? schema.info?.displayName ?? uid) as string;
+  // Source lines carry the page title as a markdown link so the agent (and
+  // the chat widget's citation chips) can show "The 2nd Floor" instead of a
+  // raw URL. Strip brackets from the title so it can't break the link syntax.
+  const sourceLabel = String(title).replace(/[[\]]/g, '').trim();
+  const sourceLine = publicUrl ? `Source: [${sourceLabel}](${publicUrl})` : null;
   const lines: string[] = [`# ${title}`, ''];
-  if (publicUrl) {
-    lines.push(`> Source: ${publicUrl}`);
+  if (sourceLine) {
+    lines.push(`> ${sourceLine}`);
     lines.push('');
   }
 
@@ -46,6 +51,8 @@ export function renderEntryMarkdown({ strapi, uid, entry, publicUrl }: RenderInp
     'dressCode',
     'category',
     'location',
+    'locationLevel',
+    'capacity',
     'website',
     'phone',
     'email',
@@ -96,9 +103,11 @@ export function renderEntryMarkdown({ strapi, uid, entry, publicUrl }: RenderInp
       continue;
     }
 
-    // Long scalar text fields included verbatim if substantial.
+    // Long scalar text fields included verbatim if substantial. richtext is
+    // Strapi's markdown-string field (event-space/venue descriptions use it) —
+    // dropping it lost the most information-dense field on those types.
     if (
-      (attr.type === 'string' || attr.type === 'text') &&
+      (attr.type === 'string' || attr.type === 'text' || attr.type === 'richtext') &&
       typeof value === 'string' &&
       value.trim().length > 30 &&
       !SUMMARY_SCALAR_FIELDS.has(name)
@@ -115,7 +124,15 @@ export function renderEntryMarkdown({ strapi, uid, entry, publicUrl }: RenderInp
     }
   }
 
-  return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  let md = lines.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  // RAG retrieves CHUNKS, so a Source line only at the top of the doc never
+  // reaches the model for content further down — and the agent then can't
+  // cite the page. Repeat the Source line at the end of every section (and
+  // the doc) so any retrieved chunk carries a citable URL.
+  if (sourceLine) {
+    md = md.replace(/\n(## )/g, `\n\n${sourceLine}\n\n$1`) + `\n\n${sourceLine}`;
+  }
+  return md;
 }
 
 function flattenRichBlocks(nodes: Array<Record<string, unknown>>): string {

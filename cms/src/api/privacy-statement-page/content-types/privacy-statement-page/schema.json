@@ -1,0 +1,32 @@
+{
+  "kind": "singleType",
+  "collectionName": "privacy_statement_pages",
+  "info": {
+    "singularName": "privacy-statement-page",
+    "pluralName": "privacy-statement-pages",
+    "displayName": "Privacy Statement Page",
+    "description": "Content for /privacy-statement — eyebrow label, title, last-revision line and a single markdown body"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "label": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "lastRevision": {
+      "type": "string"
+    },
+    "body": {
+      "type": "richtext"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
+  }
+}

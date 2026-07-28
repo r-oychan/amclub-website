@@ -304,3 +304,59 @@ promoCards: { populate: { cards: { populate: { image: true, cta: true } } } },
 Then `cd cms && npm run build`, commit, deploy. **Rule of thumb:** every time you add a component/relation field to `fitness-facility`, `restaurant`, `kids-experience`, `event-space`, or any type with a custom controller, **update its `POPULATE` map in the same commit** — the schema and the controller's read map drift apart silently otherwise. Discovered 2026‑06‑16: commit `22c7ccf` added `imagePanels`/`promoCards` but left both controllers' maps untouched, so the content was invisible despite being stored.
 
 > Earlier misdiagnosis (recorded so nobody repeats it): this was first mistaken for a missing-DB-table / schema-sync problem. It is **not** — the component tables exist and the writes persist. `TRUNCATE strapi_database_schema` + restart does nothing for this; only the controller `POPULATE` map fix does.
+
+## Chatbot KB syncs "succeed" but the agent never gets the new docs
+
+**Symptom:** publishing entries creates new ElevenLabs KB documents (visible via the
+knowledge-base API, often as accumulating duplicates), but the agent's attached
+`knowledge_base` list never changes; the bot answers from stale content or says it
+doesn't know. Container logs show two warnings from `[elevenlabs-chatbot]`:
+
+- `ElevenLabs PATCH /v1/convai/agents/... failed: 404 ... document_not_found` —
+  the sync-log (`elevenlabs-doc` collection) holds rows whose remote doc was
+  deleted (e.g. by another environment's CMS pointing at the same ElevenLabs
+  account historically, or manual cleanup). One dead id makes the whole agent
+  PATCH fail, so **no** attachment update ever lands.
+- `Transaction query already complete` — lifecycle-triggered syncs ran inside the
+  request's committed DB transaction, losing sync-log upserts (→ duplicate docs).
+
+**Fix (landed July 2026):** the agent attach now tries the PATCH first and, only
+on failure, verifies each sync-log row with a **direct GET** and drops true
+404s (the knowledge-base *search* endpoint's index lags doc creation — using
+it for validation wrongly deletes rows for docs created seconds earlier).
+Lifecycle syncs are queued and drained by a bootstrap-scoped worker (a nested
+`strapi.db.transaction` JOINS the completed parent — it does not escape it).
+If you see this on an older build, redeploy, then re-publish entries (or
+admin → Sync All) to rebuild the log and attachments.
+
+**Related:** RAG indexes are NOT computed automatically for newly attached docs —
+`POST /v1/convai/knowledge-base/{id}/rag-index` per doc, or the agent retrieves
+nothing and falls back to "I don't have that in my knowledge base".
+
+## Chatbot KB: duplicate docs, quota exhaustion, missing content (July 2026)
+
+- **Symptom:** `rag_limit_exceeded` when indexing; the agent's KB full of
+  `am-club:<type>:id-<n>` docs in multiple generations (e.g. five copies of
+  `footer:id-5..9:file:club-bylaws` holding ~1.2 MB of the ~2 MB account quota).
+  **Cause:** doc names keyed on the published **row id**, which Strapi v5
+  regenerates on every publish — each republish of a slugless entry (singletons,
+  committee members) created a new doc and stranded the old one, still attached
+  and indexed. **Fix (landed 10 Jul 2026):** `buildDocName`/`buildFileDocName`
+  key on slug → `documentId`; stale-file cleanup matches the stable doc-name
+  prefix instead of `ownerEntryId`. Purge any remaining `id-N` docs with
+  `scripts/elevenlabs-purge-stale.py <env>` and re-index with
+  `scripts/elevenlabs-index-kb.py <env>`.
+- **Symptom:** chatbot knows nothing about a whole content type (e.g. event
+  spaces). **Cause:** stale UID in `DEFAULT_ELEVENLABS_CONTENT_TYPES`
+  (`api::venue.venue` survived the rename to `event-space`) — a bad UID fails
+  silently. Keep the allow-list in step with content-type renames.
+- **Symptom:** chatbot can't answer from a field that is clearly on the page
+  (e.g. ballroom size/capacity). **Cause:** the markdown renderer skipped
+  `richtext` fields entirely and dropped short scalars (`capacity`,
+  `locationLevel`) not in its summary set. Both render since 10 Jul 2026 —
+  if a new "invisible field" appears, check `markdown.ts` field handling first.
+- **Symptom:** RAG index status `failed` at 100% progress on multiple accounts
+  for the same doc. **Cause:** corrupt doc content (not quota) — inspect the
+  uploaded text. Status must be polled via **GET**; the POST response reports
+  `new` misleadingly, and an index can only be deleted after the doc is
+  detached from every agent (`rag_index_used`).

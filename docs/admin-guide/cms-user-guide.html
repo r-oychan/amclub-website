@@ -23,12 +23,17 @@
   <ol>
     <li><a href="#welcome">1. Welcome</a></li>
     <li><a href="#environments">2. The Three Websites</a></li>
-    <li><a href="#login">3. Logging In</a></li>
+    <li><a href="#login">3. Logging In</a>
+      <ol>
+        <li><a href="#user-roles">Managing users &amp; roles</a></li>
+      </ol>
+    </li>
     <li><a href="#dashboard">4. The Dashboard</a></li>
     <li><a href="#content-model">5. How Content Is Organised</a></li>
     <li><a href="#editing">6. Editing an Entry</a>
       <ol>
         <li><a href="#field-types">Field types</a></li>
+        <li><a href="#rich-text">Rich text &amp; Markdown</a></li>
         <li><a href="#images">Images &amp; files</a></li>
       </ol>
     </li>
@@ -36,10 +41,11 @@
     <li><a href="#new-entry">8. Creating &amp; Cloning Entries</a></li>
     <li><a href="#single-types">9. Editing Page Content</a></li>
     <li><a href="#special-fields">10. Special Fields</a></li>
-    <li><a href="#media-library">11. The Media Library</a></li>
-    <li><a href="#style-rules">12. House Style Rules</a></li>
-    <li><a href="#verify">13. Checking Your Changes</a></li>
-    <li><a href="#troubleshooting">14. If Something Goes Wrong</a></li>
+    <li><a href="#chatbot">11. The Website Chatbot</a></li>
+    <li><a href="#media-library">12. The Media Library</a></li>
+    <li><a href="#style-rules">13. House Style Rules</a></li>
+    <li><a href="#verify">14. Checking Your Changes</a></li>
+    <li><a href="#troubleshooting">15. If Something Goes Wrong</a></li>
   </ol>
 </aside>
 
@@ -50,7 +56,7 @@
   <h1>CMS User Guide<br>The American Club Website</h1>
   <p>Everything you need to update text, images, events, promotions, and page content on the Club's
      website — without touching any code. Changes you publish appear on the public website within moments.</p>
-  <p class="meta">Last updated 8 June 2026 · Screenshots taken on the UAT environment (the screens are identical in production) ·
+  <p class="meta">Last updated 10 July 2026 · Screenshots taken on the UAT environment (the screens are identical in production) ·
      Technical readers: see the <a href="tech-admin-guide.html">Technical Admin Guide</a></p>
 </div>
 
@@ -68,6 +74,47 @@
     <p><strong>Save</strong> keeps your work as a draft (invisible to the public). <strong>Publish</strong> puts it on
        the live website. Nothing reaches visitors until you publish it.</p>
   </div>
+
+  <figure class="diagram">
+    <svg viewBox="0 0 880 220" role="img" aria-labelledby="publishflow-title publishflow-desc" xmlns="http://www.w3.org/2000/svg">
+      <title id="publishflow-title">What happens when you publish</title>
+      <desc id="publishflow-desc">You edit an entry, click Save to keep a private draft, then click Publish. Publishing
+        sends the content to the live public website and to the website chatbot's knowledge base at the same time.</desc>
+      <defs>
+        <marker id="arrowNavy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0 L10 5 L0 10 z" fill="#14213d"/>
+        </marker>
+      </defs>
+      <!-- 1. Edit -->
+      <rect x="20" y="78" width="150" height="64" rx="10" fill="#e9f0fa" stroke="#1d4f91"/>
+      <text x="95" y="104" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="700" fill="#14213d">You edit</text>
+      <text x="95" y="124" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#5c6470">change fields</text>
+      <line x1="170" y1="110" x2="214" y2="110" stroke="#14213d" stroke-width="2" marker-end="url(#arrowNavy)"/>
+      <!-- 2. Save / Draft -->
+      <rect x="220" y="78" width="160" height="64" rx="10" fill="#fdf3e0" stroke="#8a5800"/>
+      <text x="300" y="100" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="700" fill="#14213d">Save</text>
+      <text x="300" y="120" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#5c6470">draft · private</text>
+      <text x="300" y="134" text-anchor="middle" font-family="sans-serif" font-size="11" fill="#8a5800">not visible to members</text>
+      <line x1="380" y1="110" x2="424" y2="110" stroke="#14213d" stroke-width="2" marker-end="url(#arrowNavy)"/>
+      <!-- 3. Publish -->
+      <rect x="430" y="78" width="150" height="64" rx="10" fill="#b3202c" stroke="#8a1822"/>
+      <text x="505" y="104" text-anchor="middle" font-family="sans-serif" font-size="15" font-weight="700" fill="#ffffff">Publish</text>
+      <text x="505" y="124" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#f0b9bd">goes live</text>
+      <!-- fan-out -->
+      <path d="M580 100 C 620 100 620 48 660 48" fill="none" stroke="#14213d" stroke-width="2" marker-end="url(#arrowNavy)"/>
+      <path d="M580 120 C 620 120 620 172 660 172" fill="none" stroke="#14213d" stroke-width="2" marker-end="url(#arrowNavy)"/>
+      <!-- 4a. Website -->
+      <rect x="666" y="20" width="194" height="56" rx="10" fill="#e3f5ec" stroke="#1a7a4c"/>
+      <text x="763" y="44" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#14213d">Public website</text>
+      <text x="763" y="62" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#5c6470">amclub.org.sg</text>
+      <!-- 4b. Chatbot -->
+      <rect x="666" y="144" width="194" height="56" rx="10" fill="#efeafb" stroke="#5b3fb0"/>
+      <text x="763" y="168" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="700" fill="#14213d">Website chatbot</text>
+      <text x="763" y="186" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#5c6470">ElevenLabs knowledge base</text>
+    </svg>
+    <figcaption>Publishing pushes your content to two places at once: the public website members see, and the
+      on-site chatbot's knowledge base (so the assistant answers with your latest copy). Drafts go nowhere until you publish.</figcaption>
+  </figure>
 </section>
 
 <!-- ============================================================ -->
@@ -110,6 +157,19 @@
     <p>Practise on <strong>UAT</strong> first. You can experiment freely there without any risk to the live website.
        All screenshots in this guide were taken on UAT — production looks exactly the same.</p>
   </div>
+  <h3>Where the web addresses live (DNS)</h3>
+  <p>As part of this project the Club's domain records for <code>amclub.org.sg</code> were <strong>migrated to
+     Cloudflare</strong> — that is now where the public internet is told which server each address
+     (<code>amclub.org.sg</code>, <code>uat.…</code>, <code>dev.…</code>) points to. Day-to-day you never need to touch
+     this; it matters only when the website's underlying IP address changes.</p>
+  <div class="callout warn">
+    <span class="label">Gotcha — the Club's own network uses a different DNS</span>
+    <p>Computers <em>inside the Club</em> (on Club Wi-Fi or the office network) do <strong>not</strong> use Cloudflare —
+       they use the Club's internal DNS, which holds its own copy of these records. If the website's IP address ever
+       changes, Cloudflare gets updated by the website team, but the <strong>Club's IT team must update the internal
+       DNS manually</strong>. The tell-tale sign it was missed: the website works fine on your phone's mobile data but
+       not on Club Wi-Fi. If that happens, contact Club IT and the website team.</p>
+  </div>
 </section>
 
 <!-- ============================================================ -->
@@ -136,6 +196,39 @@
     <span class="label">Access levels</span>
     <p>Most content editors have the <strong>Editor</strong> role — you can create, edit, and publish content,
        but cannot change website structure or user accounts. That's intentional and keeps the site safe.</p>
+  </div>
+
+  <h3 id="user-roles">Managing users &amp; roles (for administrators)</h3>
+  <p>If you have the <strong>Super Admin</strong> role you can invite colleagues and control what they can do.
+     Everything happens in <strong>Settings → Administration Panel → Users</strong>.</p>
+  <table>
+    <thead><tr><th>Role</th><th>Can do</th><th>Give it to</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Super Admin</strong></td>
+          <td>Everything — content, users, settings, website structure</td>
+          <td>The maintenance team and <em>one</em> Club owner only</td></tr>
+      <tr><td><strong>Editor</strong></td>
+          <td>Create, edit and publish <em>all</em> content; upload media</td>
+          <td>Club content staff — this is the normal role</td></tr>
+      <tr><td><strong>Author</strong></td>
+          <td>Create and edit only <em>their own</em> entries</td>
+          <td>Occasional contributors, if ever needed</td></tr>
+    </tbody>
+  </table>
+  <p><strong>To invite a colleague:</strong></p>
+  <ol>
+    <li>Go to <strong>Settings → Users → Invite new user</strong>.</li>
+    <li>Enter their name and email, choose the role (usually <strong>Editor</strong>), and click <strong>Invite user</strong>.</li>
+    <li>Copy the invitation link and send it to them. Their account shows <em>Inactive</em> until they accept
+        and set a password (or they can simply use <strong>Continue with Microsoft</strong> with the same email).</li>
+  </ol>
+  <p><strong>To change or remove someone's access:</strong> open the user in the same list — you can change their role,
+     or switch <strong>Active</strong> off to suspend access. Prefer deactivating over deleting, so their name stays on
+     the entries they edited.</p>
+  <div class="callout tip">
+    <span class="label">Do this on the live site</span>
+    <p>User accounts are separate per environment. Inviting someone on UAT does <em>not</em> give them access to the
+       live CMS — invite them on <strong>amclub.org.sg/admin</strong> (and on UAT too if they'll help review changes).</p>
   </div>
 </section>
 
@@ -247,6 +340,142 @@
               <em>seo</em> sets the title/description Google shows. Click "No entry yet. Click to add one." to create.</td></tr>
     </tbody>
   </table>
+
+  <h3 id="rich-text">Rich text &amp; Markdown — formatting longer copy</h3>
+  <p>Some fields hold more than one plain line — a coach biography, an event's long description, a restaurant's
+     opening hours, an FAQ answer. These use one of <strong>two formatting editors</strong>. They look a little
+     different and it's worth knowing which is which, because <em>only one of them understands Markdown</em>.</p>
+
+  <table>
+    <thead><tr><th>Editor</th><th>What you'll see</th><th>Fields that use it</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="editor-tag markdown">Markdown</span><br>editor</td>
+        <td>A box with an <strong>Edit</strong> / <strong>Preview</strong> tab and a small toolbar
+            (<strong>B</strong>, <em>i</em>, link, list, image…). You can type Markdown symbols directly, or click the
+            toolbar and it inserts them for you. The <strong>Preview</strong> tab shows the finished look.</td>
+        <td><em>longDescription</em> on Events; the <em>bio</em> on Gym Trainers, Pilates Instructors,
+            Tennis Coaches &amp; Aquatics Coaches.</td>
+      </tr>
+      <tr>
+        <td><span class="editor-tag blocks">Blocks</span><br>editor</td>
+        <td>A cleaner, page-like editor. You don't type symbols — you click the <strong>＋</strong> /
+            toolbar to choose a heading, list, quote, etc., and format selected text with the floating toolbar.
+            What you see is what you get.</td>
+        <td><em>answer</em> on FAQ Items; the body of News Articles; <em>openingHours</em> and
+            <em>detailedDescription</em> on Dining: Restaurants.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout note">
+    <span class="label">Quick way to tell them apart</span>
+    <p>If the field has an <strong>"Edit / Preview"</strong> toggle, it's the <strong>Markdown</strong> editor —
+       use the cheatsheet below. If it has a <strong>＋ "Click to add an element"</strong> row and a pop-up block menu,
+       it's the <strong>Blocks</strong> editor — just click the buttons; <em>typing Markdown symbols there won't format
+       anything</em> (though a few shortcuts work — see the tip after the cheatsheet).</p>
+  </div>
+
+  <h4>Markdown cheatsheet (for the Markdown editor)</h4>
+  <p>Markdown is a simple way to add formatting by typing a few symbols. The Club's CMS supports
+     <strong>GitHub-Flavored Markdown (GFM)</strong> — the most widely used version. Type the symbols on the left and
+     you get the result on the right. <strong>Tip:</strong> you rarely need to memorise these — click the toolbar
+     buttons and they insert the symbols for you, then check the <strong>Preview</strong> tab.</p>
+
+  <table class="md-table">
+    <thead><tr><th>What you type</th><th>What it becomes</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code># Big heading
+## Smaller heading
+### Smaller still</code></td>
+        <td class="rendered"><div class="rendered"><h4>Big heading</h4><p style="margin:2px 0"><strong>Smaller heading</strong> · <span style="color:#5c6470">Smaller still</span></p></div></td>
+      </tr>
+      <tr>
+        <td><code>**bold text**
+_italic text_
+~~crossed out~~</code></td>
+        <td class="rendered"><div class="rendered"><strong>bold text</strong> · <em>italic text</em> · <s>crossed out</s></div></td>
+      </tr>
+      <tr>
+        <td><code>- First item
+- Second item
+- Third item</code></td>
+        <td class="rendered"><div class="rendered"><ul><li>First item</li><li>Second item</li><li>Third item</li></ul></div></td>
+      </tr>
+      <tr>
+        <td><code>1. Book a court
+2. Arrive 10 mins early
+3. Bring your card</code></td>
+        <td class="rendered"><div class="rendered"><ol><li>Book a court</li><li>Arrive 10 mins early</li><li>Bring your card</li></ol></div></td>
+      </tr>
+      <tr>
+        <td><code>[Book now](/membership)
+[Email us](mailto:info@amclub.org.sg)</code></td>
+        <td class="rendered"><div class="rendered"><a href="#" onclick="return false">Book now</a> · <a href="#" onclick="return false">Email us</a> <span style="color:#5c6470">(clickable links)</span></div></td>
+      </tr>
+      <tr>
+        <td><code>&gt; Members enjoy priority booking
+&gt; up to 14 days ahead.</code></td>
+        <td class="rendered"><div class="rendered"><blockquote>Members enjoy priority booking up to 14 days ahead.</blockquote></div></td>
+      </tr>
+      <tr>
+        <td><code>Open **6:00 PM – 9:00 PM**
+nightly.
+
+---</code></td>
+        <td class="rendered"><div class="rendered"><p style="margin:2px 0">Open <strong>6:00 PM – 9:00 PM</strong> nightly.</p><hr style="border:none;border-top:1px solid #e3e6ea;margin:6px 0"></div></td>
+      </tr>
+      <tr>
+        <td><code>| Day | Hours |
+| --- | --- |
+| Mon–Fri | 6 AM–10 PM |
+| Sat–Sun | 8 AM–8 PM |</code></td>
+        <td class="rendered"><div class="rendered"><table style="margin:2px 0"><thead><tr><th>Day</th><th>Hours</th></tr></thead><tbody><tr><td>Mon–Fri</td><td>6 AM–10 PM</td></tr><tr><td>Sat–Sun</td><td>8 AM–8 PM</td></tr></tbody></table></div></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout tip">
+    <span class="label">A few rules that trip people up</span>
+    <p>• Leave a <strong>blank line between paragraphs</strong> — two lines of text with no gap run together into one.<br>
+       • A single line break in the middle of a paragraph is usually ignored; use a blank line, or end a line with
+         <strong>two spaces</strong> to force a line break.<br>
+       • Put a <strong>space after the symbol</strong>: <code># Heading</code> ✓, <code>#Heading</code> ✗;
+         <code>- item</code> ✓, <code>-item</code> ✗.<br>
+       • Keep our <a href="#style-rules">house style</a>: times as <code>6:00 PM</code> (uppercase, no periods).</p>
+  </div>
+
+  <h4>A worked example</h4>
+  <p>This is what an event's <em>longDescription</em> might look like in the Markdown editor, and how it reads once published:</p>
+  <table class="md-table">
+    <thead><tr><th>In the editor (what you type)</th><th>On the website (Preview)</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>Celebrate **Father's Day** at Grillhouse with a
+4-course feast.
+
+**Highlights**
+
+- Free-flow craft beer
+- Live carving station
+- A gift for every dad
+
+Seats are limited — [reserve a table](/dining/grillhouse).</code></td>
+        <td class="rendered"><div class="rendered"><p style="margin:2px 0">Celebrate <strong>Father's Day</strong> at Grillhouse with a 4-course feast.</p><p style="margin:6px 0 2px"><strong>Highlights</strong></p><ul><li>Free-flow craft beer</li><li>Live carving station</li><li>A gift for every dad</li></ul><p style="margin:4px 0">Seats are limited — <a href="#" onclick="return false">reserve a table</a>.</p></div></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout warn">
+    <span class="label">Don't paste straight from Word or Google Docs</span>
+    <p>Copying formatted text from Word, Google Docs, or a webpage can drag invisible formatting and odd characters
+       into the field. Paste as <strong>plain text</strong> (<kbd>Cmd</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> /
+       <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd>), then add formatting with the toolbar or Markdown.
+       In the <strong>Blocks</strong> editor, typing a few shortcuts also works: <code>## </code> then a space makes a
+       heading, <code>- </code> starts a bullet list, <code>&gt; </code> a quote, and <code>**word**</code> turns bold —
+       but it always <em>saves as blocks</em>, never as raw Markdown.</p>
+  </div>
 
   <h3 id="images">Images &amp; files on an entry</h3>
   <figure>
@@ -361,11 +590,90 @@
      synced to its knowledge base automatically (expired ones are removed hourly). The
      <strong>Sync to ElevenLabs</strong> button in the right panel forces an immediate re-sync after a significant
      edit — useful but rarely needed. It only works on published entries.</p>
+
+  <h3>Featured On Homepage — curating the events strip</h3>
+  <p>The scrolling events strip on the homepage shows <strong>upcoming events you've marked with the
+     "Featured On Homepage" toggle</strong> on each Event entry. Use it to hand-pick what members see first.
+     If nothing is featured, the strip falls back to the next upcoming events automatically, so it never goes blank —
+     but curating it is better. Past events never appear, regardless of the toggle.</p>
+
+  <h3>Mobile Fit Media — the homepage banner on phones</h3>
+  <p>On the <strong>Home Page → Hero</strong> section there is a <strong>Mobile Fit Media</strong> toggle. Off (the
+     default), phones show the banner image full-screen, cropped to fit. On, phones show the <em>entire</em> image
+     uncropped with the title and button below it — useful when the artwork itself contains text that must not be cut
+     off. It only affects phones; desktop is unchanged.</p>
+
+  <h3>SEO — how pages appear on Google and social media</h3>
+  <p>Most pages have an <strong>SEO</strong> section with a meta title, meta description, sharing image and canonical
+     URL. These control the page's Google search snippet and its preview card when a link is shared on social media
+     or WhatsApp.</p>
+  <ul>
+    <li><strong>Site-wide defaults</strong> live in <strong>Global: Site Configuration</strong> (the <em>Site Name</em>
+        and <em>Default SEO</em> fields). Every page uses these unless it says otherwise.</li>
+    <li><strong>Per-page override:</strong> fill in a page's own SEO fields to override the defaults — field by field.
+        A page with only a meta title still inherits the default description and image.</li>
+    <li>Keep meta titles under ~60 characters and descriptions under ~160 so Google doesn't cut them off.</li>
+  </ul>
+</section>
+
+<!-- ============================================================ -->
+<section class="card" id="chatbot">
+  <h2>11. The Website Chatbot</h2>
+  <p>Every page of the public website carries an <strong>Assistant</strong> bubble (bottom-right). It answers member
+     and visitor questions using <em>your published content</em> — the same pages, PDFs and FAQ answers you manage in
+     this CMS. You never edit the chatbot directly: <strong>publish good content and the chatbot gets smarter
+     automatically</strong>.</p>
+
+  <h3>Answers cite their sources</h3>
+  <p>Every factual answer ends with one or more numbered <strong>source chips</strong> showing the page the
+     information came from — by page title, e.g. <em>① The 2nd Floor ↗</em>. Clicking a chip opens that page behind
+     the chat window (or downloads the document, for PDFs), so members can verify everything themselves.</p>
+  <figure>
+    <img src="screenshots/chatbot-answer-hours.png" alt="Chatbot answering 2nd Floor opening hours with a titled source chip" loading="lazy">
+    <figcaption>The assistant answering opening hours: it knows today's date and time in Singapore, gives the full
+      schedule, and cites the venue page with a titled chip (① The 2nd Floor).</figcaption>
+  </figure>
+
+  <h3>What the chatbot knows</h3>
+  <ul>
+    <li><strong>Published entries</strong> of the main content types: pages, restaurants, event spaces, fitness
+        facilities, kids experiences, events, dining promotions, news, membership pages, committee members and FAQs.
+        Drafts are invisible to it.</li>
+    <li><strong>Attached PDFs too.</strong> Menus, price lists, party packages and capacity charts linked on a page
+        are read into the knowledge base. In the example below, the room dimensions come from the page and the
+        per-setup capacities come from the attached capacity-chart PDF.</li>
+    <li><strong>The Master FAQ repository</strong> — the approved FAQ answers document, which also sets the
+        assistant's tone.</li>
+  </ul>
+  <figure>
+    <img src="screenshots/chatbot-answer-ballroom.png" alt="Chatbot answering Galbraith Ballroom capacity with page and PDF citations" loading="lazy">
+    <figcaption>Ballroom size and capacity: the description and capacity fields from the CMS entry plus the
+      capacity-chart PDF, each cited with its own chip.</figcaption>
+  </figure>
+
+  <h3>Make your content chatbot-friendly</h3>
+  <ul>
+    <li><strong>Fill in the structured fields</strong> — description, capacity, location, phone, email, opening
+        hours. The chatbot can only quote what's in the entry: a ballroom without a capacity value can't answer
+        "how many people fit?".</li>
+    <li><strong>Attach the document</strong> when the detail lives in a PDF (menus, price lists, capacity charts) —
+        the chatbot reads those too.</li>
+    <li><strong>Publish.</strong> Publishing an entry updates the chatbot's knowledge automatically within a minute
+        or two; expired events are removed hourly.</li>
+  </ul>
+
+  <div class="callout note">
+    <span class="label">Chatbot missing something?</span>
+    <p>1) Check the entry is <strong>published</strong> (not draft). 2) Check the information is actually in a field
+       or attached PDF on that entry. 3) Use the <strong>Sync to ElevenLabs</strong> button in the entry's right
+       panel to force a refresh. If it still can't answer, contact the technical administrator — the knowledge-base
+       index may need rebuilding (see the Tech Admin Guide).</p>
+  </div>
 </section>
 
 <!-- ============================================================ -->
 <section class="card" id="media-library">
-  <h2>11. The Media Library</h2>
+  <h2>12. The Media Library</h2>
   <p>All images, PDFs, and videos live in the <strong>Media Library</strong> (picture icon in the left menu).</p>
   <figure>
     <img src="screenshots/media-library-assets.png" alt="Media Library grid of uploaded images with checkboxes, sort and filter controls" loading="lazy">
@@ -386,7 +694,7 @@
 
 <!-- ============================================================ -->
 <section class="card" id="style-rules">
-  <h2>12. House Style Rules</h2>
+  <h2>13. House Style Rules</h2>
   <ul>
     <li><strong>Times</strong> use uppercase AM/PM without periods: <code>6:00 PM</code> ✓, <code>6.00 p.m.</code> ✗.</li>
     <li><strong>Dates</strong> in body text are written out: <code>Sunday, June 21, 2026</code>.</li>
@@ -400,7 +708,7 @@
 
 <!-- ============================================================ -->
 <section class="card" id="verify">
-  <h2>13. Checking Your Changes</h2>
+  <h2>14. Checking Your Changes</h2>
   <ol>
     <li>Publish the entry.</li>
     <li>Open the public page in a <strong>new browser tab</strong> (e.g. <code>amclub.org.sg/whats-on</code>) and refresh.
@@ -417,7 +725,7 @@
 
 <!-- ============================================================ -->
 <section class="card" id="troubleshooting">
-  <h2>14. If Something Goes Wrong</h2>
+  <h2>15. If Something Goes Wrong</h2>
   <table>
     <thead><tr><th>Problem</th><th>What to check / do</th></tr></thead>
     <tbody>
