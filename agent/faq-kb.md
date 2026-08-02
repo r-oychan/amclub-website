@@ -82,10 +82,6 @@ If you return to Singapore during your Absentee Status period, you can reactivat
 Our Membership team will be happy to explain your options and help you determine the best choice before you make your decision.
 Source: [Membership](https://amclub.org.sg/membership)
 
-### Can my spouse or partner use the Club without me?
-_(answer pending)_
-Source: [Membership](https://amclub.org.sg/membership)
-
 ### What should I do if I lose my membership card?
 Please contact the Member Services team (mailto:membership@amclub.org.sg)and we will work with you to get a replacment.
 Source: [Membership](https://amclub.org.sg/membership)
@@ -121,14 +117,6 @@ Source: [Reciprocal Clubs](https://amclub.org.sg/membership/reciprocal-clubs)
 Yes. Prospective members are encouraged to schedule a personalized Club tour to explore the facilities, learn more about membership options, and experience the community firsthand. Please reach out to our Membership Team (mailto:membership@amclub.org.sg) to schedule your tour.
 Source: [FAQ](https://amclub.org.sg/faq)
 
-### What benefits are available to family members?
-_(answer pending)_
-Source: [FAQ](https://amclub.org.sg/faq)
-
-### How do I add family members to my membership?
-_(answer pending)_
-Source: [FAQ](https://amclub.org.sg/faq)
-
 ### What are the Club's operating hours?
 The Club is open daily from Sunday to Thursday: 6:00 AM – 11:00 PM and Friday, Saturday & Evenings prior to Public Holidays: 6:00 AM – 12:00 AM. Individual facility hours vary by venue. Up-to-date opening times for the gym, pools, dining outlets, and other facilities are listed on each facility page.
 Source: [FAQ](https://amclub.org.sg/faq)
@@ -141,116 +129,8 @@ Source: [FAQ](https://amclub.org.sg/faq)
 Complimentary member parking is available on-site, subject to capacity. Valet service is also available during peak periods.
 Source: [FAQ](https://amclub.org.sg/faq)
 
-### What family facilities does The American Club offer?
-_(answer pending)_
-Source: [FAQ](https://amclub.org.sg/faq)
-
-### What sports and fitness facilities are available at The American Club?
-_(answer pending)_
-Source: [FAQ](https://amclub.org.sg/faq)
-
-### Does The American Club offer reciprocal club privileges?
-_(answer pending)_
-Source: [FAQ](https://amclub.org.sg/faq)
-
-### Why do expatriates join The American Club?
-_(answer pending)_
-Source: [FAQ](https://amclub.org.sg/faq)
-
-### What makes The American Club different from other clubs in Singapore?
-_(answer pending)_
-Source: [FAQ](https://amclub.org.sg/faq)
-
-### Is The American Club suitable for families?
-_(answer pending)_
-Source: [FAQ](https://amclub.org.sg/faq)
-
-### Can non-Americans join The American Club?
-_(answer pending)_
-Source: [FAQ](https://amclub.org.sg/faq)
-
-### What lifestyle benefits come with membership?
-_(answer pending)_
-Source: [FAQ](https://amclub.org.sg/faq)
-
-## Membership/Front Desk
-
-### How do I access the Member portal and mobile app?
-_(answer pending)_
-Source: [Membership](https://amclub.org.sg/membership)
-
-### Can I bring guests to the Club?
-_(answer pending)_
-Source: [Membership](https://amclub.org.sg/membership)
-
-### How many guests may I bring?
-_(answer pending)_
-Source: [Membership](https://amclub.org.sg/membership)
-
-### Are there guest fees or restrictions?
-_(answer pending)_
-Source: [Membership](https://amclub.org.sg/membership)
-
-### Can children use Club facilities without a parent present?
-_(answer pending)_
-Source: [Membership](https://amclub.org.sg/membership)
-
-## F&L
-
 ### What fitness facilities are available?
 Membership grants access to our full slate of facilities, including the fitness center, swimming pools, tennis and squash courts, spa and wellness center, kids zones, business center, and multiple dining venues.
-Source: [Fitness](https://amclub.org.sg/fitness)
-
-### Do I need to book gym equipment or fitness spaces?
-_(answer pending)_
-Source: [Fitness](https://amclub.org.sg/fitness)
-
-### Are personal training services available?
-_(answer pending)_
-Source: [Fitness](https://amclub.org.sg/fitness)
-
-### Are fitness assessments offered?
-_(answer pending)_
-Source: [Fitness](https://amclub.org.sg/fitness)
-
-### Are group fitness classes included in membership?
-_(answer pending)_
-Source: [Fitness](https://amclub.org.sg/fitness)
-
-### How do I book fitness classes?
-_(answer pending)_
-Source: [Fitness](https://amclub.org.sg/fitness)
-
-### What happens if I miss a booked class?
-_(answer pending)_
-Source: [Fitness](https://amclub.org.sg/fitness)
-
-### Are classes available for beginners?
-_(answer pending)_
-Source: [Fitness](https://amclub.org.sg/fitness)
-
-## Tennis
-
-### How do I reserve tennis or squash courts?
-_(answer pending)_
-Source: [Fitness](https://amclub.org.sg/fitness)
-
-### How far in advance can courts be booked?
-_(answer pending)_
-Source: [Fitness](https://amclub.org.sg/fitness)
-
-### Are coaching programs available?
-_(answer pending)_
-Source: [Fitness](https://amclub.org.sg/fitness)
-
-### Are junior coaching programs offered?
-_(answer pending)_
-Source: [Fitness](https://amclub.org.sg/fitness)
-
-## Aquatics
-
-### What pool facilities are available?
-_(answer pending)_
 Source: [Fitness](https://amclub.org.sg/fitness)
 
 ### Are swimming lessons available?
@@ -263,60 +143,8 @@ Source: [Fitness](https://amclub.org.sg/fitness)
 Yes. Designated lap swimming times are available to accommodate Members who wish to swim for fitness or training. As lane availability may vary due to swim lessons, programs, or Club events, we recommend checking the latest pool schedule in the Club app or contacting the Sports & Recreation team ((mailto:aquatics@amclub.org.sg)before your visit.
 Source: [Fitness](https://amclub.org.sg/fitness)
 
-### What are the pool supervision requirements for children?
-_(answer pending)_
-Source: [Fitness](https://amclub.org.sg/fitness)
-
-## Y&F
-
-### What programs and activities are available for children and teens?
-_(answer pending)_
-Source: [Kids](https://amclub.org.sg/kids)
-
-### What age groups do youth programs serve?
-_(answer pending)_
-Source: [Kids](https://amclub.org.sg/kids)
-
-### How do I register my child for classes or camps?
-_(answer pending)_
-Source: [Kids](https://amclub.org.sg/kids)
-
-### Are holiday camps available throughout the year?
-_(answer pending)_
-Source: [Kids](https://amclub.org.sg/kids)
-
-### Is childcare available at the Club?
-_(answer pending)_
-Source: [Kids](https://amclub.org.sg/kids)
-
-### What ages are accepted in childcare programs?
-_(answer pending)_
-Source: [Kids](https://amclub.org.sg/kids)
-
-### Do childcare services require advance booking?
-_(answer pending)_
-Source: [Kids](https://amclub.org.sg/kids)
-
-### Are childcare services included in membership?
-_(answer pending)_
-Source: [Kids](https://amclub.org.sg/kids)
-
-### What facilities are available specifically for teenagers?
-_(answer pending)_
-Source: [Kids](https://amclub.org.sg/kids)
-
-## Member Engagement
-
-### Are there family-friendly events throughout the year?
-_(answer pending)_
-Source: [What's On](https://amclub.org.sg/whats-on)
-
 ### What types of social events does the Club host?
 We host a year-round calendar of social, cultural, family, and sporting events, including signature American holidays, kids' programs, wine dinners, and fitness challenges. Visit What's On (https://amclub.org.sg/whats-on)  for the current calendar.
-Source: [What's On](https://amclub.org.sg/whats-on)
-
-### How do I register for Club events?
-_(answer pending)_
 Source: [What's On](https://amclub.org.sg/whats-on)
 
 ### Can guests attend Club events?
@@ -339,10 +167,6 @@ Source: [What's On](https://amclub.org.sg/whats-on)
 
 ## F&B
 
-### What dining venues are available at the Club?
-_(answer pending)_
-Source: [Dining](https://amclub.org.sg/dining)
-
 ### Do I need reservations for Club restaurants?
 Reservations are recommended for all our restaurants, especially during peak hours and weekends. You can book via our website, the AMClub app, or by contacting the venue directly.
 Source: [Dining](https://amclub.org.sg/dining)
@@ -358,20 +182,6 @@ The American Club offers a variety of dining experiences to suit every occasion,
 
 Each venue offers its own distinct menu and atmosphere, giving Members and their guests a range of options throughout the day.
 Source: [Dining](https://amclub.org.sg/dining)
-
-### Are children welcome in all dining venues?
-_(answer pending)_
-Source: [Dining](https://amclub.org.sg/dining)
-
-### Are takeaway and delivery options available?
-_(answer pending)_
-Source: [Dining](https://amclub.org.sg/dining)
-
-### Are private dining rooms available?
-_(answer pending)_
-Source: [Dining](https://amclub.org.sg/dining)
-
-## Events
 
 ### Can Members host private parties or celebrations at the Club?
 Yes. Members can host a wide range of private events at The American Club, including birthday parties, anniversaries, family celebrations, corporate meetings, and other special occasions.
@@ -391,20 +201,3 @@ Source: [Event Spaces](https://amclub.org.sg/event-spaces)
 Private event spaces — including ballrooms, function rooms, and outdoor venues — can be booked through our Events (mailto:catering@amclub.org.sg) team. Submit an enquiry via the Event Spaces (https://amclub.org.sg/event-spaces) page and we will follow up with availability and pricing.
 Source: [Event Spaces](https://amclub.org.sg/event-spaces)
 
-## Thinkspace
-
-### Are meeting rooms available for Members?
-_(answer pending)_
-Source: [FAQ](https://amclub.org.sg/faq)
-
-### Can Members host business meetings at the Club?
-_(answer pending)_
-Source: [FAQ](https://amclub.org.sg/faq)
-
-### Is Wi‑Fi available throughout the Club?
-_(answer pending)_
-Source: [FAQ](https://amclub.org.sg/faq)
-
-### Are business services available for visiting guests?
-_(answer pending)_
-Source: [FAQ](https://amclub.org.sg/faq)

@@ -88,20 +88,12 @@
   "order": 11
  },
  {
-  "question": "Can my spouse or partner use the Club without me?",
-  "slug": "can-my-spouse-or-partner-use-the-club-without-me",
-  "answer": "_(answer pending)_",
-  "category": "membership",
-  "department": "Membership",
-  "order": 12
- },
- {
   "question": "What should I do if I lose my membership card?",
   "slug": "what-should-i-do-if-i-lose-my-membership-card",
   "answer": "Please contact the Member Services team (mailto:membership@amclub.org.sg)and we will work with you to get a replacment.",
   "category": "membership",
   "department": "Membership",
-  "order": 13
+  "order": 12
  },
  {
   "question": "Can visiting family members use Club facilities?",
@@ -109,7 +101,7 @@
   "answer": "Yes. Visiting family members who are not Singapore residents may be eligible for a Visiting Membership, allowing them to enjoy Club facilities during their stay. Visiting Memberships are available for up to 90 days per calendar year and may be used in up to three separate application periods. (amclub.org.sg⁠ )\n\nEligible family members include:\n\n* Children of current Members aged 21–24 who are full-time students living outside Singapore (Type A).\n* Visiting relatives of any age, or Members’ children aged 25 and above, who are non-Singapore residents (Type B). (amclub.org.sg⁠ )\n\nWeekly and monthly rates apply. If you’re expecting family to visit, our Membership Office (mailto:Membership@amclub.org.sg)can help you determine the appropriate Visiting Membership category and guide you through the application process.",
   "category": "membership",
   "department": "Membership",
-  "order": 14
+  "order": 13
  },
  {
   "question": "Are there areas of the Club reserved exclusively for Members?",
@@ -117,7 +109,7 @@
   "answer": "No. The American Club does not have areas that are reserved exclusively for Members. Members are welcome to host guests throughout the Club in accordance with the Guest Policy, creating opportunities to share the Club experience with family, friends, and colleagues.\n\nWhile some events, programs, or member benefits may be reserved for Members, the Club itself is designed to be a welcoming place where Members can gather and entertain their guests.",
   "category": "membership",
   "department": "Membership",
-  "order": 15
+  "order": 14
  },
  {
   "question": "What are reciprocal clubs?",
@@ -125,7 +117,7 @@
   "answer": "Members of The American Club, enjoy privileged access to over 150 distinguished clubs worldwide, extending the comfort of membership wherever you travel. To see the list of clubs with reciprocal privileges, go to our Reciprocal Clubs (https://amclub.org.sg/membership/reciprocal-clubs) page for the current list and access guidelines.",
   "category": "membership",
   "department": "Membership",
-  "order": 16
+  "order": 15
  },
  {
   "question": "Which reciprocal clubs can I access around the world?",
@@ -133,7 +125,7 @@
   "answer": "Yes, members enjoy reciprocal privileges at a network of partner clubs around the world. See our Reciprocal Clubs (https://amclub.org.sg/membership/reciprocal-clubs) page for the current list and access guidelines.",
   "category": "membership",
   "department": "Membership",
-  "order": 17
+  "order": 16
  },
  {
   "question": "Can I visit the Club before becoming a Member?",
@@ -141,23 +133,7 @@
   "answer": "Yes. Prospective members are encouraged to schedule a personalized Club tour to explore the facilities, learn more about membership options, and experience the community firsthand. Please reach out to our Membership Team (mailto:membership@amclub.org.sg) to schedule your tour.",
   "category": "general",
   "department": "General",
-  "order": 18
- },
- {
-  "question": "What benefits are available to family members?",
-  "slug": "what-benefits-are-available-to-family-members",
-  "answer": "_(answer pending)_",
-  "category": "general",
-  "department": "General",
-  "order": 19
- },
- {
-  "question": "How do I add family members to my membership?",
-  "slug": "how-do-i-add-family-members-to-my-membership",
-  "answer": "_(answer pending)_",
-  "category": "general",
-  "department": "General",
-  "order": 20
+  "order": 17
  },
  {
   "question": "What are the Club's operating hours?",
@@ -165,7 +141,7 @@
   "answer": "The Club is open daily from Sunday to Thursday: 6:00 AM – 11:00 PM and Friday, Saturday & Evenings prior to Public Holidays: 6:00 AM – 12:00 AM. Individual facility hours vary by venue. Up-to-date opening times for the gym, pools, dining outlets, and other facilities are listed on each facility page.",
   "category": "general",
   "department": "General",
-  "order": 21
+  "order": 18
  },
  {
   "question": "What is the Club dress code?",
@@ -173,7 +149,7 @@
   "answer": "Smart casual attire is expected throughout the Club. Some venues, including The 2nd Floor restaurant and certain event spaces, observe a stricter dress code. Sports facilities require appropriate athletic wear. If you have a question about appropriate attire, please reach out to our Membership Services (mailto:info@amclub.org.sg)  team for more information.",
   "category": "general",
   "department": "General",
-  "order": 22
+  "order": 19
  },
  {
   "question": "Is parking available at the Club?",
@@ -181,111 +157,7 @@
   "answer": "Complimentary member parking is available on-site, subject to capacity. Valet service is also available during peak periods.",
   "category": "general",
   "department": "General",
-  "order": 23
- },
- {
-  "question": "What family facilities does The American Club offer?",
-  "slug": "what-family-facilities-does-the-american-club-offer",
-  "answer": "_(answer pending)_",
-  "category": "general",
-  "department": "General",
-  "order": 24
- },
- {
-  "question": "What sports and fitness facilities are available at The American Club?",
-  "slug": "what-sports-and-fitness-facilities-are-available-at-the-american-club",
-  "answer": "_(answer pending)_",
-  "category": "general",
-  "department": "General",
-  "order": 25
- },
- {
-  "question": "Does The American Club offer reciprocal club privileges?",
-  "slug": "does-the-american-club-offer-reciprocal-club-privileges",
-  "answer": "_(answer pending)_",
-  "category": "general",
-  "department": "General",
-  "order": 26
- },
- {
-  "question": "Why do expatriates join The American Club?",
-  "slug": "why-do-expatriates-join-the-american-club",
-  "answer": "_(answer pending)_",
-  "category": "general",
-  "department": "General",
-  "order": 27
- },
- {
-  "question": "What makes The American Club different from other clubs in Singapore?",
-  "slug": "what-makes-the-american-club-different-from-other-clubs-in-singapore",
-  "answer": "_(answer pending)_",
-  "category": "general",
-  "department": "General",
-  "order": 28
- },
- {
-  "question": "Is The American Club suitable for families?",
-  "slug": "is-the-american-club-suitable-for-families",
-  "answer": "_(answer pending)_",
-  "category": "general",
-  "department": "General",
-  "order": 29
- },
- {
-  "question": "Can non-Americans join The American Club?",
-  "slug": "can-non-americans-join-the-american-club",
-  "answer": "_(answer pending)_",
-  "category": "general",
-  "department": "General",
-  "order": 30
- },
- {
-  "question": "What lifestyle benefits come with membership?",
-  "slug": "what-lifestyle-benefits-come-with-membership",
-  "answer": "_(answer pending)_",
-  "category": "general",
-  "department": "General",
-  "order": 31
- },
- {
-  "question": "How do I access the Member portal and mobile app?",
-  "slug": "how-do-i-access-the-member-portal-and-mobile-app",
-  "answer": "_(answer pending)_",
-  "category": "membership",
-  "department": "Membership/Front Desk",
-  "order": 32
- },
- {
-  "question": "Can I bring guests to the Club?",
-  "slug": "can-i-bring-guests-to-the-club",
-  "answer": "_(answer pending)_",
-  "category": "membership",
-  "department": "Membership/Front Desk",
-  "order": 33
- },
- {
-  "question": "How many guests may I bring?",
-  "slug": "how-many-guests-may-i-bring",
-  "answer": "_(answer pending)_",
-  "category": "membership",
-  "department": "Membership/Front Desk",
-  "order": 34
- },
- {
-  "question": "Are there guest fees or restrictions?",
-  "slug": "are-there-guest-fees-or-restrictions",
-  "answer": "_(answer pending)_",
-  "category": "membership",
-  "department": "Membership/Front Desk",
-  "order": 35
- },
- {
-  "question": "Can children use Club facilities without a parent present?",
-  "slug": "can-children-use-club-facilities-without-a-parent-present",
-  "answer": "_(answer pending)_",
-  "category": "membership",
-  "department": "Membership/Front Desk",
-  "order": 36
+  "order": 20
  },
  {
   "question": "What fitness facilities are available?",
@@ -293,103 +165,7 @@
   "answer": "Membership grants access to our full slate of facilities, including the fitness center, swimming pools, tennis and squash courts, spa and wellness center, kids zones, business center, and multiple dining venues.",
   "category": "facilities",
   "department": "F&L",
-  "order": 37
- },
- {
-  "question": "Do I need to book gym equipment or fitness spaces?",
-  "slug": "do-i-need-to-book-gym-equipment-or-fitness-spaces",
-  "answer": "_(answer pending)_",
-  "category": "facilities",
-  "department": "F&L",
-  "order": 38
- },
- {
-  "question": "Are personal training services available?",
-  "slug": "are-personal-training-services-available",
-  "answer": "_(answer pending)_",
-  "category": "facilities",
-  "department": "F&L",
-  "order": 39
- },
- {
-  "question": "Are fitness assessments offered?",
-  "slug": "are-fitness-assessments-offered",
-  "answer": "_(answer pending)_",
-  "category": "facilities",
-  "department": "F&L",
-  "order": 40
- },
- {
-  "question": "Are group fitness classes included in membership?",
-  "slug": "are-group-fitness-classes-included-in-membership",
-  "answer": "_(answer pending)_",
-  "category": "facilities",
-  "department": "F&L",
-  "order": 41
- },
- {
-  "question": "How do I book fitness classes?",
-  "slug": "how-do-i-book-fitness-classes",
-  "answer": "_(answer pending)_",
-  "category": "facilities",
-  "department": "F&L",
-  "order": 42
- },
- {
-  "question": "What happens if I miss a booked class?",
-  "slug": "what-happens-if-i-miss-a-booked-class",
-  "answer": "_(answer pending)_",
-  "category": "facilities",
-  "department": "F&L",
-  "order": 43
- },
- {
-  "question": "Are classes available for beginners?",
-  "slug": "are-classes-available-for-beginners",
-  "answer": "_(answer pending)_",
-  "category": "facilities",
-  "department": "F&L",
-  "order": 44
- },
- {
-  "question": "How do I reserve tennis or squash courts?",
-  "slug": "how-do-i-reserve-tennis-or-squash-courts",
-  "answer": "_(answer pending)_",
-  "category": "facilities",
-  "department": "Tennis",
-  "order": 45
- },
- {
-  "question": "How far in advance can courts be booked?",
-  "slug": "how-far-in-advance-can-courts-be-booked",
-  "answer": "_(answer pending)_",
-  "category": "facilities",
-  "department": "Tennis",
-  "order": 46
- },
- {
-  "question": "Are coaching programs available?",
-  "slug": "are-coaching-programs-available",
-  "answer": "_(answer pending)_",
-  "category": "facilities",
-  "department": "Tennis",
-  "order": 47
- },
- {
-  "question": "Are junior coaching programs offered?",
-  "slug": "are-junior-coaching-programs-offered",
-  "answer": "_(answer pending)_",
-  "category": "facilities",
-  "department": "Tennis",
-  "order": 48
- },
- {
-  "question": "What pool facilities are available?",
-  "slug": "what-pool-facilities-are-available",
-  "answer": "_(answer pending)_",
-  "category": "facilities",
-  "department": "Aquatics",
-  "order": 49
+  "order": 21
  },
  {
   "question": "Are swimming lessons available?",
@@ -397,7 +173,7 @@
   "answer": "Yes. The American Club offers swimming lessons for children and adults of all skill levels, from beginners building water confidence to more experienced swimmers looking to refine their technique.\n\nLessons are conducted by qualified instructors and are available as private or group sessions, subject to availability. For the latest schedules, program details, and registration information, please contact the Sports & Recreation team (mailto:aquatics@amclub.org.sg).",
   "category": "facilities",
   "department": "Aquatics",
-  "order": 50
+  "order": 22
  },
  {
   "question": "Are there designated lap swimming hours?",
@@ -405,95 +181,7 @@
   "answer": "Yes. Designated lap swimming times are available to accommodate Members who wish to swim for fitness or training. As lane availability may vary due to swim lessons, programs, or Club events, we recommend checking the latest pool schedule in the Club app or contacting the Sports & Recreation team ((mailto:aquatics@amclub.org.sg)before your visit.",
   "category": "facilities",
   "department": "Aquatics",
-  "order": 51
- },
- {
-  "question": "What are the pool supervision requirements for children?",
-  "slug": "what-are-the-pool-supervision-requirements-for-children",
-  "answer": "_(answer pending)_",
-  "category": "facilities",
-  "department": "Aquatics",
-  "order": 52
- },
- {
-  "question": "What programs and activities are available for children and teens?",
-  "slug": "what-programs-and-activities-are-available-for-children-and-teens",
-  "answer": "_(answer pending)_",
-  "category": "kids",
-  "department": "Y&F",
-  "order": 53
- },
- {
-  "question": "What age groups do youth programs serve?",
-  "slug": "what-age-groups-do-youth-programs-serve",
-  "answer": "_(answer pending)_",
-  "category": "kids",
-  "department": "Y&F",
-  "order": 54
- },
- {
-  "question": "How do I register my child for classes or camps?",
-  "slug": "how-do-i-register-my-child-for-classes-or-camps",
-  "answer": "_(answer pending)_",
-  "category": "kids",
-  "department": "Y&F",
-  "order": 55
- },
- {
-  "question": "Are holiday camps available throughout the year?",
-  "slug": "are-holiday-camps-available-throughout-the-year",
-  "answer": "_(answer pending)_",
-  "category": "kids",
-  "department": "Y&F",
-  "order": 56
- },
- {
-  "question": "Is childcare available at the Club?",
-  "slug": "is-childcare-available-at-the-club",
-  "answer": "_(answer pending)_",
-  "category": "kids",
-  "department": "Y&F",
-  "order": 57
- },
- {
-  "question": "What ages are accepted in childcare programs?",
-  "slug": "what-ages-are-accepted-in-childcare-programs",
-  "answer": "_(answer pending)_",
-  "category": "kids",
-  "department": "Y&F",
-  "order": 58
- },
- {
-  "question": "Do childcare services require advance booking?",
-  "slug": "do-childcare-services-require-advance-booking",
-  "answer": "_(answer pending)_",
-  "category": "kids",
-  "department": "Y&F",
-  "order": 59
- },
- {
-  "question": "Are childcare services included in membership?",
-  "slug": "are-childcare-services-included-in-membership",
-  "answer": "_(answer pending)_",
-  "category": "kids",
-  "department": "Y&F",
-  "order": 60
- },
- {
-  "question": "What facilities are available specifically for teenagers?",
-  "slug": "what-facilities-are-available-specifically-for-teenagers",
-  "answer": "_(answer pending)_",
-  "category": "kids",
-  "department": "Y&F",
-  "order": 61
- },
- {
-  "question": "Are there family-friendly events throughout the year?",
-  "slug": "are-there-family-friendly-events-throughout-the-year",
-  "answer": "_(answer pending)_",
-  "category": "events",
-  "department": "Member Engagement",
-  "order": 62
+  "order": 23
  },
  {
   "question": "What types of social events does the Club host?",
@@ -501,15 +189,7 @@
   "answer": "We host a year-round calendar of social, cultural, family, and sporting events, including signature American holidays, kids' programs, wine dinners, and fitness challenges. Visit What's On (https://amclub.org.sg/whats-on)  for the current calendar.",
   "category": "events",
   "department": "Member Engagement",
-  "order": 63
- },
- {
-  "question": "How do I register for Club events?",
-  "slug": "how-do-i-register-for-club-events",
-  "answer": "_(answer pending)_",
-  "category": "events",
-  "department": "Member Engagement",
-  "order": 64
+  "order": 24
  },
  {
   "question": "Can guests attend Club events?",
@@ -517,7 +197,7 @@
   "answer": "Most events are member-only, but selected events allow guests when accompanied by a member. Some signature events are open to the wider community — see the individual event page for details.",
   "category": "events",
   "department": "Member Engagement",
-  "order": 65
+  "order": 25
  },
  {
   "question": "Are events included in membership or ticketed separately?",
@@ -525,7 +205,7 @@
   "answer": "Events are ticketed seperately",
   "category": "events",
   "department": "Member Engagement",
-  "order": 66
+  "order": 26
  },
  {
   "question": "How can I stay informed about upcoming events?",
@@ -533,15 +213,7 @@
   "answer": "There are several easy ways to keep up with everything happening at The American Club:\n\n* Visit the Club website to explore the latest events, dining experiences, family activities, and special programs.\n* Subscribe to our WhatsApp Channel for timely updates and event highlights delivered directly to your phone.\n* Read the weekly e-newsletter for a roundup of upcoming events, member news, and Club announcements.\n\nFollowing all three ensures you never miss what’s happening at the Club.",
   "category": "events",
   "department": "Member Engagement",
-  "order": 67
- },
- {
-  "question": "What dining venues are available at the Club?",
-  "slug": "what-dining-venues-are-available-at-the-club",
-  "answer": "_(answer pending)_",
-  "category": "dining",
-  "department": "F&B",
-  "order": 68
+  "order": 27
  },
  {
   "question": "Do I need reservations for Club restaurants?",
@@ -549,7 +221,7 @@
   "answer": "Reservations are recommended for all our restaurants, especially during peak hours and weekends. You can book via our website, the AMClub app, or by contacting the venue directly.",
   "category": "dining",
   "department": "F&B",
-  "order": 69
+  "order": 28
  },
  {
   "question": "Can I bring guests to dine with me?",
@@ -557,31 +229,7 @@
   "answer": "The American Club offers a variety of dining experiences to suit every occasion, whether you’re enjoying a casual family meal, meeting friends, or celebrating a special event. Dining venues include:\n\n* Central – A relaxed café serving coffee, light meals, and all-day favorites.\n* Grillhouse & Tiki Bar – American barbecue, burgers, pizzas, salads, and tropical drinks in a casual setting.\n* The 2nd Floor – A premium casual dining experience featuring contemporary cuisine.\n* Tradewinds – Asian and international favorites in a family-friendly atmosphere.\n* The Gourmet Pantry – A specialty store offering wines, gourmet foods, and ready-to-enjoy selections. (amclub.org.sg⁠ )\n\nEach venue offers its own distinct menu and atmosphere, giving Members and their guests a range of options throughout the day.",
   "category": "dining",
   "department": "F&B",
-  "order": 70
- },
- {
-  "question": "Are children welcome in all dining venues?",
-  "slug": "are-children-welcome-in-all-dining-venues",
-  "answer": "_(answer pending)_",
-  "category": "dining",
-  "department": "F&B",
-  "order": 71
- },
- {
-  "question": "Are takeaway and delivery options available?",
-  "slug": "are-takeaway-and-delivery-options-available",
-  "answer": "_(answer pending)_",
-  "category": "dining",
-  "department": "F&B",
-  "order": 72
- },
- {
-  "question": "Are private dining rooms available?",
-  "slug": "are-private-dining-rooms-available",
-  "answer": "_(answer pending)_",
-  "category": "dining",
-  "department": "F&B",
-  "order": 73
+  "order": 29
  },
  {
   "question": "Can Members host private parties or celebrations at the Club?",
@@ -589,7 +237,7 @@
   "answer": "Yes. Members can host a wide range of private events at The American Club, including birthday parties, anniversaries, family celebrations, corporate meetings, and other special occasions.\n\nThe Club offers a variety of event spaces for both intimate gatherings and larger celebrations, with dedicated event planning, customized catering, and audiovisual support available to help bring your event to life.\n\nTo start planning your event, contact the Events team(mailto:catering@amclub.org.sg) to discuss your requirements and find the venue that’s best suited to your occasion.",
   "category": "events",
   "department": "Events",
-  "order": 74
+  "order": 30
  },
  {
   "question": "Can the Club cater private events?",
@@ -597,7 +245,7 @@
   "answer": "Yes. The American Club offers customized catering for private events hosted at the Club. Whether you’re planning a birthday celebration, family gathering, business meeting, or formal dinner, the Events team will work with you to create a menu that suits your occasion.\n\nA variety of menu options are available, and the team can help tailor the food and beverage selection to your event. Contact the Events team (mailto:catering@amclub.org.sg)to discuss your requirements and begin planning.",
   "category": "events",
   "department": "Events",
-  "order": 75
+  "order": 31
  },
  {
   "question": "How do I book a private event space?",
@@ -605,38 +253,6 @@
   "answer": "Private event spaces — including ballrooms, function rooms, and outdoor venues — can be booked through our Events (mailto:catering@amclub.org.sg) team. Submit an enquiry via the Event Spaces (https://amclub.org.sg/event-spaces) page and we will follow up with availability and pricing.",
   "category": "events",
   "department": "Events",
-  "order": 76
- },
- {
-  "question": "Are meeting rooms available for Members?",
-  "slug": "are-meeting-rooms-available-for-members",
-  "answer": "_(answer pending)_",
-  "category": "facilities",
-  "department": "Thinkspace",
-  "order": 77
- },
- {
-  "question": "Can Members host business meetings at the Club?",
-  "slug": "can-members-host-business-meetings-at-the-club",
-  "answer": "_(answer pending)_",
-  "category": "facilities",
-  "department": "Thinkspace",
-  "order": 78
- },
- {
-  "question": "Is Wi‑Fi available throughout the Club?",
-  "slug": "is-wi-fi-available-throughout-the-club",
-  "answer": "_(answer pending)_",
-  "category": "facilities",
-  "department": "Thinkspace",
-  "order": 79
- },
- {
-  "question": "Are business services available for visiting guests?",
-  "slug": "are-business-services-available-for-visiting-guests",
-  "answer": "_(answer pending)_",
-  "category": "facilities",
-  "department": "Thinkspace",
-  "order": 80
+  "order": 32
  }
 ]
