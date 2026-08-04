@@ -12,7 +12,7 @@ interface ChatbotConfig {
 }
 
 type Message = {
-  role: 'agent' | 'user';
+  role: 'agent' | 'user' | 'divider';
   text: string;
   id: number;
 };
@@ -298,12 +298,71 @@ function AnimatedAgentMessage({
 function ChatbotPanel({
   cfg,
   positionClasses,
+  open,
   onClose,
 }: {
   cfg: ChatbotConfig;
-  positionClasses: { panel: string };
+  positionClasses: { panel: string; origin: string };
+  open: boolean;
   onClose: () => void;
 }) {
+  // Mounted-closed on first open so the entrance transition actually runs.
+  const [entered, setEntered] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setEntered(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+  const visible = open && entered;
+
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Mobile: the chat fills the screen below the fixed site header (64px), so
+  // the page behind must not scroll — lock the body while the panel is open.
+  // position:fixed is the only lock iOS respects; restore the scroll offset
+  // on unlock unless a citation tap navigated to a new page meanwhile.
+  useEffect(() => {
+    if (!open || !window.matchMedia('(max-width: 767px)').matches) return;
+    const body = document.body;
+    const scrollY = window.scrollY;
+    const path = window.location.pathname;
+    body.style.position = 'fixed';
+    body.style.top = `-${scrollY}px`;
+    body.style.left = '0';
+    body.style.right = '0';
+    body.style.width = '100%';
+    return () => {
+      body.style.position = '';
+      body.style.top = '';
+      body.style.left = '';
+      body.style.right = '';
+      body.style.width = '';
+      if (window.location.pathname === path) window.scrollTo(0, scrollY);
+    };
+  }, [open]);
+
+  // Mobile: when the on-screen keyboard opens, iOS shrinks the VISUAL
+  // viewport but not the layout viewport, then pans the page (exposing the
+  // background). Sizing the panel to the visual viewport keeps the input
+  // above the keyboard with nothing to pan.
+  useEffect(() => {
+    const vv = window.visualViewport;
+    const el = panelRef.current;
+    if (!open || !vv || !el || !window.matchMedia('(max-width: 767px)').matches) return;
+    const HEADER_PX = 64;
+    const update = () => {
+      const keyboardOpen = vv.height < window.innerHeight - 80;
+      el.style.height = keyboardOpen ? `${vv.height + vv.offsetTop - HEADER_PX}px` : '';
+      el.scrollIntoView?.({ block: 'nearest' });
+    };
+    vv.addEventListener('resize', update);
+    vv.addEventListener('scroll', update);
+    update();
+    return () => {
+      vv.removeEventListener('resize', update);
+      vv.removeEventListener('scroll', update);
+      el.style.height = '';
+    };
+  }, [open]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -320,15 +379,21 @@ function ChatbotPanel({
   };
 
   // Citation chips: internal pages open BEHIND the chat panel (SPA navigation
-  // keeps the widget mounted and open); external links open a new tab.
+  // keeps the widget mounted and open); external links open a new tab. On
+  // mobile the panel covers the page, so minimize it after navigating — the
+  // session stays alive and the bubble reopens the conversation.
   const openSource = (href: string) => {
     if (href.startsWith('mailto:')) {
       window.location.href = href;
       return;
     }
     const internal = toInternalPath(href);
-    if (internal) navigate(internal);
-    else window.open(href, '_blank', 'noopener,noreferrer');
+    if (internal) {
+      navigate(internal);
+      if (window.matchMedia('(max-width: 767px)').matches) onClose();
+    } else {
+      window.open(href, '_blank', 'noopener,noreferrer');
+    }
   };
 
   const conversation = useConversation({
@@ -395,6 +460,13 @@ function ChatbotPanel({
   const handleEnd = async () => {
     try {
       await conversation.endSession();
+      setAwaitingReply(false);
+      // Divider so the next session reads as a fresh conversation.
+      setMessages((prev) => {
+        if (prev.length === 0 || prev[prev.length - 1].role === 'divider') return prev;
+        messageIdRef.current += 1;
+        return [...prev, { role: 'divider', text: 'Chat ended', id: messageIdRef.current }];
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     }
@@ -418,9 +490,13 @@ function ChatbotPanel({
 
   return (
     <div
+      ref={panelRef}
       className={`fixed z-50 bg-white shadow-2xl flex flex-col overflow-hidden border border-black/5
-        inset-x-0 bottom-0 w-full h-[min(85dvh,640px)] rounded-t-2xl
-        md:inset-x-auto ${positionClasses.panel} md:bottom-24 md:w-[380px] md:h-[560px] md:max-h-[calc(100vh-8rem)] md:rounded-2xl`}
+        inset-x-0 top-16 bottom-0 w-full
+        md:inset-x-auto md:top-auto ${positionClasses.panel} md:bottom-4 md:w-[380px] md:h-[560px] md:max-h-[calc(100dvh-5rem)] md:rounded-2xl
+        ${positionClasses.origin} transition-[opacity,transform] duration-300 ease-out
+        ${visible ? 'opacity-100 translate-y-0 md:scale-100' : 'opacity-0 translate-y-full md:translate-y-3 md:scale-90 pointer-events-none'}`}
+      aria-hidden={!open}
     >
       <div className="flex items-center justify-between px-4 py-3 bg-primary text-white">
         <div className="flex items-center gap-2">
@@ -450,7 +526,7 @@ function ChatbotPanel({
         />
       )}
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-3 space-y-2 bg-neutral-50">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto overscroll-contain px-4 py-3 space-y-2 bg-neutral-50">
         {messages.length === 0 && (
           <p className="text-xs text-neutral-500 text-center py-6">
             {isConnected
@@ -462,21 +538,29 @@ function ChatbotPanel({
                 : 'Tap "Start chat" to begin.'}
           </p>
         )}
-        {messages.map((m) => (
-          <div
-            key={m.id}
-            style={m.role === 'user' ? { backgroundColor: accent } : undefined}
-            className={`max-w-[85%] px-3 py-2 rounded-2xl text-sm whitespace-pre-wrap break-words ${
-              m.role === 'user'
-                ? 'ml-auto text-white rounded-br-sm'
-                : 'mr-auto bg-white text-neutral-800 border border-neutral-200 rounded-bl-sm'
-            }`}
-          >
-            {m.role === 'user'
-              ? linkifyMessage(m.text, true)
-              : <AnimatedAgentMessage text={m.text} onOpen={openSource} onGrow={scrollToBottom} />}
-          </div>
-        ))}
+        {messages.map((m) =>
+          m.role === 'divider' ? (
+            <div key={m.id} className="flex items-center gap-3 py-3" role="separator" aria-label="Previous conversation ended">
+              <span className="flex-1 h-px bg-neutral-200" />
+              <span className="text-[11px] uppercase tracking-wide text-neutral-400">{m.text}</span>
+              <span className="flex-1 h-px bg-neutral-200" />
+            </div>
+          ) : (
+            <div
+              key={m.id}
+              style={m.role === 'user' ? { backgroundColor: accent } : undefined}
+              className={`max-w-[85%] px-3 py-2 rounded-2xl text-sm whitespace-pre-wrap break-words ${
+                m.role === 'user'
+                  ? 'ml-auto text-white rounded-br-sm'
+                  : 'mr-auto bg-white text-neutral-800 border border-neutral-200 rounded-bl-sm'
+              }`}
+            >
+              {m.role === 'user'
+                ? linkifyMessage(m.text, true)
+                : <AnimatedAgentMessage text={m.text} onOpen={openSource} onGrow={scrollToBottom} />}
+            </div>
+          ),
+        )}
         {awaitingReply && (
           <div className="max-w-[85%] px-3 py-2 rounded-2xl mr-auto bg-white border border-neutral-200 rounded-bl-sm">
             <TypingDots />
@@ -634,18 +718,24 @@ function MicIcon({ muted, className }: { muted?: boolean; className?: string }) 
 function FloatingButton({
   cfg,
   positionClasses,
+  hidden,
   onOpen,
 }: {
   cfg: ChatbotConfig;
   positionClasses: { button: string };
+  hidden: boolean;
   onOpen: () => void;
 }) {
   return (
     <button
       onClick={onOpen}
       aria-label="Open chatbot"
+      aria-hidden={hidden}
+      tabIndex={hidden ? -1 : 0}
       style={{ backgroundColor: cfg.accentColor }}
-      className={`fixed ${positionClasses.button} bottom-[max(1rem,env(safe-area-inset-bottom))] z-50 w-14 h-14 rounded-full text-white shadow-lg hover:scale-105 active:scale-95 transition-transform cursor-pointer flex items-center justify-center`}
+      className={`fixed ${positionClasses.button} bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 w-14 h-14 rounded-full text-white shadow-lg hover:scale-105 active:scale-95 transition-[transform,opacity] duration-200 cursor-pointer flex items-center justify-center ${
+        hidden ? 'opacity-0 scale-75 pointer-events-none' : 'opacity-100 scale-100'
+      }`}
     >
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6" aria-hidden>
         <path d="M12 3C6.48 3 2 6.91 2 11.7c0 2.36 1.13 4.5 2.95 6.06L4 22l4.5-2.05c1.07.31 2.22.48 3.5.48 5.52 0 10-3.91 10-8.73S17.52 3 12 3z" />
@@ -687,22 +777,33 @@ function useChatbotConfig(): ChatbotConfig | null {
 export function ChatbotWidget() {
   const cfg = useChatbotConfig();
   const [open, setOpen] = useState(false);
+  const [everOpened, setEverOpened] = useState(false);
 
   if (!cfg) return null; // still loading, or fetch failed
   if (!cfg.chatbotEnabled || !cfg.agentId) return null;
 
   const positionClasses =
     cfg.bubblePosition === 'bottom-left'
-      ? { button: 'left-4', panel: 'md:left-4' }
-      : { button: 'right-4', panel: 'md:right-4' };
+      ? { button: 'left-4', panel: 'md:left-4', origin: 'origin-bottom-left' }
+      : { button: 'right-4', panel: 'md:right-4', origin: 'origin-bottom-right' };
 
+  // The panel stays MOUNTED once opened: closing/minimizing only hides it, so
+  // the conversation session (and its messages) survive minimize — needed for
+  // mobile citation taps, which minimize the chat to show the page behind.
   return (
     <ConversationProvider>
-      {open ? (
-        <ChatbotPanel cfg={cfg} positionClasses={positionClasses} onClose={() => setOpen(false)} />
-      ) : (
-        <FloatingButton cfg={cfg} positionClasses={positionClasses} onOpen={() => setOpen(true)} />
+      {everOpened && (
+        <ChatbotPanel cfg={cfg} positionClasses={positionClasses} open={open} onClose={() => setOpen(false)} />
       )}
+      <FloatingButton
+        cfg={cfg}
+        positionClasses={positionClasses}
+        hidden={open}
+        onOpen={() => {
+          setEverOpened(true);
+          setOpen(true);
+        }}
+      />
     </ConversationProvider>
   );
 }
