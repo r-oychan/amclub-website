@@ -47,6 +47,8 @@ export function renderEntryMarkdown({ strapi, uid, entry, publicUrl }: RenderInp
   // chatbot cares about but the generic >30-char rule would drop.
   const SUMMARY_SCALAR_FIELDS = new Set([
     'name',
+    'role',
+    'memberType',
     'cuisineType',
     'dressCode',
     'category',
@@ -62,9 +64,17 @@ export function renderEntryMarkdown({ strapi, uid, entry, publicUrl }: RenderInp
     const value = entry[name];
     if (value == null) continue;
     if (typeof value !== 'string') continue;
-    if (attr.type !== 'string' && attr.type !== 'text' && attr.type !== 'email' && attr.type !== 'uid') continue;
+    if (
+      attr.type !== 'string' &&
+      attr.type !== 'text' &&
+      attr.type !== 'email' &&
+      attr.type !== 'uid' &&
+      attr.type !== 'enumeration'
+    ) continue;
     if (!SUMMARY_SCALAR_FIELDS.has(name)) continue;
-    summaryRows.push(`- **${humanise(name)}:** ${value}`);
+    // Enum values are kebab-case slugs ("general-committee") — humanise them.
+    const rendered = attr.type === 'enumeration' ? humanise(value.replace(/-/g, ' ')) : value;
+    summaryRows.push(`- **${humanise(name)}:** ${rendered}`);
   }
   if (summaryRows.length > 0) {
     lines.push('## Summary', ...summaryRows, '');
