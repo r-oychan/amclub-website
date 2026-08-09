@@ -122,6 +122,37 @@ export async function docExists(strapi: StrapiLike, documentId: string): Promise
   }
 }
 
+// ── RAG indexing ─────────────────────────────────────────────────────
+// Attaching a doc does NOT build its retrieval index — without an explicit
+// rag-index request the doc is invisible to RAG. Requests are idempotent:
+// POSTing for an already-indexed / in-progress doc returns the existing
+// index rather than rebuilding.
+
+export interface RagIndexInfo {
+  id?: string;
+  model?: string;
+  status?: string;
+  progress_percentage?: number;
+}
+
+const RAG_EMBEDDING_MODEL = 'e5_mistral_7b_instruct';
+
+export async function getRagIndex(strapi: StrapiLike, documentId: string): Promise<RagIndexInfo[]> {
+  const res = await request<{ indexes?: RagIndexInfo[] }>(
+    strapi,
+    `/v1/convai/knowledge-base/${documentId}/rag-index`,
+    { method: 'GET' },
+  );
+  return res.indexes ?? [];
+}
+
+export async function requestRagIndex(strapi: StrapiLike, documentId: string): Promise<RagIndexInfo> {
+  return request<RagIndexInfo>(strapi, `/v1/convai/knowledge-base/${documentId}/rag-index`, {
+    method: 'POST',
+    body: JSON.stringify({ model: RAG_EMBEDDING_MODEL }),
+  });
+}
+
 export async function getAgent(strapi: StrapiLike, agentId: string): Promise<AgentResponse> {
   return request<AgentResponse>(strapi, `/v1/convai/agents/${agentId}`, { method: 'GET' });
 }

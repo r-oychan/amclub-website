@@ -274,7 +274,62 @@ export async function syncEntry(strapi: Strapi, uid: string, documentId?: string
 
   await syncAttachedFiles(strapi, uid, entry);
   await refreshAgentKnowledgeBase(strapi);
+  await requestIndexSafe(strapi, created.id, docName);
   return { documentName: docName, status: existingRow ? 'updated' : 'created', documentId: created.id };
+}
+
+/**
+ * Every created doc is brand-new to ElevenLabs (updates are delete +
+ * recreate), so it starts unindexed and is invisible to RAG until an index
+ * is requested. Fire the request right after upload; never fail the sync
+ * over it — the settings-page "Build missing indexes" button is the
+ * catch-up path.
+ */
+async function requestIndexSafe(strapi: Strapi, elDocumentId: string, docName: string): Promise<void> {
+  try {
+    await client.requestRagIndex(strapi as never, elDocumentId);
+  } catch (err) {
+    strapi.log.warn(`[${PLUGIN_ID}] rag-index request failed for ${docName}: ${(err as Error).message}`);
+  }
+}
+
+/**
+ * Walk every synced doc, report RAG index state, and (when build=true)
+ * request indexing for any doc without a succeeded/in-progress index.
+ * Backs the settings-page "Check indexes" / "Build missing indexes"
+ * buttons.
+ */
+export async function auditRagIndexes(
+  strapi: Strapi,
+  build: boolean,
+): Promise<{
+  counts: Record<string, number>;
+  unindexed: string[];
+  failures: string[];
+}> {
+  const rows = (await strapi.db.query(SYNC_LOG_UID).findMany({})) as SyncLogRow[];
+  const counts: Record<string, number> = { total: rows.length, indexed: 0, missing: 0, requested: 0, failed: 0 };
+  const unindexed: string[] = [];
+  const failures: string[] = [];
+  for (const row of rows) {
+    try {
+      const indexes = await client.getRagIndex(strapi as never, row.elDocumentId);
+      if (indexes.some((i) => i.status === 'succeeded')) {
+        counts.indexed += 1;
+        continue;
+      }
+      counts.missing += 1;
+      unindexed.push(row.documentName);
+      if (build) {
+        await client.requestRagIndex(strapi as never, row.elDocumentId);
+        counts.requested += 1;
+      }
+    } catch (err) {
+      counts.failed += 1;
+      failures.push(`${row.documentName}: ${(err as Error).message.slice(0, 160)}`);
+    }
+  }
+  return { counts, unindexed, failures };
 }
 
 // ── PDF / file-doc syncing ───────────────────────────────────────────
@@ -347,6 +402,7 @@ async function syncOneFile(
     contentHash: fileHash,
     syncedAt: new Date().toISOString(),
   });
+  await requestIndexSafe(strapi, created.id, documentName);
 }
 
 async function fetchUploadBuffer(url: string): Promise<Buffer> {

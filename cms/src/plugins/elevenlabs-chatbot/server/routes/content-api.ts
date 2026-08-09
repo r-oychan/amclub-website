@@ -31,6 +31,7 @@ export default {
     { method: 'POST', path: '/sync-entry', handler: 'sync.syncEntry', config: adminAuth },
     { method: 'POST', path: '/sync-all',   handler: 'sync.syncAll',   config: adminAuth },
     { method: 'POST', path: '/clear-all',  handler: 'sync.clearAll',  config: adminAuth },
+    { method: 'POST', path: '/index-all',  handler: 'sync.indexAll',  config: adminAuth },
     { method: 'GET',  path: '/status',     handler: 'sync.status',    config: adminAuth },
     { method: 'GET',  path: '/settings',   handler: 'settings.find',  config: adminAuth },
     { method: 'PUT',  path: '/settings',   handler: 'settings.update', config: adminAuth },
