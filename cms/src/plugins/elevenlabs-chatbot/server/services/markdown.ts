@@ -97,7 +97,8 @@ export function renderEntryMarkdown({ strapi, uid, entry, publicUrl }: RenderInp
         }
       } else {
         const md = renderBlock(attr.component, value as Record<string, unknown>);
-        if (md) lines.push(`## ${humanise(name)}`, md, '');
+        // htmlBody IS the article body on the page — title the section "Body".
+        if (md) lines.push(`## ${name === 'htmlBody' ? 'Body' : humanise(name)}`, md, '');
       }
       continue;
     }
@@ -126,6 +127,11 @@ export function renderEntryMarkdown({ strapi, uid, entry, publicUrl }: RenderInp
     }
 
     if (attr.type === 'blocks' && Array.isArray(value)) {
+      // News articles carry both `body` (blocks) and `htmlBody` (html-block);
+      // the page renders ONLY htmlBody, and the blocks copy drifts stale.
+      // Mirror the page: when htmlBody has content, it is the sole body.
+      const htmlBody = entry.htmlBody as { html?: unknown } | null | undefined;
+      if (name === 'body' && typeof htmlBody?.html === 'string' && htmlBody.html.trim()) continue;
       // Strapi rich-text blocks → flatten paragraph children.
       const flattened = flattenRichBlocks(value as Array<Record<string, unknown>>);
       if (flattened.trim()) {
