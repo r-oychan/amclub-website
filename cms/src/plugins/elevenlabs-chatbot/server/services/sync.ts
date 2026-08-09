@@ -187,11 +187,28 @@ export async function unsyncEntryBySlug(
 ): Promise<SyncResult> {
   const docName = buildDocName(strapi, uid, { slug, id: 0 } as unknown as Record<string, unknown>);
   const existingRow = await getLogRowByName(strapi, docName);
-  if (!existingRow) return { documentName: docName, status: 'skipped' };
 
-  try { await client.deleteDoc(strapi as never, existingRow.elDocumentId); }
-  catch (err) { strapi.log.warn(`[${PLUGIN_ID}] failed to delete remote doc ${existingRow.elDocumentId}: ${(err as Error).message}`); }
-  await deleteLogRow(strapi, existingRow.id);
+  // Harvested media docs (menus, posters) belong to the expired entry and
+  // must expire with it — otherwise the PDF outlives the event in the KB.
+  const fileRows = (await strapi.db.query(SYNC_LOG_UID).findMany({
+    where: { sourceKind: 'media-file', ownerContentType: uid },
+  })) as SyncLogRow[];
+  let dropped = 0;
+  for (const row of fileRows) {
+    if (!row.documentName.startsWith(`${docName}:file:`)) continue;
+    try { await client.deleteDoc(strapi as never, row.elDocumentId); }
+    catch (err) { strapi.log.warn(`[${PLUGIN_ID}] failed to delete remote doc ${row.elDocumentId}: ${(err as Error).message}`); }
+    await deleteLogRow(strapi, row.id);
+    dropped += 1;
+  }
+
+  if (!existingRow && dropped === 0) return { documentName: docName, status: 'skipped' };
+
+  if (existingRow) {
+    try { await client.deleteDoc(strapi as never, existingRow.elDocumentId); }
+    catch (err) { strapi.log.warn(`[${PLUGIN_ID}] failed to delete remote doc ${existingRow.elDocumentId}: ${(err as Error).message}`); }
+    await deleteLogRow(strapi, existingRow.id);
+  }
   await refreshAgentKnowledgeBase(strapi);
   return { documentName: docName, status: 'deleted' };
 }
