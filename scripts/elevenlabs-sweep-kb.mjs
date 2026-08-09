@@ -14,7 +14,12 @@ import { dirname, join } from 'node:path';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const env = process.argv[2];
-const HOST_GUARD = { dev: 'dev.amclub.org.sg', uat: 'uat.amclub.org.sg', prod: '//amclub.org.sg' };
+// Accept the custom domain or the Azure container-app FQDN for the env.
+const HOST_GUARD = {
+  dev: /dev\.amclub\.org\.sg|amclub-dev-app/,
+  uat: /uat\.amclub\.org\.sg|amclub-uat-app/,
+  prod: /\/\/amclub\.org\.sg|amclub-prod-app/,
+};
 if (!HOST_GUARD[env ?? '']) {
   console.error('usage: node scripts/elevenlabs-sweep-kb.mjs <dev|uat|prod>');
   process.exit(1);
@@ -23,7 +28,7 @@ const envFile = readFileSync(join(ROOT, `cms/.env.seed.${env}`), 'utf8');
 const get = (k) => envFile.match(new RegExp(`^${k}=(.*)$`, 'm'))?.[1].trim();
 const BASE = get('STRAPI_BASE_URL');
 const TOKEN = get('STRAPI_API_TOKEN');
-if (!BASE?.includes(HOST_GUARD[env])) {
+if (!BASE || !HOST_GUARD[env].test(BASE)) {
   console.error(`refusing: STRAPI_BASE_URL "${BASE}" does not look like the ${env} environment`);
   process.exit(1);
 }

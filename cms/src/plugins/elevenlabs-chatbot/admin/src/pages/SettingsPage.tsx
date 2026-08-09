@@ -43,12 +43,14 @@ interface RuntimeSettings {
 }
 
 interface JobState {
-  kind: 'sync-all' | 'clear-all';
+  kind: 'sync-all' | 'clear-all' | 'index-check' | 'index-build';
   mode?: 'delta' | 'full';
   startedAt: string;
   finishedAt?: string;
   counts?: Record<string, number>;
   deleted?: number;
+  unindexed?: string[];
+  failures?: string[];
   error?: string;
 }
 
@@ -197,6 +199,27 @@ export const SettingsPage = () => {
     }
   }
 
+  async function runIndexAll(build: boolean) {
+    setBusy(build ? 'index-build' : 'index-check');
+    setResult(null);
+    try {
+      const { data } = await post<StartResponse>('/api/elevenlabs-chatbot/index-all', { build });
+      setResult(
+        data.started
+          ? {
+              variant: 'success',
+              text: `${build ? 'Index build' : 'Index check'} started — polling for progress…`,
+            }
+          : { variant: 'danger', text: data.reason ?? 'Job rejected' },
+      );
+      await refresh();
+    } catch (err) {
+      setResult({ variant: 'danger', text: `Index job failed: ${formatError(err)}` });
+    } finally {
+      setBusy(null);
+    }
+  }
+
   async function runClearAll() {
     if (
       !confirm(
@@ -278,6 +301,23 @@ export const SettingsPage = () => {
             {job.finishedAt && <>, finished {new Date(job.finishedAt).toLocaleTimeString()}</>}
             {job.counts && <> — {JSON.stringify(job.counts)}</>}
             {typeof job.deleted === 'number' && <> — deleted {job.deleted}</>}
+            {job.unindexed && job.unindexed.length > 0 && (
+              <>
+                <br />
+                <strong>Not indexed ({job.unindexed.length}):</strong>{' '}
+                <span style={{ fontFamily: 'monospace' }}>
+                  {job.unindexed.slice(0, 20).join(', ')}
+                  {job.unindexed.length > 20 ? ` … +${job.unindexed.length - 20} more` : ''}
+                </span>
+              </>
+            )}
+            {job.failures && job.failures.length > 0 && (
+              <>
+                <br />
+                <strong>Failures ({job.failures.length}):</strong>{' '}
+                <span style={{ fontFamily: 'monospace' }}>{job.failures.slice(0, 5).join(' | ')}</span>
+              </>
+            )}
             {job.error && (
               <>
                 <br />
@@ -426,6 +466,22 @@ export const SettingsPage = () => {
             variant="secondary"
           >
             Sync all (full)
+          </Button>
+          <Button
+            onClick={() => runIndexAll(false)}
+            disabled={buttonsDisabled}
+            loading={busy === 'index-check'}
+            variant="tertiary"
+          >
+            Check indexes
+          </Button>
+          <Button
+            onClick={() => runIndexAll(true)}
+            disabled={buttonsDisabled}
+            loading={busy === 'index-build'}
+            variant="secondary"
+          >
+            Build missing indexes
           </Button>
           <Button
             onClick={runClearAll}

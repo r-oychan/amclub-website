@@ -13,10 +13,12 @@ ENV = open(os.path.join(ROOT, '.env')).read()
 env = sys.argv[1] if len(sys.argv) > 1 else ''
 if env == 'dev':
     key_prefix, AID = '#ELEVENLABS_KEY=', 'agent_2501krr788f7esxaqkyqvxx5vrsh'
+elif env == 'prod':
+    key_prefix, AID = 'ELEVENLABS_KEY=', 'agent_8501kwyk5w3ben9vt241mq3q8hz3'
 elif env == 'uat':
     key_prefix, AID = 'ELEVENLABS_KEY=', 'agent_6001kvayq5h3f7p9p41hwzq4s3sp'
 else:
-    sys.exit('usage: elevenlabs-index-kb.py <dev|uat>')
+    sys.exit('usage: elevenlabs-index-kb.py <dev|uat|prod>')
 KEY = [l.split('=', 1)[1].strip() for l in ENV.splitlines() if l.startswith(key_prefix)][0]
 
 

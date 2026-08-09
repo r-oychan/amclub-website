@@ -117,25 +117,25 @@ Editor experience:
 - Set `expiredAt = past` → hide now even if the natural date is upcoming.
 - Set `expiredAt = future` → keep listed past the natural date (recurring/annual).
 
-## 4. Hourly KB-cleanup cron
+## 4. Nightly KB-cleanup cron
 
 **Goal:** when an entry drops off the listing (via the expiry filter), also drop it from the ElevenLabs chatbot knowledge base. Don't depend on an editor save — time alone should trigger cleanup.
 
 **Pattern (in `cms/src/index.ts`):**
 
 1. `cms/config/server.ts` enables cron: `cron: { enabled: env.bool('CRON_ENABLED', true) }`.
-2. Bootstrap registers a single hourly task:
+2. Bootstrap registers a single nightly task just after the Singapore day rolls over:
    ```ts
    strapi.cron.add({
      expiryKbSweep: {
        task: () => sweepExpiredKbDocs(strapi),
-       options: { rule: '0 * * * *' },
+       options: { rule: '5 0 * * *', tz: 'Asia/Singapore' },
      },
    });
    ```
-3. `sweepExpiredKbDocs` queries each expiry-aware UID (`event`, `dining-promotion`) for rows past their natural date, calls `elevenlabs-chatbot.sync.unsyncEntryBySlug` per row. Idempotent — already-removed rows no-op.
+3. `sweepExpiredKbDocs` queries each expiry-aware UID (`event`, `dining-promotion`) for rows past their natural date, calls `elevenlabs-chatbot.sync.unsyncEntryBySlug` per row — which also drops the entry's harvested `:file:` docs (menus/posters). Idempotent — already-removed rows no-op, and each run re-checks *all* past rows, so a missed tick self-heals the next night.
 
-Hourly cadence is deliberate: listing-side hiding is instant (driven by request-time SQL filter), so KB freshness doesn't need minute precision.
+Nightly cadence is deliberate: expiry is date-granular and listing-side hiding is instant (request-time SQL filter), so the KB only needs a day-boundary sweep. Compute "today" with `toLocaleDateString('en-CA', { timeZone: 'Asia/Singapore' })` — containers run UTC, and a UTC date keeps yesterday's events alive until 8am SGT.
 
 ## 5. Display naming `<Section>: <Thing>`
 
@@ -285,3 +285,15 @@ git log --oneline origin/main..origin/uat   # uat ahead of main
 ```
 
 Environment-specific config lives in `infra/Pulumi.<env>.yaml`. Strapi env-specific settings come from Container App env vars + plugin config that reads `env(...)`. **Never hardcode an env URL in source.**
+
+## 9. RAG auto-indexing (ElevenLabs KB)
+
+**Gotcha:** attaching a KB doc to an agent does **not** build its retrieval index. Un-indexed docs are invisible to RAG — the agent simply can't answer from them. And because KB docs are immutable, every entry *update* uploads a brand-new doc that starts un-indexed, even if the previous generation was indexed.
+
+**Pattern (elevenlabs-chatbot plugin):**
+
+1. `client.ts` wraps `GET/POST /v1/convai/knowledge-base/{id}/rag-index`. The POST is idempotent — an already-indexed or in-progress doc returns the existing index, so firing it blind is safe and free.
+2. `sync.ts` calls `requestIndexSafe(...)` right after every `createTextDoc` / `createFileDoc` — indexing failures log a warning but never fail the sync.
+3. `auditRagIndexes(strapi, build)` walks the sync log, reports per-doc index state, and (when `build`) requests indexing for any doc missing one. Exposed via `POST /api/elevenlabs-chatbot/index-all { build }` and the settings-page **Check indexes** / **Build missing indexes** buttons.
+
+Cost: no per-index credit charge — the constraint is the plan-tier cap on total *original file size* indexed (~2MB observed on this account). Deleted docs free quota, so the expiry cron doubles as quota hygiene. `scripts/elevenlabs-index-kb.py <env>` remains the CLI fallback.

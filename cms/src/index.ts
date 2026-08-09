@@ -147,10 +147,13 @@ async function backfillUploadMimes(strapi: any) {
 // tick, and asks the elevenlabs-chatbot plugin to drop them from the KB.
 // Strapi keeps the entry rows themselves (URL stays alive).
 //
-// Hourly cadence is enough — KB hygiene doesn't need minute precision,
-// and listing-side filtering already gives instant user-facing effect.
+// Expiry is date-granular (event `date`, promotion `validTo`), so a single
+// nightly run right after the Singapore day rolls over is all it needs —
+// listing-side filtering already gives instant user-facing effect.
 async function sweepExpiredKbDocs(strapi: any) {
-  const today = new Date().toISOString().slice(0, 10);
+  // Club days end at midnight SGT, not UTC — containers run in UTC, so an
+  // ISO date here would keep yesterday's events alive until 8am Singapore.
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Singapore' });
   const targets: { uid: string; field: string }[] = [
     { uid: 'api::event.event', field: 'date' },
     { uid: 'api::dining-promotion.dining-promotion', field: 'validTo' },
@@ -328,15 +331,16 @@ export default {
     } catch (e) {
       strapi.log.error('[bootstrap] failed to reorder event edit layout', e);
     }
-    // Hourly content-expiry KB sweep. config/server.ts enables cron.
+    // Nightly content-expiry KB sweep at 00:05 Singapore time.
+    // config/server.ts enables cron.
     try {
       strapi.cron.add({
         expiryKbSweep: {
           task: () => sweepExpiredKbDocs(strapi),
-          options: { rule: '0 * * * *' },
+          options: { rule: '5 0 * * *', tz: 'Asia/Singapore' },
         },
       });
-      strapi.log.info('[bootstrap] registered hourly expiry KB sweep');
+      strapi.log.info('[bootstrap] registered nightly (00:05 SGT) expiry KB sweep');
     } catch (e) {
       strapi.log.error('[bootstrap] failed to register expiry cron', e);
     }

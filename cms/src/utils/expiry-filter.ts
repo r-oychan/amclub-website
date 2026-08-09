@@ -13,9 +13,11 @@
 // (`fallbackField: 'validTo'`). Detail-by-slug queries bypass via
 // shouldApplyExpiryFilter so /events/<expired-slug> still resolves.
 export function buildExpiryFilter(fallbackField: string) {
-  // 'YYYY-MM-DD' — date fields are stored as plain dates (no time), so
-  // this matches Postgres date comparison semantics.
-  const today = new Date().toISOString().slice(0, 10);
+  // 'YYYY-MM-DD' in Singapore time — date fields are stored as plain dates
+  // (no time), and the Club's day rolls over at midnight SGT, not UTC.
+  // Containers run UTC; an ISO date would keep yesterday's events listed
+  // until 8am Singapore (and out of step with the nightly KB expiry sweep).
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Singapore' });
   return {
     $or: [
       // explicit override: editor set expiredAt → respect it
