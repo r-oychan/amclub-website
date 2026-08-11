@@ -117,8 +117,13 @@ export async function parseDeck(buf) {
   // ── "New" badges: overlay images mapped to cells by geometry ───────
   const colX = [frameBox.x];
   for (const w of colW) colX.push(colX[colX.length - 1] + w);
+  // `a:tr@h` is a MINIMUM — PowerPoint grows rows to fit their content, and the
+  // frame's rendered height reflects that (5.8% taller here). Using the raw
+  // values makes boundaries drift further out with every row, which pushed the
+  // last-row badge outside the table entirely. Scale them to the real height.
+  const rowScale = rowH.reduce((a, b) => a + b, 0) > 0 ? frameBox.cy / rowH.reduce((a, b) => a + b, 0) : 1;
   const rowY = [frameBox.y];
-  for (const h of rowH) rowY.push(rowY[rowY.length - 1] + h);
+  for (const h of rowH) rowY.push(rowY[rowY.length - 1] + h * rowScale);
 
   const badges = [];
   const badgeHashes = new Set();
@@ -140,7 +145,15 @@ export async function parseDeck(buf) {
     // PowerPoint renders.
     let ci = 0; while (ci + 1 < colX.length && colX[ci + 1] <= cx) ci += 1;
     let ri = 0; while (ri + 1 < rowY.length && rowY[ri + 1] <= cy) ri += 1;
-    badges.push({ ri: Math.min(ri, trs.length - 1), ci: Math.min(ci, colW.length - 1) });
+    ri = Math.min(ri, trs.length - 1); ci = Math.min(ci, colW.length - 1);
+    // Badge→cell mapping is the one geometric inference here, so it is also
+    // the only thing that could go wrong SILENTLY (a table nudged without its
+    // badges tags the wrong class). A badge deliberately placed on a cell sits
+    // well inside it; one that has drifted sits near an edge — so flag that.
+    const fx = (cx - colX[ci]) / (colX[ci + 1] - colX[ci]);
+    const fy = (cy - rowY[ri]) / (rowY[ri + 1] - rowY[ri]);
+    const margin = Math.min(fx, 1 - fx, fy, 1 - fy);
+    badges.push({ ri, ci, margin });
   }
   if (badgeHashes.size > 1) warnings.push(`overlay images are not identical: ${[...badgeHashes].join(', ')}`);
 
@@ -166,7 +179,14 @@ export async function parseDeck(buf) {
       if (!cell || cell.hMerge || cell.vMerge || !cell.text) continue;
       const intensity = legend[cell.fill ?? ''] ?? null;
       if (!intensity) { unmapped += 1; unknownColours.add(String(cell.fill)); }
-      const isNew = badges.some((b) => b.ri === ri && b.ci >= ci && b.ci < ci + cell.gridSpan);
+      const hit = badges.find((b) => b.ri === ri && b.ci >= ci && b.ci < ci + cell.gridSpan);
+      const isNew = !!hit;
+      if (hit && hit.margin < 0.12) {
+        warnings.push(
+          `${dayOf[ci]} ${time}: a NEW badge sits ${Math.round(hit.margin * 100)}% from the cell edge — ` +
+          `it may belong to the neighbouring class. Check the badge positions in the deck.`,
+        );
+      }
       const blocks = splitCell(cell.text);
       if (isNew && blocks.length > 1) {
         warnings.push(
