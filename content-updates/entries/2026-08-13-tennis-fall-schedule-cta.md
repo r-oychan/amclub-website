@@ -5,8 +5,8 @@ content_type: fitness-facility (tennis) — imagePanels
 entry: "Seed tennis imagePanels into prod CMS; replace Summer Term schedule CTA with Fall Term 2026 Schedule"
 author: prod (Claude) on 2026-08-13
 prod: applied (08-13)
-dev: pending
-uat: pending
+dev: applied (08-13)
+uat: applied (08-13)
 seed: ported (patch-2026-08-13-tennis-fall-schedule.mjs)
 ---
 
@@ -78,16 +78,39 @@ script). Media relations must be reduced to a bare numeric id *before* stripping
 - `/fitness`, `/fitness/gym`, `/fitness/squash`, `/fitness/pilates`, `/fitness/tennis` → all 200.
 - Patch script re-run is a clean no-op (idempotent).
 
-## Replay notes for dev / uat
+## Replayed to dev + uat (2026-08-13)
 
-⚠️ The Fall PDF href `/uploads/Tennis_Fall_Programs_2026_f423abe4c6.pdf` is **hash-suffixed and
-prod-only** — that blob does not exist on dev or uat. Before replaying, either upload the PDF to the
-target env and swap the href, or (preferred, per commit `12bc39b`) re-upload it under
-`documents/fitness/` with a stable hash-less name like the Summer one had.
+Both applied via the same script. Verified: `Fall Term 2026 Schedule` is the only CTA, "Summer Term"
+absent from page text, socials rows and etiquette bullets intact, no broken images. Re-running on
+all three environments is now a clean no-op.
 
-dev and uat already have both panels, so the script takes its path (b) there and only rewrites the
-Programs panel's CTA list.
+The PDF was pulled off prod into `media/documents/fitness/tennis-fall-programs-2026.pdf` (renamed to
+the lowercase-hyphen convention) and uploaded per environment, so each has its own blob:
 
-No deployment is required: the prod frontend bundle already requests
-`populate[imagePanels][populate][ctas]` and `origin/main` maps multi-CTA panels at
-`frontend/src/lib/imagePanels.ts:44`. This is a pure content change.
+| env | Fall PDF href |
+|---|---|
+| dev | `/uploads/documents/fitness/tennis_fall_programs_2026_b684b0bdc2.pdf` |
+| uat | `/uploads/documents/fitness/tennis_fall_programs_2026_c65f45fb3a.pdf` |
+| prod | `/uploads/Tennis_Fall_Programs_2026_f423abe4c6.pdf` (uploaded via `/admin`; left as-is) |
+
+All three return `200 application/pdf`, 393,135 bytes.
+
+### Two portability bugs found and fixed while replaying
+
+1. **Superseded CTA was matched by exact href.** Strapi appends a per-upload hash, so uat's Summer
+   button was `…schedule_2026_6417fa564c.pdf` while dev/prod were `…schedule_2026.pdf`. The exact
+   match missed on uat and would have left **two** buttons. Now matched by label + filename stem.
+2. **Fall href was hardcoded to prod's blob.** Now the script uploads the repo copy into the target
+   environment and builds the CTA from the returned URL. It reuses an existing Fall CTA's href when
+   one is already present, so prod's `/admin`-uploaded link is not silently re-pointed.
+
+Note: dev's old Summer PDF href 404s. That was already broken before this change (no files were
+deleted); removing the CTA that pointed at it is a net fix.
+
+## No deployment needed
+
+The code is identical across `dev`, `uat` and `main` — `git diff origin/main..dev` over
+`imagePanels.ts`, `ImageTextPanels.tsx` and `VenueDetailPage.tsx` is empty — and all three
+environments were verified rendering panels **from the CMS** (panel images resolve to `/uploads/…`,
+not the `/images/…` static fallback). This is a pure content change; promoting code will not carry
+or clobber it, and the CTA does not depend on any unreleased frontend work.

@@ -21,7 +21,8 @@
 
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { initEnv, api, uploadFile, findOneBySlug, isDryRun } from './seed-helpers.mjs';
+import { basename } from 'node:path';
+import { initEnv, api, uploadFile, findOneBySlug, findUploadedByName, isDryRun } from './seed-helpers.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, '..');
@@ -32,18 +33,20 @@ const PANEL_HEADING = 'Tennis Programs';
 const IMG_DIR = join(ROOT, 'media', 'fitness', 'detail');
 const lines = (...xs) => xs.map((text) => ({ text }));
 
-// The Summer Term schedule is superseded and is removed from the panel. The PDF
-// itself is left in the media library — only the button is dropped.
-const SUPERSEDED_HREFS = ['/uploads/documents/fitness/tennis_summer_term_schedule_2026.pdf'];
-// NOTE: hash-suffixed href — this blob exists on PROD only (uploaded via
-// /admin). On a dev/uat replay the file must be re-uploaded there and this
-// href swapped for that environment's path, or moved under
-// documents/fitness/ with a stable hash-less name like the Summer one.
-const FALL_CTA = {
-  label: 'Fall Term 2026 Schedule',
-  href: '/uploads/Tennis_Fall_Programs_2026_f423abe4c6.pdf',
-  isExternal: true,
-};
+const FALL_LABEL = 'Fall Term 2026 Schedule';
+const FALL_PDF = join(ROOT, 'media', 'documents', 'fitness', 'tennis-fall-programs-2026.pdf');
+
+/**
+ * The Summer Term schedule is superseded — the button is dropped (the PDF is
+ * left in the media library).
+ *
+ * Matched by LABEL and filename stem, deliberately not by exact href: Strapi
+ * appends a per-upload hash, so the same document has a different href in every
+ * environment (prod `…schedule_2026.pdf` vs uat `…schedule_2026_6417fa564c.pdf`).
+ * An exact-href match silently misses on uat and leaves two buttons.
+ */
+const isSuperseded = (c) =>
+  /summer[\s_-]*term/i.test(c.label ?? '') || /summer[\s_-]*term[\s_-]*schedule/i.test(c.href ?? '');
 
 /** Strapi returns media as an object but accepts only an id on write. */
 const toMediaId = (m) => (m && typeof m === 'object' ? (m.id ?? null) : (m ?? null));
@@ -73,7 +76,25 @@ function stripComponentIds(value) {
   return value;
 }
 
-async function buildFreshPanels() {
+/**
+ * Upload the Fall PDF into THIS environment and build the CTA from the URL the
+ * upload returns. Hardcoding an href would only ever work in the environment it
+ * was copied from — uploadFile dedups by filename, so re-runs reuse the
+ * existing blob rather than piling up copies.
+ */
+async function fallCta() {
+  // Dry runs must not write, so look the file up instead of uploading. An
+  // env that has never had it reports "(would upload)".
+  if (DRY) {
+    const found = await findUploadedByName(ctx, basename(FALL_PDF));
+    return { label: FALL_LABEL, href: found?.url ?? '(would upload)', isExternal: true };
+  }
+  const f = await uploadFile(ctx, FALL_PDF, { path: 'documents/fitness' });
+  if (!f?.url) throw new Error('Fall PDF upload returned no url');
+  return { label: FALL_LABEL, href: f.url, isExternal: true };
+}
+
+async function buildFreshPanels(FALL_CTA) {
   const program = await uploadFile(ctx, join(IMG_DIR, 'tennis-program.jpeg'), { path: 'fitness/detail' });
   const etiquette = await uploadFile(ctx, join(IMG_DIR, 'tennis-etiquette.jpeg'), { path: 'fitness/detail' });
   return [
@@ -115,11 +136,11 @@ async function buildFreshPanels() {
  * schedule buttons — while leaving every other field on every panel intact.
  * Returns null when the panel already matches (no write needed).
  */
-function setProgramsCtas(panels) {
+function setProgramsCtas(panels, FALL_CTA) {
   const idx = panels.findIndex((p) => p.heading === PANEL_HEADING);
   if (idx < 0) throw new Error(`No "${PANEL_HEADING}" panel found — refusing to guess which panel to patch.`);
   const existing = panels[idx].ctas ?? [];
-  const kept = existing.filter((c) => !SUPERSEDED_HREFS.includes(c.href) && c.href !== FALL_CTA.href);
+  const kept = existing.filter((c) => !isSuperseded(c) && c.label !== FALL_CTA.label);
   const next = [...kept, FALL_CTA];
   const same =
     existing.length === next.length &&
@@ -147,14 +168,29 @@ function setProgramsCtas(panels) {
   );
   const panels = Array.isArray(full?.data?.imagePanels) ? full.data.imagePanels : [];
   console.log(`  current imagePanels: ${panels.length}`);
+  if (panels.length) {
+    const before = (panels.find((p) => p.heading === PANEL_HEADING)?.ctas ?? []).map((c) => c.label);
+    console.log(`  current Programs CTAs: ${JSON.stringify(before)}`);
+  }
+
+  // If a Fall CTA is already wired up, keep its href verbatim. Prod's copy was
+  // uploaded through /admin under a different filename; re-uploading the repo
+  // copy would silently re-point a working link and orphan the original blob.
+  // Only upload when the CTA has to be created.
+  const existingFall = (panels.find((p) => p.heading === PANEL_HEADING)?.ctas ?? [])
+    .find((c) => c.label === FALL_LABEL && c.href);
+  const FALL_CTA = existingFall
+    ? { label: FALL_LABEL, href: existingFall.href, isExternal: true }
+    : await fallCta();
+  console.log(`  fall PDF href: ${FALL_CTA.href}${existingFall ? '  (existing — left as-is)' : ''}`);
 
   let imagePanels;
   if (panels.length === 0) {
     console.log('  → empty: seeding both panels with the Fall CTA');
     if (DRY) { console.log('  [dry] would upload 2 panel images and PUT 2 panels'); return; }
-    imagePanels = await buildFreshPanels();
+    imagePanels = await buildFreshPanels(FALL_CTA);
   } else {
-    const next = setProgramsCtas(panels);
+    const next = setProgramsCtas(panels, FALL_CTA);
     if (!next) { console.log('  ✓ Programs panel CTAs already correct — nothing to do'); return; }
     console.log('  → setting Tennis Programs CTAs to [Fall] (dropping superseded Summer)');
     if (DRY) {
