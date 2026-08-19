@@ -371,11 +371,36 @@ git log --oneline origin/main..origin/uat   # ready for PROD</code></pre>
           <td>Creating a KB doc is <em>not enough</em> — each doc needs a RAG index
               (<code>POST /v1/convai/knowledge-base/{id}/rag-index</code>, then poll status via <strong>GET</strong>).
               Index <em>sequentially</em>; parallel POSTs spawn duplicate attempts. Each ElevenLabs account has a
-              RAG storage quota (~2&nbsp;MB on the current plans) — <code>rag_limit_exceeded</code> means quota, a
+              RAG storage quota (<strong>20&nbsp;MB</strong> on the Club account; the ~2&nbsp;MB figure was the old agency plan) — <code>rag_limit_exceeded</code> means quota, a
               plain <code>failed</code> at 100% usually means corrupt doc content.</td></tr>
       <tr><td>Expiry sweep (cron)</td>
-          <td><code>0 * * * *</code> hourly job (<code>expiryKbSweep</code> in <code>cms/src/index.ts</code>) unsyncs
-              entries whose <code>expiredAt</code>/<code>date</code> has passed — keeps the bot from citing stale events.</td></tr>
+          <td><code>5 0 * * *</code> nightly at 00:05 <strong>Asia/Singapore</strong> (<code>expiryKbSweep</code> in
+              <code>cms/src/index.ts</code>) unsyncs events / dining promotions whose date has passed — keeps the bot
+              from citing stale events. "Today" is computed in SGT, not UTC: containers run UTC, so an ISO date would
+              keep yesterday's events alive until 8am Singapore.</td></tr>
+      <tr><td>Excluded documents</td>
+          <td>Plugin Settings → <strong>Excluded documents</strong>. One pattern per line, matched case-insensitively
+              against the upload's file name <em>and</em> its URL; <code>*</code> is a wildcard. A matching file is
+              never pushed, and any doc a previous sync created for it is deleted on the next sync of its owner page —
+              so the denylist is <strong>retroactive</strong>.
+              <br><strong>Why it exists:</strong> ElevenLabs' PDF extractor flattens tables — a class timetable loses
+              every row/column association and the agent then confabulates confident wrong pairings (verified on prod,
+              11 Aug 2026, gym class schedule). Text-only PDFs (menus, policies, forms) extract fine, so this is a
+              targeted denylist, <em>not</em> a blanket "no PDFs" rule.</td></tr>
+      <tr><td>Teamup calendar sync</td>
+          <td>Plugin Settings → <strong>Teamup calendar</strong>. Pulls a rolling window
+              (<em>days before</em> / <em>days after</em> today, SGT) from the Teamup API and pushes it to the KB.
+              Optionally whitelist subcalendars — leave all unticked to pull everything.
+              <br>Repeating events are <strong>collapsed to one document per series</strong>: a 60-day window returns
+              ~1,900 occurrences but only ~230 series, so per-occurrence docs would flood the KB and bury one-off
+              events. Cadence is derived from the <em>actual</em> gaps between occurrences (weekly / fortnightly /
+              monthly / "every day"); when the spacing fits no clean pattern the real dates are listed instead of a
+              cadence being invented. Sessions with differing times are listed individually rather than collapsed to
+              one misleading time.
+              <br><strong>Past events expire automatically:</strong> each run recomputes the window and deletes any
+              Teamup doc that fell out of it — no separate cron needed.
+              <br>Use <strong>Preview</strong> first: it reports the window, event/series counts and sample rendered
+              documents <em>without writing anything</em>.</td></tr>
       <tr><td>Manual re-sync</td>
           <td>The <strong>"Sync to ElevenLabs"</strong> panel on a published entry (<code>EditViewSidePanel</code>) forces an
               immediate upsert. Bulk re-sync is available from the plugin Settings page.</td></tr>
@@ -387,7 +412,9 @@ git log --oneline origin/main..origin/uat   # ready for PROD</code></pre>
   <div class="callout note">
     <span class="label">Required env vars</span>
     <p><code>ELEVENLABS_API_KEY</code> (secret) + <code>ELEVENLABS_AGENT_ID</code> (GitHub environment
-       <em>variable</em>) per environment → injected by Pulumi. If unset, the plugin no-ops gracefully (no sync, no
+       <em>variable</em>) per environment → injected by Pulumi. <code>TEAMUP_TOKEN</code> (secret, optional) is
+       required only when Teamup sync is enabled; the calendar <em>key</em> is not secret and is set on the plugin
+       Settings page. A missing token does not fail the deploy — Teamup sync simply errors when run. If unset, the plugin no-ops gracefully (no sync, no
        widget) — useful for local dev. Each environment points at its <em>own</em> ElevenLabs agent so UAT edits don't
        pollute the prod KB.</p>
   </div>

@@ -21,7 +21,7 @@
   "attributes": {
     "sourceKind": {
       "type": "enumeration",
-      "enum": ["page-entry", "media-file"],
+      "enum": ["page-entry", "media-file", "teamup-series"],
       "required": true
     },
     "contentType": { "type": "string" },

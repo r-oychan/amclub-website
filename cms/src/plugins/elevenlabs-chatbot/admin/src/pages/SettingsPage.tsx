@@ -25,6 +25,7 @@ import {
   Table,
   Tbody,
   Td,
+  Textarea,
   TextInput,
   Th,
   Thead,
@@ -33,6 +34,14 @@ import {
   Typography,
 } from '@strapi/design-system';
 
+interface TeamupSettings {
+  enabled: boolean;
+  calendarKey: string;
+  subcalendarIds: number[];
+  daysBefore: number;
+  daysAfter: number;
+}
+
 interface RuntimeSettings {
   chatbotEnabled: boolean;
   voiceVisible: boolean;
@@ -40,6 +49,34 @@ interface RuntimeSettings {
   accentColor: string;
   panelTitle: string;
   contentTypeAllowList: string[];
+  excludedFilePatterns: string[];
+  teamup: TeamupSettings;
+}
+
+interface Subcalendar {
+  id: number;
+  name: string;
+  active?: boolean;
+}
+
+interface TeamupPreview {
+  window: { from: string; to: string };
+  fetched: number;
+  series: number;
+  recurring: number;
+  oneOff: number;
+  sample: Array<{ title: string; occurrences: number; recurring: boolean; markdown: string }>;
+}
+
+interface TeamupSyncResult {
+  window: { from: string; to: string };
+  fetched: number;
+  series: number;
+  created: number;
+  updated: number;
+  skipped: number;
+  deleted: number;
+  errors: string[];
 }
 
 interface JobState {
@@ -244,6 +281,74 @@ export const SettingsPage = () => {
     }
   }
 
+  // ── Teamup ──
+  const [subcals, setSubcals] = useState<Subcalendar[] | null>(null);
+  const [preview, setPreview] = useState<TeamupPreview | null>(null);
+
+  async function loadSubcalendars() {
+    if (!settings?.teamup.calendarKey) {
+      setResult({ variant: 'warning', text: 'Enter a Teamup calendar key first, then Save.' });
+      return;
+    }
+    setBusy('teamup-cals');
+    try {
+      const { data } = await get<{ subcalendars: Subcalendar[]; error?: string }>(
+        `/api/elevenlabs-chatbot/teamup/subcalendars?calendarKey=${encodeURIComponent(settings.teamup.calendarKey)}`,
+      );
+      setSubcals(data.subcalendars);
+      if (data.error) setResult({ variant: 'danger', text: `Teamup: ${data.error}` });
+    } catch (err) {
+      setResult({ variant: 'danger', text: `Could not load calendars: ${formatError(err)}` });
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function runTeamupPreview() {
+    setBusy('teamup-preview');
+    setResult(null);
+    try {
+      const { data } = await get<TeamupPreview>('/api/elevenlabs-chatbot/teamup/preview');
+      setPreview(data);
+      setResult({
+        variant: 'success',
+        text: `${data.fetched} events in ${data.window.from} → ${data.window.to} collapse to ${data.series} document(s) (${data.recurring} recurring, ${data.oneOff} one-off). Nothing was pushed.`,
+      });
+    } catch (err) {
+      setResult({ variant: 'danger', text: `Preview failed: ${formatError(err)}` });
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function runTeamupSync() {
+    if (!confirm('Push the current Teamup window to the chatbot knowledge base? Events that fell outside the window will be removed.')) return;
+    setBusy('teamup-sync');
+    setResult(null);
+    try {
+      const { data } = await post<TeamupSyncResult>('/api/elevenlabs-chatbot/teamup/sync', {});
+      const msg = `Teamup ${data.window.from} → ${data.window.to}: ${data.fetched} events → ${data.series} docs (+${data.created} new, ${data.updated} updated, ${data.skipped} unchanged, ${data.deleted} removed).`;
+      setResult(
+        data.errors.length
+          ? { variant: 'warning', text: `${msg} ${data.errors.length} error(s): ${data.errors.slice(0, 3).join('; ')}` }
+          : { variant: 'success', text: msg },
+      );
+      await refresh();
+    } catch (err) {
+      setResult({ variant: 'danger', text: `Teamup sync failed: ${formatError(err)}` });
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  function toggleSubcal(id: number) {
+    if (!settings) return;
+    const cur = new Set(settings.teamup.subcalendarIds);
+    if (cur.has(id)) cur.delete(id);
+    else cur.add(id);
+    setSettings({ ...settings, teamup: { ...settings.teamup, subcalendarIds: [...cur].sort((a, b) => a - b) } });
+  }
+
   const allowSet = useMemo(() => new Set(settings?.contentTypeAllowList ?? []), [settings]);
   function toggleAllow(uid: string) {
     if (!settings) return;
@@ -419,6 +524,173 @@ export const SettingsPage = () => {
               </Grid.Item>
             </Grid.Root>
           </Section>
+        )}
+
+        {settings && (
+          <>
+          <Section title={`Excluded documents (${settings.excludedFilePatterns.length})`}>
+            <Box paddingBottom={3}>
+              <Typography textColor="neutral600" variant="pi">
+                PDFs and other documents attached to a page are normally pushed to the knowledge base.
+                Anything matching a pattern below is skipped instead — and if it was pushed before,
+                it is removed on the next sync of its page. One pattern per line, matched
+                case-insensitively against the file name and its URL. <code>*</code> works as a wildcard.
+              </Typography>
+              <Box paddingTop={2}>
+                <Typography textColor="neutral600" variant="pi">
+                  Use this for <strong>timetables and grids</strong>: the extractor flattens tables, so
+                  rows and columns lose their pairing and the bot invents class times. Text-only
+                  documents (menus, policies, forms) extract correctly — leave those indexed.
+                </Typography>
+              </Box>
+            </Box>
+            <Textarea
+              aria-label="Excluded file patterns"
+              placeholder={'group fitness schedule\n/uploads/documents/schedules/\n*timetable*.pdf'}
+              value={settings.excludedFilePatterns.join('\n')}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                setSettings({
+                  ...settings,
+                  excludedFilePatterns: e.target.value.split('\n').map((l) => l.trim()).filter(Boolean),
+                })
+              }
+            />
+          </Section>
+
+          <Section title="Teamup calendar">
+            <Box paddingBottom={3}>
+              <Typography textColor="neutral600" variant="pi">
+                Pulls a rolling window of the Teamup calendar into the knowledge base so the bot can
+                answer "what's on". Repeating events are collapsed into a single document describing
+                the pattern and date range, rather than one document per occurrence. Each sync also
+                removes events that have dropped out of the window, so past events stop being
+                answered. The API token comes from the <code>TEAMUP_TOKEN</code> environment
+                variable, not this page.
+              </Typography>
+            </Box>
+            <Grid.Root gap={4}>
+              <Grid.Item col={4} s={12} direction="column" alignItems="stretch">
+                <Flex direction="column" gap={1} alignItems="flex-start">
+                  <Typography variant="pi" fontWeight="bold">Teamup sync enabled</Typography>
+                  <Toggle
+                    onLabel="On"
+                    offLabel="Off"
+                    checked={settings.teamup.enabled}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setSettings({ ...settings, teamup: { ...settings.teamup, enabled: e.target.checked } })
+                    }
+                  />
+                </Flex>
+              </Grid.Item>
+              <Grid.Item col={8} s={12} direction="column" alignItems="stretch">
+                <Flex direction="column" gap={1} alignItems="stretch">
+                  <Typography variant="pi" fontWeight="bold">Calendar key</Typography>
+                  <TextInput
+                    aria-label="Teamup calendar key"
+                    placeholder="kst39gqfh6t1cy87gv"
+                    value={settings.teamup.calendarKey}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setSettings({ ...settings, teamup: { ...settings.teamup, calendarKey: e.target.value.trim() } })
+                    }
+                  />
+                </Flex>
+              </Grid.Item>
+              <Grid.Item col={6} s={12} direction="column" alignItems="stretch">
+                <Flex direction="column" gap={1} alignItems="stretch">
+                  <Typography variant="pi" fontWeight="bold">Days before today</Typography>
+                  <TextInput
+                    aria-label="Days before today"
+                    type="number"
+                    value={String(settings.teamup.daysBefore)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setSettings({
+                        ...settings,
+                        teamup: { ...settings.teamup, daysBefore: Math.max(0, Number(e.target.value) || 0) },
+                      })
+                    }
+                  />
+                </Flex>
+              </Grid.Item>
+              <Grid.Item col={6} s={12} direction="column" alignItems="stretch">
+                <Flex direction="column" gap={1} alignItems="stretch">
+                  <Typography variant="pi" fontWeight="bold">Days after today</Typography>
+                  <TextInput
+                    aria-label="Days after today"
+                    type="number"
+                    value={String(settings.teamup.daysAfter)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setSettings({
+                        ...settings,
+                        teamup: { ...settings.teamup, daysAfter: Math.max(0, Number(e.target.value) || 0) },
+                      })
+                    }
+                  />
+                </Flex>
+              </Grid.Item>
+            </Grid.Root>
+
+            <Box paddingTop={4}>
+              <Flex gap={2} alignItems="center" marginBottom={3}>
+                <Button variant="tertiary" onClick={() => void loadSubcalendars()} loading={busy === 'teamup-cals'} disabled={buttonsDisabled}>
+                  Load calendars
+                </Button>
+                <Typography variant="pi" textColor="neutral600">
+                  {settings.teamup.subcalendarIds.length === 0
+                    ? 'No calendars ticked — every calendar will be pulled.'
+                    : `${settings.teamup.subcalendarIds.length} calendar(s) whitelisted.`}
+                </Typography>
+              </Flex>
+              {subcals && (
+                <Grid.Root gap={2}>
+                  {subcals.map((c) => (
+                    <Grid.Item key={c.id} col={6} s={12} direction="column" alignItems="flex-start">
+                      <Checkbox
+                        checked={settings.teamup.subcalendarIds.includes(c.id)}
+                        onCheckedChange={() => toggleSubcal(c.id)}
+                      >
+                        {c.name}
+                      </Checkbox>
+                    </Grid.Item>
+                  ))}
+                </Grid.Root>
+              )}
+            </Box>
+
+            <Box paddingTop={4}>
+              <Flex gap={2} wrap="wrap">
+                <Button variant="secondary" onClick={() => void runTeamupPreview()} loading={busy === 'teamup-preview'} disabled={buttonsDisabled}>
+                  Preview (no changes)
+                </Button>
+                <Button variant="default" onClick={() => void runTeamupSync()} loading={busy === 'teamup-sync'} disabled={buttonsDisabled || !settings.teamup.enabled}>
+                  Sync Teamup now
+                </Button>
+              </Flex>
+              <Box paddingTop={2}>
+                <Typography variant="pi" textColor="neutral600">
+                  Save settings before previewing or syncing — both read the stored values.
+                </Typography>
+              </Box>
+            </Box>
+
+            {preview && (
+              <Box paddingTop={4}>
+                <Typography variant="pi" fontWeight="bold">
+                  Preview {preview.window.from} → {preview.window.to}: {preview.fetched} events → {preview.series} documents
+                </Typography>
+                <Box paddingTop={2}>
+                  {preview.sample.map((x) => (
+                    <Box key={x.title} background="neutral100" hasRadius padding={3} marginBottom={2}>
+                      <Typography variant="pi" fontWeight="bold">
+                        {x.title} — {x.occurrences} occurrence(s), {x.recurring ? 'recurring' : 'one-off'}
+                      </Typography>
+                      <pre style={{ whiteSpace: 'pre-wrap', margin: '8px 0 0', fontSize: 12 }}>{x.markdown}</pre>
+                    </Box>
+                  ))}
+                </Box>
+              </Box>
+            )}
+          </Section>
+          </>
         )}
 
         {settings && status && (

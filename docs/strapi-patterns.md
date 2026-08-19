@@ -296,4 +296,34 @@ Environment-specific config lives in `infra/Pulumi.<env>.yaml`. Strapi env-speci
 2. `sync.ts` calls `requestIndexSafe(...)` right after every `createTextDoc` / `createFileDoc` — indexing failures log a warning but never fail the sync.
 3. `auditRagIndexes(strapi, build)` walks the sync log, reports per-doc index state, and (when `build`) requests indexing for any doc missing one. Exposed via `POST /api/elevenlabs-chatbot/index-all { build }` and the settings-page **Check indexes** / **Build missing indexes** buttons.
 
-Cost: no per-index credit charge — the constraint is the plan-tier cap on total *original file size* indexed (~2MB observed on this account). Deleted docs free quota, so the expiry cron doubles as quota hygiene. `scripts/elevenlabs-index-kb.py <env>` remains the CLI fallback.
+Cost: no per-index credit charge — the constraint is the plan-tier cap on total *original file size* indexed. Measured on the Club account 2026-08-19: **1.5 MB used of 20 MB** (`GET /v1/convai/knowledge-base/rag-index` reports `total_used_bytes` / `total_max_bytes` — read it rather than trusting a remembered figure; the old ~2 MB number was the agency plan). Deleted docs free quota, so the expiry cron doubles as quota hygiene. `scripts/elevenlabs-index-kb.py <env>` remains the CLI fallback.
+
+**This only works where the code is deployed.** Auto-indexing landed on `dev` 2026-08-09 (`89ac316`) but prod's last promotion was 2026-08-07, so for ten days prod uploaded every doc and indexed none — 31 of 306 attached docs were invisible to the bot, including 17 upcoming events. The symptom is indistinguishable from a relevance problem: the agent answers from an older, *indexed* doc (a 2025 photo album) while ignoring the current one. **Diagnose with the index status, not the doc list** — a doc can be present and attached and still unreachable:
+
+```
+GET /v1/convai/knowledge-base/{id}/rag-index   → {"indexes": []}   ← invisible to RAG
+```
+
+## 10. Excluding documents from the KB (selective, not blanket)
+
+**Gotcha:** ElevenLabs' PDF extractor flattens tables. A class timetable becomes headings in reading order with no row/column association, and the agent then *confabulates* confident wrong pairings (verified on prod 2026-08-11). Linear PDFs — menus, policies, forms — extract fine, so "stop indexing PDFs" is the wrong fix.
+
+**Pattern:** `RuntimeSettings.excludedFilePatterns` (plugin settings page, one pattern per line). `isFileExcluded(file, patterns)` in `utils.ts` matches case-insensitively against the upload's **name and URL**, with `*` as a wildcard, so a rule can target one file or a whole upload folder.
+
+The important detail is *where* the check sits: `syncAttachedFiles` skips an excluded file **and leaves it out of `fileNamesAfter`**, which is the set the stale-cleanup pass diffs against. That makes the denylist **retroactive** for free — adding a pattern deletes the already-pushed doc on the next sync of its owner page, with no separate purge step.
+
+## 11. Calendar → KB: collapse recurrence before indexing
+
+**Gotcha:** a 60-day Teamup window returns ~1,900 event occurrences but only ~230 distinct series — the calendar is dominated by weekly classes and court bookings. One doc per occurrence floods the KB with near-identical records and buries the one-off events members actually ask about.
+
+**Pattern (`services/teamup.ts`):**
+
+1. **Group** occurrences into series: `series_id` → master id parsed off the `"<id>-rid-<ts>"` occurrence id → `title+time+location` signature. Anything alone in its bucket is a one-off.
+2. **Derive cadence from the actual gaps**, never from the weekday alone. Two Wednesdays five weeks apart is *not* "every Wednesday" — that is a confident falsehood of exactly the kind this pipeline exists to prevent. Median gap 6–8d → weekly, 13–16d → fortnightly, 27–32d → monthly, all-gaps ≤8d across 7 weekdays → "every day"; anything else **enumerates the real dates**.
+3. **Don't collapse differing times.** If sessions in a series run at different times, list them per session rather than printing the first one as if it applied to all.
+4. **Expire by recomputing the window.** Each run rebuilds the wanted set from today and deletes any `<prefix>teamup:` doc no longer in it — past events drop out with no extra cron.
+5. Call `refreshAgentKnowledgeBase` afterwards: creating a doc does not attach it to the agent.
+
+Secrets: `TEAMUP_TOKEN` is env-only (Container App secret). The calendar **key** is non-secret and lives in plugin settings — don't put the token in the plugin store, which any admin can read and which lands in DB backups.
+
+Pure transforms (`collapseSeries`, `renderSeriesMarkdown`, `computeWindow`, `isFileExcluded`) are unit-tested in `cms/tests/teamup-render.test.mjs` via `npm run test:plugin` — they compile to a temp dir so no Strapi runtime is needed.

@@ -14,6 +14,8 @@ import {
   getPluginConfig,
   getResolvedAgentId,
   getSiteUrl,
+  isFileExcluded,
+  readRuntimeSettings,
 } from '../utils';
 import { buildDeepPopulate } from './populate';
 import { renderEntryMarkdown } from './markdown';
@@ -114,7 +116,7 @@ async function upsertLogRow(strapi: Strapi, data: Omit<SyncLogRow, 'id'>): Promi
 
 // ── Agent attachment ─────────────────────────────────────────────────
 
-async function refreshAgentKnowledgeBase(strapi: Strapi): Promise<void> {
+export async function refreshAgentKnowledgeBase(strapi: Strapi): Promise<void> {
   const agentId = getResolvedAgentId(strapi as never);
   if (!agentId) {
     strapi.log.warn(`[${PLUGIN_ID}] no agent id configured — skipping agent attachment`);
@@ -339,8 +341,17 @@ async function syncAttachedFiles(strapi: Strapi, ownerUid: string, entry: Record
   const ownerEntryId = (entry.id as number) ?? null;
   const ownerDocName = buildDocName(strapi, ownerUid, entry);
   const fileNamesAfter = new Set<string>();
+  const { excludedFilePatterns } = await readRuntimeSettings(strapi as never);
 
   for (const f of files) {
+    // Denylisted files are skipped AND deliberately left out of
+    // fileNamesAfter, so the stale-cleanup pass below removes any doc a
+    // previous sync already pushed. That makes the denylist retroactive:
+    // adding a pattern un-indexes the file on the next sync of its owner.
+    if (isFileExcluded(f, excludedFilePatterns)) {
+      strapi.log.info(`[${PLUGIN_ID}] skipping excluded file "${f.name}" (owner ${ownerDocName})`);
+      continue;
+    }
     try {
       const name = buildFileDocName(strapi, ownerUid, entry, f);
       fileNamesAfter.add(name);
