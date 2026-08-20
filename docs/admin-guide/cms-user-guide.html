@@ -587,9 +587,28 @@ Seats are limited — [reserve a table](/dining/grillhouse).</code></td>
   </ul>
   <h3>Sync to ElevenLabs — the website chatbot</h3>
   <p>The website chatbot answers member questions using published content. Published events and promotions are
-     synced to its knowledge base automatically (expired ones are removed hourly). The
-     <strong>Sync to ElevenLabs</strong> button in the right panel forces an immediate re-sync after a significant
-     edit — useful but rarely needed. It only works on published entries.</p>
+     synced to its knowledge base automatically, and expired ones are removed every night just after midnight
+     Singapore time. The <strong>Sync to ElevenLabs</strong> button in the right panel forces an immediate re-sync
+     after a significant edit — useful but rarely needed. It only works on published entries.</p>
+
+  <h3>What the chatbot can and cannot read from a PDF</h3>
+  <p>PDFs you attach to a page are added to the chatbot's knowledge base too, so it can answer from a menu, a policy
+     or a form. There is one important exception: <strong>the chatbot cannot reliably read a timetable or any
+     grid-shaped table in a PDF</strong>. It sees the words but loses which time belongs to which class, and will then
+     answer confidently <em>and wrongly</em>.</p>
+  <p>For that reason, schedule-style PDFs (for example the group fitness timetable) are on an
+     <strong>exclusion list</strong> and are deliberately kept out of the chatbot. Members still see and download them
+     on the website exactly as before — only the chatbot ignores them. Ordinary text PDFs (menus, policies, forms)
+     are unaffected and still answered from.</p>
+  <p>If you add a new schedule-style PDF, tell your technical administrator so it can be added to the exclusion list.
+     Nothing breaks if it is missed — but the chatbot may start inventing class times.</p>
+
+  <h3>Where "what's on" answers come from</h3>
+  <p>Alongside your published Events, the chatbot is fed a rolling window of the <strong>Teamup calendar</strong>, so
+     it can answer questions like "what's on this weekend" or "when is Pilates". Repeating bookings are summarised as
+     one entry ("Every Wednesday, 8:00 AM – 9:00 AM, until 14 Oct") rather than listed session by session, and
+     anything that has already happened drops out automatically. This is configured by your technical administrator
+     on the chatbot's settings page — there is nothing to maintain in the CMS.</p>
 
   <h3>Featured On Homepage — curating the events strip</h3>
   <p>The scrolling events strip on the homepage shows <strong>upcoming events you've marked with the

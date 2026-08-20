@@ -17,6 +17,13 @@ if (!elevenlabsApiKeyRaw) throw new Error('Missing env var ELEVENLABS_API_KEY (a
 if (!elevenlabsAgentId) throw new Error('Missing env var ELEVENLABS_AGENT_ID (set in deploy.yml)');
 const elevenlabsApiKey = pulumi.secret(elevenlabsApiKeyRaw);
 
+// ── Teamup calendar token ─────────────────────────────────────────
+// Optional: the chatbot's Teamup → knowledge-base sync is off unless enabled
+// in the plugin settings, so a missing token must not fail the deploy. An
+// empty value is still injected so the container env shape stays uniform.
+const teamupToken = pulumi.secret(process.env.TEAMUP_TOKEN ?? '');
+const teamupCalendarKey = pulumi.secret(process.env.TEAMUP_CALENDAR_KEY ?? '');
+
 // ── Microsoft Entra ID SSO config (env-var driven) ────────────────
 // Consumed by strapi-plugin-sso at the CMS layer. All four values are
 // OPTIONAL — if AZUREAD_OAUTH_CLIENT_ID is empty, the plugin won't be able
@@ -376,6 +383,8 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
       { name: 'preview-token', value: previewToken.result },
       { name: 'storage-account-key', value: storageKey },
       { name: 'elevenlabs-api-key', value: elevenlabsApiKey },
+      { name: 'teamup-token', value: teamupToken },
+      { name: 'teamup-calendar-key', value: teamupCalendarKey },
       // SSO client secret — only added when the GitHub secret is set for this
       // environment; the env block below references it conditionally to avoid
       // a Container App "missing secretRef" error on stacks where SSO isn't
@@ -418,6 +427,8 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
           { name: 'STORAGE_CDN_URL', value: publicSiteUrl },
           { name: 'ELEVENLABS_API_KEY', secretRef: 'elevenlabs-api-key' },
           { name: 'ELEVENLABS_AGENT_ID', value: elevenlabsAgentId },
+          { name: 'TEAMUP_TOKEN', secretRef: 'teamup-token' },
+          { name: 'TEAMUP_CALENDAR_KEY', secretRef: 'teamup-calendar-key' },
           { name: 'PUBLIC_SITE_URL', value: publicSiteUrl },
           // Microsoft Entra ID SSO — consumed by strapi-plugin-sso. If
           // ssoEnabled is false (any of the 3 GitHub secrets unset on this

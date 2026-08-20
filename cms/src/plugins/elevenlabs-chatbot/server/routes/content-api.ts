@@ -35,5 +35,9 @@ export default {
     { method: 'GET',  path: '/status',     handler: 'sync.status',    config: adminAuth },
     { method: 'GET',  path: '/settings',   handler: 'settings.find',  config: adminAuth },
     { method: 'PUT',  path: '/settings',   handler: 'settings.update', config: adminAuth },
+
+    { method: 'GET',  path: '/teamup/subcalendars', handler: 'teamup.subcalendars', config: adminAuth },
+    { method: 'GET',  path: '/teamup/preview',      handler: 'teamup.preview',      config: adminAuth },
+    { method: 'POST', path: '/teamup/sync',         handler: 'teamup.sync',         config: adminAuth },
   ],
 };

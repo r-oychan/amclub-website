@@ -13,7 +13,8 @@
     "strapi": "strapi",
     "upgrade": "npx @strapi/upgrade latest",
     "upgrade:dry": "npx @strapi/upgrade latest --dry",
-    "sync:elevenlabs": "tsx scripts/sync-elevenlabs.ts"
+    "sync:elevenlabs": "tsx scripts/sync-elevenlabs.ts",
+    "test:plugin": "tsc src/plugins/elevenlabs-chatbot/server/services/teamup.ts src/plugins/elevenlabs-chatbot/server/utils.ts --outDir .tmp/plugin-test --module commonjs --target es2022 --moduleResolution node --skipLibCheck --esModuleInterop && TEAMUP_TEST_BUILD=$PWD/.tmp/plugin-test node --test tests/teamup-render.test.mjs"
   },
   "dependencies": {
     "@strapi/plugin-cloud": "5.46.1",
