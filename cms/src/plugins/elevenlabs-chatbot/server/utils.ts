@@ -18,8 +18,6 @@ export const SYNC_LOG_UID = `plugin::${PLUGIN_ID}.elevenlabs-doc`;
 export interface TeamupSettings {
   /** Master switch for the Teamup → KB pipeline. */
   enabled: boolean;
-  /** Teamup calendar key (the path segment, e.g. "kst39gqfh6t1cy87gv"). */
-  calendarKey: string;
   /** Whitelisted subcalendar ids. Empty = pull every subcalendar. */
   subcalendarIds: number[];
   /** Window around today, in days. Past days are how far back to keep events. */
@@ -48,7 +46,6 @@ export interface RuntimeSettings {
 
 export const DEFAULT_TEAMUP_SETTINGS: TeamupSettings = {
   enabled: false,
-  calendarKey: '',
   subcalendarIds: [],
   daysBefore: 0,
   daysAfter: 60,
@@ -92,6 +89,23 @@ export function getResolvedAgentId(strapi: StrapiLike): string | null {
 
 export function getResolvedApiKey(strapi: StrapiLike): string | null {
   return process.env.ELEVENLABS_API_KEY ?? getPluginConfig(strapi).apiKey ?? null;
+}
+
+/**
+ * Teamup calendar key — the path segment in `api.teamup.com/<key>/...`.
+ *
+ * Env-only, alongside TEAMUP_TOKEN. It was briefly a settings-page field, but
+ * the key and the token are both opaque 18–64 char strings and the token was
+ * pasted into the key box on first use; Teamup then 404s and the calendar list
+ * comes back empty with no obvious cause. Keeping both in env removes the
+ * chance to mix them up, and keeps deploy-time config in one place.
+ */
+export function getTeamupCalendarKey(): string {
+  return (process.env.TEAMUP_CALENDAR_KEY ?? '').trim();
+}
+
+export function getTeamupToken(): string {
+  return (process.env.TEAMUP_TOKEN ?? '').trim();
 }
 
 export function getSiteUrl(strapi: StrapiLike): string {

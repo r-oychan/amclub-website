@@ -324,6 +324,6 @@ The important detail is *where* the check sits: `syncAttachedFiles` skips an exc
 4. **Expire by recomputing the window.** Each run rebuilds the wanted set from today and deletes any `<prefix>teamup:` doc no longer in it — past events drop out with no extra cron.
 5. Call `refreshAgentKnowledgeBase` afterwards: creating a doc does not attach it to the agent.
 
-Secrets: `TEAMUP_TOKEN` is env-only (Container App secret). The calendar **key** is non-secret and lives in plugin settings — don't put the token in the plugin store, which any admin can read and which lands in DB backups.
+Secrets: **both** `TEAMUP_CALENDAR_KEY` and `TEAMUP_TOKEN` are env-only (Container App secrets). The key was briefly a settings-page field; on first use the *token* was pasted into it, Teamup 404'd, and the handler returned `200` with an empty array — so the admin UI showed an empty calendar grid, which reads as "this calendar has no subcalendars" rather than "the call failed". Two lessons: keep interchangeable-looking credentials out of hand-typed fields, and **never degrade an upstream failure into an empty success payload** — the controller now returns `502` with the upstream message, and `400` naming any missing env var.
 
 Pure transforms (`collapseSeries`, `renderSeriesMarkdown`, `computeWindow`, `isFileExcluded`) are unit-tested in `cms/tests/teamup-render.test.mjs` via `npm run test:plugin` — they compile to a temp dir so no Strapi runtime is needed.

@@ -36,7 +36,6 @@ import {
 
 interface TeamupSettings {
   enabled: boolean;
-  calendarKey: string;
   subcalendarIds: number[];
   daysBefore: number;
   daysAfter: number;
@@ -189,6 +188,12 @@ export const SettingsPage = () => {
   }, []);
 
   useEffect(() => {
+    if (!settings) return;
+    void loadSubcalendars();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!settings]);
+
+  useEffect(() => {
     if (!jobRunning) return;
     const t = setInterval(() => void refresh(), 3000);
     return () => clearInterval(t);
@@ -285,22 +290,24 @@ export const SettingsPage = () => {
   const [subcals, setSubcals] = useState<Subcalendar[] | null>(null);
   const [preview, setPreview] = useState<TeamupPreview | null>(null);
 
-  async function loadSubcalendars() {
-    if (!settings?.teamup.calendarKey) {
-      setResult({ variant: 'warning', text: 'Enter a Teamup calendar key first, then Save.' });
-      return;
-    }
-    setBusy('teamup-cals');
+  // The calendar key lives in TEAMUP_CALENDAR_KEY, so there is nothing to type
+  // before loading — fetch the list as soon as the page opens.
+  const [subcalError, setSubcalError] = useState<string | null>(null);
+
+  async function loadSubcalendars(manual = false) {
+    if (manual) setBusy('teamup-cals');
     try {
-      const { data } = await get<{ subcalendars: Subcalendar[]; error?: string }>(
-        `/api/elevenlabs-chatbot/teamup/subcalendars?calendarKey=${encodeURIComponent(settings.teamup.calendarKey)}`,
-      );
+      const { data } = await get<{ subcalendars: Subcalendar[] }>('/api/elevenlabs-chatbot/teamup/subcalendars');
       setSubcals(data.subcalendars);
-      if (data.error) setResult({ variant: 'danger', text: `Teamup: ${data.error}` });
+      setSubcalError(null);
+      if (manual) setResult({ variant: 'success', text: `Loaded ${data.subcalendars.length} calendar(s).` });
     } catch (err) {
-      setResult({ variant: 'danger', text: `Could not load calendars: ${formatError(err)}` });
+      const msg = formatError(err);
+      setSubcals(null);
+      setSubcalError(msg);
+      if (manual) setResult({ variant: 'danger', text: `Could not load calendars: ${msg}` });
     } finally {
-      setBusy(null);
+      if (manual) setBusy(null);
     }
   }
 
@@ -564,12 +571,13 @@ export const SettingsPage = () => {
                 answer "what's on". Repeating events are collapsed into a single document describing
                 the pattern and date range, rather than one document per occurrence. Each sync also
                 removes events that have dropped out of the window, so past events stop being
-                answered. The API token comes from the <code>TEAMUP_TOKEN</code> environment
-                variable, not this page.
+                answered. The calendar and its credentials come from the
+                <code>TEAMUP_CALENDAR_KEY</code> and <code>TEAMUP_TOKEN</code> environment variables —
+                deploy-time config, nothing calendar-identifying is typed here.
               </Typography>
             </Box>
             <Grid.Root gap={4}>
-              <Grid.Item col={4} s={12} direction="column" alignItems="stretch">
+              <Grid.Item col={12} s={12} direction="column" alignItems="stretch">
                 <Flex direction="column" gap={1} alignItems="flex-start">
                   <Typography variant="pi" fontWeight="bold">Teamup sync enabled</Typography>
                   <Toggle
@@ -578,19 +586,6 @@ export const SettingsPage = () => {
                     checked={settings.teamup.enabled}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setSettings({ ...settings, teamup: { ...settings.teamup, enabled: e.target.checked } })
-                    }
-                  />
-                </Flex>
-              </Grid.Item>
-              <Grid.Item col={8} s={12} direction="column" alignItems="stretch">
-                <Flex direction="column" gap={1} alignItems="stretch">
-                  <Typography variant="pi" fontWeight="bold">Calendar key</Typography>
-                  <TextInput
-                    aria-label="Teamup calendar key"
-                    placeholder="kst39gqfh6t1cy87gv"
-                    value={settings.teamup.calendarKey}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setSettings({ ...settings, teamup: { ...settings.teamup, calendarKey: e.target.value.trim() } })
                     }
                   />
                 </Flex>
@@ -631,15 +626,22 @@ export const SettingsPage = () => {
 
             <Box paddingTop={4}>
               <Flex gap={2} alignItems="center" marginBottom={3}>
-                <Button variant="tertiary" onClick={() => void loadSubcalendars()} loading={busy === 'teamup-cals'} disabled={buttonsDisabled}>
-                  Load calendars
+                <Button variant="tertiary" onClick={() => void loadSubcalendars(true)} loading={busy === 'teamup-cals'} disabled={buttonsDisabled}>
+                  Reload calendars
                 </Button>
                 <Typography variant="pi" textColor="neutral600">
                   {settings.teamup.subcalendarIds.length === 0
-                    ? 'No calendars ticked — every calendar will be pulled.'
-                    : `${settings.teamup.subcalendarIds.length} calendar(s) whitelisted.`}
+                    ? `No calendars ticked — all ${subcals ? subcals.length : ''} will be pulled.`
+                    : `${settings.teamup.subcalendarIds.length} of ${subcals?.length ?? '?'} calendar(s) ticked.`}
                 </Typography>
               </Flex>
+              {subcalError && (
+                <Box background="danger100" hasRadius padding={3} marginBottom={3}>
+                  <Typography textColor="danger700" variant="pi">
+                    Could not load calendars: {subcalError}
+                  </Typography>
+                </Box>
+              )}
               {subcals && (
                 <Grid.Root gap={2}>
                   {subcals.map((c) => (

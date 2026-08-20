@@ -7,6 +7,9 @@
  *   GET  /teamup/preview       — dry run: what WOULD be pushed, without
  *                                writing anything. Lets staff sanity-check
  *                                the whitelist and window before syncing.
+ *
+ * The calendar key and token both come from env (TEAMUP_CALENDAR_KEY /
+ * TEAMUP_TOKEN) — nothing calendar-identifying is typed on the settings page.
  */
 
 import { PLUGIN_ID, readRuntimeSettings, getSiteUrl } from '../utils';
@@ -15,6 +18,7 @@ import type * as TeamupService from '../services/teamup';
 interface Ctx {
   query: Record<string, string | undefined>;
   body: unknown;
+  status: number;
   badRequest: (msg: string) => void;
   throw: (status: number, msg: string) => void;
 }
@@ -25,27 +29,37 @@ function svc(): typeof TeamupService {
   return strapi.plugin(PLUGIN_ID).service('teamup') as typeof TeamupService;
 }
 
+/** Human-readable reason the integration can't run, or null when it can. */
+function missingConfig(): string | null {
+  const c = svc().teamupConfigured();
+  const missing = [!c.calendarKey && 'TEAMUP_CALENDAR_KEY', !c.token && 'TEAMUP_TOKEN'].filter(Boolean);
+  return missing.length ? `Missing env var(s): ${missing.join(', ')}` : null;
+}
+
 export default ({ strapi: _ }: StrapiArg) => ({
   async subcalendars(ctx: Ctx): Promise<void> {
-    const settings = await readRuntimeSettings(strapi as never);
-    const key = ctx.query.calendarKey || settings.teamup.calendarKey;
-    if (!key) return ctx.badRequest('No Teamup calendar key configured');
+    const missing = missingConfig();
+    if (missing) return ctx.badRequest(missing);
     try {
-      ctx.body = { subcalendars: await svc().listSubcalendars(key) };
+      ctx.body = { subcalendars: await svc().listSubcalendars() };
     } catch (err) {
-      ctx.body = { subcalendars: [], error: (err as Error).message };
+      // Surface upstream failures as an error status rather than a 200 with an
+      // empty list — a silently empty calendar grid reads as "no calendars
+      // exist" instead of "the call failed", which is how a bad key first
+      // presented in the admin UI.
+      ctx.throw(502, `Teamup: ${(err as Error).message}`);
     }
   },
 
   async preview(ctx: Ctx): Promise<void> {
+    const missing = missingConfig();
+    if (missing) return ctx.badRequest(missing);
     const settings = await readRuntimeSettings(strapi as never);
-    const t = settings.teamup;
-    if (!t.calendarKey) return ctx.badRequest('No Teamup calendar key configured');
     try {
       const s = svc();
-      const { events, window } = await s.fetchEvents(t);
+      const { events, window } = await s.fetchEvents(settings.teamup);
       const names = new Map<number, string>();
-      try { for (const c of await s.listSubcalendars(t.calendarKey)) names.set(c.id, c.name); } catch { /* names are cosmetic */ }
+      try { for (const c of await s.listSubcalendars()) names.set(c.id, c.name); } catch { /* names are cosmetic */ }
       const series = s.collapseSeries(events);
       ctx.body = {
         window,
@@ -66,6 +80,8 @@ export default ({ strapi: _ }: StrapiArg) => ({
   },
 
   async sync(ctx: Ctx): Promise<void> {
+    const missing = missingConfig();
+    if (missing) return ctx.badRequest(missing);
     try {
       ctx.body = await svc().syncTeamup(strapi as never);
     } catch (err) {

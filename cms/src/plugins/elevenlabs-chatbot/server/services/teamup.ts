@@ -24,6 +24,8 @@ import {
   PLUGIN_ID,
   SYNC_LOG_UID,
   getSiteUrl,
+  getTeamupCalendarKey,
+  getTeamupToken,
   readRuntimeSettings,
   type TeamupSettings,
 } from '../utils';
@@ -86,9 +88,20 @@ export interface TeamupSyncResult {
 // plugin store, which is world-readable to any admin and ends up in DB
 // backups. The calendar key (a non-secret path segment) is a setting.
 function teamupToken(): string {
-  const t = process.env.TEAMUP_TOKEN;
+  const t = getTeamupToken();
   if (!t) throw new Error('Missing TEAMUP_TOKEN env var');
   return t;
+}
+
+function calendarKey(): string {
+  const k = getTeamupCalendarKey();
+  if (!k) throw new Error('Missing TEAMUP_CALENDAR_KEY env var');
+  return k;
+}
+
+/** Both env vars present? Used by the admin UI to explain what is missing. */
+export function teamupConfigured(): { token: boolean; calendarKey: boolean } {
+  return { token: !!getTeamupToken(), calendarKey: !!getTeamupCalendarKey() };
 }
 
 async function teamupGet<T>(path: string): Promise<T> {
@@ -102,9 +115,8 @@ async function teamupGet<T>(path: string): Promise<T> {
   return (await res.json()) as T;
 }
 
-export async function listSubcalendars(calendarKey: string): Promise<TeamupSubcalendar[]> {
-  if (!calendarKey) throw new Error('No Teamup calendar key configured');
-  const r = await teamupGet<{ subcalendars: TeamupSubcalendar[] }>(`/${calendarKey}/subcalendars`);
+export async function listSubcalendars(): Promise<TeamupSubcalendar[]> {
+  const r = await teamupGet<{ subcalendars: TeamupSubcalendar[] }>(`/${calendarKey()}/subcalendars`);
   return r.subcalendars ?? [];
 }
 
@@ -131,7 +143,7 @@ export async function fetchEvents(s: TeamupSettings): Promise<{ events: TeamupEv
   const window = computeWindow(s);
   const params = new URLSearchParams({ startDate: window.from, endDate: window.to });
   for (const id of s.subcalendarIds) params.append('subcalendarId[]', String(id));
-  const r = await teamupGet<{ events: TeamupEvent[] }>(`/${s.calendarKey}/events?${params.toString()}`);
+  const r = await teamupGet<{ events: TeamupEvent[] }>(`/${calendarKey()}/events?${params.toString()}`);
   return { events: r.events ?? [], window };
 }
 
@@ -336,7 +348,9 @@ export async function syncTeamup(strapi: Strapi): Promise<TeamupSyncResult> {
     fetched: 0, series: 0, created: 0, updated: 0, skipped: 0, deleted: 0, errors: [],
   };
   if (!t.enabled) { result.errors.push('Teamup sync is disabled in settings'); return result; }
-  if (!t.calendarKey) { result.errors.push('No Teamup calendar key configured'); return result; }
+  const cfg = teamupConfigured();
+  if (!cfg.calendarKey) { result.errors.push('Missing TEAMUP_CALENDAR_KEY env var'); return result; }
+  if (!cfg.token) { result.errors.push('Missing TEAMUP_TOKEN env var'); return result; }
 
   const { events, window } = await fetchEvents(t);
   result.window = window;
@@ -344,7 +358,7 @@ export async function syncTeamup(strapi: Strapi): Promise<TeamupSyncResult> {
 
   const subcalNames = new Map<number, string>();
   try {
-    for (const c of await listSubcalendars(t.calendarKey)) subcalNames.set(c.id, c.name);
+    for (const c of await listSubcalendars()) subcalNames.set(c.id, c.name);
   } catch (e) {
     strapi.log.warn(`[${PLUGIN_ID}] could not load subcalendar names: ${(e as Error).message}`);
   }

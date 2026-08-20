@@ -390,7 +390,8 @@ git log --oneline origin/main..origin/uat   # ready for PROD</code></pre>
       <tr><td>Teamup calendar sync</td>
           <td>Plugin Settings → <strong>Teamup calendar</strong>. Pulls a rolling window
               (<em>days before</em> / <em>days after</em> today, SGT) from the Teamup API and pushes it to the KB.
-              Optionally whitelist subcalendars — leave all unticked to pull everything.
+              The calendar list loads automatically when the page opens; tick the subcalendars you want, or leave all
+              unticked to pull everything.
               <br>Repeating events are <strong>collapsed to one document per series</strong>: a 60-day window returns
               ~1,900 occurrences but only ~230 series, so per-occurrence docs would flood the KB and bury one-off
               events. Cadence is derived from the <em>actual</em> gaps between occurrences (weekly / fortnightly /
@@ -412,9 +413,11 @@ git log --oneline origin/main..origin/uat   # ready for PROD</code></pre>
   <div class="callout note">
     <span class="label">Required env vars</span>
     <p><code>ELEVENLABS_API_KEY</code> (secret) + <code>ELEVENLABS_AGENT_ID</code> (GitHub environment
-       <em>variable</em>) per environment → injected by Pulumi. <code>TEAMUP_TOKEN</code> (secret, optional) is
-       required only when Teamup sync is enabled; the calendar <em>key</em> is not secret and is set on the plugin
-       Settings page. A missing token does not fail the deploy — Teamup sync simply errors when run. If unset, the plugin no-ops gracefully (no sync, no
+       <em>variable</em>) per environment → injected by Pulumi. <code>TEAMUP_CALENDAR_KEY</code> + <code>TEAMUP_TOKEN</code>
+       (both secrets, both optional) are required only when Teamup sync is enabled. Both live in env rather than on
+       the Settings page: they are similar-looking opaque strings, and pasting the token into a "calendar key" field
+       produced an empty calendar list with no obvious cause. Missing values do not fail the deploy — Teamup sync
+       reports the missing variable by name when run. If unset, the plugin no-ops gracefully (no sync, no
        widget) — useful for local dev. Each environment points at its <em>own</em> ElevenLabs agent so UAT edits don't
        pollute the prod KB.</p>
   </div>
