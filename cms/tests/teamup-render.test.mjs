@@ -102,7 +102,27 @@ test('doc names are stable and unique per series', () => {
   const s = t.collapseSeries([ev('1', '2026-09-05T18:00:00', '2026-09-05T23:00:00', { title: "Chef's Table & Wine!" })])[0];
   const name = t.buildSeriesDocName('am-club:', s);
   assert.match(name, /^am-club:teamup:chef-s-table-wine:/);
-  assert.equal(name, t.buildSeriesDocName('am-club:', s));
+  assert.equal(name, t.buildSeriesDocName('am-club:', s), 'stable across calls');
+});
+
+test('doc names stay colon-segmented — the fallback key is hashed, not inlined', () => {
+  // The signature key is `t<title>|<HH:MM>|<location>`; the time's colon would
+  // otherwise split the name into extra segments.
+  const s = t.collapseSeries([
+    ev('x', '2026-08-26T19:00:00', '2026-08-26T20:30:00', { title: 'Adult Book Club', location: 'library' }),
+  ])[0];
+  const name = t.buildSeriesDocName('am-club:', s);
+  assert.equal(name.split(':').length, 4, `expected 4 segments, got ${name}`);
+  assert.doesNotMatch(name, /[ |]/, 'no spaces or pipes in a doc name');
+  assert.match(name, /^am-club:teamup:adult-book-club:h[0-9a-f]{12}$/);
+  assert.equal(name, t.buildSeriesDocName('am-club:', s), 'hash is stable');
+});
+
+test('series-id and master-id keys stay readable (not hashed)', () => {
+  const byId = t.collapseSeries([
+    ev('a', '2026-08-19T08:00:00', '2026-08-19T09:00:00', { series_id: 2084465114, title: 'Mahjong Social' }),
+  ])[0];
+  assert.equal(t.buildSeriesDocName('am-club:', byId), 'am-club:teamup:mahjong-social:s2084465114');
 });
 
 test('window honours daysBefore/daysAfter', () => {
