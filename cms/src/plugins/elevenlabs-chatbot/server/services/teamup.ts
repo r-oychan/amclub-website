@@ -308,9 +308,20 @@ export function renderSeriesMarkdown(
   return lines.join('\n');
 }
 
+/**
+ * Stable, collision-free doc name.
+ *
+ * Doc names are colon-segmented (`<prefix>teamup:<slug>:<key>`), so the key has
+ * to be name-safe. Teamup-derived keys (`s<seriesId>` / `m<masterId>`) already
+ * are; the fallback signature key is not — it carries the raw title, spaces,
+ * pipes and a COLON from the time (`tAdult Book Club|19:00|library`), which
+ * fragments the name into extra segments. Hash those instead: the signature is
+ * stable across runs, so the hash is too.
+ */
 export function buildSeriesDocName(prefix: string, s: CollapsedSeries): string {
   const slug = s.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'event';
-  return `${prefix}${TEAMUP_DOC_SEGMENT}:${slug}:${s.key}`;
+  const key = /^[sm]\d+$/.test(s.key) ? s.key : `h${sha256(s.key).slice(0, 12)}`;
+  return `${prefix}${TEAMUP_DOC_SEGMENT}:${slug}:${key}`;
 }
 
 // ── Sync ─────────────────────────────────────────────────────────────

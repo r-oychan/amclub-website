@@ -160,6 +160,9 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export const SettingsPage = () => {
   const { get, post, put } = useFetchClient();
   const [settings, setSettings] = useState<RuntimeSettings | null>(null);
+  // What the server last confirmed it has stored. Preview/sync read the STORED
+  // values, so the buttons must be gated on this — not on the edited form.
+  const [savedSettings, setSavedSettings] = useState<RuntimeSettings | null>(null);
   const [status, setStatus] = useState<StatusResponse | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [savingSettings, setSavingSettings] = useState(false);
@@ -169,6 +172,19 @@ export const SettingsPage = () => {
   const jobRunning = !!job && !job.finishedAt;
   const buttonsDisabled = !!busy || jobRunning;
 
+  // Key order can differ between the server payload and locally-spread objects,
+  // so compare a key-sorted serialisation rather than raw JSON.stringify.
+  const stable = (v: unknown): string =>
+    JSON.stringify(v, (_k, val) =>
+      val && typeof val === 'object' && !Array.isArray(val)
+        ? Object.fromEntries(Object.entries(val as Record<string, unknown>).sort(([a], [b]) => a.localeCompare(b)))
+        : val,
+    );
+  const unsaved = !!settings && !!savedSettings && stable(settings) !== stable(savedSettings);
+  // Teamup sync bails server-side when the STORED enabled flag is false.
+  const teamupStoredEnabled = savedSettings?.teamup.enabled ?? false;
+  const teamupBlocked = unsaved || !teamupStoredEnabled;
+
   async function refresh() {
     try {
       const [statusRes, settingsRes] = await Promise.all([
@@ -177,6 +193,7 @@ export const SettingsPage = () => {
       ]);
       setStatus(statusRes.data);
       setSettings(settingsRes.data);
+      setSavedSettings(settingsRes.data);
     } catch (err) {
       setResult({ variant: 'danger', text: `Failed to load: ${formatError(err)}` });
     }
@@ -207,6 +224,7 @@ export const SettingsPage = () => {
     try {
       const { data } = await put<RuntimeSettings>('/api/elevenlabs-chatbot/settings', settings);
       setSettings(data);
+      setSavedSettings(data);
       setResult({ variant: 'success', text: 'Settings saved.' });
       await refresh();
     } catch (err) {
@@ -660,16 +678,20 @@ export const SettingsPage = () => {
 
             <Box paddingTop={4}>
               <Flex gap={2} wrap="wrap">
-                <Button variant="secondary" onClick={() => void runTeamupPreview()} loading={busy === 'teamup-preview'} disabled={buttonsDisabled}>
+                <Button variant="secondary" onClick={() => void runTeamupPreview()} loading={busy === 'teamup-preview'} disabled={buttonsDisabled || teamupBlocked}>
                   Preview (no changes)
                 </Button>
-                <Button variant="default" onClick={() => void runTeamupSync()} loading={busy === 'teamup-sync'} disabled={buttonsDisabled || !settings.teamup.enabled}>
+                <Button variant="default" onClick={() => void runTeamupSync()} loading={busy === 'teamup-sync'} disabled={buttonsDisabled || teamupBlocked}>
                   Sync Teamup now
                 </Button>
               </Flex>
               <Box paddingTop={2}>
-                <Typography variant="pi" textColor="neutral600">
-                  Save settings before previewing or syncing — both read the stored values.
+                <Typography variant="pi" textColor={unsaved || !teamupStoredEnabled ? 'danger600' : 'neutral600'}>
+                  {unsaved
+                    ? 'You have unsaved changes. Preview and sync read the stored settings — click “Save settings” first.'
+                    : !teamupStoredEnabled
+                      ? 'Teamup is disabled in the stored settings. Tick “Enable” above, then click “Save settings”.'
+                      : 'Preview and sync read the stored settings.'}
                 </Typography>
               </Box>
             </Box>

@@ -327,3 +327,52 @@ The important detail is *where* the check sits: `syncAttachedFiles` skips an exc
 Secrets: **both** `TEAMUP_CALENDAR_KEY` and `TEAMUP_TOKEN` are env-only (Container App secrets). The key was briefly a settings-page field; on first use the *token* was pasted into it, Teamup 404'd, and the handler returned `200` with an empty array — so the admin UI showed an empty calendar grid, which reads as "this calendar has no subcalendars" rather than "the call failed". Two lessons: keep interchangeable-looking credentials out of hand-typed fields, and **never degrade an upstream failure into an empty success payload** — the controller now returns `502` with the upstream message, and `400` naming any missing env var.
 
 Pure transforms (`collapseSeries`, `renderSeriesMarkdown`, `computeWindow`, `isFileExcluded`) are unit-tested in `cms/tests/teamup-render.test.mjs` via `npm run test:plugin` — they compile to a temp dir so no Strapi runtime is needed.
+
+## 12. Custom auth policies must return 401, not 403, for expired tokens
+
+A plugin route on `/api/*` can't use `auth.strategies: ['admin']` — that strategy
+isn't in the content-api pool. The workaround is `auth: false` plus a policy that
+validates the admin session by hand (`server/policies/is-admin.ts`).
+
+**The trap:** a policy that returns `false` becomes a `PolicyError`, which Strapi
+maps to **403** (`@strapi/core/services/server/policy.js`). But Strapi's admin
+fetch client refreshes an expired access token **only on a 401**:
+
+```js
+// @strapi/admin .../admin/src/utils/getFetchClient.js
+// Only attempt refresh for 401 errors on non-auth paths
+if (isFetchError(error) && error.status === 401 && !isAuthPath(url)) {
+  await attemptTokenRefresh();
+  return await executeRequest();   // retried with fresh headers
+}
+```
+
+Admin access tokens live **30 minutes** by default (`accessTokenLifespan`,
+defaulted in `@strapi/admin`'s bootstrap; override under
+`admin.auth.sessions.*`). So with a 403 the client never refreshes: core Strapi
+routes keep working — they return 401 and refresh transparently — while every
+custom plugin route starts failing. The page looks fine, then ~30 minutes later
+every button silently 403s until a manual reload and re-login.
+
+**Symptom:** an admin action works, then the *same* action fails with a bare 403
+about half an hour later without the user touching anything. Container logs show
+`POST /api/<plugin>/<route> (2 ms) 403` — the short duration means the policy
+rejected it before any handler ran.
+
+**Fix — separate authentication from authorization:**
+
+| Condition | Response | Why |
+|---|---|---|
+| header absent / malformed / token expired / session revoked | `throw new UnauthorizedError(...)` → **401** | credentials are stale; a refresh + retry fixes it |
+| valid session, deactivated account | `return false` → **403** | retrying cannot help |
+
+`import { errors } from '@strapi/utils'` and throw `errors.UnauthorizedError`.
+Two independent paths turn it into a 401: `createAuthorizeMiddleware` wraps
+`await next()` and calls `ctx.unauthorized()`, and failing that the global error
+middleware maps `UnauthorizedError → 401` (`@strapi/core/services/errors.js`).
+Note `ctx.unauthorized()` replaces your message with a generic one — the *status*
+is what restores the refresh, not the text.
+
+Read `strapi` off `globalThis` in the policy rather than as a bare global, so the
+file also compiles in a standalone `tsc` test harness with no ambient types.
+Covered by `cms/tests/is-admin-policy.test.mjs`.
