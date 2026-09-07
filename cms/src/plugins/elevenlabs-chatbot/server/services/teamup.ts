@@ -274,31 +274,61 @@ function commonTimeRange(occ: TeamupEvent[]): string | null {
 }
 
 /**
- * Flatten Teamup's HTML notes to text **without destroying links**.
+ * Convert Teamup's HTML notes to markdown.
  *
- * Registration and pricing links live inside the notes as `<a href>`. A blanket
- * `replace(/<[^>]+>/g, '')` turns "Refer to this <a href="...pdf">file</a> for
- * pricing" into "Refer to this file for pricing" — the URL is gone, so the
- * agent cannot cite it and members are told to look at a file with no way to
- * reach it. Anchors are rewritten to markdown first, then the rest is stripped.
+ * Two things went wrong with a blanket `replace(/<[^>]+>/g, '')`:
+ *
+ *  1. Links were destroyed. Registration and pricing live in the notes as
+ *     `<a href>`, so "Refer to this <a href="...pdf">file</a>" became "Refer to
+ *     this file" — the URL gone before indexing, leaving the agent pointing at
+ *     a document it could not link to.
+ *  2. Structure was destroyed. `<br>` and `</p>` both collapsed to spaces, so
+ *     four age-group lines became one run-on sentence. That hurts chunking and
+ *     makes the model work harder to separate discrete facts.
+ *
+ * The tag vocabulary on this calendar is small and closed — p, strong, br, a,
+ * li, ul — and the only entity in use is &amp;, so a hand-rolled converter is
+ * enough and avoids a dependency. Output is markdown to match the rest of the
+ * document; the agent reproduces the format it is shown, and the chat widget
+ * renders markdown rather than HTML.
  */
-export function htmlNotesToText(html: string): string {
-  return html
+export function htmlNotesToMarkdown(html: string): string {
+  const stripInner = (t: string): string => t.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+
+  const converted = html
+    // Anchors first — before any tag stripping can eat the href.
     .replace(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi, (_m, href: string, label: string) => {
-      const text = label.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
-      // A bare URL as its own label would render as "[url](url)" — keep it plain.
+      const text = stripInner(label);
+      // A bare URL as its own label would render "[url](url)" — keep it plain.
       return !text || text === href ? href : `[${text}](${href})`;
     })
-    .replace(/<br\s*\/?>/gi, ' ')
-    .replace(/<\/p>/gi, ' ')
-    .replace(/<[^>]+>/g, ' ')
+    .replace(/<(strong|b)\b[^>]*>([\s\S]*?)<\/\1>/gi, (_m, _t, inner: string) => {
+      const text = stripInner(inner);
+      return text ? `**${text}**` : '';
+    })
+    .replace(/<(em|i)\b[^>]*>([\s\S]*?)<\/\1>/gi, (_m, _t, inner: string) => {
+      const text = stripInner(inner);
+      return text ? `*${text}*` : '';
+    })
+    .replace(/<li\b[^>]*>/gi, '\n- ')
+    .replace(/<\/li>/gi, '')
+    .replace(/<\/?(?:ul|ol)\b[^>]*>/gi, '\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n\n')
+    .replace(/<[^>]+>/g, '');
+
+  return converted
     .replace(/&nbsp;/gi, ' ')
     .replace(/&amp;/gi, '&')
     .replace(/&lt;/gi, '<')
     .replace(/&gt;/gi, '>')
     .replace(/&quot;/gi, '"')
     .replace(/&#39;|&apos;/gi, "'")
-    .replace(/\s+/g, ' ')
+    // Collapse runs of spaces/tabs but NEVER newlines — the structure is the point.
+    .split('\n')
+    .map((line) => line.replace(/[ \t]+/g, ' ').trim())
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
     .trim();
 }
 
@@ -363,7 +393,7 @@ export function renderSeriesMarkdown(
 
   // Attachments are deliberately NOT surfaced: on this calendar they are
   // internal BEO (Banquet Event Order) working documents, not member-facing.
-  const notes = htmlNotesToText(first.notes ?? '');
+  const notes = htmlNotesToMarkdown(first.notes ?? '');
   if (notes) lines.push('', notes);
 
   // Per-chunk Source line — RAG retrieves chunks, and the widget renders this

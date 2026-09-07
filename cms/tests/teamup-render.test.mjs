@@ -170,7 +170,7 @@ test('exclusion tolerates missing name/url', () => {
 // the agent told members to check a file it could not point them to.
 
 test('anchor hrefs in notes survive as markdown links', () => {
-  const out = t.htmlNotesToText(
+  const out = t.htmlNotesToMarkdown(
     '<p>Refer to this <a href="https://x.test/a.pdf" rel="noreferrer" target="_blank">file</a> for pricing.</p>',
   );
   assert.match(out, /\[file\]\(https:\/\/x\.test\/a\.pdf\)/);
@@ -178,17 +178,45 @@ test('anchor hrefs in notes survive as markdown links', () => {
 });
 
 test('a bare-URL label is not double-wrapped', () => {
-  const out = t.htmlNotesToText('<a href="https://x.test/a">https://x.test/a</a>');
+  const out = t.htmlNotesToMarkdown('<a href="https://x.test/a">https://x.test/a</a>');
   assert.equal(out, 'https://x.test/a');
 });
 
-test('non-anchor tags are stripped and entities decoded', () => {
-  const out = t.htmlNotesToText('<p>Tea&nbsp;&amp; cake<br>7&#39;s</p>');
-  assert.equal(out, "Tea & cake 7's");
+test('entities decode and <br> becomes a real line break', () => {
+  const out = t.htmlNotesToMarkdown('<p>Tea&nbsp;&amp; cake<br>7&#39;s</p>');
+  assert.equal(out, "Tea & cake\n7's");
+});
+
+test('paragraphs are separated, not run together', () => {
+  const out = t.htmlNotesToMarkdown('<p>First para.</p><p>Second para.</p>');
+  assert.equal(out, 'First para.\n\nSecond para.');
+});
+
+test('empty paragraphs do not leave gaping blank runs', () => {
+  const out = t.htmlNotesToMarkdown('<p>A</p><p></p><p>B</p>');
+  assert.equal(out, 'A\n\nB');
+});
+
+test('<strong> becomes bold, <em> becomes italic', () => {
+  assert.equal(t.htmlNotesToMarkdown('<p>Join <strong>Parent &amp; Child Yoga</strong> now</p>'),
+    'Join **Parent & Child Yoga** now');
+  assert.equal(t.htmlNotesToMarkdown('<em>soon</em>'), '*soon*');
+});
+
+test('list items become markdown bullets', () => {
+  const out = t.htmlNotesToMarkdown('<ul><li>Bring a mat</li><li>Arrive 10 min early</li></ul>');
+  assert.equal(out, '- Bring a mat\n- Arrive 10 min early');
+});
+
+test('the four age-group lines stay four lines, not one run-on', () => {
+  const out = t.htmlNotesToMarkdown(
+    '<p>Art (Baby Beetles) for 3 to 4 years old<br>Art (Mini Mantis) for 5 to 6 years old</p>',
+  );
+  assert.equal(out.split('\n').length, 2, 'each <br> line must survive as its own line');
 });
 
 test('multiple links in one note are all preserved', () => {
-  const out = t.htmlNotesToText('<a href="https://a.test">A</a> and <a href="https://b.test">B</a>');
+  const out = t.htmlNotesToMarkdown('<a href="https://a.test">A</a> and <a href="https://b.test">B</a>');
   assert.match(out, /\[A\]\(https:\/\/a\.test\)/);
   assert.match(out, /\[B\]\(https:\/\/b\.test\)/);
 });
