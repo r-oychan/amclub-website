@@ -46,6 +46,15 @@ export interface TeamupEvent {
   notes?: string | null;
   rrule?: string | null;
   subcalendar_ids?: number[];
+  /**
+   * Teamup's per-calendar custom fields. On this calendar they carry the
+   * registration route and price — `sign_up_method`, `price`,
+   * `organizing_department`, `expected_of_participants`. Values are strings
+   * or single-element arrays depending on the field type.
+   */
+  custom?: Record<string, string | string[] | null>;
+  /** Teamup's native signup feature. Unused on this calendar (false for all). */
+  signup_enabled?: boolean;
 }
 
 export interface TeamupSubcalendar {
@@ -264,6 +273,83 @@ function commonTimeRange(occ: TeamupEvent[]): string | null {
   return `${prettyTime(tPart(occ[0].start_dt))} – ${prettyTime(tPart(occ[0].end_dt))}`;
 }
 
+/**
+ * Convert Teamup's HTML notes to markdown.
+ *
+ * Two things went wrong with a blanket `replace(/<[^>]+>/g, '')`:
+ *
+ *  1. Links were destroyed. Registration and pricing live in the notes as
+ *     `<a href>`, so "Refer to this <a href="...pdf">file</a>" became "Refer to
+ *     this file" — the URL gone before indexing, leaving the agent pointing at
+ *     a document it could not link to.
+ *  2. Structure was destroyed. `<br>` and `</p>` both collapsed to spaces, so
+ *     four age-group lines became one run-on sentence. That hurts chunking and
+ *     makes the model work harder to separate discrete facts.
+ *
+ * The tag vocabulary on this calendar is small and closed — p, strong, br, a,
+ * li, ul — and the only entity in use is &amp;, so a hand-rolled converter is
+ * enough and avoids a dependency. Output is markdown to match the rest of the
+ * document; the agent reproduces the format it is shown, and the chat widget
+ * renders markdown rather than HTML.
+ */
+export function htmlNotesToMarkdown(html: string): string {
+  const stripInner = (t: string): string => t.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+
+  const converted = html
+    // Anchors first — before any tag stripping can eat the href.
+    .replace(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi, (_m, href: string, label: string) => {
+      const text = stripInner(label);
+      // A bare URL as its own label would render "[url](url)" — keep it plain.
+      return !text || text === href ? href : `[${text}](${href})`;
+    })
+    .replace(/<(strong|b)\b[^>]*>([\s\S]*?)<\/\1>/gi, (_m, _t, inner: string) => {
+      const text = stripInner(inner);
+      return text ? `**${text}**` : '';
+    })
+    .replace(/<(em|i)\b[^>]*>([\s\S]*?)<\/\1>/gi, (_m, _t, inner: string) => {
+      const text = stripInner(inner);
+      return text ? `*${text}*` : '';
+    })
+    .replace(/<li\b[^>]*>/gi, '\n- ')
+    .replace(/<\/li>/gi, '')
+    .replace(/<\/?(?:ul|ol)\b[^>]*>/gi, '\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n\n')
+    .replace(/<[^>]+>/g, '');
+
+  return converted
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    // Collapse runs of spaces/tabs but NEVER newlines — the structure is the point.
+    .split('\n')
+    .map((line) => line.replace(/[ \t]+/g, ' ').trim())
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+/**
+ * How members actually sign up, keyed by Teamup's `custom.sign_up_method`.
+ * `n_a` is deliberately absent — "not applicable" means no registration step,
+ * and inventing one would be worse than saying nothing.
+ */
+const SIGNUP_METHOD_TEXT: Record<string, string> = {
+  tac_book: 'Register via the TAC Book app',
+  call_outlet_to_book: 'Call the outlet to book',
+  alternate_digital_form: 'Register via the online form (see the link in the details below)',
+};
+
+/** Teamup custom values arrive as a string or a one-element array. */
+function customValue(e: TeamupEvent, key: string): string {
+  const v = e.custom?.[key];
+  const raw = Array.isArray(v) ? v[0] : v;
+  return typeof raw === 'string' ? raw.trim() : '';
+}
+
 export function renderSeriesMarkdown(
   s: CollapsedSeries,
   subcalNames: Map<number, string>,
@@ -298,7 +384,16 @@ export function renderSeriesMarkdown(
   const cals = (first.subcalendar_ids ?? []).map((id) => subcalNames.get(id)).filter(Boolean);
   if (cals.length) lines.push(`**Calendar:** ${cals.join(', ')}`);
 
-  const notes = (first.notes ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  // Registration route and price are the two things a member needs after
+  // "when and where" — both live in Teamup custom fields, not in the notes.
+  const price = customValue(first, 'price');
+  if (price) lines.push(`**Price:** ${/^[\d.]+$/.test(price) ? `$${price}` : price}`);
+  const signup = SIGNUP_METHOD_TEXT[customValue(first, 'sign_up_method')];
+  if (signup) lines.push(`**How to register:** ${signup}`);
+
+  // Attachments are deliberately NOT surfaced: on this calendar they are
+  // internal BEO (Banquet Event Order) working documents, not member-facing.
+  const notes = htmlNotesToMarkdown(first.notes ?? '');
   if (notes) lines.push('', notes);
 
   // Per-chunk Source line — RAG retrieves chunks, and the widget renders this
