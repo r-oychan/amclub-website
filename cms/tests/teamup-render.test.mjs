@@ -161,3 +161,87 @@ test('exclusion tolerates missing name/url', () => {
   assert.equal(u.isFileExcluded({}, ['x']), false);
   assert.equal(u.isFileExcluded({ name: null, url: null }, ['x']), false);
 });
+
+// ── Registration links, price and signup route ───────────────────────
+//
+// The bug these cover: notes are HTML and carry the registration / pricing
+// links as <a href>. Blanket tag-stripping turned "Refer to this
+// <a href="...pdf">file</a>" into "Refer to this file" — the URL vanished, so
+// the agent told members to check a file it could not point them to.
+
+test('anchor hrefs in notes survive as markdown links', () => {
+  const out = t.htmlNotesToText(
+    '<p>Refer to this <a href="https://x.test/a.pdf" rel="noreferrer" target="_blank">file</a> for pricing.</p>',
+  );
+  assert.match(out, /\[file\]\(https:\/\/x\.test\/a\.pdf\)/);
+  assert.ok(!out.includes('<'), 'no raw tags should remain');
+});
+
+test('a bare-URL label is not double-wrapped', () => {
+  const out = t.htmlNotesToText('<a href="https://x.test/a">https://x.test/a</a>');
+  assert.equal(out, 'https://x.test/a');
+});
+
+test('non-anchor tags are stripped and entities decoded', () => {
+  const out = t.htmlNotesToText('<p>Tea&nbsp;&amp; cake<br>7&#39;s</p>');
+  assert.equal(out, "Tea & cake 7's");
+});
+
+test('multiple links in one note are all preserved', () => {
+  const out = t.htmlNotesToText('<a href="https://a.test">A</a> and <a href="https://b.test">B</a>');
+  assert.match(out, /\[A\]\(https:\/\/a\.test\)/);
+  assert.match(out, /\[B\]\(https:\/\/b\.test\)/);
+});
+
+const evc = (custom, notes) => ({
+  id: 'e1', title: 'Thing', start_dt: '2026-09-07T10:00:00+08:00',
+  end_dt: '2026-09-07T11:00:00+08:00', custom, notes,
+});
+
+test('price and signup method are rendered from custom fields', () => {
+  const md = t.renderSeriesMarkdown(
+    { key: 'k', title: 'Thing', recurring: false,
+      occurrences: [evc({ price: '58.10', sign_up_method: ['tac_book'] })] },
+    new Map(), 'https://s.test',
+  );
+  assert.match(md, /\*\*Price:\*\* \$58\.10/);
+  assert.match(md, /\*\*How to register:\*\* Register via the TAC Book app/);
+});
+
+test('prose prices are passed through without a bogus $ prefix', () => {
+  const md = t.renderSeriesMarkdown(
+    { key: 'k', title: 'Thing', recurring: false,
+      occurrences: [evc({ price: '$35 for Members and $40 for Guests' })] },
+    new Map(), 'https://s.test',
+  );
+  assert.match(md, /\*\*Price:\*\* \$35 for Members and \$40 for Guests/);
+  assert.ok(!md.includes('$$'), 'must not double the dollar sign');
+});
+
+test('sign_up_method n_a renders no registration line', () => {
+  const md = t.renderSeriesMarkdown(
+    { key: 'k', title: 'Thing', recurring: false,
+      occurrences: [evc({ sign_up_method: ['n_a'] })] },
+    new Map(), 'https://s.test',
+  );
+  assert.ok(!md.includes('How to register'), 'n_a means there is no registration step');
+});
+
+test('missing custom fields render nothing rather than empty labels', () => {
+  const md = t.renderSeriesMarkdown(
+    { key: 'k', title: 'Thing', recurring: false, occurrences: [evc(undefined)] },
+    new Map(), 'https://s.test',
+  );
+  assert.ok(!md.includes('Price:'));
+  assert.ok(!md.includes('How to register'));
+});
+
+test('internal BEO attachments are never surfaced', () => {
+  const ev = evc({}, null);
+  ev.attachments = [{ name: 'BEO Internal.docx', link: 'https://files.teamup.com/secret' }];
+  const md = t.renderSeriesMarkdown(
+    { key: 'k', title: 'Thing', recurring: false, occurrences: [ev] }, new Map(), 'https://s.test',
+  );
+  assert.ok(!md.includes('files.teamup.com'), 'attachment links must not leak into the KB');
+  assert.ok(!md.includes('BEO'), 'internal doc names must not leak into the KB');
+});

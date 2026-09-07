@@ -46,6 +46,15 @@ export interface TeamupEvent {
   notes?: string | null;
   rrule?: string | null;
   subcalendar_ids?: number[];
+  /**
+   * Teamup's per-calendar custom fields. On this calendar they carry the
+   * registration route and price — `sign_up_method`, `price`,
+   * `organizing_department`, `expected_of_participants`. Values are strings
+   * or single-element arrays depending on the field type.
+   */
+  custom?: Record<string, string | string[] | null>;
+  /** Teamup's native signup feature. Unused on this calendar (false for all). */
+  signup_enabled?: boolean;
 }
 
 export interface TeamupSubcalendar {
@@ -264,6 +273,53 @@ function commonTimeRange(occ: TeamupEvent[]): string | null {
   return `${prettyTime(tPart(occ[0].start_dt))} – ${prettyTime(tPart(occ[0].end_dt))}`;
 }
 
+/**
+ * Flatten Teamup's HTML notes to text **without destroying links**.
+ *
+ * Registration and pricing links live inside the notes as `<a href>`. A blanket
+ * `replace(/<[^>]+>/g, '')` turns "Refer to this <a href="...pdf">file</a> for
+ * pricing" into "Refer to this file for pricing" — the URL is gone, so the
+ * agent cannot cite it and members are told to look at a file with no way to
+ * reach it. Anchors are rewritten to markdown first, then the rest is stripped.
+ */
+export function htmlNotesToText(html: string): string {
+  return html
+    .replace(/<a\b[^>]*\bhref=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi, (_m, href: string, label: string) => {
+      const text = label.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+      // A bare URL as its own label would render as "[url](url)" — keep it plain.
+      return !text || text === href ? href : `[${text}](${href})`;
+    })
+    .replace(/<br\s*\/?>/gi, ' ')
+    .replace(/<\/p>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+/**
+ * How members actually sign up, keyed by Teamup's `custom.sign_up_method`.
+ * `n_a` is deliberately absent — "not applicable" means no registration step,
+ * and inventing one would be worse than saying nothing.
+ */
+const SIGNUP_METHOD_TEXT: Record<string, string> = {
+  tac_book: 'Register via the TAC Book app',
+  call_outlet_to_book: 'Call the outlet to book',
+  alternate_digital_form: 'Register via the online form (see the link in the details below)',
+};
+
+/** Teamup custom values arrive as a string or a one-element array. */
+function customValue(e: TeamupEvent, key: string): string {
+  const v = e.custom?.[key];
+  const raw = Array.isArray(v) ? v[0] : v;
+  return typeof raw === 'string' ? raw.trim() : '';
+}
+
 export function renderSeriesMarkdown(
   s: CollapsedSeries,
   subcalNames: Map<number, string>,
@@ -298,7 +354,16 @@ export function renderSeriesMarkdown(
   const cals = (first.subcalendar_ids ?? []).map((id) => subcalNames.get(id)).filter(Boolean);
   if (cals.length) lines.push(`**Calendar:** ${cals.join(', ')}`);
 
-  const notes = (first.notes ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  // Registration route and price are the two things a member needs after
+  // "when and where" — both live in Teamup custom fields, not in the notes.
+  const price = customValue(first, 'price');
+  if (price) lines.push(`**Price:** ${/^[\d.]+$/.test(price) ? `$${price}` : price}`);
+  const signup = SIGNUP_METHOD_TEXT[customValue(first, 'sign_up_method')];
+  if (signup) lines.push(`**How to register:** ${signup}`);
+
+  // Attachments are deliberately NOT surfaced: on this calendar they are
+  // internal BEO (Banquet Event Order) working documents, not member-facing.
+  const notes = htmlNotesToText(first.notes ?? '');
   if (notes) lines.push('', notes);
 
   // Per-chunk Source line — RAG retrieves chunks, and the widget renders this
