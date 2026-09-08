@@ -191,6 +191,42 @@ async function sweepExpiredKbDocs(strapi: any) {
   }
 }
 
+// Teamup -> ElevenLabs KB refresh.
+//
+// The Teamup window is ROLLING (today-daysBefore .. today+daysAfter), so it
+// goes stale on its own: with no scheduled run the KB freezes at whenever
+// someone last clicked "Sync Teamup now" while "today" keeps moving. Events
+// added to the calendar after that point are never indexed, and past events
+// linger. That is exactly what happened between 2026-08-21 and 2026-09-08 —
+// a dinner added in early September was invisible to the bot for 18 days.
+//
+// Each run recomputes the window and reconciles by document name, so it both
+// adds new events and drops ones that fell out of the window. Docs whose
+// content hash is unchanged are skipped, so a quiet run costs two Teamup API
+// calls and a batch of hash comparisons — cheap enough to run several times
+// a day and keep the lag down to hours instead of days.
+async function syncTeamupToKb(strapi: any) {
+  const svc = strapi.plugin('elevenlabs-chatbot')?.service('teamup');
+  if (typeof svc?.syncTeamup !== 'function') {
+    strapi.log.warn('[teamup-cron] elevenlabs-chatbot.teamup.syncTeamup not available');
+    return;
+  }
+  try {
+    const r = await svc.syncTeamup(strapi);
+    if (r.errors?.length) {
+      // "disabled in settings" is a normal resting state, not a failure.
+      strapi.log.info(`[teamup-cron] skipped: ${r.errors.join('; ')}`);
+      return;
+    }
+    strapi.log.info(
+      `[teamup-cron] ${r.window.from}..${r.window.to}: ${r.fetched} events -> ${r.series} series ` +
+        `(+${r.created} new, ${r.updated} updated, ${r.skipped} unchanged, ${r.deleted} removed)`,
+    );
+  } catch (e) {
+    strapi.log.error(`[teamup-cron] sync failed: ${(e as Error).message}`);
+  }
+}
+
 // Ensure a deterministic read-only API token named "preview" exists, whose
 // access key equals env.PREVIEW_TOKEN. The frontend's Preview mode sends this
 // token (handed to it by Strapi's preview handler URL) so it can fetch DRAFT
@@ -343,6 +379,19 @@ export default {
       strapi.log.info('[bootstrap] registered nightly (00:05 SGT) expiry KB sweep');
     } catch (e) {
       strapi.log.error('[bootstrap] failed to register expiry cron', e);
+    }
+    try {
+      // Every 6 hours at :20 SGT. Offset past the 00:05 expiry sweep so the
+      // two never contend for the same KB documents.
+      strapi.cron.add({
+        teamupKbSync: {
+          task: () => syncTeamupToKb(strapi),
+          options: { rule: '20 */6 * * *', tz: 'Asia/Singapore' },
+        },
+      });
+      strapi.log.info('[bootstrap] registered 6-hourly (:20 SGT) Teamup KB sync');
+    } catch (e) {
+      strapi.log.error('[bootstrap] failed to register teamup cron', e);
     }
   },
 };

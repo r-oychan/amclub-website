@@ -446,6 +446,15 @@ function docPrefix(strapi: Strapi): string {
  * events — no separate cron needed, because each run recomputes the window
  * from today and drops whatever fell out of the back of it.
  */
+/**
+ * Guards against a scheduled run overlapping a manual "Sync Teamup now".
+ * Reconciliation is keyed on document name, so two concurrent runs can both
+ * see a doc as missing and create it twice. In-process only, which is enough:
+ * the CMS runs a single replica, and the cost of being wrong is a duplicate
+ * doc rather than data loss.
+ */
+let syncInFlight = false;
+
 export async function syncTeamup(strapi: Strapi): Promise<TeamupSyncResult> {
   const settings = await readRuntimeSettings(strapi as never);
   const t = settings.teamup;
@@ -454,10 +463,24 @@ export async function syncTeamup(strapi: Strapi): Promise<TeamupSyncResult> {
     fetched: 0, series: 0, created: 0, updated: 0, skipped: 0, deleted: 0, errors: [],
   };
   if (!t.enabled) { result.errors.push('Teamup sync is disabled in settings'); return result; }
+  if (syncInFlight) { result.errors.push('A Teamup sync is already running'); return result; }
   const cfg = teamupConfigured();
   if (!cfg.calendarKey) { result.errors.push('Missing TEAMUP_CALENDAR_KEY env var'); return result; }
   if (!cfg.token) { result.errors.push('Missing TEAMUP_TOKEN env var'); return result; }
 
+  syncInFlight = true;
+  try {
+    return await runTeamupSync(strapi, t, result);
+  } finally {
+    syncInFlight = false;
+  }
+}
+
+async function runTeamupSync(
+  strapi: Strapi,
+  t: TeamupSettings,
+  result: TeamupSyncResult,
+): Promise<TeamupSyncResult> {
   const { events, window } = await fetchEvents(t);
   result.window = window;
   result.fetched = events.length;
