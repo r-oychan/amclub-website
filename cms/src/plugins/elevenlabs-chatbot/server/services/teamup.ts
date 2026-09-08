@@ -48,9 +48,9 @@ export interface TeamupEvent {
   subcalendar_ids?: number[];
   /**
    * Teamup's per-calendar custom fields. On this calendar they carry the
-   * registration route and price — `sign_up_method`, `price`,
-   * `organizing_department`, `expected_of_participants`. Values are strings
-   * or single-element arrays depending on the field type.
+   * registration route and price — `sign_up_method`, `link_url_to_sign_up`,
+   * `price`, `organizing_department`, `expected_of_participants`. Values are
+   * strings or single-element arrays depending on the field type.
    */
   custom?: Record<string, string | string[] | null>;
   /** Teamup's native signup feature. Unused on this calendar (false for all). */
@@ -347,20 +347,31 @@ const SIGNUP_METHOD_TEXT: Record<string, string> = {
 /**
  * Wording for the registration line.
  *
- * `alternate_digital_form` means "an online form somewhere", and the form's URL
- * — when there is one — lives in the notes. Stating "see the link below"
- * unconditionally was a confabulation trap: all 6 such series in the current
- * window carry NO link, so the agent was told a link existed, could not find
- * one, and invented a plausible location for it ("the online form on the What's
- * On page"). Only promise the link when one is actually present; otherwise say
- * the neutral thing and let the agent's own "no answer → give a contact" rule
- * take over.
+ * The real signup URL lives in its own custom field, `link_url_to_sign_up` —
+ * NOT in the notes. Without it the agent knows a form exists but not where, and
+ * reliably invents a location ("the online form on the What's On page", which
+ * does not exist). Emitting the actual URL is what stops that.
+ *
+ * Only 3 series carry the field today, but they are precisely the ones members
+ * ask about — one-off ticketed events. The remaining `alternate_digital_form`
+ * series genuinely have no link recorded, so they get neutral wording and the
+ * agent's own "no answer → give a concrete contact" rule takes over. Never
+ * imply a link that is not present.
  */
-function signupText(method: string, notesHaveLink: boolean): string {
+function signupText(method: string, link: string, notesHaveLink: boolean): string {
+  const base =
+    method === 'alternate_digital_form'
+      ? 'Register via the online form'
+      : (SIGNUP_METHOD_TEXT[method] ?? '');
+
+  if (link) {
+    // Markdown so the widget renders it tappable and the agent copies it whole.
+    return base ? `[${base}](${link})` : `[Sign up here](${link})`;
+  }
   if (method === 'alternate_digital_form') {
     return notesHaveLink ? 'Register via the online form linked below' : 'Register via an online form';
   }
-  return SIGNUP_METHOD_TEXT[method] ?? '';
+  return base;
 }
 
 /** Teamup custom values arrive as a string or a one-element array. */
@@ -412,7 +423,11 @@ export function renderSeriesMarkdown(
   // Attachments are deliberately NOT surfaced: on this calendar they are
   // internal BEO (Banquet Event Order) working documents, not member-facing.
   const notes = htmlNotesToMarkdown(first.notes ?? '');
-  const signup = signupText(customValue(first, 'sign_up_method'), /https?:\/\//.test(notes));
+  const signup = signupText(
+    customValue(first, 'sign_up_method'),
+    customValue(first, 'link_url_to_sign_up'),
+    /https?:\/\//.test(notes),
+  );
   if (signup) lines.push(`**How to register:** ${signup}`);
 
   if (notes) lines.push('', notes);
