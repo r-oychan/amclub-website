@@ -300,3 +300,48 @@ test('alternate_digital_form promises a link ONLY when the notes contain one', (
   assert.match(noLink, /How to register:\*\* Register via an online form/);
   assert.ok(!/link(ed)? below|details below/.test(noLink), 'must not reference a link that does not exist');
 });
+
+// ── The real signup URL lives in custom.link_url_to_sign_up ──────────
+//
+// Not in the notes. Without it the agent knows a form exists but not where,
+// and invents a location ("the online form on the What's On page").
+
+const evSignup = (custom, notes) => ({
+  key: 'k', title: 'T', recurring: false,
+  occurrences: [{ id: '1', title: 'T', start_dt: '2026-09-17T19:00:00+08:00',
+    end_dt: '2026-09-17T22:00:00+08:00', custom, notes }],
+});
+
+test('a signup URL is emitted as a markdown link', () => {
+  const md = t.renderSeriesMarkdown(
+    evSignup({ sign_up_method: ['alternate_digital_form'], link_url_to_sign_up: 'https://forms.test/x' }),
+    new Map(), 'https://s.test',
+  );
+  assert.match(md, /\*\*How to register:\*\* \[Register via the online form\]\(https:\/\/forms\.test\/x\)/);
+});
+
+test('a signup URL is emitted even when the method is not a digital form', () => {
+  const md = t.renderSeriesMarkdown(
+    evSignup({ sign_up_method: ['tac_book'], link_url_to_sign_up: 'https://forms.test/y' }),
+    new Map(), 'https://s.test',
+  );
+  assert.match(md, /\[Register via the TAC Book app\]\(https:\/\/forms\.test\/y\)/);
+});
+
+test('a signup URL with no method still surfaces', () => {
+  const md = t.renderSeriesMarkdown(
+    evSignup({ link_url_to_sign_up: 'https://forms.test/z' }), new Map(), 'https://s.test');
+  assert.match(md, /\[Sign up here\]\(https:\/\/forms\.test\/z\)/);
+});
+
+test('an empty link field falls back to neutral wording, never a fake link', () => {
+  const md = t.renderSeriesMarkdown(
+    evSignup({ sign_up_method: ['alternate_digital_form'], link_url_to_sign_up: '' }),
+    new Map(), 'https://s.test',
+  );
+  assert.match(md, /How to register:\*\* Register via an online form/);
+  // Scope the check to the registration line — every doc legitimately ends with
+  // a markdown Source link, so a whole-document check would always match.
+  const regLine = md.split('\n').find((l) => l.includes('How to register'));
+  assert.ok(!/\]\(http/.test(regLine), 'no link should be fabricated on the registration line');
+});
