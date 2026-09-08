@@ -340,8 +340,28 @@ export function htmlNotesToMarkdown(html: string): string {
 const SIGNUP_METHOD_TEXT: Record<string, string> = {
   tac_book: 'Register via the TAC Book app',
   call_outlet_to_book: 'Call the outlet to book',
-  alternate_digital_form: 'Register via the online form (see the link in the details below)',
+  // `alternate_digital_form` is resolved at render time — see signupText().
+  alternate_digital_form: '',
 };
+
+/**
+ * Wording for the registration line.
+ *
+ * `alternate_digital_form` means "an online form somewhere", and the form's URL
+ * — when there is one — lives in the notes. Stating "see the link below"
+ * unconditionally was a confabulation trap: all 6 such series in the current
+ * window carry NO link, so the agent was told a link existed, could not find
+ * one, and invented a plausible location for it ("the online form on the What's
+ * On page"). Only promise the link when one is actually present; otherwise say
+ * the neutral thing and let the agent's own "no answer → give a contact" rule
+ * take over.
+ */
+function signupText(method: string, notesHaveLink: boolean): string {
+  if (method === 'alternate_digital_form') {
+    return notesHaveLink ? 'Register via the online form linked below' : 'Register via an online form';
+  }
+  return SIGNUP_METHOD_TEXT[method] ?? '';
+}
 
 /** Teamup custom values arrive as a string or a one-element array. */
 function customValue(e: TeamupEvent, key: string): string {
@@ -388,12 +408,13 @@ export function renderSeriesMarkdown(
   // "when and where" — both live in Teamup custom fields, not in the notes.
   const price = customValue(first, 'price');
   if (price) lines.push(`**Price:** ${/^[\d.]+$/.test(price) ? `$${price}` : price}`);
-  const signup = SIGNUP_METHOD_TEXT[customValue(first, 'sign_up_method')];
-  if (signup) lines.push(`**How to register:** ${signup}`);
 
   // Attachments are deliberately NOT surfaced: on this calendar they are
   // internal BEO (Banquet Event Order) working documents, not member-facing.
   const notes = htmlNotesToMarkdown(first.notes ?? '');
+  const signup = signupText(customValue(first, 'sign_up_method'), /https?:\/\//.test(notes));
+  if (signup) lines.push(`**How to register:** ${signup}`);
+
   if (notes) lines.push('', notes);
 
   // Per-chunk Source line — RAG retrieves chunks, and the widget renders this

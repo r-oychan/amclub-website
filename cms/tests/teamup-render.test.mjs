@@ -273,3 +273,30 @@ test('internal BEO attachments are never surfaced', () => {
   assert.ok(!md.includes('files.teamup.com'), 'attachment links must not leak into the KB');
   assert.ok(!md.includes('BEO'), 'internal doc names must not leak into the KB');
 });
+
+// ── The registration line must never promise a link that isn't there ──
+//
+// All 6 `alternate_digital_form` series in the live window carry no link, and
+// the old unconditional "(see the link in the details below)" made the agent
+// invent one ("the online form on the What's On page").
+
+test('alternate_digital_form promises a link ONLY when the notes contain one', () => {
+  const withLink = t.renderSeriesMarkdown(
+    { key: 'k', title: 'T', recurring: false, occurrences: [{
+      id: '1', title: 'T', start_dt: '2026-09-07T10:00:00+08:00', end_dt: '2026-09-07T11:00:00+08:00',
+      custom: { sign_up_method: ['alternate_digital_form'] },
+      notes: '<p>Sign up <a href="https://form.test/x">here</a>.</p>' }] },
+    new Map(), 'https://s.test',
+  );
+  assert.match(withLink, /How to register:\*\* Register via the online form linked below/);
+
+  const noLink = t.renderSeriesMarkdown(
+    { key: 'k', title: 'T', recurring: false, occurrences: [{
+      id: '1', title: 'T', start_dt: '2026-09-07T10:00:00+08:00', end_dt: '2026-09-07T11:00:00+08:00',
+      custom: { sign_up_method: ['alternate_digital_form'] },
+      notes: '<p>No link here.</p>' }] },
+    new Map(), 'https://s.test',
+  );
+  assert.match(noLink, /How to register:\*\* Register via an online form/);
+  assert.ok(!/link(ed)? below|details below/.test(noLink), 'must not reference a link that does not exist');
+});
