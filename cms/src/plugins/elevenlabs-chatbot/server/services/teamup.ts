@@ -589,10 +589,16 @@ async function runTeamupSync(
 
   // New/removed docs only reach the agent when its knowledge_base list is
   // re-PATCHed — creating the doc alone leaves it detached.
-  if (result.created || result.updated || result.deleted) {
-    try { await refreshAgentKnowledgeBase(strapi as never); }
-    catch (e) { result.errors.push(`agent attach: ${(e as Error).message.slice(0, 160)}`); }
-  }
+  //
+  // This runs on EVERY sync, not just when something changed. Gating it on
+  // created/updated/deleted made the sync unable to heal itself: if a previous
+  // run created the documents but the attach failed, every later run skips all
+  // of them on unchanged content hashes and never re-attaches, leaving the KB
+  // full of documents the agent cannot see. That is exactly the
+  // present-but-unreachable failure behind the Birthday Bash 78 bug. One PATCH
+  // per run (4x/day) is far cheaper than a silently detached knowledge base.
+  try { await refreshAgentKnowledgeBase(strapi as never); }
+  catch (e) { result.errors.push(`agent attach: ${(e as Error).message.slice(0, 160)}`); }
 
   strapi.log.info(
     `[${PLUGIN_ID}] teamup ${window.from}→${window.to}: ${result.fetched} events → ${result.series} series ` +
