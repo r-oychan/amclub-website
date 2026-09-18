@@ -69,6 +69,8 @@ jobs:
           ARM_TENANT_ID: ${{ steps.azure.outputs.tenant-id }}
           ARM_SUBSCRIPTION_ID: ${{ steps.azure.outputs.subscription-id }}
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          TEAMUP_TOKEN: ${{ secrets.TEAMUP_TOKEN }}
+          TEAMUP_CALENDAR_KEY: ${{ secrets.TEAMUP_CALENDAR_KEY }}
           ELEVENLABS_AGENT_ID: ${{ vars.ELEVENLABS_AGENT_ID }}
           PUBLIC_SITE_URL: ${{ github.ref_name == 'main' && 'https://amclub.org.sg' || github.ref_name == 'uat' && 'https://uat.amclub.org.sg' || 'https://dev.amclub.org.sg' }}
           # Microsoft Entra ID SSO for the Strapi admin (via strapi-plugin-sso).

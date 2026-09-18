@@ -117,25 +117,25 @@ Editor experience:
 - Set `expiredAt = past` → hide now even if the natural date is upcoming.
 - Set `expiredAt = future` → keep listed past the natural date (recurring/annual).
 
-## 4. Hourly KB-cleanup cron
+## 4. Nightly KB-cleanup cron
 
 **Goal:** when an entry drops off the listing (via the expiry filter), also drop it from the ElevenLabs chatbot knowledge base. Don't depend on an editor save — time alone should trigger cleanup.
 
 **Pattern (in `cms/src/index.ts`):**
 
 1. `cms/config/server.ts` enables cron: `cron: { enabled: env.bool('CRON_ENABLED', true) }`.
-2. Bootstrap registers a single hourly task:
+2. Bootstrap registers a single nightly task just after the Singapore day rolls over:
    ```ts
    strapi.cron.add({
      expiryKbSweep: {
        task: () => sweepExpiredKbDocs(strapi),
-       options: { rule: '0 * * * *' },
+       options: { rule: '5 0 * * *', tz: 'Asia/Singapore' },
      },
    });
    ```
-3. `sweepExpiredKbDocs` queries each expiry-aware UID (`event`, `dining-promotion`) for rows past their natural date, calls `elevenlabs-chatbot.sync.unsyncEntryBySlug` per row. Idempotent — already-removed rows no-op.
+3. `sweepExpiredKbDocs` queries each expiry-aware UID (`event`, `dining-promotion`) for rows past their natural date, calls `elevenlabs-chatbot.sync.unsyncEntryBySlug` per row — which also drops the entry's harvested `:file:` docs (menus/posters). Idempotent — already-removed rows no-op, and each run re-checks *all* past rows, so a missed tick self-heals the next night.
 
-Hourly cadence is deliberate: listing-side hiding is instant (driven by request-time SQL filter), so KB freshness doesn't need minute precision.
+Nightly cadence is deliberate: expiry is date-granular and listing-side hiding is instant (request-time SQL filter), so the KB only needs a day-boundary sweep. Compute "today" with `toLocaleDateString('en-CA', { timeZone: 'Asia/Singapore' })` — containers run UTC, and a UTC date keeps yesterday's events alive until 8am SGT.
 
 ## 5. Display naming `<Section>: <Thing>`
 
@@ -285,3 +285,94 @@ git log --oneline origin/main..origin/uat   # uat ahead of main
 ```
 
 Environment-specific config lives in `infra/Pulumi.<env>.yaml`. Strapi env-specific settings come from Container App env vars + plugin config that reads `env(...)`. **Never hardcode an env URL in source.**
+
+## 9. RAG auto-indexing (ElevenLabs KB)
+
+**Gotcha:** attaching a KB doc to an agent does **not** build its retrieval index. Un-indexed docs are invisible to RAG — the agent simply can't answer from them. And because KB docs are immutable, every entry *update* uploads a brand-new doc that starts un-indexed, even if the previous generation was indexed.
+
+**Pattern (elevenlabs-chatbot plugin):**
+
+1. `client.ts` wraps `GET/POST /v1/convai/knowledge-base/{id}/rag-index`. The POST is idempotent — an already-indexed or in-progress doc returns the existing index, so firing it blind is safe and free.
+2. `sync.ts` calls `requestIndexSafe(...)` right after every `createTextDoc` / `createFileDoc` — indexing failures log a warning but never fail the sync.
+3. `auditRagIndexes(strapi, build)` walks the sync log, reports per-doc index state, and (when `build`) requests indexing for any doc missing one. Exposed via `POST /api/elevenlabs-chatbot/index-all { build }` and the settings-page **Check indexes** / **Build missing indexes** buttons.
+
+Cost: no per-index credit charge — the constraint is the plan-tier cap on total *original file size* indexed. Measured on the Club account 2026-08-19: **1.5 MB used of 20 MB** (`GET /v1/convai/knowledge-base/rag-index` reports `total_used_bytes` / `total_max_bytes` — read it rather than trusting a remembered figure; the old ~2 MB number was the agency plan). Deleted docs free quota, so the expiry cron doubles as quota hygiene. `scripts/elevenlabs-index-kb.py <env>` remains the CLI fallback.
+
+**This only works where the code is deployed.** Auto-indexing landed on `dev` 2026-08-09 (`89ac316`) but prod's last promotion was 2026-08-07, so for ten days prod uploaded every doc and indexed none — 31 of 306 attached docs were invisible to the bot, including 17 upcoming events. The symptom is indistinguishable from a relevance problem: the agent answers from an older, *indexed* doc (a 2025 photo album) while ignoring the current one. **Diagnose with the index status, not the doc list** — a doc can be present and attached and still unreachable:
+
+```
+GET /v1/convai/knowledge-base/{id}/rag-index   → {"indexes": []}   ← invisible to RAG
+```
+
+## 10. Excluding documents from the KB (selective, not blanket)
+
+**Gotcha:** ElevenLabs' PDF extractor flattens tables. A class timetable becomes headings in reading order with no row/column association, and the agent then *confabulates* confident wrong pairings (verified on prod 2026-08-11). Linear PDFs — menus, policies, forms — extract fine, so "stop indexing PDFs" is the wrong fix.
+
+**Pattern:** `RuntimeSettings.excludedFilePatterns` (plugin settings page, one pattern per line). `isFileExcluded(file, patterns)` in `utils.ts` matches case-insensitively against the upload's **name and URL**, with `*` as a wildcard, so a rule can target one file or a whole upload folder.
+
+The important detail is *where* the check sits: `syncAttachedFiles` skips an excluded file **and leaves it out of `fileNamesAfter`**, which is the set the stale-cleanup pass diffs against. That makes the denylist **retroactive** for free — adding a pattern deletes the already-pushed doc on the next sync of its owner page, with no separate purge step.
+
+## 11. Calendar → KB: collapse recurrence before indexing
+
+**Gotcha:** a 60-day Teamup window returns ~1,900 event occurrences but only ~230 distinct series — the calendar is dominated by weekly classes and court bookings. One doc per occurrence floods the KB with near-identical records and buries the one-off events members actually ask about.
+
+**Pattern (`services/teamup.ts`):**
+
+1. **Group** occurrences into series: `series_id` → master id parsed off the `"<id>-rid-<ts>"` occurrence id → `title+time+location` signature. Anything alone in its bucket is a one-off.
+2. **Derive cadence from the actual gaps**, never from the weekday alone. Two Wednesdays five weeks apart is *not* "every Wednesday" — that is a confident falsehood of exactly the kind this pipeline exists to prevent. Median gap 6–8d → weekly, 13–16d → fortnightly, 27–32d → monthly, all-gaps ≤8d across 7 weekdays → "every day"; anything else **enumerates the real dates**.
+3. **Don't collapse differing times.** If sessions in a series run at different times, list them per session rather than printing the first one as if it applied to all.
+4. **Expire by recomputing the window.** Each run rebuilds the wanted set from today and deletes any `<prefix>teamup:` doc no longer in it — past events drop out with no extra cron.
+5. Call `refreshAgentKnowledgeBase` afterwards: creating a doc does not attach it to the agent.
+
+Secrets: **both** `TEAMUP_CALENDAR_KEY` and `TEAMUP_TOKEN` are env-only (Container App secrets). The key was briefly a settings-page field; on first use the *token* was pasted into it, Teamup 404'd, and the handler returned `200` with an empty array — so the admin UI showed an empty calendar grid, which reads as "this calendar has no subcalendars" rather than "the call failed". Two lessons: keep interchangeable-looking credentials out of hand-typed fields, and **never degrade an upstream failure into an empty success payload** — the controller now returns `502` with the upstream message, and `400` naming any missing env var.
+
+Pure transforms (`collapseSeries`, `renderSeriesMarkdown`, `computeWindow`, `isFileExcluded`) are unit-tested in `cms/tests/teamup-render.test.mjs` via `npm run test:plugin` — they compile to a temp dir so no Strapi runtime is needed.
+
+## 12. Custom auth policies must return 401, not 403, for expired tokens
+
+A plugin route on `/api/*` can't use `auth.strategies: ['admin']` — that strategy
+isn't in the content-api pool. The workaround is `auth: false` plus a policy that
+validates the admin session by hand (`server/policies/is-admin.ts`).
+
+**The trap:** a policy that returns `false` becomes a `PolicyError`, which Strapi
+maps to **403** (`@strapi/core/services/server/policy.js`). But Strapi's admin
+fetch client refreshes an expired access token **only on a 401**:
+
+```js
+// @strapi/admin .../admin/src/utils/getFetchClient.js
+// Only attempt refresh for 401 errors on non-auth paths
+if (isFetchError(error) && error.status === 401 && !isAuthPath(url)) {
+  await attemptTokenRefresh();
+  return await executeRequest();   // retried with fresh headers
+}
+```
+
+Admin access tokens live **30 minutes** by default (`accessTokenLifespan`,
+defaulted in `@strapi/admin`'s bootstrap; override under
+`admin.auth.sessions.*`). So with a 403 the client never refreshes: core Strapi
+routes keep working — they return 401 and refresh transparently — while every
+custom plugin route starts failing. The page looks fine, then ~30 minutes later
+every button silently 403s until a manual reload and re-login.
+
+**Symptom:** an admin action works, then the *same* action fails with a bare 403
+about half an hour later without the user touching anything. Container logs show
+`POST /api/<plugin>/<route> (2 ms) 403` — the short duration means the policy
+rejected it before any handler ran.
+
+**Fix — separate authentication from authorization:**
+
+| Condition | Response | Why |
+|---|---|---|
+| header absent / malformed / token expired / session revoked | `throw new UnauthorizedError(...)` → **401** | credentials are stale; a refresh + retry fixes it |
+| valid session, deactivated account | `return false` → **403** | retrying cannot help |
+
+`import { errors } from '@strapi/utils'` and throw `errors.UnauthorizedError`.
+Two independent paths turn it into a 401: `createAuthorizeMiddleware` wraps
+`await next()` and calls `ctx.unauthorized()`, and failing that the global error
+middleware maps `UnauthorizedError → 401` (`@strapi/core/services/errors.js`).
+Note `ctx.unauthorized()` replaces your message with a generic one — the *status*
+is what restores the refresh, not the text.
+
+Read `strapi` off `globalThis` in the policy rather than as a bare global, so the
+file also compiles in a standalone `tsc` test harness with no ambient types.
+Covered by `cms/tests/is-admin-policy.test.mjs`.

@@ -18,19 +18,21 @@ import {
 } from '../utils';
 
 interface Ctx {
-  request: { body?: { uid?: string; documentId?: string; mode?: 'delta' | 'full' } };
+  request: { body?: { uid?: string; documentId?: string; mode?: 'delta' | 'full'; build?: boolean } };
   state: { user?: { id: number; email?: string } };
   badRequest: (msg: string) => void;
   body: unknown;
 }
 
 interface JobState {
-  kind: 'sync-all' | 'clear-all';
+  kind: 'sync-all' | 'clear-all' | 'index-check' | 'index-build';
   mode?: 'delta' | 'full';
   startedAt: string;
   finishedAt?: string;
   counts?: Record<string, number>;
   deleted?: number;
+  unindexed?: string[];
+  failures?: string[];
   error?: string;
 }
 
@@ -112,6 +114,29 @@ export default ({ strapi: _ }: StrapiArg) => ({
       strapi.log.info(`[${PLUGIN_ID}] cleared ${r.deleted} doc(s)`);
       return { deleted: r.deleted };
     });
+    ctx.body = { started: true, job };
+  },
+
+  indexAll(ctx: Ctx): void {
+    if (currentJob && !currentJob.finishedAt) {
+      ctx.body = { started: false, reason: 'Another sync job is already running', current: currentJob };
+      return;
+    }
+    const build = ctx.request.body?.build ?? false;
+    const sync = strapi.plugin(PLUGIN_ID).service('sync') as {
+      auditRagIndexes: (
+        s: unknown,
+        build: boolean,
+      ) => Promise<{ counts: Record<string, number>; unindexed: string[]; failures: string[] }>;
+    };
+    const job = startJob(
+      { kind: build ? 'index-build' : 'index-check', startedAt: new Date().toISOString() },
+      async () => {
+        const r = await sync.auditRagIndexes(strapi, build);
+        strapi.log.info(`[${PLUGIN_ID}] index ${build ? 'build' : 'check'} complete: ${JSON.stringify(r.counts)}`);
+        return { counts: r.counts, unindexed: r.unindexed, failures: r.failures };
+      },
+    );
     ctx.body = { started: true, job };
   },
 

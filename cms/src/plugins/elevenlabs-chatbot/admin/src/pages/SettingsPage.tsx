@@ -25,6 +25,7 @@ import {
   Table,
   Tbody,
   Td,
+  Textarea,
   TextInput,
   Th,
   Thead,
@@ -33,6 +34,13 @@ import {
   Typography,
 } from '@strapi/design-system';
 
+interface TeamupSettings {
+  enabled: boolean;
+  subcalendarIds: number[];
+  daysBefore: number;
+  daysAfter: number;
+}
+
 interface RuntimeSettings {
   chatbotEnabled: boolean;
   voiceVisible: boolean;
@@ -40,15 +48,45 @@ interface RuntimeSettings {
   accentColor: string;
   panelTitle: string;
   contentTypeAllowList: string[];
+  excludedFilePatterns: string[];
+  teamup: TeamupSettings;
+}
+
+interface Subcalendar {
+  id: number;
+  name: string;
+  active?: boolean;
+}
+
+interface TeamupPreview {
+  window: { from: string; to: string };
+  fetched: number;
+  series: number;
+  recurring: number;
+  oneOff: number;
+  sample: Array<{ title: string; occurrences: number; recurring: boolean; markdown: string }>;
+}
+
+interface TeamupSyncResult {
+  window: { from: string; to: string };
+  fetched: number;
+  series: number;
+  created: number;
+  updated: number;
+  skipped: number;
+  deleted: number;
+  errors: string[];
 }
 
 interface JobState {
-  kind: 'sync-all' | 'clear-all';
+  kind: 'sync-all' | 'clear-all' | 'index-check' | 'index-build';
   mode?: 'delta' | 'full';
   startedAt: string;
   finishedAt?: string;
   counts?: Record<string, number>;
   deleted?: number;
+  unindexed?: string[];
+  failures?: string[];
   error?: string;
 }
 
@@ -122,6 +160,9 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export const SettingsPage = () => {
   const { get, post, put } = useFetchClient();
   const [settings, setSettings] = useState<RuntimeSettings | null>(null);
+  // What the server last confirmed it has stored. Preview/sync read the STORED
+  // values, so the buttons must be gated on this — not on the edited form.
+  const [savedSettings, setSavedSettings] = useState<RuntimeSettings | null>(null);
   const [status, setStatus] = useState<StatusResponse | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [savingSettings, setSavingSettings] = useState(false);
@@ -131,6 +172,19 @@ export const SettingsPage = () => {
   const jobRunning = !!job && !job.finishedAt;
   const buttonsDisabled = !!busy || jobRunning;
 
+  // Key order can differ between the server payload and locally-spread objects,
+  // so compare a key-sorted serialisation rather than raw JSON.stringify.
+  const stable = (v: unknown): string =>
+    JSON.stringify(v, (_k, val) =>
+      val && typeof val === 'object' && !Array.isArray(val)
+        ? Object.fromEntries(Object.entries(val as Record<string, unknown>).sort(([a], [b]) => a.localeCompare(b)))
+        : val,
+    );
+  const unsaved = !!settings && !!savedSettings && stable(settings) !== stable(savedSettings);
+  // Teamup sync bails server-side when the STORED enabled flag is false.
+  const teamupStoredEnabled = savedSettings?.teamup.enabled ?? false;
+  const teamupBlocked = unsaved || !teamupStoredEnabled;
+
   async function refresh() {
     try {
       const [statusRes, settingsRes] = await Promise.all([
@@ -139,6 +193,7 @@ export const SettingsPage = () => {
       ]);
       setStatus(statusRes.data);
       setSettings(settingsRes.data);
+      setSavedSettings(settingsRes.data);
     } catch (err) {
       setResult({ variant: 'danger', text: `Failed to load: ${formatError(err)}` });
     }
@@ -148,6 +203,12 @@ export const SettingsPage = () => {
     void refresh();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (!settings) return;
+    void loadSubcalendars();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [!!settings]);
 
   useEffect(() => {
     if (!jobRunning) return;
@@ -163,6 +224,7 @@ export const SettingsPage = () => {
     try {
       const { data } = await put<RuntimeSettings>('/api/elevenlabs-chatbot/settings', settings);
       setSettings(data);
+      setSavedSettings(data);
       setResult({ variant: 'success', text: 'Settings saved.' });
       await refresh();
     } catch (err) {
@@ -197,6 +259,27 @@ export const SettingsPage = () => {
     }
   }
 
+  async function runIndexAll(build: boolean) {
+    setBusy(build ? 'index-build' : 'index-check');
+    setResult(null);
+    try {
+      const { data } = await post<StartResponse>('/api/elevenlabs-chatbot/index-all', { build });
+      setResult(
+        data.started
+          ? {
+              variant: 'success',
+              text: `${build ? 'Index build' : 'Index check'} started — polling for progress…`,
+            }
+          : { variant: 'danger', text: data.reason ?? 'Job rejected' },
+      );
+      await refresh();
+    } catch (err) {
+      setResult({ variant: 'danger', text: `Index job failed: ${formatError(err)}` });
+    } finally {
+      setBusy(null);
+    }
+  }
+
   async function runClearAll() {
     if (
       !confirm(
@@ -219,6 +302,76 @@ export const SettingsPage = () => {
     } finally {
       setBusy(null);
     }
+  }
+
+  // ── Teamup ──
+  const [subcals, setSubcals] = useState<Subcalendar[] | null>(null);
+  const [preview, setPreview] = useState<TeamupPreview | null>(null);
+
+  // The calendar key lives in TEAMUP_CALENDAR_KEY, so there is nothing to type
+  // before loading — fetch the list as soon as the page opens.
+  const [subcalError, setSubcalError] = useState<string | null>(null);
+
+  async function loadSubcalendars(manual = false) {
+    if (manual) setBusy('teamup-cals');
+    try {
+      const { data } = await get<{ subcalendars: Subcalendar[] }>('/api/elevenlabs-chatbot/teamup/subcalendars');
+      setSubcals(data.subcalendars);
+      setSubcalError(null);
+      if (manual) setResult({ variant: 'success', text: `Loaded ${data.subcalendars.length} calendar(s).` });
+    } catch (err) {
+      const msg = formatError(err);
+      setSubcals(null);
+      setSubcalError(msg);
+      if (manual) setResult({ variant: 'danger', text: `Could not load calendars: ${msg}` });
+    } finally {
+      if (manual) setBusy(null);
+    }
+  }
+
+  async function runTeamupPreview() {
+    setBusy('teamup-preview');
+    setResult(null);
+    try {
+      const { data } = await get<TeamupPreview>('/api/elevenlabs-chatbot/teamup/preview');
+      setPreview(data);
+      setResult({
+        variant: 'success',
+        text: `${data.fetched} events in ${data.window.from} → ${data.window.to} collapse to ${data.series} document(s) (${data.recurring} recurring, ${data.oneOff} one-off). Nothing was pushed.`,
+      });
+    } catch (err) {
+      setResult({ variant: 'danger', text: `Preview failed: ${formatError(err)}` });
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function runTeamupSync() {
+    if (!confirm('Push the current Teamup window to the chatbot knowledge base? Events that fell outside the window will be removed.')) return;
+    setBusy('teamup-sync');
+    setResult(null);
+    try {
+      const { data } = await post<TeamupSyncResult>('/api/elevenlabs-chatbot/teamup/sync', {});
+      const msg = `Teamup ${data.window.from} → ${data.window.to}: ${data.fetched} events → ${data.series} docs (+${data.created} new, ${data.updated} updated, ${data.skipped} unchanged, ${data.deleted} removed).`;
+      setResult(
+        data.errors.length
+          ? { variant: 'warning', text: `${msg} ${data.errors.length} error(s): ${data.errors.slice(0, 3).join('; ')}` }
+          : { variant: 'success', text: msg },
+      );
+      await refresh();
+    } catch (err) {
+      setResult({ variant: 'danger', text: `Teamup sync failed: ${formatError(err)}` });
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  function toggleSubcal(id: number) {
+    if (!settings) return;
+    const cur = new Set(settings.teamup.subcalendarIds);
+    if (cur.has(id)) cur.delete(id);
+    else cur.add(id);
+    setSettings({ ...settings, teamup: { ...settings.teamup, subcalendarIds: [...cur].sort((a, b) => a - b) } });
   }
 
   const allowSet = useMemo(() => new Set(settings?.contentTypeAllowList ?? []), [settings]);
@@ -278,6 +431,23 @@ export const SettingsPage = () => {
             {job.finishedAt && <>, finished {new Date(job.finishedAt).toLocaleTimeString()}</>}
             {job.counts && <> — {JSON.stringify(job.counts)}</>}
             {typeof job.deleted === 'number' && <> — deleted {job.deleted}</>}
+            {job.unindexed && job.unindexed.length > 0 && (
+              <>
+                <br />
+                <strong>Not indexed ({job.unindexed.length}):</strong>{' '}
+                <span style={{ fontFamily: 'monospace' }}>
+                  {job.unindexed.slice(0, 20).join(', ')}
+                  {job.unindexed.length > 20 ? ` … +${job.unindexed.length - 20} more` : ''}
+                </span>
+              </>
+            )}
+            {job.failures && job.failures.length > 0 && (
+              <>
+                <br />
+                <strong>Failures ({job.failures.length}):</strong>{' '}
+                <span style={{ fontFamily: 'monospace' }}>{job.failures.slice(0, 5).join(' | ')}</span>
+              </>
+            )}
             {job.error && (
               <>
                 <br />
@@ -381,6 +551,172 @@ export const SettingsPage = () => {
           </Section>
         )}
 
+        {settings && (
+          <>
+          <Section title={`Excluded documents (${settings.excludedFilePatterns.length})`}>
+            <Box paddingBottom={3}>
+              <Typography textColor="neutral600" variant="pi">
+                PDFs and other documents attached to a page are normally pushed to the knowledge base.
+                Anything matching a pattern below is skipped instead — and if it was pushed before,
+                it is removed on the next sync of its page. One pattern per line, matched
+                case-insensitively against the file name and its URL. <code>*</code> works as a wildcard.
+              </Typography>
+              <Box paddingTop={2}>
+                <Typography textColor="neutral600" variant="pi">
+                  Use this for <strong>timetables and grids</strong>: the extractor flattens tables, so
+                  rows and columns lose their pairing and the bot invents class times. Text-only
+                  documents (menus, policies, forms) extract correctly — leave those indexed.
+                </Typography>
+              </Box>
+            </Box>
+            <Textarea
+              aria-label="Excluded file patterns"
+              placeholder={'group fitness schedule\n/uploads/documents/schedules/\n*timetable*.pdf'}
+              value={settings.excludedFilePatterns.join('\n')}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                setSettings({
+                  ...settings,
+                  excludedFilePatterns: e.target.value.split('\n').map((l) => l.trim()).filter(Boolean),
+                })
+              }
+            />
+          </Section>
+
+          <Section title="Teamup calendar">
+            <Box paddingBottom={3}>
+              <Typography textColor="neutral600" variant="pi">
+                Pulls a rolling window of the Teamup calendar into the knowledge base so the bot can
+                answer "what's on". Repeating events are collapsed into a single document describing
+                the pattern and date range, rather than one document per occurrence. Each sync also
+                removes events that have dropped out of the window, so past events stop being
+                answered. The calendar and its credentials come from the
+                <code>TEAMUP_CALENDAR_KEY</code> and <code>TEAMUP_TOKEN</code> environment variables —
+                deploy-time config, nothing calendar-identifying is typed here.
+              </Typography>
+            </Box>
+            <Grid.Root gap={4}>
+              <Grid.Item col={12} s={12} direction="column" alignItems="stretch">
+                <Flex direction="column" gap={1} alignItems="flex-start">
+                  <Typography variant="pi" fontWeight="bold">Teamup sync enabled</Typography>
+                  <Toggle
+                    onLabel="On"
+                    offLabel="Off"
+                    checked={settings.teamup.enabled}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setSettings({ ...settings, teamup: { ...settings.teamup, enabled: e.target.checked } })
+                    }
+                  />
+                </Flex>
+              </Grid.Item>
+              <Grid.Item col={6} s={12} direction="column" alignItems="stretch">
+                <Flex direction="column" gap={1} alignItems="stretch">
+                  <Typography variant="pi" fontWeight="bold">Days before today</Typography>
+                  <TextInput
+                    aria-label="Days before today"
+                    type="number"
+                    value={String(settings.teamup.daysBefore)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setSettings({
+                        ...settings,
+                        teamup: { ...settings.teamup, daysBefore: Math.max(0, Number(e.target.value) || 0) },
+                      })
+                    }
+                  />
+                </Flex>
+              </Grid.Item>
+              <Grid.Item col={6} s={12} direction="column" alignItems="stretch">
+                <Flex direction="column" gap={1} alignItems="stretch">
+                  <Typography variant="pi" fontWeight="bold">Days after today</Typography>
+                  <TextInput
+                    aria-label="Days after today"
+                    type="number"
+                    value={String(settings.teamup.daysAfter)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setSettings({
+                        ...settings,
+                        teamup: { ...settings.teamup, daysAfter: Math.max(0, Number(e.target.value) || 0) },
+                      })
+                    }
+                  />
+                </Flex>
+              </Grid.Item>
+            </Grid.Root>
+
+            <Box paddingTop={4}>
+              <Flex gap={2} alignItems="center" marginBottom={3}>
+                <Button variant="tertiary" onClick={() => void loadSubcalendars(true)} loading={busy === 'teamup-cals'} disabled={buttonsDisabled}>
+                  Reload calendars
+                </Button>
+                <Typography variant="pi" textColor="neutral600">
+                  {settings.teamup.subcalendarIds.length === 0
+                    ? `No calendars ticked — all ${subcals ? subcals.length : ''} will be pulled.`
+                    : `${settings.teamup.subcalendarIds.length} of ${subcals?.length ?? '?'} calendar(s) ticked.`}
+                </Typography>
+              </Flex>
+              {subcalError && (
+                <Box background="danger100" hasRadius padding={3} marginBottom={3}>
+                  <Typography textColor="danger700" variant="pi">
+                    Could not load calendars: {subcalError}
+                  </Typography>
+                </Box>
+              )}
+              {subcals && (
+                <Grid.Root gap={2}>
+                  {subcals.map((c) => (
+                    <Grid.Item key={c.id} col={6} s={12} direction="column" alignItems="flex-start">
+                      <Checkbox
+                        checked={settings.teamup.subcalendarIds.includes(c.id)}
+                        onCheckedChange={() => toggleSubcal(c.id)}
+                      >
+                        {c.name}
+                      </Checkbox>
+                    </Grid.Item>
+                  ))}
+                </Grid.Root>
+              )}
+            </Box>
+
+            <Box paddingTop={4}>
+              <Flex gap={2} wrap="wrap">
+                <Button variant="secondary" onClick={() => void runTeamupPreview()} loading={busy === 'teamup-preview'} disabled={buttonsDisabled || teamupBlocked}>
+                  Preview (no changes)
+                </Button>
+                <Button variant="default" onClick={() => void runTeamupSync()} loading={busy === 'teamup-sync'} disabled={buttonsDisabled || teamupBlocked}>
+                  Sync Teamup now
+                </Button>
+              </Flex>
+              <Box paddingTop={2}>
+                <Typography variant="pi" textColor={unsaved || !teamupStoredEnabled ? 'danger600' : 'neutral600'}>
+                  {unsaved
+                    ? 'You have unsaved changes. Preview and sync read the stored settings — click “Save settings” first.'
+                    : !teamupStoredEnabled
+                      ? 'Teamup is disabled in the stored settings. Tick “Enable” above, then click “Save settings”.'
+                      : 'Preview and sync read the stored settings.'}
+                </Typography>
+              </Box>
+            </Box>
+
+            {preview && (
+              <Box paddingTop={4}>
+                <Typography variant="pi" fontWeight="bold">
+                  Preview {preview.window.from} → {preview.window.to}: {preview.fetched} events → {preview.series} documents
+                </Typography>
+                <Box paddingTop={2}>
+                  {preview.sample.map((x) => (
+                    <Box key={x.title} background="neutral100" hasRadius padding={3} marginBottom={2}>
+                      <Typography variant="pi" fontWeight="bold">
+                        {x.title} — {x.occurrences} occurrence(s), {x.recurring ? 'recurring' : 'one-off'}
+                      </Typography>
+                      <pre style={{ whiteSpace: 'pre-wrap', margin: '8px 0 0', fontSize: 12 }}>{x.markdown}</pre>
+                    </Box>
+                  ))}
+                </Box>
+              </Box>
+            )}
+          </Section>
+          </>
+        )}
+
         {settings && status && (
           <Section title={`Sync allow-list (${settings.contentTypeAllowList.length})`}>
             <Box paddingBottom={3}>
@@ -426,6 +762,22 @@ export const SettingsPage = () => {
             variant="secondary"
           >
             Sync all (full)
+          </Button>
+          <Button
+            onClick={() => runIndexAll(false)}
+            disabled={buttonsDisabled}
+            loading={busy === 'index-check'}
+            variant="tertiary"
+          >
+            Check indexes
+          </Button>
+          <Button
+            onClick={() => runIndexAll(true)}
+            disabled={buttonsDisabled}
+            loading={busy === 'index-build'}
+            variant="secondary"
+          >
+            Build missing indexes
           </Button>
           <Button
             onClick={runClearAll}

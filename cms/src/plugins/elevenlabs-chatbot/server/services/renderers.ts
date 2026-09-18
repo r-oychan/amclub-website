@@ -32,6 +32,48 @@ const para = (text: string | undefined | null): string =>
 const bulleted = (items: string[]): string =>
   items.filter(Boolean).map((s) => `- ${s}`).join('\n');
 
+// HTML → markdown-ish text. shared.html-block carries the exact HTML the
+// page displays (news articles render it verbatim), so the KB doc must be
+// built from it too — anchors become [label](href) so the agent can hand
+// back the real URLs, list items become bullets, headings become ##/###.
+const HTML_ENTITIES: Record<string, string> = {
+  amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ',
+  mdash: '—', ndash: '–', hellip: '…',
+  lsquo: '‘', rsquo: '’', ldquo: '“', rdquo: '”',
+};
+
+const decodeEntities = (s: string): string =>
+  s
+    .replace(/&#(\d+);/g, (_, n: string) => String.fromCodePoint(Number(n)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, n: string) => String.fromCodePoint(parseInt(n, 16)))
+    .replace(/&([a-z]+);/gi, (m, name: string) => HTML_ENTITIES[name.toLowerCase()] ?? m);
+
+export const htmlToMarkdown = (html: string): string => {
+  let s = html;
+  s = s.replace(/<(script|style)[\s\S]*?<\/\1>/gi, '');
+  s = s.replace(/<a\b[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi, (_, href: string, label: string) => {
+    const text = decodeEntities(label.replace(/<[^>]+>/g, '')).replace(/\s+/g, ' ').trim();
+    return text ? `[${text}](${href})` : href;
+  });
+  s = s.replace(/<h([1-6])\b[^>]*>([\s\S]*?)<\/h\1>/gi, (_, lvl: string, text: string) => {
+    const depth = Math.min(Number(lvl) + 1, 6);
+    return `\n\n${'#'.repeat(depth)} ${text.replace(/<[^>]+>/g, '').trim()}\n\n`;
+  });
+  s = s.replace(/<li\b[^>]*>/gi, '\n- ');
+  s = s.replace(/<\/(p|div|ul|ol|li|blockquote|figure|table|tr)>/gi, '\n');
+  s = s.replace(/<br\s*\/?>/gi, '\n');
+  s = s.replace(/<(strong|b)\b[^>]*>([\s\S]*?)<\/\1>/gi, '**$2**');
+  s = s.replace(/<(em|i)\b[^>]*>([\s\S]*?)<\/\1>/gi, '*$2*');
+  s = s.replace(/<[^>]+>/g, ' ');
+  s = decodeEntities(s);
+  s = s.replace(/[ \t]+/g, ' ');
+  s = s.replace(/ ?\n ?/g, '\n').replace(/\n{3,}/g, '\n\n');
+  return s.trim();
+};
+
+const renderHtmlBlock: RendererFn = (a) =>
+  typeof a.html === 'string' && a.html.trim() ? htmlToMarkdown(a.html) : '';
+
 // ── Specific renderers ───────────────────────────────────────────────
 
 const renderHero: RendererFn = (a) => {
@@ -308,6 +350,7 @@ const registry: Record<string, RendererFn> = {
   'blocks.operating-hours-section': renderOperatingHoursSection,
   'blocks.location-contact': renderLocationContact,
   'shared.schedule-row': renderScheduleRow,
+  'shared.html-block': renderHtmlBlock,
 };
 
 export function renderBlock(componentName: string, attrs: Record<string, unknown>): string {
