@@ -42,6 +42,50 @@ interface StrapiWithSessions {
   db: { query: (uid: string) => { findOne: (opts: { where: Record<string, unknown> }) => Promise<unknown> } };
 }
 
+/** Bearer token off the Authorization header, or null when absent/malformed. */
+export function bearerToken(ctx: PolicyContext): string | null {
+  const auth = ctx.request.header.authorization;
+  if (!auth) return null;
+  const parts = auth.split(/\s+/);
+  if (parts.length !== 2 || parts[0].toLowerCase() !== 'bearer') return null;
+  return parts[1];
+}
+
+/**
+ * Validate an admin session WITHOUT throwing, so callers can fall through to
+ * another credential type. `authorized: false` means "not an admin session",
+ * not "rejected" — is-admin-or-token relies on that distinction to try a
+ * Strapi API token next.
+ */
+export async function tryAdminSession(
+  ctx: PolicyContext,
+): Promise<{ ok: boolean; user?: unknown; deactivated: boolean }> {
+  const token = bearerToken(ctx);
+  if (!token) return { ok: false, deactivated: false };
+
+  const s = (globalThis as unknown as { strapi: StrapiWithSessions }).strapi;
+  if (!s.sessionManager) return { ok: false, deactivated: false };
+
+  const result = s.sessionManager('admin').validateAccessToken(token);
+  if (!result.isValid || !result.payload) return { ok: false, deactivated: false };
+
+  const active = await s.sessionManager('admin').isSessionActive(result.payload.sessionId);
+  if (!active) return { ok: false, deactivated: false };
+
+  const rawUserId = result.payload.userId;
+  const numericUserId = Number(rawUserId);
+  const userId =
+    Number.isFinite(numericUserId) && String(numericUserId) === rawUserId ? numericUserId : rawUserId;
+
+  const user = (await s.db.query('admin::user').findOne({ where: { id: userId } })) as
+    | { isActive?: boolean }
+    | null;
+
+  // Valid session on a deactivated account: authenticated but not permitted.
+  if (!user || user.isActive !== true) return { ok: false, deactivated: true };
+  return { ok: true, user, deactivated: false };
+}
+
 export default async function isAdminPolicy(ctx: PolicyContext): Promise<boolean> {
   const auth = ctx.request.header.authorization;
   if (!auth) throw new UnauthorizedError('Missing admin session token');
