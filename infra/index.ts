@@ -130,7 +130,14 @@ const dbServer = new azure.dbforpostgresql.Server(`${projectName}-pg`, {
     passwordAuth: azure.dbforpostgresql.PasswordAuth.Enabled,
   },
   backup: {
-    backupRetentionDays: 7,
+    // Prod keeps 21 days after the 2026-08-25 outage: an Azure platform fault
+    // (PlatformInitiated, "Unknown Reason") killed the engine for ~2 hours and
+    // recovery depended entirely on point-in-time restore. A longer window is
+    // the cheap half of that lesson — backup storage is free up to the
+    // provisioned 32 GB, and 21 days measured ~22 GB. Set live via `az` during
+    // the incident; declared here so `pulumi up` stops reverting it to 7.
+    // dev/uat stay at 7 — they are rebuildable and not worth the storage.
+    backupRetentionDays: stack === 'prod' ? 21 : 7,
     geoRedundantBackup: azure.dbforpostgresql.GeoRedundantBackup.Disabled,
   },
 });
