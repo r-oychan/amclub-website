@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { useFooterData } from '../../hooks/useFooterData';
+import { useFooterData, type FooterData } from '../../hooks/useFooterData';
 import type { FooterColumnData, FooterLink } from '../../hooks/useFooterData';
 
 // Shared text styles — Framer uses one Lato uppercase scale for almost all footer text
@@ -17,8 +17,8 @@ const SOCIAL_ICONS: Record<string, () => React.ReactElement> = {
   whatsapp: WhatsAppIcon,
 };
 
-export function Footer() {
-  const footer = useFooterData();
+export function Footer({ initialData }: { initialData?: FooterData } = {}) {
+  const footer = useFooterData(initialData);
   const telHref = `tel:${footer.phone.replace(/\s+/g, '')}`;
   const mailHref = `mailto:${footer.email}`;
 

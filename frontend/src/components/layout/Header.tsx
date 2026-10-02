@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useLocation } from 'react-router';
-import { useHeaderData } from '../../hooks/useHeaderData';
+import { useHeaderData, type HeaderData } from '../../hooks/useHeaderData';
 import type { NavItemConfig, NavChild } from '../../hooks/useHeaderData';
 
 function NavLink({ href, isExternal, className, style, onClick, children }: {
@@ -21,13 +21,13 @@ function NavLink({ href, isExternal, className, style, onClick, children }: {
   return <Link to={href} className={className} style={style} onClick={onClick}>{children}</Link>;
 }
 
-export function Header() {
+export function Header({ initialData }: { initialData?: HeaderData } = {}) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const dropdownTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const location = useLocation();
-  const headerData = useHeaderData();
+  const headerData = useHeaderData(initialData);
 
   const { logoUrl, navItems, ctaButton } = headerData;
   const leftItems = navItems.slice(0, 4);

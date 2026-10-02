@@ -5,6 +5,18 @@
 
 ---
 
+## Next.js homepage POC (dev only)
+
+- `next-home/` is a Next.js 16 App Router app on Node 24. `/` and `/home` render on each request (`force-dynamic`, Strapi fetches `no-store`). No publish webhook or rebuild is needed for current published homepage content.
+- `next-home/lib/cms.ts` fetches `home-page`, featured/upcoming `event` entries, `header`, `footer`, and `site-config` in parallel using server-only `STRAPI_INTERNAL_URL`. Production runs against the same environment's Strapi at `http://127.0.0.1:1337`; local verification can point to a public published CMS origin. Singapore dates drive event selection.
+- Existing blocks render through `frontend/src/pages/home-view.tsx`, shared with the Vite `HomePage.tsx`. Header/Footer accept initial CMS data to include navigation and contact links in the response. The POC uses normal anchor navigation to hand other routes back to Vite.
+- Metadata is rendered in the initial document using page/global CMS SEO, with a homepage title and CMS-derived description when SEO is blank. `PUBLIC_SITE_URL` supplies the canonical origin.
+- Existing Strapi `?preview=<token>&status=draft` links are validated against server-only `PREVIEW_TOKEN`; authenticated draft fetches are request-scoped and uncached. Preview pages are noindex and omit analytics/chatbot. No CMS schema changes.
+- nginx proxies exact `/` and `/home` matches and `/_next/` assets to Next on port 3000. Existing Vite routes, Strapi API/admin, branding assets and uploads retain their routes. `NEXT_HOME_ENABLED` is true only for the Pulumi `dev` stack; uat/prod keep the Vite homepage.
+- Docker builds Next's standalone server; entrypoint starts/monitors it only when enabled, after Strapi is healthy. CI checks both frontends. Rollback: set the dev stack's `NEXT_HOME_ENABLED` expression to false and redeploy.
+- SSR compatibility: hero media queries provide a deterministic server snapshot; scroll-fade sections begin visible, so meaningful HTML is readable before hydration. Browser-only chatbot loads after hydration.
+- POC scope excludes SSR for other pages, ISR/webhook caching, new structured CMS fields and the report's content corrections. Validate crawlable body/metadata, desktop/mobile hydration, cross-app navigation and draft isolation before promotion.
+
 ## Pages
 
 | Route | Page Component | Strapi Type | Content Type Name | CMS Wired |
