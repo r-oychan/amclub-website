@@ -16,10 +16,7 @@ export function useScrollFadeIn<T extends HTMLElement = HTMLDivElement>(
   const { threshold = 0.15, rootMargin = '0px 0px -10% 0px', replay = true } = opts;
 
   const ref = useRef<T>(null);
-  const [isVisible, setIsVisible] = useState(() =>
-    typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  );
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const el = ref.current;
