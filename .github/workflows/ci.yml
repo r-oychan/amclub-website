@@ -53,6 +53,7 @@ jobs:
       - run: cd next-home && npm run typecheck
       - run: cd next-home && npm run lint
       - run: cd next-home && npm run build
+      - run: cd next-home && npm run test:ssr
 
   infra:
     name: Infra — Typecheck
