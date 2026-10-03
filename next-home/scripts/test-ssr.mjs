@@ -11,6 +11,9 @@ const cms = createServer((req, res) => {
   const data = {
     '/api/home-page': { title: 'Home', hero: { heading: 'A Home Away From Home' }, aboutSection: { heading: draft ? 'Private draft heading' : revision } },
     '/api/events': [],
+    '/api/about-page': { title: 'About fixture', hero: { heading: draft ? 'Draft about fixture' : 'Published about fixture' }, generalCommittee: { heading: 'Fixture committee' } },
+    '/api/committee-members': [{ documentId: 'member-1', name: 'Fixture member', role: 'Chair', memberType: 'general-committee' }],
+    '/api/restaurants': url.searchParams.get('filters[slug][$eq]') === 'fixture-venue' ? [{ name: 'Fixture restaurant', slug: 'fixture-venue', description: 'Fixture restaurant description', operatingHoursSections: [{ title: 'Opening Hours', rows: [{ dayRange: 'Monday', time: '12pm to 9pm' }] }] }] : [],
     '/api/header': { logo: { url: '/branding/logo.webp' }, navItems: [{ label: 'Home', href: '/home' }] },
     '/api/footer': { address: 'Test address', phone: '+65 1234 5678', email: 'test@example.com' },
     '/api/site-config': { siteName: 'Test Club', defaultSeo: { metaDescription: 'CMS test description' } },
@@ -70,7 +73,18 @@ try {
   assert.ok(!invalid.html.includes('Private draft heading'));
   assert.ok((await read('/')).html.includes(revision), 'root serves SSR homepage');
   assert.equal((await read('/missing-page')).response.status, 404, 'Next returns a real missing-route status');
-  console.log('PASS SSR body, metadata, freshness, request deduplication, preview isolation, root and errors');
+  const about = await read('/about');
+  assert.equal(about.response.status, 200);
+  assert.ok(about.html.includes('Published about fixture'));
+  assert.ok(about.html.includes('Fixture member'));
+  assert.ok((await read('/about?preview=test-preview-token')).html.includes('Draft about fixture'));
+  const dining = await read('/dining/fixture-venue');
+  assert.equal(dining.response.status, 200);
+  assert.ok(dining.html.includes('Fixture restaurant description'));
+  assert.ok(dining.html.includes('12pm to 9pm'));
+  assert.ok(dining.html.includes('/dining/fixture-venue'));
+  assert.equal((await read('/dining/missing-venue')).response.status, 404);
+  console.log('PASS About, dining details, missing slugs, SSR body, metadata, freshness, request deduplication, preview isolation, root and errors');
 } catch (error) {
   console.error(logs);
   throw error;
