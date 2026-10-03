@@ -22,10 +22,7 @@ export async function fetchPublished<T>(endpoint: string, params?: Record<string
 }
 
 export const getHomeData = cache(async (token?: string, requestedStatus?: string) => {
-  const expected = process.env.PREVIEW_TOKEN;
-  const valid = Boolean(token && expected && Buffer.byteLength(token) === Buffer.byteLength(expected) && timingSafeEqual(Buffer.from(token), Buffer.from(expected)));
-  if (token && !valid) throw new Error('Invalid CMS preview token');
-  const preview = valid ? { token: token!, status: requestedStatus === 'published' ? 'published' : 'draft' } : undefined;
+  const preview = resolvePreview(token, requestedStatus);
   const read = <T,>(endpoint: string, params?: Record<string, string>) => fetchPublished<T>(endpoint, params, preview);
   const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Singapore' }).format(new Date());
   const eventParams = { 'sort[0]': 'date:asc', 'populate[image]': 'true', 'populate[category]': 'true', 'filters[date][$gte]': today, 'pagination[limit]': '9' };
@@ -38,4 +35,22 @@ export const getHomeData = cache(async (token?: string, requestedStatus?: string
   ]);
   const events = curated.length ? curated : await read<StrapiEvent[]>('/events', eventParams);
   return { home, events, header, footer, config };
+});
+
+export function resolvePreview(token?: string, requestedStatus?: string) {
+  const expected = process.env.PREVIEW_TOKEN;
+  const valid = Boolean(token && expected && Buffer.byteLength(token) === Buffer.byteLength(expected) && timingSafeEqual(Buffer.from(token), Buffer.from(expected)));
+  if (token && !valid) throw new Error('Invalid CMS preview token');
+  const preview = valid ? { token: token!, status: requestedStatus === 'published' ? 'published' : 'draft' } : undefined;
+  return preview;
+}
+
+export const getSiteData = cache(async (token?: string, status?: string) => {
+  const preview = resolvePreview(token, status);
+  const [header, footer, config] = await Promise.all([
+    fetchPublished<StrapiHeader>('/header', { 'populate[logo]': 'true', 'populate[navItems][populate][columns][populate]': '*', 'populate[ctaButton]': '*' }, preview),
+    fetchPublished<StrapiFooter>('/footer', { 'populate[logo]': 'true', 'populate[columns][populate][links]': '*', 'populate[socials]': '*', 'populate[legalLinks]': '*' }, preview),
+    fetchPublished<SiteConfig>('/site-config', undefined, preview),
+  ]);
+  return { header, footer, config };
 });

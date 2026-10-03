@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Link, useLocation } from 'react-router';
+import { useLocation } from 'react-router';
+import { Link } from '../shared/site-link';
 import { useHeaderData, type HeaderData } from '../../hooks/useHeaderData';
 import type { NavItemConfig, NavChild } from '../../hooks/useHeaderData';
 

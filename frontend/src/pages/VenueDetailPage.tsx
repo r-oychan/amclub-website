@@ -3,7 +3,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { fetchAPI } from '../lib/api';
 import { isHardLink } from '../lib/links';
 import { Markdown } from '../components/shared/Markdown';
-import { getSubpage } from '../data/subpages';
+import { staticFallback, resolveMarquee } from '../lib/venue-data';
 import { Button } from '../components/shared/Button';
 import { DetailHeroBanner } from '../components/detail/DetailHeroBanner';
 import { DetailBreadcrumb } from '../components/detail/DetailBreadcrumb';
@@ -39,7 +39,7 @@ interface LocationContact {
   email?: string;
 }
 
-interface VenueData {
+export interface VenueData {
   id?: number;
   name: string;
   slug: string;
@@ -242,45 +242,7 @@ const SECTION_MAP: Record<string, { apiPath: string; parentLabel: string; parent
   'home-sub': { apiPath: '/facilities', parentLabel: 'The American Club', parentHref: '/home' },
 };
 
-function staticFallback(section: string, slug: string): VenueData | null {
-  const sp = getSubpage(section, slug);
-  if (!sp) return null;
-  return {
-    name: sp.name,
-    slug: sp.slug,
-    parentSection: sp.parentSection,
-    parentHref: sp.parentHref,
-    description: sp.description,
-    cuisineType: sp.type,
-    locationLevel: sp.level,
-    phone: sp.phone,
-    email: sp.email,
-    hours: sp.hours,
-    dressCode: sp.dressCode,
-    capacity: sp.capacity,
-    image: sp.image ? { url: sp.image } : undefined,
-    video: sp.video,
-    ctas: sp.ctas,
-    extraSections: sp.extraSections,
-    promoCards: sp.promoCards,
-    teamMembers: sp.teamMembers,
-    teamHeading: sp.teamHeading,
-    teamLayout: sp.teamLayout,
-    bottomCtas: sp.bottomCtas,
-    imagePanels: sp.imagePanels,
-    cardSections: sp.cardSections,
-    faq: sp.faq,
-    gallery: sp.gallery,
-    partyPackages: sp.partyPackages,
-    quotes: sp.quotes,
-    operatingHoursSections: sp.operatingHoursSections,
-    locationContact: sp.locationContact ?? null,
-    downloads: sp.downloads,
-    tierCards: sp.tierCards,
-    venueCards: sp.venueCards,
-    packageCards: sp.packageCards,
-  };
-}
+
 
 /** Membership subpages backed by SINGLE TYPES rather than a collection.
  *  These render through this page's standard layout (identical to prod), but
@@ -401,21 +363,7 @@ function mapSingletonToVenue(s: MembershipSingleton, fallback: VenueData | null)
  *    (media objects flattened to URL strings for MarqueeGallery);
  *  - component absent (entry never edited) → static subpages fallback.
  *  The flat `gallery` media field is deliberately ignored — wrong shape. */
-function resolveMarquee(api: VenueData, fallback: VenueData | null): VenueData['gallery'] {
-  const m = api.marquee;
-  if (m) {
-    if (m.enabled === false) return undefined;
-    const rows = (m.rows ?? [])
-      .map((r) => ({
-        direction: r.direction ?? undefined,
-        durationSec: r.durationSec ?? undefined,
-        images: (r.images ?? []).map((img) => img.url),
-      }))
-      .filter((r) => r.images.length > 0);
-    return rows.length > 0 ? { heading: m.heading ?? undefined, rows } : undefined;
-  }
-  return fallback?.gallery;
-}
+
 
 /* Map extra section titles to DetailSection icon names */
 /** Extract a YouTube video ID from a watch URL, youtu.be URL, embed URL, or raw ID. */
@@ -435,7 +383,7 @@ function youtubeEmbedUrl(input: string): string | null {
 const STRIPE_PATTERN_SVG =
   'url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22126%22 height=%22126%22%3E%3Cpath d=%22M126 0v21.584L21.584 126H0v-17.585L108.415 0H126Zm0 108.414V126h-17.586L126 108.414Zm0-84v39.171L63.585 126H24.414L126 24.414Zm0 42v39.17L105.584 126h-39.17L126 66.414ZM105.586 0 0 105.586V66.415L66.415 0h39.171Zm-42 0L0 63.586V24.415L24.415 0h39.171Zm-42 0L0 21.586V0h21.586Z%22 fill=%22rgb(136,136,136,0.2)%22 fill-rule=%22evenodd%22/%3E%3C/svg%3E")';
 
-export default function VenueDetailPage({ section: sectionProp }: { section?: string }) {
+export default function VenueDetailPage({ section: sectionProp, initialVenue, initialSlug }: { section?: string; initialVenue?: VenueData; initialSlug?: string }) {
   const { section: sectionParam, slug: slugParam, subSlug } = useParams<{
     section: string;
     slug: string;
@@ -445,11 +393,11 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
   // When a sub-slug is present (e.g. /fitness/aquatics/swimamerica), the
   // detail entry is registered under `<slug>-<subSlug>` in subpages.ts so it
   // stays unique across the section.
-  const lookupSlug = subSlug ? `${slugParam}-${subSlug}` : slugParam;
-  const [venue, setVenue] = useState<VenueData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const lookupSlug = initialSlug ?? (subSlug ? `${slugParam}-${subSlug}` : slugParam);
+  const [venue, setVenue] = useState<VenueData | null>(initialVenue ?? null);
+  const [loading, setLoading] = useState(!initialVenue);
   const [bioModal, setBioModal] = useState<{ image: string; name: string } | null>(null);
-  usePageSeo(venue ? (venue.seo ?? { metaTitle: venue.name }) : null);
+  usePageSeo(venue ? (venue.seo ?? { metaTitle: venue.name }) : null, !initialVenue);
   const location = useLocation();
 
   // Close bio modal on Esc; lock background scroll while open.
@@ -480,7 +428,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
   }, [location.hash, venue]);
 
   useEffect(() => {
-    if (!config || !lookupSlug || !section) return;
+    if (initialVenue || !config || !lookupSlug || !section) return;
     const load = async () => {
       setLoading(true);
       // Singleton-backed subpages (e.g. /membership/niche-group-membership):
@@ -652,7 +600,7 @@ export default function VenueDetailPage({ section: sectionProp }: { section?: st
       setLoading(false);
     };
     load();
-  }, [config, lookupSlug, section]);
+  }, [config, lookupSlug, section, initialVenue]);
 
   if (!config) {
     return (

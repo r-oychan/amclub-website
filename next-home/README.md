@@ -23,3 +23,7 @@ Local `npm run start` launches the standalone server and copies static/branding 
 See `../SPECS.md` for routing, request-time freshness, preview isolation and rollback. The POC intentionally uses uncached SSR. CMS downtime produces an error instead of static marketing/price fallbacks.
 
 After deployment: `npm run verify:ssr -- https://dev.amclub.org.sg`. The fixture-backed SSR test verifies request-time freshness and authenticated draft isolation without writing to a CMS.
+
+## Incremental migration
+
+`/about` and `/dining/:slug` render published CMS data on the server using the shared site shell and metadata helper. Unknown restaurant slugs return 404. `/dining/dining-promotion` and other sections remain on Vite behind nginx. Existing About/restaurant CMS controllers force published status; draft preview support is a separate CMS change.

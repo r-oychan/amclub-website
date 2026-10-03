@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { Link } from '../shared/site-link';
 import { useFooterData, type FooterData } from '../../hooks/useFooterData';
 import type { FooterColumnData, FooterLink } from '../../hooks/useFooterData';
 

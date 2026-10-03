@@ -18,7 +18,7 @@ import type { PageSeo } from '../lib/seo';
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string; caption?: string };
 
-interface StrapiAboutPage {
+export interface StrapiAboutPage {
   title: string;
   hero?: { heading: string; subheading?: string; variant?: 'full' | 'compact'; backgroundImage?: StrapiMedia };
   heritage?: {
@@ -52,7 +52,7 @@ interface StrapiAboutPage {
   seo?: PageSeo | null;
 }
 
-interface StrapiCommitteeMember {
+export interface StrapiCommitteeMember {
   documentId: string;
   name: string;
   role: string;
@@ -71,14 +71,17 @@ const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
 const linksOf = (ls?: StrapiLink[]) =>
   (ls ?? []).map((l) => ({ label: l.label, href: l.href ?? '#', isExternal: l.isExternal, caption: l.caption }));
 
-export default function AboutPage() {
-  const [data, setData] = useState<StrapiAboutPage | null>(null);
-  const [gc, setGc] = useState<StrapiCommitteeMember[]>([]);
-  const [mgmt, setMgmt] = useState<StrapiCommitteeMember[]>([]);
-  const [loaded, setLoaded] = useState(false);
-  usePageSeo(data?.seo ?? null);
+export interface AboutInitialData { page: StrapiAboutPage; gc: StrapiCommitteeMember[]; mgmt: StrapiCommitteeMember[] }
+
+export default function AboutPage({ initialData }: { initialData?: AboutInitialData } = {}) {
+  const [data, setData] = useState<StrapiAboutPage | null>(initialData?.page ?? null);
+  const [gc, setGc] = useState<StrapiCommitteeMember[]>(initialData?.gc ?? []);
+  const [mgmt, setMgmt] = useState<StrapiCommitteeMember[]>(initialData?.mgmt ?? []);
+  const [loaded, setLoaded] = useState(Boolean(initialData));
+  usePageSeo(data?.seo ?? null, !initialData);
 
   useEffect(() => {
+    if (initialData) return;
     let cancelled = false;
     (async () => {
       const [page, gcList, mgmtList] = await Promise.all([
@@ -103,7 +106,7 @@ export default function AboutPage() {
       setLoaded(true);
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [initialData]);
 
   if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
   if (!data) return <div className="min-h-screen flex items-center justify-center text-text-dark/70">About page content unavailable.</div>;

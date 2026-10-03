@@ -1,4 +1,4 @@
-import { Link } from 'react-router';
+import { Link } from './site-link';
 import { CtaIcon, type CtaIconName } from './CtaIcon';
 import { isHardLink } from '../../lib/links';
 
