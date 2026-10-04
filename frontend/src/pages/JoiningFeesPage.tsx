@@ -43,7 +43,7 @@ type StrapiSupplementaryCard = {
   secondaryCta?: StrapiLink | null;
 };
 
-interface StrapiJoiningFeesPage {
+export interface StrapiJoiningFeesPage {
   title?: string;
   individualHeading?: string;
   individualSubheading?: string;
@@ -642,19 +642,9 @@ export function JoiningFeesView({ data }: { data: JoiningFeesData }) {
   );
 }
 
-export default function JoiningFeesPage() {
-  const [data, setData] = useState<JoiningFeesData>(JOINING_FEES_FALLBACK);
-  const [seo, setSeo] = useState<PageSeo | null>(null);
-  usePageSeo(seo);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const api = await fetchAPI<StrapiJoiningFeesPage>('/joining-fees-page');
-      if (cancelled || !api) return;
-      setSeo(api.seo ?? null);
+function normalizePage(api: StrapiJoiningFeesPage): JoiningFeesData {
       const fb = JOINING_FEES_FALLBACK;
-      setData({
+      return {
         individualHeading: pickStr(api.individualHeading, fb.individualHeading),
         individualSubheading: pickStr(api.individualSubheading, fb.individualSubheading),
         individualCtas: normalizeLinks(api.individualCtas, fb.individualCtas),
@@ -676,12 +666,27 @@ export default function JoiningFeesPage() {
           api.additionalNotes && api.additionalNotes.length > 0
             ? api.additionalNotes.map((n) => n.text)
             : fb.additionalNotes,
-      });
+      };
+}
+
+export default function JoiningFeesPage({ initialData }: { initialData?: { api: StrapiJoiningFeesPage } } = {}) {
+  const [data, setData] = useState<JoiningFeesData>(() => initialData ? normalizePage(initialData.api) : JOINING_FEES_FALLBACK);
+  const [seo, setSeo] = useState<PageSeo | null>(initialData?.api.seo ?? null);
+  usePageSeo(seo, !initialData);
+
+  useEffect(() => {
+    if (initialData) return;
+    let cancelled = false;
+    (async () => {
+      const api = await fetchAPI<StrapiJoiningFeesPage>('/joining-fees-page');
+      if (cancelled || !api) return;
+      setSeo(api.seo ?? null);
+      setData(normalizePage(api));
     })();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [initialData]);
 
   return <JoiningFeesView data={data} />;
 }

@@ -21,7 +21,7 @@ type StrapiLink = {
   icon?: CtaIconName | null;
 };
 
-interface StrapiEvent {
+export interface StrapiEvent {
   documentId: string;
   title: string;
   subtitle?: string;
@@ -50,6 +50,7 @@ const formatEventDate = (iso: string): string => {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
   return d.toLocaleString('en-US', {
+    timeZone: 'Asia/Singapore',
     weekday: 'long',
     month: 'long',
     day: 'numeric',
@@ -60,13 +61,13 @@ const formatEventDate = (iso: string): string => {
 const formatMonth = (iso: string): string => {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+  return d.toLocaleString('en-US', { month: 'short', timeZone: 'Asia/Singapore' }).toUpperCase();
 };
 
 const formatDay = (iso: string): string => {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '';
-  return String(d.getDate());
+  return d.toLocaleString('en-US', { day: 'numeric', timeZone: 'Asia/Singapore' });
 };
 
 const paragraphs = (text?: string): string[] =>
@@ -75,13 +76,16 @@ const paragraphs = (text?: string): string[] =>
     .map((p) => p.trim())
     .filter(Boolean);
 
-export default function EventDetailPage() {
+export interface EventDetailInitialData { event: StrapiEvent }
+
+export default function EventDetailPage({ initialData }: { initialData?: EventDetailInitialData } = {}) {
   const { slug } = useParams<{ slug: string }>();
-  const [event, setEvent] = useState<StrapiEvent | null>(null);
-  const [loading, setLoading] = useState(true);
-  usePageSeo(event ? (event.seo ?? { metaTitle: event.title }) : null);
+  const [event, setEvent] = useState<StrapiEvent | null>(initialData?.event ?? null);
+  const [loading, setLoading] = useState(!initialData);
+  usePageSeo(event ? (event.seo ?? { metaTitle: event.title }) : null, !initialData);
 
   useEffect(() => {
+    if (initialData) return;
     if (!slug) return;
     let cancelled = false;
     (async () => {
@@ -99,7 +103,7 @@ export default function EventDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [slug]);
+  }, [slug, initialData]);
 
   if (loading) {
     return (

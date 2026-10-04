@@ -21,7 +21,7 @@ type StrapiLink = {
   icon?: CtaIconName | null;
 };
 
-interface StrapiRestaurant {
+export interface StrapiRestaurant {
   documentId: string;
   name: string;
   slug: string;
@@ -49,7 +49,7 @@ interface StrapiOverlay {
   ctas?: StrapiLink[];
 }
 
-interface StrapiDiningPage {
+export interface StrapiDiningPage {
   title: string;
   hero?: { heading: string; subheading?: string; variant?: 'full' | 'compact'; backgroundImage?: StrapiMedia };
   clubFavorites?: {
@@ -75,13 +75,16 @@ const linksOf = (ls?: StrapiLink[]) =>
     icon: l.icon ?? 'arrow',
   }));
 
-export default function DiningPage() {
-  const [data, setData] = useState<StrapiDiningPage | null>(null);
-  const [restaurants, setRestaurants] = useState<StrapiRestaurant[]>([]);
-  const [loaded, setLoaded] = useState(false);
-  usePageSeo(data?.seo ?? null);
+export interface DiningInitialData { data: StrapiDiningPage; restaurants: StrapiRestaurant[] }
+
+export default function DiningPage({ initialData }: { initialData?: DiningInitialData } = {}) {
+  const [data, setData] = useState<StrapiDiningPage | null>(initialData?.data ?? null);
+  const [restaurants, setRestaurants] = useState<StrapiRestaurant[]>(initialData?.restaurants ?? []);
+  const [loaded, setLoaded] = useState(Boolean(initialData));
+  usePageSeo(data?.seo ?? null, !initialData);
 
   useEffect(() => {
+    if (initialData) return;
     let cancelled = false;
     (async () => {
       const [page, list] = await Promise.all([
@@ -100,7 +103,7 @@ export default function DiningPage() {
       setLoaded(true);
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [initialData]);
 
   if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
   if (!data) return <div className="min-h-screen flex items-center justify-center text-text-dark/70">Dining page content unavailable.</div>;

@@ -25,7 +25,7 @@ interface AdvertiseBlock {
   body?: string;
 }
 
-interface AdvertiseData {
+export interface AdvertiseData {
   title?: string;
   label?: string;
   heading?: string;
@@ -54,11 +54,14 @@ const RIGHT_COL_GAP = '32px';
  * component fetches the singleton and inlines text-block body content
  * into the right column so the visual matches.
  */
-export default function AdvertiseWithUsPage() {
-  const [data, setData] = useState<AdvertiseData | null>(null);
-  const [loading, setLoading] = useState(true);
+export interface AdvertiseWithUsInitialData { data: AdvertiseData }
+
+export default function AdvertiseWithUsPage({ initialData }: { initialData?: AdvertiseWithUsInitialData } = {}) {
+  const [data, setData] = useState<AdvertiseData | null>(initialData?.data ?? null);
+  const [loading, setLoading] = useState(!initialData);
 
   useEffect(() => {
+    if (initialData) return;
     let cancelled = false;
     (async () => {
       const d = await fetchAPI<AdvertiseData>('/advertise-with-us-page');
@@ -69,7 +72,7 @@ export default function AdvertiseWithUsPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [initialData]);
 
   if (loading) {
     return (
