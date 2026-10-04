@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useUrlHash } from '../hooks/use-url-hash';
 import { fetchAPI, STRAPI_URL } from '../lib/api';
 import { Hero } from '../components/blocks/Hero';
 import { CtaBanner } from '../components/blocks/CtaBanner';
@@ -31,7 +32,7 @@ interface StrapiPromotionRestaurant {
   order?: number | null;
 }
 
-interface StrapiPromotion {
+export interface StrapiPromotion {
   documentId: string;
   title: string;
   slug: string;
@@ -46,7 +47,7 @@ interface StrapiPromotion {
   order?: number;
 }
 
-interface StrapiDiningPromotionsPage {
+export interface StrapiDiningPromotionsPage {
   title: string;
   subtitle?: string;
   hero?: { heading: string; subheading?: string; variant?: 'full' | 'compact'; backgroundImage?: StrapiMedia };
@@ -237,26 +238,28 @@ function groupPromotions(promotions: StrapiPromotion[]): Map<Tag, StrapiPromotio
   return ordered;
 }
 
-function tagFromHash(availableTags: readonly Tag[]): Tag | null {
-  if (typeof window === 'undefined') return null;
-  const slug = window.location.hash.replace(/^#promo-/, '');
+function tagFromHash(availableTags: readonly Tag[], hash: string): Tag | null {
+  const slug = hash.replace(/^#promo-/, '');
   return slug && availableTags.includes(slug) ? slug : null;
 }
 
-export default function DiningPromotionsPage() {
-  const [data, setData] = useState<StrapiDiningPromotionsPage | null>(null);
-  const [promotions, setPromotions] = useState<StrapiPromotion[]>([]);
-  const [loaded, setLoaded] = useState(false);
+export interface DiningPromotionsInitialData { data: StrapiDiningPromotionsPage; promotions: StrapiPromotion[] }
+
+export default function DiningPromotionsPage({ initialData }: { initialData?: DiningPromotionsInitialData } = {}) {
+  const [data, setData] = useState<StrapiDiningPromotionsPage | null>(initialData?.data ?? null);
+  const [promotions, setPromotions] = useState<StrapiPromotion[]>(initialData?.promotions ?? []);
+  const [loaded, setLoaded] = useState(Boolean(initialData));
   // Seed the active tag from the URL hash if one is present (e.g. arrived via
   // /dining/dining-promotion#promo-central). Lazy-init so we don't setState
   // inside an effect.
   // Hash-driven seed runs after promos load (we need availableTags to validate
   // the hash slug), so init to null here and let the post-load effect set it.
   const [activeTag, setActiveTag] = useState<Tag | null>(null);
-  usePageSeo(data?.seo ?? null);
+  usePageSeo(data?.seo ?? null, !initialData);
   const sectionRefs = useRef<Map<Tag, HTMLElement>>(new Map());
 
   useEffect(() => {
+    if (initialData) return;
     let cancelled = false;
     (async () => {
       const [page, list] = await Promise.all([
@@ -272,7 +275,7 @@ export default function DiningPromotionsPage() {
       setLoaded(true);
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [initialData]);
 
   const groups = useMemo(() => groupPromotions(promotions), [promotions]);
   const availableTags = useMemo(() => Array.from(groups.keys()), [groups]);
@@ -280,7 +283,8 @@ export default function DiningPromotionsPage() {
   // All three sources are computed during render so we avoid the
   // react-hooks/set-state-in-effect violation that would come from seeding
   // `activeTag` inside the post-load effect.
-  const hashTag = useMemo(() => tagFromHash(availableTags), [availableTags]);
+  const hash = useUrlHash();
+  const hashTag = useMemo(() => tagFromHash(availableTags, hash), [availableTags, hash]);
   const displayedActiveTag: Tag | null = activeTag ?? hashTag ?? availableTags[0] ?? null;
 
   // Scroll to the matching section if the page was opened with a

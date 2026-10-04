@@ -8,7 +8,7 @@ import { REFERRAL_FALLBACK, type ReferralData, type ReferralRow } from '../data/
 import { usePageSeo } from '../hooks/usePageSeo';
 import type { PageSeo } from '../lib/seo';
 
-interface StrapiReferralPage {
+export interface StrapiReferralPage {
   title?: string;
   heading?: string;
   body?: string;
@@ -221,19 +221,9 @@ export function ReferralView({ data }: { data: ReferralData }) {
   );
 }
 
-export default function ReferralPage() {
-  const [data, setData] = useState<ReferralData>(REFERRAL_FALLBACK);
-  const [seo, setSeo] = useState<PageSeo | null>(null);
-  usePageSeo(seo);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const api = await fetchAPI<StrapiReferralPage>('/referral-page');
-      if (cancelled || !api) return;
-      setSeo(api.seo ?? null);
+function normalizePage(api: StrapiReferralPage): ReferralData {
       const fb = REFERRAL_FALLBACK;
-      setData({
+      return {
         heading: pickStr(api.heading, fb.heading),
         body: pickStr(api.body, fb.body),
         ctaLabel: pickStr(api.cta?.label, fb.ctaLabel),
@@ -248,12 +238,27 @@ export default function ReferralPage() {
         },
         rows: api.rows && api.rows.length > 0 ? api.rows : fb.rows,
         footnote: pickStr(api.footnote, fb.footnote),
-      });
+      };
+}
+
+export default function ReferralPage({ initialData }: { initialData?: { api: StrapiReferralPage } } = {}) {
+  const [data, setData] = useState<ReferralData>(() => initialData ? normalizePage(initialData.api) : REFERRAL_FALLBACK);
+  const [seo, setSeo] = useState<PageSeo | null>(initialData?.api.seo ?? null);
+  usePageSeo(seo, !initialData);
+
+  useEffect(() => {
+    if (initialData) return;
+    let cancelled = false;
+    (async () => {
+      const api = await fetchAPI<StrapiReferralPage>('/referral-page');
+      if (cancelled || !api) return;
+      setSeo(api.seo ?? null);
+      setData(normalizePage(api));
     })();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [initialData]);
 
   return <ReferralView data={data} />;
 }

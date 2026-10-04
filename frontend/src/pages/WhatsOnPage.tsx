@@ -11,7 +11,7 @@ import type { PageSeo } from '../lib/seo';
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string };
 
-interface StrapiWhatsOnPage {
+export interface StrapiWhatsOnPage {
   title: string;
   hero?: { heading: string; subheading?: string; variant?: 'full' | 'compact'; backgroundImage?: StrapiMedia };
   eventsSection?: { heading?: string; cta?: StrapiLink; maxItems?: number };
@@ -19,14 +19,14 @@ interface StrapiWhatsOnPage {
   seo?: PageSeo | null;
 }
 
-interface StrapiCategory {
+export interface StrapiCategory {
   documentId: string;
   name: string;
   slug: string;
   displayOrder?: number | null;
 }
 
-interface StrapiEvent {
+export interface StrapiEvent {
   documentId: string;
   title: string;
   slug?: string;
@@ -46,13 +46,13 @@ const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
 const formatMonth = (iso: string): string => {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleString('en-US', { month: 'short' }).toUpperCase();
+  return d.toLocaleString('en-US', { month: 'short', timeZone: 'Asia/Singapore' }).toUpperCase();
 };
 
 const formatDay = (iso: string): string => {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '';
-  return String(d.getDate());
+  return d.toLocaleString('en-US', { day: 'numeric', timeZone: 'Asia/Singapore' });
 };
 
 const sortCategories = (cats: StrapiCategory[]): StrapiCategory[] => {
@@ -75,15 +75,18 @@ const readHashSlug = (): string | null => {
   return raw || null;
 };
 
-export default function WhatsOnPage() {
-  const [data, setData] = useState<StrapiWhatsOnPage | null>(null);
-  const [events, setEvents] = useState<StrapiEvent[]>([]);
-  const [categories, setCategories] = useState<StrapiCategory[]>([]);
-  const [activeSlug, setActiveSlug] = useState<string | null>(readHashSlug);
-  const [loaded, setLoaded] = useState(false);
-  usePageSeo(data?.seo ?? null);
+export interface WhatsOnInitialData { data: StrapiWhatsOnPage; events: StrapiEvent[]; categories: StrapiCategory[] }
+
+export default function WhatsOnPage({ initialData }: { initialData?: WhatsOnInitialData } = {}) {
+  const [data, setData] = useState<StrapiWhatsOnPage | null>(initialData?.data ?? null);
+  const [events, setEvents] = useState<StrapiEvent[]>(initialData?.events ?? []);
+  const [categories, setCategories] = useState<StrapiCategory[]>(sortCategories(initialData?.categories ?? []));
+  const [activeSlug, setActiveSlug] = useState<string | null>(null);
+  const [loaded, setLoaded] = useState(Boolean(initialData));
+  usePageSeo(data?.seo ?? null, !initialData);
 
   useEffect(() => {
+    if (initialData) return;
     let cancelled = false;
     (async () => {
       const [page, evs, cats] = await Promise.all([
@@ -106,12 +109,13 @@ export default function WhatsOnPage() {
       setLoaded(true);
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [initialData]);
 
   // Keep the filter in sync with browser back/forward navigation and external
   // links that change `#…` while the page is already mounted.
   useEffect(() => {
     const onHashChange = () => setActiveSlug(readHashSlug());
+    onHashChange();
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);

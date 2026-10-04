@@ -6,7 +6,12 @@ import type { StrapiHeader } from '../../frontend/src/hooks/useHeaderData';
 import type { StrapiFooter } from '../../frontend/src/hooks/useFooterData';
 import type { PageSeo } from '../../frontend/src/lib/seo';
 
-export interface SiteConfig { siteName?: string | null; defaultSeo?: PageSeo | null }
+export interface SiteConfig extends Partial<import("../../frontend/src/hooks/useSiteCopy").SiteCopy> { siteName?: string | null; defaultSeo?: PageSeo | null }
+
+export class CmsHttpError extends Error {
+  constructor(public readonly status: number, endpoint: string) { super(`CMS ${endpoint} returned ${status}`); }
+}
+export class CmsEmptyError extends Error {}
 
 export async function fetchPublished<T>(endpoint: string, params?: Record<string, string>, preview?: { token: string; status: string }): Promise<T> {
   const origin = process.env.STRAPI_INTERNAL_URL;
@@ -15,9 +20,9 @@ export async function fetchPublished<T>(endpoint: string, params?: Record<string
   for (const [key, value] of Object.entries(params ?? {})) url.searchParams.set(key, value);
   url.searchParams.set('status', preview?.status ?? 'published');
   const response = await fetch(url, { cache: 'no-store', headers: preview ? { Authorization: `Bearer ${preview.token}` } : undefined, signal: AbortSignal.timeout(10000) });
-  if (!response.ok) throw new Error(`CMS ${endpoint} returned ${response.status}`);
+  if (!response.ok) throw new CmsHttpError(response.status, endpoint);
   const result: { data: T | null } = await response.json();
-  if (!result.data) throw new Error(`CMS ${endpoint} has no published content`);
+  if (!result.data) throw new CmsEmptyError(`CMS ${endpoint} has no published content`);
   return result.data;
 }
 
@@ -54,3 +59,12 @@ export const getSiteData = cache(async (token?: string, status?: string) => {
   ]);
   return { header, footer, config };
 });
+
+/** Detail routes may be absent; transport/server errors must still reach the error boundary. */
+export async function fetchOptional<T>(endpoint: string, params?: Record<string, string>, preview?: ReturnType<typeof resolvePreview>): Promise<T | null> {
+  try { return await fetchPublished<T>(endpoint, params, preview); }
+  catch (error) {
+    if (error instanceof CmsEmptyError || (error instanceof CmsHttpError && error.status === 404)) return null;
+    throw error;
+  }
+}

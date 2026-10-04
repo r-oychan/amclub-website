@@ -26,6 +26,17 @@ for (const path of ['/', '/home']) {
   assert.match(asset.response.headers.get('content-type') ?? '', /text\/css/, 'Next stylesheet served');
   console.log(`PASS ${path}: CMS body, metadata, no-store and CSS`);
 }
-const { body: dining } = await get('/dining');
-assert.match(dining, /<div id="root"><\/div>/, 'Nearby route still uses Vite');
-console.log('PASS /dining: retained Vite routing');
+for (const path of ['/about', '/dining', '/dining/dining-promotion', '/fitness', '/kids', '/event-spaces', '/membership', '/membership/joining-fees', '/whats-on', '/home-sub/news', '/home-sub/gallery', '/home-sub/contact-us', '/faq', '/privacy-statement']) {
+  const { response, body } = await get(path);
+  const html = body.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '');
+  assert.match(html, /<main\b[^>]*>[\s\S]*<h[12]\b/, `${path} populated main content`);
+  assert.match(html, /<title>[^<]+<\/title>/, `${path} title`);
+  assert.ok(html.includes(`href="${new URL(path, origin).href}"`), `${path} canonical`);
+  assert.match(html, /\/_next\//, `${path} Next assets`);
+  assert.match(response.headers.get('cache-control') ?? '', /no-store/, `${path} uncached SSR`);
+  assert.doesNotMatch(html, /<div id="root"><\/div>/, `${path} server-rendered body`);
+  console.log(`PASS ${path}: populated SSR body, title, canonical and no-store`);
+}
+const missing = await fetch(new URL('/fitness/unknown-ssr-verification-route', origin));
+assert.equal(missing.status, 404, 'Missing detail returns 404');
+console.log('PASS missing detail: HTTP 404');

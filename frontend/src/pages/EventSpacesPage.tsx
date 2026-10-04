@@ -12,7 +12,7 @@ import type { PageSeo } from '../lib/seo';
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string };
 
-interface StrapiEventSpacesPage {
+export interface StrapiEventSpacesPage {
   title: string;
   hero?: { heading: string; subheading?: string; variant?: 'full' | 'compact'; backgroundImage?: StrapiMedia };
   privatePackages?: {
@@ -45,12 +45,15 @@ const linkOf = (l?: StrapiLink) =>
 const linksOf = (ls?: StrapiLink[]) =>
   (ls ?? []).map((l) => ({ label: l.label, href: l.href ?? '#', isExternal: l.isExternal }));
 
-export default function EventSpacesPage() {
-  const [data, setData] = useState<StrapiEventSpacesPage | null>(null);
-  const [loaded, setLoaded] = useState(false);
-  usePageSeo(data?.seo ?? null);
+export interface EventSpacesInitialData { data: StrapiEventSpacesPage }
+
+export default function EventSpacesPage({ initialData }: { initialData?: EventSpacesInitialData } = {}) {
+  const [data, setData] = useState<StrapiEventSpacesPage | null>(initialData?.data ?? null);
+  const [loaded, setLoaded] = useState(Boolean(initialData));
+  usePageSeo(data?.seo ?? null, !initialData);
 
   useEffect(() => {
+    if (initialData) return;
     let cancelled = false;
     (async () => {
       const page = await fetchAPI<StrapiEventSpacesPage>('/event-spaces-page');
@@ -59,7 +62,7 @@ export default function EventSpacesPage() {
       setLoaded(true);
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [initialData]);
 
   if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
   if (!data) return <div className="min-h-screen flex items-center justify-center text-text-dark/70">Event spaces page content unavailable.</div>;

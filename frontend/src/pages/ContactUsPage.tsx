@@ -13,7 +13,7 @@ import type { PageSeo } from '../lib/seo';
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 type StrapiLink = { label: string; href?: string; isExternal?: boolean; variant?: string };
 
-interface StrapiContactUsPage {
+export interface StrapiContactUsPage {
   title: string;
   heroImage?: StrapiMedia;
   address?: string[];
@@ -32,12 +32,15 @@ const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
   return `${STRAPI_URL}${m.url}`;
 };
 
-export default function ContactUsPage() {
-  const [data, setData] = useState<StrapiContactUsPage | null>(null);
-  const [loaded, setLoaded] = useState(false);
-  usePageSeo(data?.seo ?? null);
+export interface ContactUsInitialData { data: StrapiContactUsPage }
+
+export default function ContactUsPage({ initialData }: { initialData?: ContactUsInitialData } = {}) {
+  const [data, setData] = useState<StrapiContactUsPage | null>(initialData?.data ?? null);
+  const [loaded, setLoaded] = useState(Boolean(initialData));
+  usePageSeo(data?.seo ?? null, !initialData);
 
   useEffect(() => {
+    if (initialData) return;
     let cancelled = false;
     (async () => {
       const page = await fetchAPI<StrapiContactUsPage>('/contact-us-page');
@@ -46,7 +49,7 @@ export default function ContactUsPage() {
       setLoaded(true);
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [initialData]);
 
   if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
   if (!data) return <div className="min-h-screen flex items-center justify-center text-text-dark/70">Contact page content unavailable.</div>;

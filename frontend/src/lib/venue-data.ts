@@ -1,5 +1,5 @@
 import { getSubpage } from '../data/subpages';
-import type { VenueData } from '../pages/VenueDetailPage';
+import type { VenueData } from './venue-types';
 
 export function staticFallback(section: string, slug: string): VenueData | null {
   const sp = getSubpage(section, slug);

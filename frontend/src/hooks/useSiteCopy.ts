@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { fetchAPI } from '../lib/api';
 
 // Site-wide UI chrome labels, editable in the CMS (Global: Site Configuration).
@@ -16,10 +16,14 @@ const DEFAULTS: SiteCopy = {
   viewAlbumLabel: 'View Album',
 };
 
+export const SiteCopyContext = createContext<Partial<SiteCopy> | undefined>(undefined);
+
 export function useSiteCopy(): SiteCopy {
-  const [copy, setCopy] = useState<SiteCopy>(DEFAULTS);
+  const initial = useContext(SiteCopyContext);
+  const [copy, setCopy] = useState<SiteCopy>(() => ({ loadMoreLabel: initial?.loadMoreLabel?.trim() || DEFAULTS.loadMoreLabel, readMoreLabel: initial?.readMoreLabel?.trim() || DEFAULTS.readMoreLabel, viewAlbumLabel: initial?.viewAlbumLabel?.trim() || DEFAULTS.viewAlbumLabel }));
 
   useEffect(() => {
+    if (initial) return;
     let cancelled = false;
     fetchAPI<Partial<SiteCopy>>('/site-config')
       .then((c) => {
@@ -36,7 +40,7 @@ export function useSiteCopy(): SiteCopy {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [initial]);
 
   return copy;
 }

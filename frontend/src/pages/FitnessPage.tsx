@@ -27,7 +27,7 @@ interface StrapiOverlay {
   logo?: StrapiMedia;
 }
 
-interface StrapiFitnessPage {
+export interface StrapiFitnessPage {
   title: string;
   pageBackgroundColor?: string;
   pageBackgroundImage?: StrapiMedia;
@@ -74,12 +74,15 @@ const overlayProps = (s?: StrapiOverlay) => {
   };
 };
 
-export default function FitnessPage() {
-  const [data, setData] = useState<StrapiFitnessPage | null>(null);
-  const [loaded, setLoaded] = useState(false);
-  usePageSeo(data?.seo ?? null);
+export interface FitnessInitialData { data: StrapiFitnessPage }
+
+export default function FitnessPage({ initialData }: { initialData?: FitnessInitialData } = {}) {
+  const [data, setData] = useState<StrapiFitnessPage | null>(initialData?.data ?? null);
+  const [loaded, setLoaded] = useState(Boolean(initialData));
+  usePageSeo(data?.seo ?? null, !initialData);
 
   useEffect(() => {
+    if (initialData) return;
     let cancelled = false;
     (async () => {
       const page = await fetchAPI<StrapiFitnessPage>('/fitness-page');
@@ -88,7 +91,7 @@ export default function FitnessPage() {
       setLoaded(true);
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [initialData]);
 
   if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
   if (!data) return <div className="min-h-screen flex items-center justify-center text-text-dark/70">Fitness page content unavailable.</div>;
