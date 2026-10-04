@@ -747,6 +747,43 @@ export interface ApiContactUsPageContactUsPage extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiCrawlerSettingsCrawlerSettings
+  extends Struct.SingleTypeSchema {
+  collectionName: 'crawler_settings';
+  info: {
+    description: 'Published controls for robots.txt, sitemap.xml and llms.txt. URLs come from published page content.';
+    displayName: 'Global: Crawler Settings';
+    pluralName: 'crawler-settings-entries';
+    singularName: 'crawler-settings';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    allowIndexing: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    excludedPaths: Schema.Attribute.Text;
+    llmsEnabled: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    llmsGuidance: Schema.Attribute.Text;
+    llmsSummary: Schema.Attribute.Text;
+    llmsTitle: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::crawler-settings.crawler-settings'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    robotsRules: Schema.Attribute.Component<'shared.crawler-rule', true>;
+    sitemapEnabled: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiDiningPageDiningPage extends Struct.SingleTypeSchema {
   collectionName: 'dining_pages';
   info: {
@@ -3282,6 +3319,7 @@ declare module '@strapi/strapi' {
       'api::coach.coach': ApiCoachCoach;
       'api::committee-member.committee-member': ApiCommitteeMemberCommitteeMember;
       'api::contact-us-page.contact-us-page': ApiContactUsPageContactUsPage;
+      'api::crawler-settings.crawler-settings': ApiCrawlerSettingsCrawlerSettings;
       'api::dining-page.dining-page': ApiDiningPageDiningPage;
       'api::dining-promotion.dining-promotion': ApiDiningPromotionDiningPromotion;
       'api::dining-promotions-page.dining-promotions-page': ApiDiningPromotionsPageDiningPromotionsPage;

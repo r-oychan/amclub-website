@@ -1,5 +1,32 @@
 # Strapi v5 Patterns
 
+## Published crawler discovery files
+
+The `crawler-settings` service generates robots.txt, sitemap.xml and llms.txt
+from published documents using an explicit frontend URL map. Query the Document
+Service directly with `status: 'published'` and page collections in batches;
+the public listing controllers can filter expired events or truncate results,
+while detail URLs still exist. Root nginx locations route to Strapi regardless
+of the Vite/Next switch. Avoid static public files that become stale after publishing.
+
+The project preview middleware can override even an explicit published read
+when the HTTP request asks for drafts. Public discovery controllers replace
+the query with published status before reading, and Next forwards no credentials
+or preview query. Keep the custom service wrapped in `createCoreService` so
+singleton CRUD still works for editors and seed scripts. Missing settings are
+closed by default; `SITE_INDEXING_ALLOWED` permits crawling only on prod.
+
+For new singleton seeds, use `PUT /api/<singular>?status=published` and verify
+the published entry afterwards. The core REST API accepts status on writes;
+`/actions/publish` is not a core content-API route and should not be assumed to
+exist. See [Strapi REST status](https://docs.strapi.io/cms/api/rest/status).
+
+Research: [Strapi SEO support](https://strapi.io/blog/strapi-seo-plugins),
+[robots protocol](https://datatracker.ietf.org/doc/html/rfc9309),
+[sitemap protocol](https://www.sitemaps.org/protocol.html),
+[llms.txt proposal](https://llmstxt.org/). There is no native sitemap generator;
+llms.txt is a proposed Markdown discovery index, not robots access control.
+
 Repeatable patterns for building features on this project. Each section describes the problem, the approach we chose, and the gotchas baked into Strapi v5 that drove the design.
 
 ## 1. Custom upload provider (file-system folder routing)

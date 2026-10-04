@@ -437,6 +437,7 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
           { name: 'TEAMUP_TOKEN', secretRef: 'teamup-token' },
           { name: 'TEAMUP_CALENDAR_KEY', secretRef: 'teamup-calendar-key' },
           { name: 'PUBLIC_SITE_URL', value: publicSiteUrl },
+          { name: 'SITE_INDEXING_ALLOWED', value: pulumi.getStack() === 'prod' ? 'true' : 'false' },
           { name: 'NEXT_HOME_ENABLED', value: pulumi.getStack() === 'dev' ? 'true' : 'false' },
           // Microsoft Entra ID SSO — consumed by strapi-plugin-sso. If
           // ssoEnabled is false (any of the 3 GitHub secrets unset on this

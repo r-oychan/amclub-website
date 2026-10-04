@@ -750,6 +750,21 @@ export interface SharedCorporateClassCard extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedCrawlerRule extends Struct.ComponentSchema {
+  collectionName: 'components_shared_crawler_rules';
+  info: {
+    description: 'robots.txt directives for one crawler group';
+    displayName: 'Crawler Rule';
+  };
+  attributes: {
+    allowPaths: Schema.Attribute.Text;
+    disallowPaths: Schema.Attribute.Text;
+    userAgent: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'*'>;
+  };
+}
+
 export interface SharedEventPackageItem extends Struct.ComponentSchema {
   collectionName: 'components_shared_event_package_items';
   info: {
@@ -1391,6 +1406,7 @@ declare module '@strapi/strapi' {
       'shared.catering-sub-banner': SharedCateringSubBanner;
       'shared.child-safety': SharedChildSafety;
       'shared.corporate-class-card': SharedCorporateClassCard;
+      'shared.crawler-rule': SharedCrawlerRule;
       'shared.event-package-item': SharedEventPackageItem;
       'shared.faq-pair': SharedFaqPair;
       'shared.feature-item': SharedFeatureItem;
