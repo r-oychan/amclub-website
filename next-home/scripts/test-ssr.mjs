@@ -7,8 +7,18 @@ let revision = 'Published revision one';
 let reads = 0;
 let fitnessReads = 0;
 let fitnessUnavailable = false;
+let discoveryUnavailable = false;
 const cms = createServer((req, res) => {
   const url = new URL(req.url, 'http://localhost');
+  if (url.pathname.startsWith('/api/site-discovery/')) {
+    assert.equal(req.headers.authorization, undefined, 'discovery proxy never forwards preview credentials');
+    assert.equal(url.search, '', 'discovery proxy never forwards draft query parameters');
+    if (discoveryUnavailable) { res.writeHead(503, { 'Content-Type': 'text/plain' }); res.end('Discovery temporarily unavailable'); return; }
+    const xml = url.pathname.endsWith('sitemap.xml');
+    res.writeHead(200, { 'Content-Type': xml ? 'application/xml' : 'text/plain' });
+    res.end(xml ? `<?xml version="1.0"?><urlset><url><loc>https://fixture.example/${revision.replaceAll(' ', '-')}</loc></url></urlset>` : url.pathname.endsWith('robots.txt') ? 'User-agent: *\nDisallow: /\n' : `# Fixture Club\n\n> ${revision}\n`);
+    return;
+  }
   const draft = req.headers.authorization === 'Bearer test-preview-token' && url.searchParams.get('status') === 'draft';
   if (url.pathname === '/api/fitness-page') {
     fitnessReads++;
@@ -84,6 +94,19 @@ try {
     await delay(100);
   }
   assert.ok(ready, 'SSR server ready');
+  for (const path of ['/robots.txt', '/sitemap.xml', '/llms.txt']) {
+    const response = await fetch(`${origin}${path}?status=draft&preview=test-preview-token`);
+    assert.equal(response.status, 200, `${path} response`);
+    assert.match(response.headers.get('content-type'), path.endsWith('.xml') ? /application\/xml/ : /text\/plain/);
+    assert.equal(response.headers.get('cache-control'), 'no-store');
+    assert.equal(response.headers.get('x-robots-tag'), 'noindex');
+    assert.doesNotMatch(await response.text(), /<!DOCTYPE html>/i, `${path} never returns the app shell`);
+  }
+  discoveryUnavailable = true;
+  const discoveryError = await fetch(`${origin}/robots.txt`);
+  assert.equal(discoveryError.status, 503);
+  assert.equal(discoveryError.headers.get('retry-after'), '60');
+  discoveryUnavailable = false;
   const first = await read('/home');
   assert.equal(first.response.status, 200);
   assert.ok(first.html.includes(revision), 'CMS facts appear in HTML without JavaScript');
@@ -94,6 +117,7 @@ try {
   const second = await read('/home');
   assert.ok(second.html.includes(revision), 'next request sees changed published content without rebuild');
   assert.ok(!second.html.includes('Published revision one'), 'no stale homepage snapshot');
+  assert.ok((await (await fetch(`${origin}/llms.txt`)).text()).includes(revision), 'discovery file reads changed CMS content without rebuilding');
   assert.equal(reads, 2, 'metadata and page share one CMS homepage read per request');
   const draft = await read('/home?preview=test-preview-token&status=draft');
   assert.equal(draft.response.status, 200);
