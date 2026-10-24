@@ -403,3 +403,21 @@ is what restores the refresh, not the text.
 Read `strapi` off `globalThis` in the policy rather than as a bare global, so the
 file also compiles in a standalone `tsc` test harness with no ambient types.
 Covered by `cms/tests/is-admin-policy.test.mjs`.
+
+## 13. Machine-to-machine endpoints: custom API token scoped to one action
+
+For a single endpoint an outside system calls (e.g. the ElevenLabs webhook tool →
+`POST /api/assistant-requests/submit`), put the route in an **`api::` module, not a
+plugin**, and leave Strapi's default auth on. Then issue a **custom** API token in
+`/admin` → API Tokens with only that action ticked
+(`Assistant-request → submit`). A leaked token can do nothing else: the same token
+gets 403 on every other route. Revoke or rotate it in the admin with no redeploy.
+
+Plugin content-api routes can't do this: custom tokens can't list plugin actions,
+which is why the elevenlabs-chatbot plugin has its own `is-admin-or-token` policy
+(§12).
+
+Expose only the action you need (`routes: [{ method, path, handler }]`, no
+`createCoreRouter`), so the content type stays reachable only through `/admin`.
+To mint a token in a script or test, call
+`strapi.service('admin::api-token').create({ name, type: 'custom', lifespan: null, permissions: ['api::x.x.action'] })`.

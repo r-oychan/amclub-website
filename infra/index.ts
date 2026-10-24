@@ -24,6 +24,15 @@ const elevenlabsApiKey = pulumi.secret(elevenlabsApiKeyRaw);
 const teamupToken = pulumi.secret(process.env.TEAMUP_TOKEN ?? '');
 const teamupCalendarKey = pulumi.secret(process.env.TEAMUP_CALENDAR_KEY ?? '');
 
+// ── Jotform (Talk2Us requests lodged by the assistant) ────────────
+// Optional like Teamup: without a key the submit endpoint answers 503 and the
+// agent falls back to the Front Desk contacts. Every environment posts to the
+// live Talk2Us form, so non-prod submissions are tagged for staff to ignore.
+const jotformApiKey = pulumi.secret(process.env.JOTFORM_API_KEY ?? '');
+const jotformApiBase = process.env.JOTFORM_API_BASE || 'https://api.jotform.com';
+const jotformTalk2usFormId = process.env.JOTFORM_TALK2US_FORM_ID ?? '';
+const assistantRequestTag = stack === 'prod' ? '' : `[${stack.toUpperCase()} TEST]`;
+
 // ── Microsoft Entra ID SSO config (env-var driven) ────────────────
 // Consumed by strapi-plugin-sso at the CMS layer. All four values are
 // OPTIONAL — if AZUREAD_OAUTH_CLIENT_ID is empty, the plugin won't be able
@@ -392,6 +401,7 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
       { name: 'elevenlabs-api-key', value: elevenlabsApiKey },
       { name: 'teamup-token', value: teamupToken },
       { name: 'teamup-calendar-key', value: teamupCalendarKey },
+      { name: 'jotform-api-key', value: jotformApiKey },
       // SSO client secret — only added when the GitHub secret is set for this
       // environment; the env block below references it conditionally to avoid
       // a Container App "missing secretRef" error on stacks where SSO isn't
@@ -436,6 +446,10 @@ const app = new azure.app.ContainerApp(`${projectName}-app`, {
           { name: 'ELEVENLABS_AGENT_ID', value: elevenlabsAgentId },
           { name: 'TEAMUP_TOKEN', secretRef: 'teamup-token' },
           { name: 'TEAMUP_CALENDAR_KEY', secretRef: 'teamup-calendar-key' },
+          { name: 'JOTFORM_API_KEY', secretRef: 'jotform-api-key' },
+          { name: 'JOTFORM_API_BASE', value: jotformApiBase },
+          { name: 'JOTFORM_TALK2US_FORM_ID', value: jotformTalk2usFormId },
+          { name: 'ASSISTANT_REQUEST_TAG', value: assistantRequestTag },
           { name: 'PUBLIC_SITE_URL', value: publicSiteUrl },
           { name: 'SITE_INDEXING_ALLOWED', value: pulumi.getStack() === 'prod' ? 'true' : 'false' },
           { name: 'NEXT_HOME_ENABLED', value: pulumi.getStack() === 'dev' ? 'true' : 'false' },

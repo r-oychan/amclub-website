@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "assistant_requests",
+  "info": {
+    "singularName": "assistant-request",
+    "pluralName": "assistant-requests",
+    "displayName": "Assistant: Talk2Us Requests",
+    "description": "Audit log of Talk2Us requests lodged by the Eli digital assistant (phone or web). Written by POST /api/assistant-requests/submit; never public."
+  },
+  "options": { "draftAndPublish": false },
+  "attributes": {
+    "outcome": { "type": "enumeration", "enum": ["submitted", "failed"], "required": true },
+    "channel": { "type": "string", "description": "ElevenLabs channel, e.g. sip_trunk (phone) or widget." },
+    "conversationId": { "type": "string", "description": "ElevenLabs conversation id — also the idempotency key." },
+    "callerId": { "type": "string" },
+    "category": { "type": "string", "description": "Talk2Us Category — decides which department inbox Jotform notifies." },
+    "subject": { "type": "string" },
+    "memberName": { "type": "string" },
+    "membershipNo": { "type": "string" },
+    "email": { "type": "email" },
+    "contactPhone": { "type": "string" },
+    "message": { "type": "text" },
+    "jotformSubmissionId": { "type": "string" },
+    "talk2usId": { "type": "string", "description": "Talk2Us! ID (e.g. T2US-000810) read back to the member." },
+    "error": { "type": "text" }
+  }
+}

@@ -21,6 +21,7 @@ jobs:
       - run: cd cms && npm ci
       - run: cd cms && npm run build
       - run: cd cms && npm run test:discovery
+      - run: cd cms && npm run test:assistant-request
 
   frontend:
     name: Frontend — Lint, Typecheck, Build
