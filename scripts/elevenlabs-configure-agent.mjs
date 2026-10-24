@@ -156,7 +156,24 @@ const prompt = readFileSync(join(ROOT, 'agent/prompt.md'), 'utf8');
 
 await el('PATCH', `/agents/${AGENT_ID}`, {
   conversation_config: {
-    agent: { prompt: { prompt, tool_ids: toolIds } },
+    agent: {
+      prompt: {
+        prompt,
+        tool_ids: toolIds,
+        // Without this the agent cannot hang up: a phone line stays open after "bye"
+        // until the caller drops or the silence timeout ends it.
+        built_in_tools: {
+          end_call: {
+            type: 'system',
+            name: 'end_call',
+            description:
+              'End the conversation once the member says goodbye or confirms they need nothing else. ' +
+              'Say a brief farewell first. Never end it in the middle of a request or before a Talk2Us submission has returned.',
+            params: { system_tool_type: 'end_call' },
+          },
+        },
+      },
+    },
     conversation: { text_only: false },
   },
   platform_settings: {
