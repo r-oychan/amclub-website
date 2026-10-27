@@ -632,38 +632,44 @@ export interface ApiAquaticsCoachAquaticsCoach
   };
 }
 
-export interface ApiCoachCoach extends Struct.CollectionTypeSchema {
-  collectionName: 'coaches';
+export interface ApiAssistantRequestAssistantRequest
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'assistant_requests';
   info: {
-    description: 'Coach detail entries linked from facility team grids';
-    displayName: 'Shared: Coaches (legacy)';
-    pluralName: 'coaches';
-    singularName: 'coach';
+    description: 'Audit log of Talk2Us requests lodged by the Eli digital assistant (phone or web). Written by POST /api/assistant-requests/submit; never public.';
+    displayName: 'Assistant: Talk2Us Requests';
+    pluralName: 'assistant-requests';
+    singularName: 'assistant-request';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
-    bio: Schema.Attribute.Text;
+    callerId: Schema.Attribute.String;
+    category: Schema.Attribute.String;
+    channel: Schema.Attribute.String;
+    contactPhone: Schema.Attribute.String;
+    conversationId: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    expertise: Schema.Attribute.Text;
+    email: Schema.Attribute.Email;
+    error: Schema.Attribute.Text;
+    jotformSubmissionId: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'api::coach.coach'> &
-      Schema.Attribute.Private;
-    name: Schema.Attribute.String & Schema.Attribute.Required;
-    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
-    photo: Schema.Attribute.Media<'images'>;
-    publishedAt: Schema.Attribute.DateTime;
-    qualifications: Schema.Attribute.Text;
-    role: Schema.Attribute.String & Schema.Attribute.Required;
-    section: Schema.Attribute.Enumeration<
-      ['aquatics', 'tennis', 'squash', 'gym', 'pilates', 'kids', 'other']
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::assistant-request.assistant-request'
     > &
+      Schema.Attribute.Private;
+    memberName: Schema.Attribute.String;
+    membershipNo: Schema.Attribute.String;
+    message: Schema.Attribute.Text;
+    outcome: Schema.Attribute.Enumeration<['submitted', 'failed']> &
       Schema.Attribute.Required;
-    seo: Schema.Attribute.Component<'shared.seo', false>;
-    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    subject: Schema.Attribute.String;
+    talk2usId: Schema.Attribute.String;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -741,6 +747,43 @@ export interface ApiContactUsPageContactUsPage extends Struct.SingleTypeSchema {
     seo: Schema.Attribute.Component<'shared.seo', false>;
     talkToUsCta: Schema.Attribute.Component<'blocks.cta-banner', false>;
     title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiCrawlerSettingsCrawlerSettings
+  extends Struct.SingleTypeSchema {
+  collectionName: 'crawler_settings';
+  info: {
+    description: 'Published controls for robots.txt, sitemap.xml and llms.txt. URLs come from published page content.';
+    displayName: 'Global: Crawler Settings';
+    pluralName: 'crawler-settings-entries';
+    singularName: 'crawler-settings';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    allowIndexing: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    excludedPaths: Schema.Attribute.Text;
+    llmsEnabled: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    llmsGuidance: Schema.Attribute.Text;
+    llmsSummary: Schema.Attribute.Text;
+    llmsTitle: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::crawler-settings.crawler-settings'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    robotsRules: Schema.Attribute.Component<'shared.crawler-rule', true>;
+    sitemapEnabled: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -863,58 +906,6 @@ export interface ApiDiningPromotionsPageDiningPromotionsPage
     seo: Schema.Attribute.Component<'shared.seo', false>;
     subtitle: Schema.Attribute.String;
     title: Schema.Attribute.String & Schema.Attribute.Required;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiElevenlabsDocElevenlabsDoc
-  extends Struct.CollectionTypeSchema {
-  collectionName: 'elevenlabs_docs';
-  info: {
-    description: 'Tracks documents pushed to the ElevenLabs ConvAI knowledge base. Internal \u2014 not edited by content authors.';
-    displayName: 'ElevenLabs Sync Log';
-    pluralName: 'elevenlabs-docs';
-    singularName: 'elevenlabs-doc';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  pluginOptions: {
-    'content-manager': {
-      visible: true;
-    };
-    'content-type-builder': {
-      visible: false;
-    };
-  };
-  attributes: {
-    contentHash: Schema.Attribute.String;
-    contentType: Schema.Attribute.String;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    documentName: Schema.Attribute.String & Schema.Attribute.Required;
-    elDocType: Schema.Attribute.Enumeration<['text', 'file']> &
-      Schema.Attribute.Required;
-    elDocumentId: Schema.Attribute.String &
-      Schema.Attribute.Required &
-      Schema.Attribute.Unique;
-    entryId: Schema.Attribute.Integer;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::elevenlabs-doc.elevenlabs-doc'
-    > &
-      Schema.Attribute.Private;
-    mediaFileId: Schema.Attribute.Integer;
-    ownerContentType: Schema.Attribute.String;
-    ownerEntryId: Schema.Attribute.Integer;
-    publishedAt: Schema.Attribute.DateTime;
-    sourceKind: Schema.Attribute.Enumeration<['page-entry', 'media-file']> &
-      Schema.Attribute.Required;
-    syncedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1109,72 +1100,6 @@ export interface ApiEventEvent extends Struct.CollectionTypeSchema {
     subtitle: Schema.Attribute.String;
     time: Schema.Attribute.String;
     title: Schema.Attribute.String & Schema.Attribute.Required;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
-export interface ApiFacilityFacility extends Struct.CollectionTypeSchema {
-  collectionName: 'facilities';
-  info: {
-    description: 'Club facilities (fitness, kids, event spaces)';
-    displayName: 'Facility';
-    pluralName: 'facilities';
-    singularName: 'facility';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    capacity: Schema.Attribute.String;
-    category: Schema.Attribute.Enumeration<
-      ['fitness', 'kids', 'event-space', 'membership']
-    > &
-      Schema.Attribute.Required;
-    categoryIconSlug: Schema.Attribute.String;
-    categoryLabel: Schema.Attribute.String;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    ctas: Schema.Attribute.Component<'shared.link', true> &
-      Schema.Attribute.SetMinMax<
-        {
-          max: 3;
-        },
-        number
-      >;
-    description: Schema.Attribute.Text & Schema.Attribute.Required;
-    detailedDescription: Schema.Attribute.Blocks;
-    downloads: Schema.Attribute.Component<'blocks.downloads-section', false>;
-    dressCode: Schema.Attribute.String;
-    email: Schema.Attribute.Email;
-    gallery: Schema.Attribute.Media<'images', true>;
-    image: Schema.Attribute.Media<'images'>;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::facility.facility'
-    > &
-      Schema.Attribute.Private;
-    locationContact: Schema.Attribute.Component<
-      'blocks.location-contact',
-      false
-    >;
-    locationLevel: Schema.Attribute.String;
-    name: Schema.Attribute.String & Schema.Attribute.Required;
-    openingHours: Schema.Attribute.Blocks;
-    operatingHoursSections: Schema.Attribute.Component<
-      'blocks.operating-hours-section',
-      true
-    >;
-    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
-    phone: Schema.Attribute.String;
-    publishedAt: Schema.Attribute.DateTime;
-    seo: Schema.Attribute.Component<'shared.seo', false>;
-    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
-    teamHeading: Schema.Attribute.String;
-    teamMembers: Schema.Attribute.Component<'shared.team-member', true>;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -2402,37 +2327,6 @@ export interface ApiSiteConfigSiteConfig extends Struct.SingleTypeSchema {
   };
 }
 
-export interface ApiSiteSettingsSiteSettings extends Struct.SingleTypeSchema {
-  collectionName: 'site_settings';
-  info: {
-    description: 'Global site-wide feature flags and toggles';
-    displayName: 'Site Settings';
-    pluralName: 'site-settings-plural';
-    singularName: 'site-settings';
-  };
-  options: {
-    draftAndPublish: false;
-  };
-  attributes: {
-    chatbotEnabled: Schema.Attribute.Boolean &
-      Schema.Attribute.Required &
-      Schema.Attribute.DefaultTo<true>;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::site-settings.site-settings'
-    > &
-      Schema.Attribute.Private;
-    publishedAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-  };
-}
-
 export interface ApiStartApplicationPageStartApplicationPage
   extends Struct.SingleTypeSchema {
   collectionName: 'start_application_pages';
@@ -2615,39 +2509,6 @@ export interface ApiTestimonialTestimonial extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     video: Schema.Attribute.Media<'videos'>;
     videoUrl: Schema.Attribute.String;
-  };
-}
-
-export interface ApiVenueVenue extends Struct.CollectionTypeSchema {
-  collectionName: 'venues';
-  info: {
-    description: 'Event venue spaces';
-    displayName: 'Venue';
-    pluralName: 'venues';
-    singularName: 'venue';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    capacity: Schema.Attribute.String;
-    createdAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    ctas: Schema.Attribute.Component<'shared.link', true>;
-    description: Schema.Attribute.Text & Schema.Attribute.Required;
-    image: Schema.Attribute.Media<'images'>;
-    locale: Schema.Attribute.String & Schema.Attribute.Private;
-    localizations: Schema.Attribute.Relation<'oneToMany', 'api::venue.venue'> &
-      Schema.Attribute.Private;
-    name: Schema.Attribute.String & Schema.Attribute.Required;
-    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
-    publishedAt: Schema.Attribute.DateTime;
-    seo: Schema.Attribute.Component<'shared.seo', false>;
-    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
-    updatedAt: Schema.Attribute.DateTime;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
   };
 }
 
@@ -3279,18 +3140,17 @@ declare module '@strapi/strapi' {
       'api::about-page.about-page': ApiAboutPageAboutPage;
       'api::advertise-with-us-page.advertise-with-us-page': ApiAdvertiseWithUsPageAdvertiseWithUsPage;
       'api::aquatics-coach.aquatics-coach': ApiAquaticsCoachAquaticsCoach;
-      'api::coach.coach': ApiCoachCoach;
+      'api::assistant-request.assistant-request': ApiAssistantRequestAssistantRequest;
       'api::committee-member.committee-member': ApiCommitteeMemberCommitteeMember;
       'api::contact-us-page.contact-us-page': ApiContactUsPageContactUsPage;
+      'api::crawler-settings.crawler-settings': ApiCrawlerSettingsCrawlerSettings;
       'api::dining-page.dining-page': ApiDiningPageDiningPage;
       'api::dining-promotion.dining-promotion': ApiDiningPromotionDiningPromotion;
       'api::dining-promotions-page.dining-promotions-page': ApiDiningPromotionsPageDiningPromotionsPage;
-      'api::elevenlabs-doc.elevenlabs-doc': ApiElevenlabsDocElevenlabsDoc;
       'api::event-category.event-category': ApiEventCategoryEventCategory;
       'api::event-space.event-space': ApiEventSpaceEventSpace;
       'api::event-spaces-page.event-spaces-page': ApiEventSpacesPageEventSpacesPage;
       'api::event.event': ApiEventEvent;
-      'api::facility.facility': ApiFacilityFacility;
       'api::faq-category.faq-category': ApiFaqCategoryFaqCategory;
       'api::faq-item.faq-item': ApiFaqItemFaqItem;
       'api::faq-page.faq-page': ApiFaqPageFaqPage;
@@ -3315,11 +3175,9 @@ declare module '@strapi/strapi' {
       'api::referral-page.referral-page': ApiReferralPageReferralPage;
       'api::restaurant.restaurant': ApiRestaurantRestaurant;
       'api::site-config.site-config': ApiSiteConfigSiteConfig;
-      'api::site-settings.site-settings': ApiSiteSettingsSiteSettings;
       'api::start-application-page.start-application-page': ApiStartApplicationPageStartApplicationPage;
       'api::tennis-coach.tennis-coach': ApiTennisCoachTennisCoach;
       'api::testimonial.testimonial': ApiTestimonialTestimonial;
-      'api::venue.venue': ApiVenueVenue;
       'api::whats-on-page.whats-on-page': ApiWhatsOnPageWhatsOnPage;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

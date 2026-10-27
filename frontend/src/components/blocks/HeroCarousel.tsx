@@ -23,7 +23,7 @@ function useMediaQuery(query: string): boolean {
     },
     [query],
   );
-  return useSyncExternalStore(subscribe, () => window.matchMedia(query).matches);
+  return useSyncExternalStore(subscribe, () => window.matchMedia(query).matches, () => false);
 }
 
 const ZONE_CLASSES: Record<HeroZone, string> = {

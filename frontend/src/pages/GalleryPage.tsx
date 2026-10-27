@@ -9,7 +9,7 @@ import type { PageSeo } from '../lib/seo';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 
-interface StrapiGalleryAlbum {
+export interface StrapiGalleryAlbum {
   documentId: string;
   title: string;
   slug: string;
@@ -20,7 +20,7 @@ interface StrapiGalleryAlbum {
   images?: StrapiMedia[];
 }
 
-interface StrapiGalleryPage {
+export interface StrapiGalleryPage {
   title: string;
   introHeading?: string;
   introBody?: string;
@@ -43,16 +43,19 @@ const toLightboxImages = (album: StrapiGalleryAlbum): LightboxImage[] => {
     .filter((i) => i.url);
 };
 
-export default function GalleryPage() {
-  const [data, setData] = useState<StrapiGalleryPage | null>(null);
-  const [albums, setAlbums] = useState<StrapiGalleryAlbum[]>([]);
-  const [loaded, setLoaded] = useState(false);
+export interface GalleryInitialData { data: StrapiGalleryPage; albums: StrapiGalleryAlbum[] }
+
+export default function GalleryPage({ initialData }: { initialData?: GalleryInitialData } = {}) {
+  const [data, setData] = useState<StrapiGalleryPage | null>(initialData?.data ?? null);
+  const [albums, setAlbums] = useState<StrapiGalleryAlbum[]>(initialData?.albums ?? []);
+  const [loaded, setLoaded] = useState(Boolean(initialData));
   const [visibleCount, setVisibleCount] = useState(8);
   const { loadMoreLabel, viewAlbumLabel } = useSiteCopy();
   const [activeAlbumSlug, setActiveAlbumSlug] = useState<string | null>(null);
-  usePageSeo(data?.seo ?? null);
+  usePageSeo(data?.seo ?? null, !initialData);
 
   useEffect(() => {
+    if (initialData) return;
     let cancelled = false;
     (async () => {
       const [page, list] = await Promise.all([
@@ -69,7 +72,7 @@ export default function GalleryPage() {
       setLoaded(true);
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [initialData]);
 
   const visible = albums.slice(0, visibleCount);
   const canLoadMore = visibleCount < albums.length;

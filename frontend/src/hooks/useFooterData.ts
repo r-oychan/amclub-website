@@ -38,7 +38,7 @@ interface StrapiLink {
   isExternal?: boolean;
 }
 
-interface StrapiFooter {
+export interface StrapiFooter {
   logo?: StrapiMedia | null;
   address?: string;
   phone?: string;
@@ -114,7 +114,7 @@ function mapLinks(links?: StrapiLink[]): FooterLink[] {
     .map((l) => ({ label: l.label, href: l.href as string, isExternal: l.isExternal ?? false }));
 }
 
-function transformFooter(data: StrapiFooter): FooterData {
+export function transformFooter(data: StrapiFooter): FooterData {
   // Per-field fallback: a partially-filled CMS entry never blanks a section.
   const columns = (data.columns ?? [])
     .filter((c) => c.title)
@@ -136,10 +136,11 @@ function transformFooter(data: StrapiFooter): FooterData {
   };
 }
 
-export function useFooterData(): FooterData {
-  const [data, setData] = useState<FooterData>(DEFAULT_FOOTER);
+export function useFooterData(initialData?: FooterData): FooterData {
+  const [data, setData] = useState<FooterData>(initialData ?? DEFAULT_FOOTER);
 
   useEffect(() => {
+    if (initialData) return;
     let cancelled = false;
 
     fetchAPI<StrapiFooter>('/footer', {
@@ -158,7 +159,7 @@ export function useFooterData(): FooterData {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [initialData]);
 
   return data;
 }

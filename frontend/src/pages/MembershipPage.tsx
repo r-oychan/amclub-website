@@ -26,7 +26,7 @@ interface StrapiFeatureItem {
   icon?: StrapiMedia;
   cta?: StrapiLink;
 }
-interface StrapiMembershipPage {
+export interface StrapiMembershipPage {
   title: string;
   hero?: { heading: string; subheading?: string; variant?: 'full' | 'compact'; backgroundImage?: StrapiMedia };
   joinCta?: StrapiCtaBanner;
@@ -50,12 +50,15 @@ const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
 const linksOf = (ls?: StrapiLink[]) =>
   (ls ?? []).map((l) => ({ label: l.label, href: l.href ?? '#', isExternal: l.isExternal }));
 
-export default function MembershipPage() {
-  const [data, setData] = useState<StrapiMembershipPage | null>(null);
-  const [loaded, setLoaded] = useState(false);
-  usePageSeo(data?.seo ?? null);
+export interface MembershipInitialData { data: StrapiMembershipPage }
+
+export default function MembershipPage({ initialData }: { initialData?: MembershipInitialData } = {}) {
+  const [data, setData] = useState<StrapiMembershipPage | null>(initialData?.data ?? null);
+  const [loaded, setLoaded] = useState(Boolean(initialData));
+  usePageSeo(data?.seo ?? null, !initialData);
 
   useEffect(() => {
+    if (initialData) return;
     let cancelled = false;
     (async () => {
       // Server-side POPULATE in cms/src/api/membership-page/controllers handles
@@ -66,7 +69,7 @@ export default function MembershipPage() {
       setLoaded(true);
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [initialData]);
 
   if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
   if (!data) return <div className="min-h-screen flex items-center justify-center text-text-dark/70">Membership page content unavailable.</div>;

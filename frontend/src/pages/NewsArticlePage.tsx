@@ -9,7 +9,7 @@ import type { PageSeo } from '../lib/seo';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 
-interface StrapiNewsArticle {
+export interface StrapiNewsArticle {
   documentId: string;
   title: string;
   slug: string;
@@ -27,13 +27,16 @@ const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
   return `${STRAPI_URL}${m.url}`;
 };
 
-export default function NewsArticlePage() {
+export interface NewsArticleInitialData { article: StrapiNewsArticle }
+
+export default function NewsArticlePage({ initialData }: { initialData?: NewsArticleInitialData } = {}) {
   const { slug } = useParams<{ slug: string }>();
-  const [article, setArticle] = useState<StrapiNewsArticle | null>(null);
-  const [loaded, setLoaded] = useState(false);
-  usePageSeo(article ? (article.seo ?? { metaTitle: article.title }) : null);
+  const [article, setArticle] = useState<StrapiNewsArticle | null>(initialData?.article ?? null);
+  const [loaded, setLoaded] = useState(Boolean(initialData));
+  usePageSeo(article ? (article.seo ?? { metaTitle: article.title }) : null, !initialData);
 
   useEffect(() => {
+    if (initialData) return;
     if (!slug) return;
     let cancelled = false;
     (async () => {
@@ -48,7 +51,7 @@ export default function NewsArticlePage() {
       setLoaded(true);
     })();
     return () => { cancelled = true; };
-  }, [slug]);
+  }, [slug, initialData]);
 
   if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
 

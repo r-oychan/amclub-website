@@ -29,7 +29,7 @@ interface OperatingHoursSection {
   rows?: OperatingHoursRow[];
 }
 
-interface ReciprocalData {
+export interface ReciprocalData {
   title?: string;
   label?: string;
   heading?: string;
@@ -66,11 +66,14 @@ const RIGHT_COL_GAP = '32px';
  *   Block 1 — hero image (left, sticky) | heading + label + CTAs + description (right)
  *   Block 2 — secondary image (left)    | secondary heading + CTA + body + operating hours sub-sections + notes (right)
  */
-export default function ReciprocalClubsPage() {
-  const [data, setData] = useState<ReciprocalData | null>(null);
-  const [loading, setLoading] = useState(true);
+export interface ReciprocalClubsInitialData { data: ReciprocalData }
+
+export default function ReciprocalClubsPage({ initialData }: { initialData?: ReciprocalClubsInitialData } = {}) {
+  const [data, setData] = useState<ReciprocalData | null>(initialData?.data ?? null);
+  const [loading, setLoading] = useState(!initialData);
 
   useEffect(() => {
+    if (initialData) return;
     let cancelled = false;
     (async () => {
       const d = await fetchAPI<ReciprocalData>('/reciprocal-clubs-page');
@@ -81,7 +84,7 @@ export default function ReciprocalClubsPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [initialData]);
 
   if (loading) {
     return (

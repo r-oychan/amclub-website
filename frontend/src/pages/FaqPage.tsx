@@ -10,7 +10,7 @@ import type { PageSeo } from '../lib/seo';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 
-interface StrapiFaqPage {
+export interface StrapiFaqPage {
   title: string;
   introHeading?: string;
   introBody?: string;
@@ -18,7 +18,7 @@ interface StrapiFaqPage {
   seo?: PageSeo | null;
 }
 
-interface StrapiFaqCategory {
+export interface StrapiFaqCategory {
   documentId: string;
   name: string;
   slug: string;
@@ -26,7 +26,7 @@ interface StrapiFaqCategory {
   displayOrder?: number;
 }
 
-interface StrapiFaqItem {
+export interface StrapiFaqItem {
   documentId: string;
   question: string;
   slug: string;
@@ -63,14 +63,17 @@ const enumDisplayOrder: Record<string, number> = {
   general: 6,
 };
 
-export default function FaqPage() {
-  const [page, setPage] = useState<StrapiFaqPage | null>(null);
-  const [categories, setCategories] = useState<StrapiFaqCategory[]>([]);
-  const [items, setItems] = useState<StrapiFaqItem[]>([]);
-  const [loaded, setLoaded] = useState(false);
-  usePageSeo(page?.seo ?? null);
+export interface FaqInitialData { page: StrapiFaqPage; categories: StrapiFaqCategory[]; items: StrapiFaqItem[] }
+
+export default function FaqPage({ initialData }: { initialData?: FaqInitialData } = {}) {
+  const [page, setPage] = useState<StrapiFaqPage | null>(initialData?.page ?? null);
+  const [categories, setCategories] = useState<StrapiFaqCategory[]>(initialData?.categories ?? []);
+  const [items, setItems] = useState<StrapiFaqItem[]>(initialData?.items ?? []);
+  const [loaded, setLoaded] = useState(Boolean(initialData));
+  usePageSeo(page?.seo ?? null, !initialData);
 
   useEffect(() => {
+    if (initialData) return;
     let cancelled = false;
     (async () => {
       const [pg, cats, list] = await Promise.all([
@@ -94,7 +97,7 @@ export default function FaqPage() {
       setLoaded(true);
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [initialData]);
 
   if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
 

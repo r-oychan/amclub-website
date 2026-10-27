@@ -10,7 +10,7 @@ import type { PageSeo } from '../lib/seo';
 
 type StrapiMedia = { id: number; url: string; alternativeText?: string | null };
 
-interface StrapiNewsArticle {
+export interface StrapiNewsArticle {
   documentId: string;
   title: string;
   slug: string;
@@ -20,7 +20,7 @@ interface StrapiNewsArticle {
   image?: StrapiMedia;
 }
 
-interface StrapiNewsPage {
+export interface StrapiNewsPage {
   title: string;
   introHeading?: string;
   introBody?: string;
@@ -34,15 +34,18 @@ const mediaUrl = (m?: StrapiMedia | null): string | undefined => {
   return `${STRAPI_URL}${m.url}`;
 };
 
-export default function NewsPage() {
-  const [data, setData] = useState<StrapiNewsPage | null>(null);
-  const [articles, setArticles] = useState<StrapiNewsArticle[]>([]);
-  const [loaded, setLoaded] = useState(false);
+export interface NewsInitialData { data: StrapiNewsPage; articles: StrapiNewsArticle[] }
+
+export default function NewsPage({ initialData }: { initialData?: NewsInitialData } = {}) {
+  const [data, setData] = useState<StrapiNewsPage | null>(initialData?.data ?? null);
+  const [articles, setArticles] = useState<StrapiNewsArticle[]>(initialData?.articles ?? []);
+  const [loaded, setLoaded] = useState(Boolean(initialData));
   const [visibleCount, setVisibleCount] = useState(6);
   const { loadMoreLabel, readMoreLabel } = useSiteCopy();
-  usePageSeo(data?.seo ?? null);
+  usePageSeo(data?.seo ?? null, !initialData);
 
   useEffect(() => {
+    if (initialData) return;
     let cancelled = false;
     (async () => {
       const [page, list] = await Promise.all([
@@ -59,7 +62,7 @@ export default function NewsPage() {
       setLoaded(true);
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [initialData]);
 
   if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
 

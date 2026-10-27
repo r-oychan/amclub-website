@@ -360,3 +360,18 @@ nothing and falls back to "I don't have that in my knowledge base".
   uploaded text. Status must be polled via **GET**; the POST response reports
   `new` misleadingly, and an index can only be deleted after the doc is
   detached from every agent (`rag_index_used`).
+
+## Next.js production preview: stale chunks after rebuilding
+
+Stop `npm run start` before running `npm run build`, then restart it after the
+build finishes. The standalone production server must use the matching build
+and static assets copied by `scripts/start.mjs`. Rebuilding while it runs can
+serve valid initial HTML followed by `ChunkLoadError` during hydration, causing
+the page error boundary to display unavailable content. This was reproduced
+on the membership page during the full-site SSR migration. Use `npm run dev`
+while editing.
+
+For CMS preview, inspect the document middleware in `cms/src/index.ts` before
+changing custom controllers: authenticated `status=draft` requests override
+their published defaults. The CMS preview token and middleware must match the
+server's configuration.

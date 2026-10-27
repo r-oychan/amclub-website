@@ -17,7 +17,7 @@ const SECTION_PARENTS: Record<string, { label: string; href: string; venue: stri
   other: { label: 'Fitness & Wellness', href: '/fitness', venue: 'Fitness' },
 };
 
-interface CoachApi {
+export interface CoachApi {
   name: string;
   slug: string;
   role: string;
@@ -41,14 +41,33 @@ function photoUrl(p: CoachApi['photo']): string | undefined {
   return p.url;
 }
 
-export default function CoachDetailPage() {
+function normalizeCoach(api: CoachApi, section: string, slug: string): CoachData {
+  const fallback = getCoach(section, slug);
+  return {
+            slug: api.slug,
+            shortName: fallback?.shortName ?? api.name.split(' ')[0],
+            name: api.name,
+            role: api.role,
+            section: api.section ?? section,
+            photo: photoUrl(api.photo) ?? fallback?.photo,
+            bio: api.bio ?? fallback?.bio ?? '',
+            expertise: toLines(api.expertise).length
+              ? toLines(api.expertise)
+              : fallback?.expertise,
+            qualifications: toLines(api.qualifications).length
+              ? toLines(api.qualifications)
+              : fallback?.qualifications,
+  };
+}
+export default function CoachDetailPage({ initialData }: { initialData?: { coach: CoachApi; section: string } } = {}) {
   const { section: sectionParam, slug: slugParam } = useParams<{ section: string; slug: string }>();
-  const section = sectionParam ?? 'aquatics';
-  const slug = slugParam ?? '';
-  const [coach, setCoach] = useState<CoachData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const section = initialData?.section ?? sectionParam ?? 'aquatics';
+  const slug = initialData?.coach.slug ?? slugParam ?? '';
+  const [coach, setCoach] = useState<CoachData | null>(() => initialData ? normalizeCoach(initialData.coach, section, slug) : null);
+  const [loading, setLoading] = useState(!initialData);
 
   useEffect(() => {
+    if (initialData) return;
     let cancelled = false;
     async function load() {
       setLoading(true);
@@ -72,21 +91,7 @@ export default function CoachDetailPage() {
         if (cancelled) return;
         if (items && items.length > 0) {
           const api = items[0];
-          setCoach({
-            slug: api.slug,
-            shortName: fallback?.shortName ?? api.name.split(' ')[0],
-            name: api.name,
-            role: api.role,
-            section: api.section ?? section,
-            photo: photoUrl(api.photo) ?? fallback?.photo,
-            bio: api.bio ?? fallback?.bio ?? '',
-            expertise: toLines(api.expertise).length
-              ? toLines(api.expertise)
-              : fallback?.expertise,
-            qualifications: toLines(api.qualifications).length
-              ? toLines(api.qualifications)
-              : fallback?.qualifications,
-          });
+          setCoach(normalizeCoach(api, section, slug));
         } else if (fallback) {
           setCoach(fallback);
         } else {
@@ -102,7 +107,7 @@ export default function CoachDetailPage() {
     return () => {
       cancelled = true;
     };
-  }, [section, slug]);
+  }, [section, slug, initialData]);
 
   const parent = SECTION_PARENTS[section] ?? SECTION_PARENTS.other;
 

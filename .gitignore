@@ -30,3 +30,7 @@ test-results/
 
 # Local seed credentials
 cms/.env.seed
+
+# Next.js
+.next/
+*.tsbuildinfo

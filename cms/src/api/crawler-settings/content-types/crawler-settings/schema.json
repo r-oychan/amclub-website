@@ -1,0 +1,21 @@
+{
+  "kind": "singleType",
+  "collectionName": "crawler_settings",
+  "info": {
+    "singularName": "crawler-settings",
+    "pluralName": "crawler-settings-entries",
+    "displayName": "Global: Crawler Settings",
+    "description": "Published controls for robots.txt, sitemap.xml and llms.txt. URLs come from published page content."
+  },
+  "options": { "draftAndPublish": true },
+  "attributes": {
+    "allowIndexing": { "type": "boolean", "default": true, "description": "Also requires SITE_INDEXING_ALLOWED=true in deployment. Dev/UAT always block crawling." },
+    "sitemapEnabled": { "type": "boolean", "default": true },
+    "llmsEnabled": { "type": "boolean", "default": true },
+    "llmsTitle": { "type": "string", "description": "Blank inherits the published site name." },
+    "llmsSummary": { "type": "text", "description": "Short summary displayed as the llms.txt blockquote. Blank inherits site SEO description." },
+    "llmsGuidance": { "type": "text", "description": "Optional Markdown guidance, e.g. booking and membership context." },
+    "excludedPaths": { "type": "text", "description": "One local path per line, excluded from both sitemap and llms. A trailing / excludes the entire subtree. Does not restrict access." },
+    "robotsRules": { "type": "component", "repeatable": true, "component": "shared.crawler-rule" }
+  }
+}

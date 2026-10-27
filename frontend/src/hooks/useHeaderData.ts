@@ -61,7 +61,7 @@ interface StrapiNavDropdown {
   columns?: StrapiNavColumn[];
 }
 
-interface StrapiHeader {
+export interface StrapiHeader {
   logo?: StrapiMedia;
   navItems?: StrapiNavDropdown[];
   ctaButton?: { label: string; href?: string; isExternal?: boolean };
@@ -75,7 +75,7 @@ function resolveMediaUrl(media?: StrapiMedia): string | undefined {
   return `${STRAPI_URL}${media.url}`;
 }
 
-function transformHeader(data: StrapiHeader): HeaderData {
+export function transformHeader(data: StrapiHeader): HeaderData {
   const logoUrl = resolveMediaUrl(data.logo)
     ?? 'https://framerusercontent.com/images/jYpgpsEhknSxMZJWxquvCab3o.webp';
 
@@ -256,10 +256,11 @@ const DEFAULT_HEADER: HeaderData = {
   ],
 };
 
-export function useHeaderData(): HeaderData {
-  const [data, setData] = useState<HeaderData>(DEFAULT_HEADER);
+export function useHeaderData(initialData?: HeaderData): HeaderData {
+  const [data, setData] = useState<HeaderData>(initialData ?? DEFAULT_HEADER);
 
   useEffect(() => {
+    if (initialData) return;
     let cancelled = false;
 
     fetchAPI<StrapiHeader>('/header', {
@@ -274,7 +275,7 @@ export function useHeaderData(): HeaderData {
     });
 
     return () => { cancelled = true; };
-  }, []);
+  }, [initialData]);
 
   return data;
 }

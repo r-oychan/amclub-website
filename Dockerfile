@@ -16,6 +16,19 @@ ARG VITE_ELEVENLABS_AGENT_ID=agent_9501k4971nfqf1xvgd0604g5kq8y
 ENV VITE_ELEVENLABS_AGENT_ID=$VITE_ELEVENLABS_AGENT_ID
 RUN npm run build
 
+# ── Next.js homepage POC ────────────────────────────────────
+FROM node:24-alpine AS next-home-builder
+RUN apk add --no-cache libc6-compat
+WORKDIR /build/frontend
+COPY frontend/package*.json ./
+RUN npm ci
+COPY frontend/ ./
+WORKDIR /build/next-home
+COPY next-home/package*.json ./
+RUN npm ci
+COPY next-home/ ./
+RUN npm run build
+
 # ── Stage 2: Build CMS ───────────────────────────────────────
 FROM node:24-alpine AS cms-builder
 RUN apk add --no-cache libc6-compat python3 make g++
@@ -57,6 +70,10 @@ COPY infra/docker/nginx.conf /etc/nginx/http.d/default.conf.template
 
 # Copy frontend build
 COPY --from=frontend-builder /build/dist /app/frontend
+
+# Next standalone output preserves the project directory under the tracing root.
+COPY --from=next-home-builder /build/next-home/.next/standalone /app/next-home
+COPY --from=next-home-builder /build/next-home/.next/static /app/next-home/next-home/.next/static
 
 # Copy CMS — use compiled JS from dist/, not raw TS from source
 WORKDIR /app/cms
