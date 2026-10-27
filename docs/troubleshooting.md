@@ -375,3 +375,17 @@ For CMS preview, inspect the document middleware in `cms/src/index.ts` before
 changing custom controllers: authenticated `status=draft` requests override
 their published defaults. The CMS preview token and middleware must match the
 server's configuration.
+
+## Deploy fails with `ContainerAppSecretInvalid` for an optional secret
+
+- **Symptom:** `pulumi up` fails on `amclub-app` with `Container app secret(s)
+  with name(s) 'jotform-api-key' are invalid: value or keyVaultUrl and identity
+  should be provided.` Seen on the first uat deploy of the Talk2Us assistant,
+  before `JOTFORM_API_KEY` was set for that environment.
+- **Cause:** Container Apps rejects a secret with an empty value, so an
+  optional GitHub secret that is unset in one environment breaks the whole
+  revision. Azure refuses the update, so the previous revision keeps serving.
+- **Fix:** add the secret and its `secretRef` env var only when the value is
+  set, as `infra/index.ts` does for SSO and Jotform
+  (`...(enabled ? [{ ... }] : [])`). The app code must treat the missing env
+  var as "not configured".
