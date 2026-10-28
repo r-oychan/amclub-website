@@ -280,7 +280,7 @@ All four detail-page collection types + the membership singletons share one dyna
 
 ### Assistant: Talk2Us requests (phone + web agent)
 
-- **Flow:** caller → Twilio/Telnyx SIP trunk → ElevenLabs agent → webhook tool `submit_talk2us_request` → `POST /api/assistant-requests/submit` (Strapi) → Jotform `POST /form/{id}/submissions` on the live Talk2Us form → Jotform's own email rules notify the department by **Category** (q10).
+- **Flow** (diagram and status in `docs/phone-ai-agent-research.md`): caller → club Panasonic PBX, which forwards on busy or after 3 rings → Telnyx +65 number → SIP → ElevenLabs agent "Eli v2" → webhook tool `submit_talk2us_request` → `POST /api/assistant-requests/submit` (Strapi) → Jotform `POST /form/{id}/submissions` on the live Talk2Us form → Jotform's own email rules notify the department by **Category** (q10).
 - **Auth:** Strapi *custom* API token whose only permission is `assistant-request.submit`, stored as ElevenLabs workspace secret `assistant-tool-token-<host>` and sent as `Authorization: Bearer …`. Revoke/rotate in `/admin` → API Tokens, then re-run the configure script.
 - **Validation/mapping:** `cms/src/api/assistant-request/utils/talk2us.ts` (qids, category→department, conditional subject fields). The Jotform API skips the form's required/captcha checks, so they are enforced here. Retries from the same conversation with the same category + message return the earlier reference.
 - **Env (per environment, `infra/index.ts`):** `JOTFORM_API_KEY` (GitHub env secret), `JOTFORM_API_BASE` + `JOTFORM_TALK2US_FORM_ID` (GitHub vars), `ASSISTANT_REQUEST_TAG` (derived: `[DEV TEST]` / `[UAT TEST]`, empty on prod — every env posts to the live form).

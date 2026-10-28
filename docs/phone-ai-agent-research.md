@@ -1,22 +1,43 @@
 # Phone AI agent: Panasonic TDE600 → Telnyx → ElevenLabs → Jotform
 
-Research notes (2026-10-22). Nothing is built yet. Prices come from vendor and third-party pages, so confirm them in each portal before relying on them.
+Research notes started 2026-10-22. Architecture settled 2026-10-28. The agent → Strapi → Jotform part is built and running on dev and uat; the PBX forward and the Telnyx SG number are still to do. Prices come from vendor and third-party pages, so confirm them in each portal before relying on them.
 
-## Target call flow
+## Architecture (settled)
 
 ```
 Caller ──PSTN──▶ Club PBX (Panasonic KX-TDE600)
-                    │  forward (option A: PSTN, option B: SIP trunk)
+                    │  answered by staff → normal call, nothing below happens
+                    │
+                    │  busy, or no answer after 3 rings
+                    │  → conditional call forward (CO-to-CO / PSTN, option A)
                     ▼
-               Telnyx (+65 DID or SIP connection)
-                    │  SIP over TCP/TLS → sip.rtc.elevenlabs.io
+               Telnyx (+65 SG number)
+                    │  SIP over TCP → sip.rtc.elevenlabs.io (FQDN connection)
                     ▼
-               ElevenLabs Agent ──webhook tool──▶ our backend /api/voice/jotform
-                    │                                  │
-                    │ transfer_to_number (optional)    └──▶ Jotform API (form submission)
+               ElevenLabs Agent "Eli v2"   (system__channel = sip_trunk)
+                    │  same agent as the website chat; it keeps phone answers short,
+                    │  never reads out URLs, hangs up after goodbye (end_call)
+                    │
+                    │  webhook tool submit_talk2us_request
+                    │  Authorization: Bearer <Strapi custom API token, stored as an ElevenLabs secret>
                     ▼
-               back to PBX / reception
+               Strapi proxy  POST /api/assistant-requests/submit
+                    │  validates, classifies the department, idempotent per conversation,
+                    │  logs every attempt in "Assistant: Talk2Us Requests"
+                    │  APIKEY header (JOTFORM_API_KEY, Container App secret)
+                    ▼
+               Jotform Talk2Us form  →  form's own email routing to the department
 ```
+
+| Hop | Detail | Status |
+|---|---|---|
+| Panasonic → Telnyx | Forward on busy or after 3 rings (no answer) to the Telnyx +65 number over the PSTN (option A below). The club's Panasonic dealer programs it. | To do: dealer, plus caller ID passthrough check |
+| Telnyx → ElevenLabs | Telnyx FQDN connection to `sip.rtc.elevenlabs.io`, TCP, +E.164. The number is imported in ElevenLabs as a SIP trunk number and assigned to Eli v2. | To do: SG number (needs the club's documents) |
+| ElevenLabs agent | One agent for both phone and web chat. It can tell which one it's on (`system__channel`, `system__is_text_only`). Prompt: `agent/prompt.md`; pushed by `scripts/elevenlabs-configure-agent.mjs <env>`. | Built (dev, uat) |
+| Agent → Strapi | Webhook tool `submit_talk2us_request`. Each environment has its own custom API token, allowed only `assistant-request.submit`. | Built (dev, uat) |
+| Strapi → Jotform | `cms/src/api/assistant-request`. Non-prod submissions are tagged `[DEV TEST]` / `[UAT TEST]`. | Built: verified end to end on dev; uat needs the `JOTFORM_*` settings |
+
+Rejected along the way: a separate voice-only agent (kept one agent, which changes its style by channel); the agent calling Jotform directly (the key would sit in ElevenLabs, and we'd have no validation or log); option B SIP trunk from the PBX (licences for this end-of-life model are hard to get). The Twilio number used for the first SIP test was only for testing.
 
 ## 1. PBX → Telnyx
 
@@ -24,7 +45,7 @@ The KX-TDE600 is discontinued. Panasonic exited the PBX business: global UC wind
 
 | Option | How | Needs | Pros / cons |
 |---|---|---|---|
-| **A. PSTN forward (recommended for PoC)** | Set FWD/CO-to-CO (trunk-to-trunk) forwarding on the DDI or extension, pointing to the Telnyx +65 number | A Singapore DID on Telnyx. The dealer enables trunk-to-trunk transfer in PBX programming. | No new PBX hardware or licences. Each call uses 2 CO lines while it's active, plus a local-call charge from the club's carrier. |
+| **A. PSTN forward (chosen: on busy or after 3 rings)** | Set conditional FWD (busy / no answer after 3 rings) with CO-to-CO (trunk-to-trunk) forwarding on the DDI or extension, pointing to the Telnyx +65 number | A Singapore DID on Telnyx. The dealer enables trunk-to-trunk transfer in PBX programming. | No new PBX hardware or licences. Each call uses 2 CO lines while it's active, plus a local-call charge from the club's carrier. |
 | **B. SIP trunk from PBX** | Set up a Virtual SIP trunk card (V-SIPGW) on the IPCMPR, pointing at a Telnyx credential SIP connection | KX-NCS4xxx SIP trunk activation keys (discontinued, grey market only), PGMPR ≥ 2.0 firmware, dealer programming | No CO lines are used and it's the cleanest route. The licences are hard to buy for an EOL box. |
 | **C. Small SBC/Asterisk in between** | PBX → existing line or IP trunk → FreePBX/Asterisk → Telnyx | A box or VM at the club | Flexible (you can add headers like `X-Caller-ID`), but it's one more thing to run. |
 
@@ -50,7 +71,7 @@ Source: ElevenLabs "Telnyx SIP trunking" and "SIP trunking" docs.
 
 ## 3. Agent → Jotform
 
-**Recommendation: wrap it in our backend** rather than having the agent call Jotform directly.
+**Decision: wrap it in our backend** (built as `POST /api/assistant-requests/submit`; see SPECS.md "Assistant: Talk2Us requests"). The original research notes follow; the built version uses the tool name `submit_talk2us_request` and a Strapi custom API token instead of a shared secret.
 
 - ElevenLabs **webhook (server) tool** `submit_enquiry` → `POST https://<site>/api/voice/jotform-submit`. The URL comes from env per environment. Auth is a shared-secret header stored as an ElevenLabs secret.
 - The body is a JSON schema the LLM fills (name, phone, email, enquiry type, preferred date…). Include `{{system__conversation_id}}` and `{{system__caller_id}}` as dynamic variables.
@@ -96,8 +117,8 @@ To test the whole PBX path, someone at the club (or a call app) dials the club's
 - Option A also adds the club carrier's local-call charge for the forward leg.
 
 ## Open questions for the client
-1. Which calls go to the agent: all calls, after hours only, or an IVR option like "press 9"?
-2. Which Jotform form(s), and which fields are required?
+1. ~~Which calls go to the agent?~~ Settled: calls that are busy or unanswered after 3 rings.
+2. ~~Which Jotform form(s)?~~ Settled: Talk2Us.
 3. Should the agent transfer to reception, and to which number or extension?
 4. Who is the PBX maintainer, and can they do CO-to-CO forwarding or SIP?
 5. Does the club approve buying the SG DID with its documents?
