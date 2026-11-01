@@ -389,3 +389,14 @@ server's configuration.
   set, as `infra/index.ts` does for SSO and Jotform
   (`...(enabled ? [{ ... }] : [])`). The app code must treat the missing env
   var as "not configured".
+
+## `ts:generate-types` adds content types that no longer exist
+
+- **Symptom:** after adding a schema, `npx strapi ts:generate-types` rewrites
+  `cms/types/generated/*.d.ts` with interfaces for long-deleted types
+  (`ApiCoachCoach`, `ApiFacilityFacility`, `ApiVenueVenue`, …) on top of the
+  new one.
+- **Cause:** typegen loads the app from a stale, gitignored `cms/dist/`
+  left by an old local build, which still contains those APIs.
+- **Fix:** `rm -rf cms/dist` before running typegen, then `npm run build`.
+  The diff should then only contain the types you added.

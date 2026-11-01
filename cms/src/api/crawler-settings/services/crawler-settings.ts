@@ -32,6 +32,7 @@ export const SOURCES: PageSource[] = [
   { type: 'reciprocal-clubs-page', path: '/membership/reciprocal-clubs', section: '/membership' },
   { type: 'start-application-page', path: '/membership/start-application', section: '/membership' },
   { type: 'niche-group-membership-page', path: '/membership/niche-group-membership', section: '/membership' },
+  { type: 'tac-connect-page', path: '/membership/tac-connect', section: '/membership' },
   { type: 'restaurant', path: '/dining/', section: '/dining', collection: true },
   { type: 'fitness-facility', path: '/fitness/', section: '/fitness', collection: true },
   { type: 'kids-experience', path: '/kids/', section: '/kids', collection: true },

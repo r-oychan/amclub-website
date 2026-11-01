@@ -2,6 +2,7 @@ import type { PageSeo } from './seo';
 import type { VenueData, LocationContact, OperatingHoursSection } from './venue-types';
 import { staticFallback, resolveMarquee } from './venue-data';
 import { mapImagePanels } from './imagePanels';
+import { loadTacConnect } from './tac-connect-loader';
 const imgSrc = (img: unknown): string | undefined => typeof img === 'string' ? img : (img as { url?: string } | null | undefined)?.url;
 export type CmsReader = <T>(endpoint: string, params?: Record<string, string>) => Promise<T | null>;
 
@@ -135,6 +136,13 @@ export async function loadVenue(section: string, lookupSlug: string, read: CmsRe
   if (!config) return null;
 
 
+      // TAC Connect has its own single type + side sections, so it maps
+      // through a dedicated loader rather than the generic membership one.
+      // No static fallback: an environment without the entry 404s (that is how
+      // the page stays off prod until it is seeded there).
+      if (section === 'membership' && lookupSlug === 'tac-connect') {
+        return loadTacConnect(read);
+      }
       // Singleton-backed subpages (e.g. /membership/niche-group-membership):
       // fetch the single type and map it over the static fallback so the CMS
       // drives content inside this page's unchanged layout.

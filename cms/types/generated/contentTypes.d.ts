@@ -2408,6 +2408,60 @@ export interface ApiStartApplicationPageStartApplicationPage
   };
 }
 
+export interface ApiTacConnectPageTacConnectPage
+  extends Struct.SingleTypeSchema {
+  collectionName: 'tac_connect_pages';
+  info: {
+    description: 'Content for /membership/tac-connect \u2014 rendered through VenueDetailPage layout';
+    displayName: 'Membership: TAC Connect Page';
+    pluralName: 'tac-connect-pages';
+    singularName: 'tac-connect-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    appDownload: Schema.Attribute.Component<'blocks.app-download', false>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    ctas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 3;
+        },
+        number
+      >;
+    description: Schema.Attribute.RichText;
+    faqCategory: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::faq-category.faq-category'
+    >;
+    faqHeading: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Frequently Asked Questions'>;
+    features: Schema.Attribute.Component<'blocks.promo-card-grid', false>;
+    heading: Schema.Attribute.String;
+    helpContacts: Schema.Attribute.Component<'blocks.help-contacts', false>;
+    heroImage: Schema.Attribute.Media<'images'>;
+    label: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::tac-connect-page.tac-connect-page'
+    > &
+      Schema.Attribute.Private;
+    parentHref: Schema.Attribute.String;
+    parentLabel: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    steps: Schema.Attribute.Component<'blocks.steps-row', false>;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiTennisCoachTennisCoach extends Struct.CollectionTypeSchema {
   collectionName: 'tennis_coaches';
   info: {
@@ -3176,6 +3230,7 @@ declare module '@strapi/strapi' {
       'api::restaurant.restaurant': ApiRestaurantRestaurant;
       'api::site-config.site-config': ApiSiteConfigSiteConfig;
       'api::start-application-page.start-application-page': ApiStartApplicationPageStartApplicationPage;
+      'api::tac-connect-page.tac-connect-page': ApiTacConnectPageTacConnectPage;
       'api::tennis-coach.tennis-coach': ApiTennisCoachTennisCoach;
       'api::testimonial.testimonial': ApiTestimonialTestimonial;
       'api::whats-on-page.whats-on-page': ApiWhatsOnPageWhatsOnPage;

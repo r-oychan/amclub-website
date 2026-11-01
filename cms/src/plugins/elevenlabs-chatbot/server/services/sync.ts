@@ -457,6 +457,7 @@ const SINGLETON_ROUTES: Record<string, string> = {
   'referral-page': '/membership/referal',
   'start-application-page': '/membership/start-application',
   'niche-group-membership-page': '/membership/niche-group-membership',
+  'tac-connect-page': '/membership/tac-connect',
   footer: '/home',
 };
 
