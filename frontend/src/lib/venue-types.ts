@@ -1,6 +1,9 @@
 import type { PageSeo } from './seo';
 import type { CtaLink } from '../components/shared/CtaButton';
 import type { DetailIconName } from './detailIcons';
+import type { AnswerBlock } from '../components/blocks/FaqAnswerBlocks';
+
+export type HelpContactIcon = 'form' | 'chat' | 'desk' | 'phone' | 'email';
 
 export interface ScheduleRow {
   dayRange: string;
@@ -119,7 +122,32 @@ export interface VenueData {
     extraSections?: { title: string; content?: string; bullets?: string[] }[];
     footnote?: string;
   }[];
-  faq?: { question: string; answer: string }[];
+  /** `answerBlocks` (Strapi blocks rich text, from shared faq-items) wins over `answer` when present. */
+  faq?: { question: string; answer: string; answerBlocks?: AnswerBlock[] }[];
+  /** FAQ section heading; defaults to "Frequently Asked Questions". */
+  faqHeading?: string;
+  /** Side section: one generated QR per store link (TAC Connect). The same
+   *  links also render as the hero's store buttons, ahead of `ctas`. */
+  appDownload?: {
+    heading?: string;
+    description?: string;
+    links: { platform: 'ios' | 'android'; label: string; url?: string }[];
+  };
+  /** Side section: ways to get help (forms, chat, front desk, phone). */
+  helpContacts?: {
+    heading?: string;
+    items: {
+      icon?: HelpContactIcon;
+      text: string;
+      href?: string;
+      action?: 'link' | 'open-chat';
+    }[];
+  };
+  /** Centered numbered-steps row rendered between the promo cards and the FAQ. */
+  steps?: {
+    heading?: string;
+    items: { title: string; description?: string; icon?: string; cta?: CtaLink }[];
+  };
   gallery?: {
     heading?: string;
     rows: { images: string[]; direction?: 'ltr' | 'rtl'; durationSec?: number }[];

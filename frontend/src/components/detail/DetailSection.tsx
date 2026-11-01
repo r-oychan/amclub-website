@@ -7,7 +7,9 @@ type IconName =
   | 'dresscode'
   | 'capacity'
   | 'menu'
-  | 'sponsorship';
+  | 'sponsorship'
+  | 'mobile'
+  | 'help';
 
 const ICON_STROKE = '#DF4661';
 
@@ -105,6 +107,26 @@ function SectionIcon({ icon }: { icon: IconName }) {
             strokeLinecap="round"
             strokeLinejoin="round"
           />
+        </svg>
+      );
+    case 'mobile':
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <rect x="6" y="2" width="12" height="20" rx="2" stroke={ICON_STROKE} strokeWidth="1.5" />
+          <path d="M11 18H13" stroke={ICON_STROKE} strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+      );
+    case 'help':
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke={ICON_STROKE} strokeWidth="1.5" />
+          <path
+            d="M9.5 9.5C9.5 8.12 10.62 7 12 7C13.38 7 14.5 8.12 14.5 9.5C14.5 10.88 13.38 11.5 12 12.2V14"
+            stroke={ICON_STROKE}
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
+          <circle cx="12" cy="17" r=".9" fill={ICON_STROKE} />
         </svg>
       );
     case 'sponsorship':

@@ -1,0 +1,17 @@
+{
+  "collectionName": "components_shared_app_store_links",
+  "info": {
+    "displayName": "App Store Link",
+    "icon": "mobile",
+    "description": "One app store listing. Drives both the hero download button and the generated QR code."
+  },
+  "attributes": {
+    "platform": {
+      "type": "enumeration",
+      "enum": ["ios", "android"],
+      "required": true
+    },
+    "label": { "type": "string", "required": true },
+    "url": { "type": "string" }
+  }
+}

@@ -375,3 +375,14 @@ For CMS preview, inspect the document middleware in `cms/src/index.ts` before
 changing custom controllers: authenticated `status=draft` requests override
 their published defaults. The CMS preview token and middleware must match the
 server's configuration.
+
+## `ts:generate-types` adds content types that no longer exist
+
+- **Symptom:** after adding a schema, `npx strapi ts:generate-types` rewrites
+  `cms/types/generated/*.d.ts` with interfaces for long-deleted types
+  (`ApiCoachCoach`, `ApiFacilityFacility`, `ApiVenueVenue`, …) on top of the
+  new one.
+- **Cause:** typegen loads the app from a stale, gitignored `cms/dist/`
+  left by an old local build, which still contains those APIs.
+- **Fix:** `rm -rf cms/dist` before running typegen, then `npm run build`.
+  The diff should then only contain the types you added.

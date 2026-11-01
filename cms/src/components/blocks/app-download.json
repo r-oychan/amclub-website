@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_blocks_app_downloads",
+  "info": {
+    "displayName": "App Download",
+    "icon": "mobile",
+    "description": "Detail-page side section: one QR code per store link, generated from the URL (no image upload)."
+  },
+  "attributes": {
+    "heading": { "type": "string", "default": "Download the App" },
+    "description": { "type": "text" },
+    "links": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.app-store-link",
+      "max": 2
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { OPEN_CHATBOT_EVENT } from '../../lib/chatbot-events';
 import { useNavigate } from 'react-router';
 import { ConversationProvider, useConversation } from '@elevenlabs/react';
 
@@ -778,6 +779,15 @@ export function ChatbotWidget() {
   const cfg = useChatbotConfig();
   const [open, setOpen] = useState(false);
   const [everOpened, setEverOpened] = useState(false);
+
+  useEffect(() => {
+    const onOpen = () => {
+      setEverOpened(true);
+      setOpen(true);
+    };
+    window.addEventListener(OPEN_CHATBOT_EVENT, onOpen);
+    return () => window.removeEventListener(OPEN_CHATBOT_EVENT, onOpen);
+  }, []);
 
   if (!cfg) return null; // still loading, or fetch failed
   if (!cfg.chatbotEnabled || !cfg.agentId) return null;

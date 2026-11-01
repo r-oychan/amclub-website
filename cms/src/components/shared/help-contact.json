@@ -1,0 +1,22 @@
+{
+  "collectionName": "components_shared_help_contacts",
+  "info": {
+    "displayName": "Help Contact",
+    "icon": "phone",
+    "description": "One row in a Need Help? list. action=open-chat opens the site chat assistant instead of following href."
+  },
+  "attributes": {
+    "icon": {
+      "type": "enumeration",
+      "enum": ["form", "chat", "desk", "phone", "email"],
+      "default": "form"
+    },
+    "text": { "type": "string", "required": true },
+    "href": { "type": "string" },
+    "action": {
+      "type": "enumeration",
+      "enum": ["link", "open-chat"],
+      "default": "link"
+    }
+  }
+}
