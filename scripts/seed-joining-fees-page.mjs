@@ -21,6 +21,7 @@ const CORPORATE_4_YEAR_PLAN_URL =
   '/documents/membership/corporate-membership-4-year-payment-plan.jpg';
 
 const breakdown = (lines) => lines.join('\n');
+const BREAKDOWN_LABEL = 'Application Fees';
 
 const data = {
   title: 'Membership Types & Joining Fees',
@@ -38,6 +39,7 @@ const data = {
       description: 'Lifetime, non-transferable membership for U.S. and Canadian citizens',
       feeLabel: 'Joining Fee (w/GST)',
       feeAmount: '$32,530',
+      breakdownLabel: BREAKDOWN_LABEL,
       breakdown: breakdown(['Entrance Fee: $26,945.00', 'Operations Surcharge: $5,585.00']),
       badge: 'Payment Plan Available',
       badgeTone: 'positive',
@@ -48,6 +50,7 @@ const data = {
         'Lifetime membership for U.S./Canadian military personnel and qualifying professionals',
       feeLabel: 'Joining Fee (w/GST)',
       feeAmount: '$19,057.50',
+      breakdownLabel: BREAKDOWN_LABEL,
       breakdown: breakdown(['Entrance Fee: $13,472.50', 'Operations Surcharge: $5,585.00']),
       badge: 'Payment Plan Available',
       badgeTone: 'positive',
@@ -57,6 +60,7 @@ const data = {
       description: 'One-year membership for non-U.S., non-Canadian, non-Singaporean residents',
       feeLabel: 'Joining Fee (w/GST)',
       feeAmount: '$10,286',
+      breakdownLabel: BREAKDOWN_LABEL,
       breakdown: breakdown([
         'Entrance Fee: $8,276.00',
         'Operations Surcharge: $1,010.00',
@@ -68,6 +72,7 @@ const data = {
       description: 'Lifetime membership for those not eligible for Ordinary Membership',
       feeLabel: 'Joining Fee (w/GST)',
       feeAmount: '$88,888',
+      breakdownLabel: BREAKDOWN_LABEL,
       breakdown: breakdown(['Entrance Fee: $83,303', 'Operations Surcharge: $5,585']),
       badge: 'Currently Closed',
       badgeTone: 'negative',
@@ -77,6 +82,7 @@ const data = {
       description: 'Membership purchased on the secondary market',
       feeLabel: 'Transfer Fee (w/GST)',
       feeAmount: '$39,240',
+      breakdownLabel: BREAKDOWN_LABEL,
       breakdown: breakdown(['Transfer Fee: $33,655', 'Operations Surcharge: $5,585']),
     },
   ],

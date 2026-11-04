@@ -1164,6 +1164,7 @@ export interface SharedPricedCard extends Struct.ComponentSchema {
       Schema.Attribute.DefaultTo<'positive'>;
     benefitsText: Schema.Attribute.Text;
     breakdown: Schema.Attribute.Text;
+    breakdownLabel: Schema.Attribute.String;
     bullets: Schema.Attribute.Component<'shared.text-line', true>;
     bulletStyle: Schema.Attribute.Enumeration<
       ['check', 'dot', 'dash', 'none']

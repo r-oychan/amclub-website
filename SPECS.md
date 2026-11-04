@@ -80,7 +80,7 @@
 | `media/kids/`, `media/pages/kids/` | `seed-kids-page.mjs`, `seed-facilities.mjs` | hangout/parties/packages |
 | `media/logos/` | `seed-dining-page.mjs` | restaurant logos |
 | `media/membership/` | `seed-membership-page.mjs`, `seed-membership-forms.mjs` | hero, community, programs, forms (PDFs) |
-| `media/membership/tac-connect/` | `seed-tac-connect-page.mjs` | `tac-connect-hero.jpg` (3:2), `tac-connect-card-*.jpg` ×5 (213×300), `tac-connect-step-*.svg` ×4 (line icons, stroke `secondary-strong`) |
+| `media/membership/tac-connect/` | `seed-tac-connect-page.mjs` | `tac-connect-hero.jpg` (3:2), `tac-connect-card-*.jpg` ×4 (213×300), `tac-connect-step-*.svg` ×4 (line icons, stroke `secondary-strong`) |
 | `media/news/` | `seed-news.mjs` (PR-3) | 2 article cover images (`news-whatsapp.jpg`, `news-expat-living.jpg`) uploaded and assigned via `news-article.image`. The 4 orphan covers + legacy `_manifest.txt` were removed in PR-3. |
 | `media/pages/` | varies | subfolder structure for new page-specific media |
 | `media/promotions/`, `media/restaurants/`, `media/services/` | `seed-dining-page.mjs` | dining-page sub-blocks |
@@ -112,7 +112,7 @@ Each row lists, for one route: the React page file, the React components it comp
 | `/event-spaces` | `EventSpacesPage.tsx` | `blocks/Hero` `blocks/CtaBanner` `event-spaces/PrivateEventPackages` `event-spaces/DistinctiveEventSpaces` `event-spaces/OffsiteCateringServices` `shared/PageFade` | 🟢 single-type `event-spaces-page` (with nested `privatePackages` `distinctiveSpaces` `offsiteCatering`) |
 | `/event-spaces/:slug` | `VenueDetailPage.tsx` (section=event-spaces) | same as dining detail | 🟢 collection `facility` (section=event-space) |
 | `/membership` | `MembershipPage.tsx` | `blocks/Hero` `blocks/CtaBanner` `blocks/FeatureGrid` `blocks/OverlaySection` `blocks/MembershipCommunityCollage` `blocks/MembershipPrograms` `shared/PageFade` | 🟢 single-type `membership-page` (with nested `hero` `joinCta` `joinCommunityImages` `intro` `benefits` `benefitIcons` `findRightCta` `findMembershipImage` `programs` `faq` `beginJourneyCta`) |
-| `/membership/joining-fees` | `JoiningFeesPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `shared/CtaIcon` | 🟢 single-type `joining-fees-page` |
+| `/membership/joining-fees` | `JoiningFeesPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `shared/CtaIcon` | 🟢 single-type `joining-fees-page` (individual cards: `shared.priced-card` — feeLabel, feeAmount, `breakdownLabel` "Application Fees", breakdown lines) |
 | `/membership/referal` | `ReferralPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `shared/CtaIcon` | 🟢 single-type `referral-page` |
 | `/membership/reciprocal-clubs` | `ReciprocalClubsPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `detail/DetailSection` `detail/ImageTextPanels` `shared/CtaButton` | ✅ 2026-06-16 — fetches `reciprocal-clubs-page` singleton; CTAs render via `CtaButton` (CMS variant); `imagePanels` (Local Reciprocity) render via the shared `detail/ImageTextPanels` (reused from `VenueDetailPage`, supports nested `extraSections`) |
 | `/membership/niche-group-membership` | `VenueDetailPage.tsx` (singleton override) | same as dining detail — tier cards keep the prod gradient layout; CMS photo replaces a tile only when set; bullets have an editor-selectable `bulletStyle` | 🟢 single-type `niche-group-membership-page` mapped into the layout (copy, hero, tier images/bullets editable; patch-2026-06-12-niche-group-images) |
@@ -165,7 +165,7 @@ Each row lists, for one route: the React page file, the React components it comp
 | `reciprocal-clubs-page` | `/membership/reciprocal-clubs` | title, hero, heading/intro, ctas (variant-aware via `CtaButton`), bottomCtas, secondary block, **`imagePanels` (`shared.image-text-panel`, e.g. Local Reciprocity — multi-CTA + nested `extraSections`)**, **body (dynamiczone)**, seo |
 | `start-application-page` | `/membership/start-application` _(new route)_ | same skeleton |
 | `niche-group-membership-page` | `/membership/niche-group-membership` | same skeleton |
-| `tac-connect-page` | `/membership/tac-connect` | title, heading, label, parentLabel/Href, heroImage, description (markdown), ctas (max 3), appDownload (`blocks.app-download`), helpContacts (`blocks.help-contacts`), features (`blocks.promo-card-grid`, overlay, 5 cols; card `subtitle` renders as the description; no cta → plain tile; cta with empty href → `#faq`), steps (`blocks.steps-row`, `iconStyle: circle`), faqHeading, faqCategory (→ `faq-category`, items shared with `/faq` + chatbot KB), seo |
+| `tac-connect-page` | `/membership/tac-connect` | title, heading, label, parentLabel/Href, heroImage, description (markdown), ctas (max 3), appDownload (`blocks.app-download`), helpContacts (`blocks.help-contacts`), features (`blocks.promo-card-grid`, overlay, 4 cols; card `subtitle` renders as the description; no cta → plain tile; cta with empty href → `#faq`), steps (`blocks.steps-row`, `iconStyle: circle`), faqHeading, faqCategory (→ `faq-category`, items shared with `/faq` + chatbot KB), seo |
 | `advertise-with-us-page` | `/membership/advertise-with-us` _(currently routed under `/home-sub`; consolidated to `/membership`)_ | same skeleton |
 
 ### Detail-page `body` dynamiczone — allowed blocks
