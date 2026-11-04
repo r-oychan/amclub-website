@@ -25,7 +25,7 @@
  * Usage:
  *   node scripts/seed-tac-connect-page.mjs --env=dev [--dry-run]
  *
- * Images live in media/membership/tac-connect/ (hero, 5 feature cards, 4
+ * Images live in media/membership/tac-connect/ (hero, 4 feature cards, 4
  * step icons) and are uploaded on each run; existing uploads are reused
  * unless --replace is passed.
  */
@@ -109,7 +109,6 @@ const FEATURE_CARDS = [
   ['My Account', 'Check your Club spend and account details anytime.', 'tac-connect-card-account.jpg'],
   ['Club Calendar', 'See what’s coming up at the Club, with all the details.', 'tac-connect-card-calendar.jpg'],
   ['Club Services', 'Quick, easy access to the Club services you use most.', 'tac-connect-card-service.jpg'],
-  ['Get Help', 'Reach us fast and get the answers you need.', 'tac-connect-card-gethelp.jpg'],
 ];
 
 // [title, description, icon]
@@ -181,7 +180,7 @@ async function seedPage(category, mediaId) {
       heading: 'What You Can Do on TAC Connect',
       description: 'Everything you need for your Club experience, together in one convenient place.',
       variant: 'overlay',
-      columns: 5,
+      columns: 4,
       cards: FEATURE_CARDS.map(([title, subtitle, image]) => ({ title, subtitle, image: mediaId(image) })),
     },
     steps: {

@@ -238,12 +238,14 @@ function IndividualCardView({ card }: { card: PricedCard }) {
         </p>
       </div>
       <div className="flex flex-col" style={{ gap: '4px', marginTop: '4px' }}>
-        <p
-          className="text-text-dark/60 uppercase"
-          style={{ fontSize: '11.2px', fontWeight: 700, letterSpacing: '0.06em' }}
-        >
-          Breakdown
-        </p>
+        {card.breakdownLabel && (
+          <p
+            className="text-text-dark/60 uppercase"
+            style={{ fontSize: '11.2px', fontWeight: 700, letterSpacing: '0.06em' }}
+          >
+            {card.breakdownLabel}
+          </p>
+        )}
         {card.breakdown.map((line) => (
           <p key={line} className="text-text-dark" style={{ fontSize: '14.4px', lineHeight: '21px' }}>
             {line}
