@@ -61,6 +61,13 @@ export function CtaButton({ cta, className = '' }: { cta: CtaLink; className?: s
       <CtaIcon name={cta.icon ?? 'arrow'} size={20} className={s.icon} />
     </>
   );
+  if (cta.href.startsWith('#')) {
+    return (
+      <a href={cta.href} className={cls} style={style}>
+        {inner}
+      </a>
+    );
+  }
   return isHardLink(cta.href, cta.isExternal) ? (
     <a href={cta.href} target="_blank" rel="noopener noreferrer" className={cls} style={style}>
       {inner}

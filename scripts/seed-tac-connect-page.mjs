@@ -14,6 +14,9 @@
  *   --ios-url=<App Store URL>        (omit → keep current value; none → no iOS button / QR)
  *   --android-url=<Google Play URL>  (omit → keep current value; none → no Android button / QR)
  *   --portal-url=<member portal URL> (omit → keep current value, else https://members.amclub.org.sg/)
+ *   --app-guide-url=<URL>            "App Login Guide" button (omit → keep current value, else #faq)
+ *   --portal-guide-url=<URL>         "Member Portal Login Guide" button (omit → keep current value, else #faq)
+ *   --replace                        re-upload images that already exist in the media library
  *   --skip-nav                       don't touch the header
  *
  * Rollout: dev + uat first. Prod 404s until this script is run there, so the
@@ -22,12 +25,14 @@
  * Usage:
  *   node scripts/seed-tac-connect-page.mjs --env=dev [--dry-run]
  *
- * Images are not supplied yet — the page renders neutral placeholders for the
- * hero, feature cards and step icons until they are uploaded in /admin (or
- * added under media/membership/tac-connect/ and wired here).
+ * Images live in media/membership/tac-connect/ (hero, 5 feature cards, 4
+ * step icons) and are uploaded on each run; existing uploads are reused
+ * unless --replace is passed.
  */
 
-import { initEnv, api as rawApi, findOneBySlug as rawFindOneBySlug, isDryRun } from './seed-helpers.mjs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { initEnv, api as rawApi, findOneBySlug as rawFindOneBySlug, isDryRun, uploadAll } from './seed-helpers.mjs';
 
 const DRY = isDryRun();
 const ctx = initEnv();
@@ -39,6 +44,9 @@ const flag = (name) => {
   return hit ? hit.slice(name.length + 3) : undefined;
 };
 const DEFAULT_PORTAL_URL = 'https://members.amclub.org.sg/';
+// No login guide pages exist yet — point at the FAQ ("How do I log in?") until they do.
+const DEFAULT_GUIDE_URL = '#faq';
+const MEDIA_DIR = join(dirname(fileURLToPath(import.meta.url)), '..', 'media', 'membership', 'tac-connect');
 const SKIP_NAV = process.argv.includes('--skip-nav');
 
 const PAGE_PATH = '/membership/tac-connect';
@@ -52,7 +60,7 @@ const FAQ_CATEGORY = {
 // [question, answer] — order follows the array.
 const FAQ_ITEMS = [
   ['What is TAC Connect?', 'TAC Connect is the Club’s member app. It brings bookings, your account and Club information together in one place. There’s also a TAC Connect member portal for when you’re on a computer.'],
-  ['What can I do on TAC Connect?', 'Check your account and transactions, make bookings for events, facilities and the spa, discover your member privileges, find important Club contacts and share your feedback.'],
+  ['What can I do on TAC Connect?', 'Book and keep track of all your events and activities, check your Club spend and account details, browse the Club calendar, access Club services and contact us for quick answers.'],
   ['Where can I download the app?', 'TAC Connect is available on the Apple App Store for iOS devices and the Google Play Store for Android devices.'],
   ['Can I use TAC Connect on my computer?', 'Yes. Log in to the TAC Connect member portal at members.amclub.org.sg. It offers many of the same features as the app, like bookings and your account. Google Chrome is the recommended browser.'],
   ['How do I log in?', 'Your username is your 7-character Membership ID (for example, X123400 – the first character must be a capital letter). Your first password is sent to your registered email address.'],
@@ -95,15 +103,33 @@ async function seedFaq() {
   return category;
 }
 
+// [title, description, image]
 const FEATURE_CARDS = [
-  'Bookings',
-  'Account & Transactions',
-  'Member Privileges',
-  'Club Contacts',
-  'Share Feedback',
+  ['Bookings', 'Book and track all your events and activities in one place.', 'tac-connect-card-bookings.jpg'],
+  ['My Account', 'Check your Club spend and account details anytime.', 'tac-connect-card-account.jpg'],
+  ['Club Calendar', 'See what’s coming up at the Club, with all the details.', 'tac-connect-card-calendar.jpg'],
+  ['Club Services', 'Quick, easy access to the Club services you use most.', 'tac-connect-card-service.jpg'],
+  ['Get Help', 'Reach us fast and get the answers you need.', 'tac-connect-card-gethelp.jpg'],
 ];
 
-async function seedPage(category) {
+// [title, description, icon]
+const STEPS = [
+  ['Download', 'Get the TAC Connect app from the App Store or Google Play', 'tac-connect-step-download.svg'],
+  ['Log In', 'Use your 7-character Membership ID and the password sent to your registered email', 'tac-connect-step-log-in.svg'],
+  ['Set Up Once', 'Change your password and pick a security question. It works on the app and the member portal', 'tac-connect-step-set-up-once.svg'],
+  ['Start Exploring', 'Make bookings, check your account and discover your member privileges', 'tac-connect-step-start-exploring.svg'],
+];
+
+const HERO_IMAGE = 'tac-connect-hero.jpg';
+
+async function uploadMedia() {
+  console.log('\n── media ──');
+  const names = [HERO_IMAGE, ...FEATURE_CARDS.map(([, , img]) => img), ...STEPS.map(([, , icon]) => icon)];
+  const map = await uploadAll(ctx, MEDIA_DIR, names, { dry: DRY });
+  return (name) => map[name]?.id || undefined;
+}
+
+async function seedPage(category, mediaId) {
   console.log('\n── tac-connect-page ──');
   // Re-running must not wipe links an editor set in /admin: an omitted flag
   // keeps whatever the live entry already has.
@@ -111,8 +137,11 @@ async function seedPage(category) {
   const currentStore = (platform) => current?.appDownload?.links?.find((l) => l.platform === platform)?.url ?? null;
   const IOS_URL = flag('ios-url') ?? currentStore('ios');
   const ANDROID_URL = flag('android-url') ?? currentStore('android');
-  const PORTAL_URL =
-    flag('portal-url') ?? current?.ctas?.find((c) => c.label === 'Member Portal')?.href ?? DEFAULT_PORTAL_URL;
+  const currentCta = (label) => current?.ctas?.find((c) => c.label === label)?.href;
+  const PORTAL_URL = flag('portal-url') ?? currentCta('Member Portal') ?? DEFAULT_PORTAL_URL;
+  const APP_GUIDE_URL = flag('app-guide-url') ?? currentCta('App Login Guide') ?? DEFAULT_GUIDE_URL;
+  const PORTAL_GUIDE_URL = flag('portal-guide-url') ?? currentCta('Member Portal Login Guide') ?? DEFAULT_GUIDE_URL;
+  const isExternal = (href) => /^https?:\/\//.test(href);
   const storeLinks = [
     { platform: 'ios', label: 'Download for iOS', url: IOS_URL },
     { platform: 'android', label: 'Download for Android', url: ANDROID_URL },
@@ -125,10 +154,15 @@ async function seedPage(category) {
     parentHref: '/membership',
     description: [
       'TAC Connect is your Club in one app. It’s the simple way to stay connected with The American Club – your bookings, your account and the latest from the Club, all in one place.',
-      'Check your account and recent transactions, book events, facilities and the spa, discover your member privileges, find key Club contacts and share your feedback – whenever and wherever suits you.',
+      'Book and track your events and activities, check your Club spend and account details, see what’s on the Club calendar, access Club services and get quick answers – whenever and wherever suits you.',
       `On the go, use the TAC Connect app on iOS and Android. At your desk, log in to the TAC Connect member portal at ${PORTAL_URL.replace(/^https?:\/\//, '').replace(/\/$/, '')}. One login works for both.`,
     ].join('\n\n'),
-    ctas: [{ label: 'Member Portal', href: PORTAL_URL, isExternal: true }],
+    heroImage: mediaId(HERO_IMAGE),
+    ctas: [
+      { label: 'App Login Guide', href: APP_GUIDE_URL, isExternal: isExternal(APP_GUIDE_URL) },
+      { label: 'Member Portal Login Guide', href: PORTAL_GUIDE_URL, isExternal: isExternal(PORTAL_GUIDE_URL) },
+      { label: 'Member Portal', href: PORTAL_URL, isExternal: true },
+    ],
     appDownload: {
       heading: 'Download the App',
       description: 'Scan with your phone camera to download TAC Connect for iOS or Android.',
@@ -148,16 +182,12 @@ async function seedPage(category) {
       description: 'Everything you need for your Club experience, together in one convenient place.',
       variant: 'overlay',
       columns: 5,
-      cards: FEATURE_CARDS.map((title) => ({ title, cta: { label: 'Learn More', href: '#faq' } })),
+      cards: FEATURE_CARDS.map(([title, subtitle, image]) => ({ title, subtitle, image: mediaId(image) })),
     },
     steps: {
       heading: 'Get Started in 4 Easy Steps',
-      items: [
-        { title: 'Download', description: 'Get the TAC Connect app from the App Store or Google Play' },
-        { title: 'Log In', description: 'Use your 7-character Membership ID and the password sent to your registered email' },
-        { title: 'Set Up Once', description: 'Change your password and pick a security question. It works on the app and the member portal' },
-        { title: 'Start Exploring', description: 'Make bookings, check your account and discover your member privileges' },
-      ],
+      iconStyle: 'circle',
+      items: STEPS.map(([title, description, icon]) => ({ title, description, icon: mediaId(icon) })),
     },
     faqHeading: 'Frequently Asked Questions',
     faqCategory: category.documentId,
@@ -195,17 +225,22 @@ async function seedNav() {
   const membership = header.navItems?.find((n) => n.href === '/membership');
   const programs = membership?.columns?.find((c) => c.heading === 'Programs');
   if (!programs) throw new Error('Header has no Membership → Programs column');
-  if (programs.links.some((l) => l.href === PAGE_PATH)) { console.log('  ✓ already present'); return; }
-  programs.links.push({ label: 'TAC Connect', href: PAGE_PATH, isExternal: false });
-  if (DRY) { console.log('  [dry] PUT /header (+ TAC Connect)'); return; }
+  const existing = programs.links.find((l) => l.href === PAGE_PATH);
+  // Re-seeding re-adds the "New" badge if it was cleared — pass --skip-nav
+  // once the launch badge has been retired in /admin.
+  if (existing?.badge) { console.log('  ✓ already present'); return; }
+  if (existing) existing.badge = 'New';
+  else programs.links.push({ label: 'TAC Connect', href: PAGE_PATH, isExternal: false, badge: 'New' });
+  if (DRY) { console.log('  [dry] PUT /header (TAC Connect + New badge)'); return; }
   await api('/header', { method: 'PUT', body: { data: toWritable(header) } });
-  console.log('  ✓ added under Membership → Programs');
+  console.log(`  ✓ ${existing ? 'badged' : 'added'} under Membership → Programs`);
 }
 
 async function main() {
   console.log(`Seeding TAC Connect${DRY ? ' (dry-run)' : ''}`);
   const category = await seedFaq();
-  await seedPage(category);
+  const mediaId = await uploadMedia();
+  await seedPage(category, mediaId);
   await seedNav();
   console.log('\nDone.');
 }

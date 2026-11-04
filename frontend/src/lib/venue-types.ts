@@ -1,3 +1,4 @@
+import type { StepIconStyle } from '../components/blocks/StepsRow';
 import type { PageSeo } from './seo';
 import type { CtaLink } from '../components/shared/CtaButton';
 import type { DetailIconName } from './detailIcons';
@@ -75,7 +76,8 @@ export interface VenueData {
       title: string;
       subtitle?: string;
       image: string;
-      cta: { label: string; href: string; isExternal?: boolean };
+      /** Optional — overlay cards without a link render as plain tiles. */
+      cta?: { label: string; href: string; isExternal?: boolean };
     }[];
   };
   teamMembers?: {
@@ -146,6 +148,7 @@ export interface VenueData {
   /** Centered numbered-steps row rendered between the promo cards and the FAQ. */
   steps?: {
     heading?: string;
+    iconStyle?: StepIconStyle;
     items: { title: string; description?: string; icon?: string; cta?: CtaLink }[];
   };
   gallery?: {

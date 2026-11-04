@@ -1090,12 +1090,14 @@ export default function VenueDetailPage({ section: sectionProp, initialVenue, in
                           aria-hidden
                           className="absolute inset-0"
                           style={{
-                            background:
-                              'linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,0.55) 100%)',
+                            // Deeper scrim when a description sits under the title
+                            background: card.subtitle
+                              ? 'linear-gradient(180deg, rgba(0,0,0,0) 38%, rgba(0,0,0,0.78) 100%)'
+                              : 'linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,0.55) 100%)',
                           }}
                         />
                         <div
-                          className="absolute inset-x-0 bottom-0 flex flex-col items-center text-center px-2 pb-8"
+                          className={`absolute inset-x-0 bottom-0 flex flex-col items-center text-center pb-8 ${card.subtitle ? 'px-4' : 'px-2'}`}
                           style={{ gap: '10px' }}
                         >
                           <h3
@@ -1110,6 +1112,11 @@ export default function VenueDetailPage({ section: sectionProp, initialVenue, in
                           >
                             {card.title}
                           </h3>
+                          {card.subtitle && (
+                            <p className="text-white" style={{ fontSize: '14.4px', lineHeight: '20px', opacity: 0.92 }}>
+                              {card.subtitle}
+                            </p>
+                          )}
                           {card.cta && (
                             <span
                               className="inline-flex items-center gap-1.5 text-white uppercase"
@@ -1409,7 +1416,7 @@ export default function VenueDetailPage({ section: sectionProp, initialVenue, in
 
       {/* ── Numbered steps (TAC Connect "Get Started") ── */}
       {venue.steps && venue.steps.items.length > 0 && (
-        <StepsRow heading={venue.steps.heading} items={venue.steps.items} />
+        <StepsRow heading={venue.steps.heading} items={venue.steps.items} iconStyle={venue.steps.iconStyle} />
       )}
 
       {/* ── Bottom CTAs (e.g. duplicate Programs Price List link) ── */}

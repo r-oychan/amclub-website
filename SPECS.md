@@ -80,7 +80,7 @@
 | `media/kids/`, `media/pages/kids/` | `seed-kids-page.mjs`, `seed-facilities.mjs` | hangout/parties/packages |
 | `media/logos/` | `seed-dining-page.mjs` | restaurant logos |
 | `media/membership/` | `seed-membership-page.mjs`, `seed-membership-forms.mjs` | hero, community, programs, forms (PDFs) |
-| `media/membership/tac-connect/` | `seed-tac-connect-page.mjs` | **(reserved — no assets yet)** hero 3:2, 5 feature cards 213×300, 4 step icons 72×96 |
+| `media/membership/tac-connect/` | `seed-tac-connect-page.mjs` | `tac-connect-hero.jpg` (3:2), `tac-connect-card-*.jpg` ×5 (213×300), `tac-connect-step-*.svg` ×4 (line icons, stroke `secondary-strong`) |
 | `media/news/` | `seed-news.mjs` (PR-3) | 2 article cover images (`news-whatsapp.jpg`, `news-expat-living.jpg`) uploaded and assigned via `news-article.image`. The 4 orphan covers + legacy `_manifest.txt` were removed in PR-3. |
 | `media/pages/` | varies | subfolder structure for new page-specific media |
 | `media/promotions/`, `media/restaurants/`, `media/services/` | `seed-dining-page.mjs` | dining-page sub-blocks |
@@ -116,7 +116,7 @@ Each row lists, for one route: the React page file, the React components it comp
 | `/membership/referal` | `ReferralPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `shared/CtaIcon` | 🟢 single-type `referral-page` |
 | `/membership/reciprocal-clubs` | `ReciprocalClubsPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `detail/DetailSection` `detail/ImageTextPanels` `shared/CtaButton` | ✅ 2026-06-16 — fetches `reciprocal-clubs-page` singleton; CTAs render via `CtaButton` (CMS variant); `imagePanels` (Local Reciprocity) render via the shared `detail/ImageTextPanels` (reused from `VenueDetailPage`, supports nested `extraSections`) |
 | `/membership/niche-group-membership` | `VenueDetailPage.tsx` (singleton override) | same as dining detail — tier cards keep the prod gradient layout; CMS photo replaces a tile only when set; bullets have an editor-selectable `bulletStyle` | 🟢 single-type `niche-group-membership-page` mapped into the layout (copy, hero, tier images/bullets editable; patch-2026-06-12-niche-group-images) |
-| `/membership/tac-connect` | `VenueDetailPage.tsx` (dedicated loader `lib/tac-connect-loader.ts`) | detail layout + `detail/AppDownloadSection` (QR generated from store URLs via `shared/QrCode`) `detail/HelpContactsSection` (`action: open-chat` opens the chat assistant via `lib/chatbot-events`) `blocks/StepsRow` + overlay promo cards (`promoCards`) + `blocks/FaqAccordion` (`#faq` anchor) | 🟢 single-type `tac-connect-page` (hero, label, `ctas`, `appDownload`, `helpContacts`, `features`, `steps`) + shared `faq-item`s via `faqCategory` relation. **Rollout: dev/uat only** — no static fallback, so an env without the entry 404s. Seed: `scripts/seed-tac-connect-page.mjs --env=<env> [--ios-url= --android-url= --portal-url=]` (also adds nav link under Membership → Programs). Images pending (placeholders render). |
+| `/membership/tac-connect` | `VenueDetailPage.tsx` (dedicated loader `lib/tac-connect-loader.ts`) | detail layout + `detail/AppDownloadSection` (QR generated from store URLs via `shared/QrCode`) `detail/HelpContactsSection` (`action: open-chat` opens the chat assistant via `lib/chatbot-events`) `blocks/StepsRow` + overlay promo cards (`promoCards`) + `blocks/FaqAccordion` (`#faq` anchor) | 🟢 single-type `tac-connect-page` (hero, label, `ctas`, `appDownload`, `helpContacts`, `features`, `steps`) + shared `faq-item`s via `faqCategory` relation. **Rollout: dev/uat only** — no static fallback, so an env without the entry 404s. Seed: `scripts/seed-tac-connect-page.mjs --env=<env> [--ios-url= --android-url= --portal-url= --app-guide-url= --portal-guide-url=]` (uploads `media/membership/tac-connect/*`; also adds the nav link under Membership → Programs with a "New" badge). Login guide buttons point at `#faq` until guide URLs exist. |
 | `/membership/:slug` | `VenueDetailPage.tsx` (section=membership) | same as dining detail | 🟢 collection `facility` (section=membership) — subpages like `start-application` and the legacy detail pages |
 | `/whats-on` | `WhatsOnPage.tsx` | `blocks/Hero` `blocks/CtaBanner` `shared/PageFade` | 🟢 single-type `whats-on-page`; 🟢 collection `event` (with `category` → `event-category`); 🟢 collection `event-category` (for category filter bar) |
 | `/whats-on/:slug` | `EventDetailPage.tsx` | `detail/DetailHeroBanner` `detail/DetailBreadcrumb` `detail/DetailSection` `shared/CtaIcon` `shared/Button` `shared/PageFade` | 🟢 collection `event` (by slug; populates `category` + `image` + `ctas`) |
@@ -165,7 +165,7 @@ Each row lists, for one route: the React page file, the React components it comp
 | `reciprocal-clubs-page` | `/membership/reciprocal-clubs` | title, hero, heading/intro, ctas (variant-aware via `CtaButton`), bottomCtas, secondary block, **`imagePanels` (`shared.image-text-panel`, e.g. Local Reciprocity — multi-CTA + nested `extraSections`)**, **body (dynamiczone)**, seo |
 | `start-application-page` | `/membership/start-application` _(new route)_ | same skeleton |
 | `niche-group-membership-page` | `/membership/niche-group-membership` | same skeleton |
-| `tac-connect-page` | `/membership/tac-connect` | title, heading, label, parentLabel/Href, heroImage, description (markdown), ctas (max 3), appDownload (`blocks.app-download`), helpContacts (`blocks.help-contacts`), features (`blocks.promo-card-grid`, overlay, 5 cols; empty card href → `#faq`), steps (`blocks.steps-row`), faqHeading, faqCategory (→ `faq-category`, items shared with `/faq` + chatbot KB), seo |
+| `tac-connect-page` | `/membership/tac-connect` | title, heading, label, parentLabel/Href, heroImage, description (markdown), ctas (max 3), appDownload (`blocks.app-download`), helpContacts (`blocks.help-contacts`), features (`blocks.promo-card-grid`, overlay, 5 cols; card `subtitle` renders as the description; no cta → plain tile; cta with empty href → `#faq`), steps (`blocks.steps-row`, `iconStyle: circle`), faqHeading, faqCategory (→ `faq-category`, items shared with `/faq` + chatbot KB), seo |
 | `advertise-with-us-page` | `/membership/advertise-with-us` _(currently routed under `/home-sub`; consolidated to `/membership`)_ | same skeleton |
 
 ### Detail-page `body` dynamiczone — allowed blocks
@@ -201,7 +201,7 @@ All four detail-page collection types + the membership singletons share one dyna
 | `OverlaySection.tsx` | `blocks.overlay-section` (or `blocks.cta-banner` + sibling media field) | Full-bleed image with overlay text panel |
 | `MembershipCommunityCollage.tsx` | `blocks.cta-banner` (heading/body/ctas) + `membership-page.joinCommunityImages` (media[]) | 4-image scattered collage with centered heading + CTA. Used by `MembershipPage`. |
 | `MembershipPrograms.tsx` | `blocks.card-grid` (cards w/ image + heading + description + cta) | 3-column dark-navy radial gradient with mint divider + arrow CTA. Used by `MembershipPage`. |
-| `StepsRow.tsx` | `blocks.steps-row` (`shared.step-item[]`: title, description, icon 3:4, optional cta) | Centered italic heading over a 2/3/4-col row of numbered steps; dashed placeholder tile when icon empty. Used by `/membership/tac-connect`; reusable for any "how it works" flow. |
+| `StepsRow.tsx` | `blocks.steps-row` (`iconStyle` circle\|tile, `shared.step-item[]`: title, description, icon, optional cta) | Centered italic heading over a 2/3/4-col row of numbered steps. `circle` = 112px `step-icon` badge (DESIGN.md) with a line icon; `tile` = 72×96 portrait art; dashed placeholder when icon empty. Used by `/membership/tac-connect`; reusable for any "how it works" flow. |
 
 ### Detail Page Components (venue/restaurant/facility detail)
 
@@ -300,7 +300,7 @@ All four detail-page collection types + the membership singletons share one dyna
 |---|---|---|
 | `shared.link` | label, href, isExternal, variant (primary/secondary/outline/text) | CTAs everywhere |
 | `shared.seo` | metaTitle, metaDescription, metaImage, canonicalURL | All page types + `site-config.defaultSeo` (site-wide fallback; page fields override per-field via `usePageSeo`) |
-| `shared.nav-item` | label, href, dropdown (nav-dropdown) | header |
+| `shared.nav-item` | label, href, isExternal, badge (optional pill after the label, e.g. "New") | header |
 | `shared.nav-dropdown` | label, href, columns (nav-column[]) | header nav |
 | `shared.nav-column` | heading, links (shared.link[]), image, imageLink | header dropdown |
 | `shared.hero-slide` | image, heading, subheading, cta | blocks.hero carousel |

@@ -7,6 +7,11 @@
   },
   "attributes": {
     "heading": { "type": "string" },
+    "iconStyle": {
+      "type": "enumeration",
+      "enum": ["circle", "tile"],
+      "default": "circle"
+    },
     "items": {
       "type": "component",
       "repeatable": true,

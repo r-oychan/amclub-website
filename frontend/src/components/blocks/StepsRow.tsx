@@ -5,13 +5,41 @@ import { isHardLink } from '../../lib/links';
 export interface StepItem {
   title: string;
   description?: string;
-  /** 3:4 portrait icon (72 × 96). A neutral placeholder tile renders when empty. */
+  /** Line icon (circle style) or 3:4 portrait art (tile style). A neutral placeholder renders when empty. */
   icon?: string;
   cta?: CtaLink;
 }
 
+export type StepIconStyle = 'circle' | 'tile';
+
+const ICON_FRAME: Record<StepIconStyle, { frame: string; img: string; placeholder: string }> = {
+  // 112px tinted badge with a ~50px line icon (DESIGN.md `step-icon`)
+  circle: {
+    frame: 'mb-4 w-[112px] h-[112px] rounded-full bg-secondary-soft flex items-center justify-center transition-transform duration-200 hover:-translate-y-0.5',
+    img: 'w-[50px] h-[50px] object-contain',
+    placeholder: 'w-[50px] h-[50px] rounded-full border border-dashed border-secondary-strong/40',
+  },
+  // 72 × 96 portrait illustration
+  tile: {
+    frame: 'overflow-hidden mb-3 w-[72px] h-[96px]',
+    img: 'w-full h-full object-contain',
+    placeholder: 'w-full h-full bg-primary/5 border border-dashed border-primary/20',
+  },
+};
+
 /** Centered heading over a row of numbered steps, e.g. "Get Started in 4 Easy Steps". */
-export function StepsRow({ heading, items, numbered = true }: { heading?: string; items: StepItem[]; numbered?: boolean }) {
+export function StepsRow({
+  heading,
+  items,
+  numbered = true,
+  iconStyle = 'circle',
+}: {
+  heading?: string;
+  items: StepItem[];
+  numbered?: boolean;
+  iconStyle?: StepIconStyle;
+}) {
+  const icon = ICON_FRAME[iconStyle];
   return (
     <section className="py-16 bg-bg">
       <div className="max-w-7xl mx-auto px-10">
@@ -26,19 +54,19 @@ export function StepsRow({ heading, items, numbered = true }: { heading?: string
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-8">
           {items.map((step, i) => (
             <div key={`${step.title}-${i}`} className="flex flex-col items-center text-center">
-              <div className="overflow-hidden mb-3 w-[72px] h-[96px]">
+              <div aria-hidden className={icon.frame}>
                 {step.icon ? (
-                  <img src={step.icon} alt="" className="w-full h-full object-contain" loading="lazy" />
+                  <img src={step.icon} alt="" className={icon.img} loading="lazy" />
                 ) : (
-                  <div aria-hidden className="w-full h-full bg-primary/5 border border-dashed border-primary/20" />
+                  <div className={icon.placeholder} />
                 )}
               </div>
-              <p
-                className="font-heading text-primary"
-                style={{ fontSize: '20.8px', fontWeight: 700, letterSpacing: '-0.416px' }}
+              <h3
+                className="text-primary"
+                style={{ fontFamily: 'Lato, sans-serif', fontSize: '24px', fontWeight: 700, lineHeight: '28px', letterSpacing: '-0.48px' }}
               >
                 {numbered ? `${i + 1}. ${step.title}` : step.title}
-              </p>
+              </h3>
               {step.description && (
                 <p className="text-text-dark/70 mt-1 max-w-[220px]" style={{ fontSize: '13.6px', lineHeight: '19px' }}>
                   {step.description}

@@ -577,6 +577,8 @@ export interface BlocksStepsRow extends Struct.ComponentSchema {
   };
   attributes: {
     heading: Schema.Attribute.String;
+    iconStyle: Schema.Attribute.Enumeration<['circle', 'tile']> &
+      Schema.Attribute.DefaultTo<'circle'>;
     items: Schema.Attribute.Component<'shared.step-item', true>;
   };
 }
@@ -1066,6 +1068,10 @@ export interface SharedNavItem extends Struct.ComponentSchema {
     icon: 'apps';
   };
   attributes: {
+    badge: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 12;
+      }>;
     href: Schema.Attribute.String & Schema.Attribute.Required;
     isExternal: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     label: Schema.Attribute.String & Schema.Attribute.Required;
@@ -1308,7 +1314,7 @@ export interface SharedStatItem extends Struct.ComponentSchema {
 export interface SharedStepItem extends Struct.ComponentSchema {
   collectionName: 'components_shared_step_items';
   info: {
-    description: 'One numbered step: icon (3:4 portrait), title, short description, optional link.';
+    description: 'One numbered step: icon (line icon for the circle style, 3:4 portrait for tile), title, short description, optional link.';
     displayName: 'Step Item';
     icon: 'check';
   };

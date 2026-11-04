@@ -3,7 +3,7 @@
   "info": {
     "displayName": "Step Item",
     "icon": "check",
-    "description": "One numbered step: icon (3:4 portrait), title, short description, optional link."
+    "description": "One numbered step: icon (line icon for the circle style, 3:4 portrait for tile), title, short description, optional link."
   },
   "attributes": {
     "title": { "type": "string", "required": true },
