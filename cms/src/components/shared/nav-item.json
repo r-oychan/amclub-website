@@ -17,6 +17,10 @@
     "isExternal": {
       "type": "boolean",
       "default": false
+    },
+    "badge": {
+      "type": "string",
+      "maxLength": 12
     }
   }
 }

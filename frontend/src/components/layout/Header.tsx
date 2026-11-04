@@ -66,6 +66,14 @@ export function Header({ initialData }: { initialData?: HeaderData } = {}) {
       className="block py-2 text-[13.6px] font-body text-black hover:opacity-60 transition-opacity"
     >
       {link.label}
+      {link.badge && (
+        <span
+          className="inline-block ml-2 px-[7px] py-0.5 rounded-full bg-accent text-white uppercase align-[1px]"
+          style={{ fontSize: '10px', fontWeight: 700, lineHeight: 1.4, letterSpacing: '0.06em' }}
+        >
+          {link.badge}
+        </span>
+      )}
     </NavLink>
   );
 

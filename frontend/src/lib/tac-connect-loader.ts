@@ -34,6 +34,7 @@ interface TacConnectSingleton {
   } | null;
   steps?: {
     heading?: string | null;
+    iconStyle?: 'circle' | 'tile' | null;
     items?: { title: string; description?: string | null; icon?: Media; cta?: CtaLink | null }[] | null;
   } | null;
   faqHeading?: string | null;
@@ -47,7 +48,7 @@ interface FaqItemApi {
 
 const opt = <T,>(v: T | null | undefined): T | undefined => v ?? undefined;
 
-/** Card links fall back to the page's FAQ anchor when an editor leaves href empty. */
+/** A card link whose href an editor leaves empty falls back to the page's FAQ anchor. */
 const FALLBACK_CARD_HREF = '#faq';
 
 /**
@@ -107,17 +108,16 @@ export async function loadTacConnect(read: CmsReader): Promise<VenueData | null>
             title: c.title,
             subtitle: opt(c.subtitle),
             image: c.image?.url ?? '',
-            cta: {
-              label: c.cta?.label || 'Learn More',
-              href: c.cta?.href || FALLBACK_CARD_HREF,
-              isExternal: opt(c.cta?.isExternal),
-            },
+            cta: c.cta
+              ? { label: c.cta.label || 'Learn More', href: c.cta.href || FALLBACK_CARD_HREF, isExternal: opt(c.cta.isExternal) }
+              : undefined,
           })),
         }
       : undefined,
     steps: s.steps?.items?.length
       ? {
           heading: opt(s.steps.heading),
+          iconStyle: opt(s.steps.iconStyle),
           items: s.steps.items.map((i) => ({
             title: i.title,
             description: opt(i.description),
