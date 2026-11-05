@@ -30,6 +30,10 @@
     "feeAmount": {
       "type": "string"
     },
+    "breakdownLabel": {
+      "type": "string",
+      "description": "Heading above the breakdown lines (e.g. \"Application Fees\"). Hidden when empty."
+    },
     "breakdown": {
       "type": "text"
     },

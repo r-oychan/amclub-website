@@ -18,6 +18,8 @@ export interface PricedCard {
   description: string;
   feeLabel: string;
   feeAmount: string;
+  /** Heading above the breakdown lines; hidden when empty. */
+  breakdownLabel?: string;
   breakdown: string[];
   badge?: string;
   badgeTone?: 'positive' | 'negative';
@@ -88,6 +90,7 @@ export const JOINING_FEES_FALLBACK: JoiningFeesData = {
       description: 'Lifetime, non-transferable membership for U.S. and Canadian citizens',
       feeLabel: 'Joining Fee (w/GST)',
       feeAmount: '$32,530',
+      breakdownLabel: 'Application Fees',
       breakdown: ['Entrance Fee: $26,945.00', 'Operations Surcharge: $5,585.00'],
       badge: 'Payment Plan Available',
       badgeTone: 'positive',
@@ -98,6 +101,7 @@ export const JOINING_FEES_FALLBACK: JoiningFeesData = {
         'Lifetime membership for U.S./Canadian military personnel and qualifying professionals',
       feeLabel: 'Joining Fee (w/GST)',
       feeAmount: '$19,057.50',
+      breakdownLabel: 'Application Fees',
       breakdown: ['Entrance Fee: $13,472.50', 'Operations Surcharge: $5,585.00'],
       badge: 'Payment Plan Available',
       badgeTone: 'positive',
@@ -107,6 +111,7 @@ export const JOINING_FEES_FALLBACK: JoiningFeesData = {
       description: 'One-year membership for non-U.S., non-Canadian, non-Singaporean residents',
       feeLabel: 'Joining Fee (w/GST)',
       feeAmount: '$10,286',
+      breakdownLabel: 'Application Fees',
       breakdown: [
         'Entrance Fee: $8,276.00',
         'Operations Surcharge: $1,010.00',
@@ -118,6 +123,7 @@ export const JOINING_FEES_FALLBACK: JoiningFeesData = {
       description: 'Lifetime membership for those not eligible for Ordinary Membership',
       feeLabel: 'Joining Fee (w/GST)',
       feeAmount: '$88,888',
+      breakdownLabel: 'Application Fees',
       breakdown: ['Entrance Fee: $83,303', 'Operations Surcharge: $5,585'],
       badge: 'Currently Closed',
       badgeTone: 'negative',
@@ -127,6 +133,7 @@ export const JOINING_FEES_FALLBACK: JoiningFeesData = {
       description: 'Membership purchased on the secondary market',
       feeLabel: 'Transfer Fee (w/GST)',
       feeAmount: '$39,240',
+      breakdownLabel: 'Application Fees',
       breakdown: ['Transfer Fee: $33,655', 'Operations Surcharge: $5,585'],
     },
   ],

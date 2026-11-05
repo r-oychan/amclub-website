@@ -18,6 +18,11 @@ import { Testimonials } from '../components/blocks/Testimonials';
 import { CtaIcon } from '../components/shared/CtaIcon';
 import { CtaButton } from '../components/shared/CtaButton';
 import { ImageTextPanels } from '../components/detail/ImageTextPanels';
+import { AppDownloadSection } from '../components/detail/AppDownloadSection';
+import { HelpContactsSection } from '../components/detail/HelpContactsSection';
+import { StepsRow } from '../components/blocks/StepsRow';
+import { FaqAnswerBlocks } from '../components/blocks/FaqAnswerBlocks';
+import type { CtaLink } from '../components/shared/CtaButton';
 import { resolveIcon } from '../lib/detailIcons';
 import { usePageSeo } from '../hooks/usePageSeo';
 
@@ -191,6 +196,11 @@ export default function VenueDetailPage({ section: sectionProp, initialVenue, in
   const effectiveParentLabel = venue.parentSection ?? config.parentLabel;
   const effectiveParentHref = venue.parentHref ?? config.parentHref;
 
+  const storeCtas: CtaLink[] = (venue.appDownload?.links ?? [])
+    .filter((l) => l.url)
+    .map((l) => ({ label: l.label, href: l.url!, isExternal: true }));
+  const heroCtas: CtaLink[] = [...storeCtas, ...(venue.ctas ?? []).slice(0, 5)];
+
   return (
     <>
       {/* ── Hero Banner ── */}
@@ -291,10 +301,11 @@ export default function VenueDetailPage({ section: sectionProp, initialVenue, in
                 );
               })()}
 
-              {/* CTA buttons — up to 3; style follows each CTA's CMS variant */}
-              {venue.ctas && venue.ctas.length > 0 && (
+              {/* CTA buttons — app store links (TAC Connect) first, then the
+                  CMS ctas; style follows each CTA's CMS variant */}
+              {heroCtas.length > 0 && (
                 <div className="flex flex-wrap gap-3">
-                  {venue.ctas.slice(0, 5).map((cta, i) => (
+                  {heroCtas.map((cta, i) => (
                     <CtaButton key={`${cta.label}-${i}`} cta={cta} />
                   ))}
                 </div>
@@ -575,6 +586,14 @@ export default function VenueDetailPage({ section: sectionProp, initialVenue, in
                     ))}
                   </ul>
                 </DetailSection>
+              )}
+
+              {/* ── Download the App (generated QR per store link) ── */}
+              {venue.appDownload && <AppDownloadSection data={venue.appDownload} />}
+
+              {/* ── Need Help? ── */}
+              {venue.helpContacts && venue.helpContacts.items.length > 0 && (
+                <HelpContactsSection data={venue.helpContacts} />
               )}
             </div>
           </div>
@@ -1055,7 +1074,10 @@ export default function VenueDetailPage({ section: sectionProp, initialVenue, in
                 {venue.promoCards.cards.map((card, i) => {
                   if (variant === 'overlay') {
                     const inner = (
-                      <div className="relative w-full overflow-hidden group" style={{ aspectRatio: '213 / 300' }}>
+                      <div
+                        className={`relative w-full overflow-hidden group ${card.image ? '' : 'bg-primary'}`}
+                        style={{ aspectRatio: '213 / 300' }}
+                      >
                         {card.image && (
                           <img
                             src={imgSrc(card.image)}
@@ -1068,12 +1090,14 @@ export default function VenueDetailPage({ section: sectionProp, initialVenue, in
                           aria-hidden
                           className="absolute inset-0"
                           style={{
-                            background:
-                              'linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,0.55) 100%)',
+                            // Deeper scrim when a description sits under the title
+                            background: card.subtitle
+                              ? 'linear-gradient(180deg, rgba(0,0,0,0) 38%, rgba(0,0,0,0.78) 100%)'
+                              : 'linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,0.55) 100%)',
                           }}
                         />
                         <div
-                          className="absolute inset-x-0 bottom-0 flex flex-col items-center text-center px-2 pb-8"
+                          className={`absolute inset-x-0 bottom-0 flex flex-col items-center text-center pb-8 ${card.subtitle ? 'px-4' : 'px-2'}`}
                           style={{ gap: '10px' }}
                         >
                           <h3
@@ -1088,6 +1112,11 @@ export default function VenueDetailPage({ section: sectionProp, initialVenue, in
                           >
                             {card.title}
                           </h3>
+                          {card.subtitle && (
+                            <p className="text-white" style={{ fontSize: '14.4px', lineHeight: '20px', opacity: 0.92 }}>
+                              {card.subtitle}
+                            </p>
+                          )}
                           {card.cta && (
                             <span
                               className="inline-flex items-center gap-1.5 text-white uppercase"
@@ -1385,6 +1414,11 @@ export default function VenueDetailPage({ section: sectionProp, initialVenue, in
         </section>
       )}
 
+      {/* ── Numbered steps (TAC Connect "Get Started") ── */}
+      {venue.steps && venue.steps.items.length > 0 && (
+        <StepsRow heading={venue.steps.heading} items={venue.steps.items} iconStyle={venue.steps.iconStyle} />
+      )}
+
       {/* ── Bottom CTAs (e.g. duplicate Programs Price List link) ── */}
       {venue.bottomCtas && venue.bottomCtas.length > 0 && (
         <section className="py-12 bg-white">
@@ -1417,10 +1451,15 @@ export default function VenueDetailPage({ section: sectionProp, initialVenue, in
 
       {/* ── FAQ ── */}
       {venue.faq && venue.faq.length > 0 && (
-        <FaqAccordion
-          heading="Frequently Asked Questions"
-          items={venue.faq}
-        />
+        <div id="faq" className="scroll-mt-24">
+          <FaqAccordion
+            heading={venue.faqHeading ?? 'Frequently Asked Questions'}
+            items={venue.faq.map((f) => ({
+              question: f.question,
+              answer: f.answerBlocks?.length ? <FaqAnswerBlocks blocks={f.answerBlocks} /> : f.answer,
+            }))}
+          />
+        </div>
       )}
 
       {/* ── Back link ── */}

@@ -5,6 +5,8 @@ export interface NavChild {
   label: string;
   href: string;
   isExternal?: boolean;
+  /** Short pill after the label, e.g. "New". */
+  badge?: string;
 }
 
 export interface NavColumn {
@@ -45,6 +47,7 @@ interface StrapiNavItem {
   label: string;
   href: string;
   isExternal?: boolean;
+  badge?: string | null;
 }
 
 interface StrapiNavColumn {
@@ -89,6 +92,7 @@ export function transformHeader(data: StrapiHeader): HeaderData {
         label: link.label,
         href: link.href,
         isExternal: link.isExternal ?? false,
+        badge: link.badge || undefined,
       })),
       image: resolveMediaUrl(col.image),
       imageLink: col.imageLink,

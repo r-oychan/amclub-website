@@ -1,0 +1,66 @@
+{
+  "kind": "singleType",
+  "collectionName": "tac_connect_pages",
+  "info": {
+    "singularName": "tac-connect-page",
+    "pluralName": "tac-connect-pages",
+    "displayName": "Membership: TAC Connect Page",
+    "description": "Content for /membership/tac-connect — rendered through VenueDetailPage layout"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": { "type": "string" },
+    "heading": { "type": "string" },
+    "label": { "type": "string" },
+    "parentLabel": { "type": "string" },
+    "parentHref": { "type": "string" },
+    "heroImage": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images"]
+    },
+    "description": { "type": "richtext" },
+    "ctas": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.link",
+      "max": 3
+    },
+    "appDownload": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.app-download"
+    },
+    "helpContacts": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.help-contacts"
+    },
+    "features": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.promo-card-grid"
+    },
+    "steps": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.steps-row"
+    },
+    "faqHeading": {
+      "type": "string",
+      "default": "Frequently Asked Questions"
+    },
+    "faqCategory": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::faq-category.faq-category"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
+  }
+}

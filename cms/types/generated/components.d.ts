@@ -18,6 +18,27 @@ export interface BlocksAboutSection extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksAppDownload extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_app_downloads';
+  info: {
+    description: 'Detail-page side section: one QR code per store link, generated from the URL (no image upload).';
+    displayName: 'App Download';
+    icon: 'mobile';
+  };
+  attributes: {
+    description: Schema.Attribute.Text;
+    heading: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Download the App'>;
+    links: Schema.Attribute.Component<'shared.app-store-link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 2;
+        },
+        number
+      >;
+  };
+}
+
 export interface BlocksAwardsGrid extends Struct.ComponentSchema {
   collectionName: 'components_blocks_awards_grids';
   info: {
@@ -208,6 +229,19 @@ export interface BlocksGovernance extends Struct.ComponentSchema {
     links: Schema.Attribute.Component<'shared.link', true>;
     sidebarBody: Schema.Attribute.Text;
     sidebarHeading: Schema.Attribute.String;
+  };
+}
+
+export interface BlocksHelpContacts extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_help_contacts';
+  info: {
+    description: 'Detail-page side section listing ways to get help (forms, chat, front desk, phone).';
+    displayName: 'Help Contacts';
+    icon: 'question';
+  };
+  attributes: {
+    heading: Schema.Attribute.String & Schema.Attribute.DefaultTo<'Need Help?'>;
+    items: Schema.Attribute.Component<'shared.help-contact', true>;
   };
 }
 
@@ -534,6 +568,21 @@ export interface BlocksStatsCounter extends Struct.ComponentSchema {
   };
 }
 
+export interface BlocksStepsRow extends Struct.ComponentSchema {
+  collectionName: 'components_blocks_steps_rows';
+  info: {
+    description: "Centered heading over a row of numbered steps (e.g. 'Get Started in 4 Easy Steps').";
+    displayName: 'Steps Row';
+    icon: 'bulletList';
+  };
+  attributes: {
+    heading: Schema.Attribute.String;
+    iconStyle: Schema.Attribute.Enumeration<['circle', 'tile']> &
+      Schema.Attribute.DefaultTo<'circle'>;
+    items: Schema.Attribute.Component<'shared.step-item', true>;
+  };
+}
+
 export interface BlocksTabsSection extends Struct.ComponentSchema {
   collectionName: 'components_blocks_tabs_sections';
   info: {
@@ -656,6 +705,21 @@ export interface BlocksVisionMission extends Struct.ComponentSchema {
       Schema.Attribute.DefaultTo<'left'>;
     mission: Schema.Attribute.Text;
     vision: Schema.Attribute.Text;
+  };
+}
+
+export interface SharedAppStoreLink extends Struct.ComponentSchema {
+  collectionName: 'components_shared_app_store_links';
+  info: {
+    description: 'One app store listing. Drives both the hero download button and the generated QR code.';
+    displayName: 'App Store Link';
+    icon: 'mobile';
+  };
+  attributes: {
+    label: Schema.Attribute.String & Schema.Attribute.Required;
+    platform: Schema.Attribute.Enumeration<['ios', 'android']> &
+      Schema.Attribute.Required;
+    url: Schema.Attribute.String;
   };
 }
 
@@ -824,6 +888,25 @@ export interface SharedFooterColumn extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedHelpContact extends Struct.ComponentSchema {
+  collectionName: 'components_shared_help_contacts';
+  info: {
+    description: 'One row in a Need Help? list. action=open-chat opens the site chat assistant instead of following href.';
+    displayName: 'Help Contact';
+    icon: 'phone';
+  };
+  attributes: {
+    action: Schema.Attribute.Enumeration<['link', 'open-chat']> &
+      Schema.Attribute.DefaultTo<'link'>;
+    href: Schema.Attribute.String;
+    icon: Schema.Attribute.Enumeration<
+      ['form', 'chat', 'desk', 'phone', 'email']
+    > &
+      Schema.Attribute.DefaultTo<'form'>;
+    text: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface SharedHeroSlide extends Struct.ComponentSchema {
   collectionName: 'components_shared_hero_slides';
   info: {
@@ -985,6 +1068,10 @@ export interface SharedNavItem extends Struct.ComponentSchema {
     icon: 'apps';
   };
   attributes: {
+    badge: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 12;
+      }>;
     href: Schema.Attribute.String & Schema.Attribute.Required;
     isExternal: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     label: Schema.Attribute.String & Schema.Attribute.Required;
@@ -1077,6 +1164,7 @@ export interface SharedPricedCard extends Struct.ComponentSchema {
       Schema.Attribute.DefaultTo<'positive'>;
     benefitsText: Schema.Attribute.Text;
     breakdown: Schema.Attribute.Text;
+    breakdownLabel: Schema.Attribute.String;
     bullets: Schema.Attribute.Component<'shared.text-line', true>;
     bulletStyle: Schema.Attribute.Enumeration<
       ['check', 'dot', 'dash', 'none']
@@ -1224,6 +1312,21 @@ export interface SharedStatItem extends Struct.ComponentSchema {
   };
 }
 
+export interface SharedStepItem extends Struct.ComponentSchema {
+  collectionName: 'components_shared_step_items';
+  info: {
+    description: 'One numbered step: icon (line icon for the circle style, 3:4 portrait for tile), title, short description, optional link.';
+    displayName: 'Step Item';
+    icon: 'check';
+  };
+  attributes: {
+    cta: Schema.Attribute.Component<'shared.link', false>;
+    description: Schema.Attribute.Text;
+    icon: Schema.Attribute.Media<'images'>;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface SharedTabItem extends Struct.ComponentSchema {
   collectionName: 'components_shared_tab_items';
   info: {
@@ -1364,6 +1467,7 @@ declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'blocks.about-section': BlocksAboutSection;
+      'blocks.app-download': BlocksAppDownload;
       'blocks.awards-grid': BlocksAwardsGrid;
       'blocks.card-grid': BlocksCardGrid;
       'blocks.collage-gallery': BlocksCollageGallery;
@@ -1375,6 +1479,7 @@ declare module '@strapi/strapi' {
       'blocks.faq-section': BlocksFaqSection;
       'blocks.feature-grid': BlocksFeatureGrid;
       'blocks.governance': BlocksGovernance;
+      'blocks.help-contacts': BlocksHelpContacts;
       'blocks.heritage-timeline': BlocksHeritageTimeline;
       'blocks.hero': BlocksHero;
       'blocks.image-panel-slideshow': BlocksImagePanelSlideshow;
@@ -1393,6 +1498,7 @@ declare module '@strapi/strapi' {
       'blocks.promo-card-grid': BlocksPromoCardGrid;
       'blocks.quotes-block': BlocksQuotesBlock;
       'blocks.stats-counter': BlocksStatsCounter;
+      'blocks.steps-row': BlocksStepsRow;
       'blocks.tabs-section': BlocksTabsSection;
       'blocks.team-grid': BlocksTeamGrid;
       'blocks.testimonial-slider': BlocksTestimonialSlider;
@@ -1400,6 +1506,7 @@ declare module '@strapi/strapi' {
       'blocks.three-col-grid': BlocksThreeColGrid;
       'blocks.venue-card-grid': BlocksVenueCardGrid;
       'blocks.vision-mission': BlocksVisionMission;
+      'shared.app-store-link': SharedAppStoreLink;
       'shared.award-item': SharedAwardItem;
       'shared.card-section': SharedCardSection;
       'shared.catering-pillar': SharedCateringPillar;
@@ -1411,6 +1518,7 @@ declare module '@strapi/strapi' {
       'shared.faq-pair': SharedFaqPair;
       'shared.feature-item': SharedFeatureItem;
       'shared.footer-column': SharedFooterColumn;
+      'shared.help-contact': SharedHelpContact;
       'shared.hero-slide': SharedHeroSlide;
       'shared.html-block': SharedHtmlBlock;
       'shared.image-panel-slide': SharedImagePanelSlide;
@@ -1433,6 +1541,7 @@ declare module '@strapi/strapi' {
       'shared.seo': SharedSeo;
       'shared.social-link': SharedSocialLink;
       'shared.stat-item': SharedStatItem;
+      'shared.step-item': SharedStepItem;
       'shared.tab-item': SharedTabItem;
       'shared.team-member': SharedTeamMember;
       'shared.text-line': SharedTextLine;

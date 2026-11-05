@@ -1,8 +1,8 @@
-type ContactIcon = 'pin' | 'phone' | 'email';
+type ContactIcon = 'pin' | 'phone' | 'email' | 'form' | 'chat' | 'desk';
 
 const TEAL = '#6BBBAE';
 
-function ContactIconSvg({ icon }: { icon: ContactIcon }) {
+function ContactIconSvg({ icon }: { icon: 'pin' | 'phone' | 'email' }) {
   switch (icon) {
     case 'pin':
       return (
@@ -70,6 +70,30 @@ function ContactIconSvg({ icon }: { icon: ContactIcon }) {
   }
 }
 
+
+function ExtraIconSvg({ icon }: { icon: 'form' | 'chat' | 'desk' }) {
+  const common = { stroke: TEAL, strokeWidth: 1.5, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const };
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="shrink-0" aria-hidden="true">
+      {icon === 'form' && (
+        <>
+          <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.9 22 6 22H18C19.1 22 20 21.1 20 20V8L14 2Z" {...common} />
+          <path d="M14 2V8H20M8 13H16M8 17H13" {...common} />
+        </>
+      )}
+      {icon === 'chat' && (
+        <path d="M21 11.5C21 16.19 16.97 20 12 20C10.82 20 9.69 19.79 8.66 19.4L3 21L4.6 16.73C3.59 15.24 3 13.43 3 11.5C3 6.81 7.03 3 12 3C16.97 3 21 6.81 21 11.5Z" {...common} />
+      )}
+      {icon === 'desk' && (
+        <>
+          <path d="M3 21V12H21V21M1 21H23M7 12V8C7 5.24 9.24 3 12 3C14.76 3 17 5.24 17 8V12" {...common} />
+          <path d="M12 3V1" {...common} />
+        </>
+      )}
+    </svg>
+  );
+}
+
 const TEXT_STYLE: React.CSSProperties = {
   fontSize: '19.2px',
   lineHeight: '26.88px',
@@ -79,18 +103,35 @@ export function ContactRow({
   icon,
   text,
   href,
+  external,
+  onClick,
 }: {
   icon: ContactIcon;
   text: string;
   href?: string;
+  /** Open `href` in a new tab (forms, external sites). */
+  external?: boolean;
+  /** Renders the text as a button instead of a link (e.g. open the chat assistant). */
+  onClick?: () => void;
 }) {
+  const linkClass = 'text-text-dark hover:text-accent transition-colors';
   return (
     <div className="flex flex-row items-center gap-3.5">
-      <ContactIconSvg icon={icon} />
-      {href ? (
+      {icon === 'form' || icon === 'chat' || icon === 'desk' ? (
+        <ExtraIconSvg icon={icon} />
+      ) : (
+        <ContactIconSvg icon={icon} />
+      )}
+      {onClick ? (
+        <button type="button" onClick={onClick} className={`${linkClass} text-left cursor-pointer`} style={TEXT_STYLE}>
+          {text}
+        </button>
+      ) : href ? (
         <a
           href={href}
-          className="text-text-dark hover:text-accent transition-colors"
+          target={external ? '_blank' : undefined}
+          rel={external ? 'noopener noreferrer' : undefined}
+          className={linkClass}
           style={TEXT_STYLE}
         >
           {text}
