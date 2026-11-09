@@ -21,7 +21,7 @@ const CORPORATE_4_YEAR_PLAN_URL =
   '/documents/membership/corporate-membership-4-year-payment-plan.jpg';
 
 const breakdown = (lines) => lines.join('\n');
-const BREAKDOWN_LABEL = 'Application Fees';
+const BREAKDOWN_LABEL = 'Applicable Fees (w/ GST)';
 
 const data = {
   title: 'Membership Types & Joining Fees',
@@ -83,7 +83,7 @@ const data = {
       feeLabel: 'Transfer Fee (w/GST)',
       feeAmount: '$39,240',
       breakdownLabel: BREAKDOWN_LABEL,
-      breakdown: breakdown(['Transfer Fee: $33,655', 'Operations Surcharge: $5,585']),
+      breakdown: breakdown(['Transfer Fee: $39,240', 'Operations Surcharge: $5,585']),
     },
   ],
   corporateHeading: 'Corporate Membership',
