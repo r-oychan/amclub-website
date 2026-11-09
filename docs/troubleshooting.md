@@ -121,6 +121,16 @@ delete: async (file) => {
 
 Already in `cms/providers/upload-azure-folders/index.js`. If you see this on a re-run after that commit landed, the deploy didn't pick up — check `gh run list --branch dev`.
 
+### Every `/uploads/...` URL returns 404 `<Code>AccountNotFound</Code>`, but the blob URL works
+
+**Symptom:** `https://<site>/uploads/x.pdf` → 404 with Azure XML `AccountNotFound — The specified account does not exist`, for every file (logo included). The same file at `https://<account>.blob.core.windows.net/media/uploads/x.pdf` → 200. Pages can still *look* fine in your own browser because `/uploads` is cached for 7 days. Check in a private window or with `curl -I`.
+
+**Cause:** Azure moved the storage account to a different storage stamp/IP. nginx's static `proxy_pass` had cached the old IP at config load, and the old stamp no longer knows the account. Prod, 2026-11-09: the replica started on 7 Nov kept using `20.150.28.132` after the account moved to `20.150.127.129`. About 10h of broken media, fixed by a restart.
+
+**Diagnose:** nginx `[warn] an upstream response is buffered…` lines in `ContainerAppConsoleLogs_CL` include `upstream: "https://<ip>:443/…"`. Compare that IP per `ContainerGroupName_s` with `nslookup <account>.blob.core.windows.net`.
+
+**Fix:** `entrypoint.sh` now re-resolves the blob host every 5 min and runs `nginx -s reload` when the address changes, plus once a day. Look for `==> Reloading nginx (…)` in the console logs. Immediate fix if it ever recurs: `az containerapp revision restart -n amclub-<env>-app -g amclub-<env>-rg --revision <active revision>`.
+
 ## SSO
 
 ### Locked out of SSO after enabling whitelist
@@ -360,6 +370,12 @@ nothing and falls back to "I don't have that in my knowledge base".
   uploaded text. Status must be polled via **GET**; the POST response reports
   `new` misleadingly, and an index can only be deleted after the doc is
   detached from every agent (`rag_index_used`).
+- **Symptom:** a linked PDF never shows up in the KB, and there's no
+  `media-file` row for it. **Cause:** ElevenLabs rejects files over 20 MB
+  (`400 content_too_large … Maximum allowed size is 20 MB`). The plugin only
+  logs a `[elevenlabs-chatbot] file <name>: … failed` warning. Seen on prod for
+  `Festive Guide 2026_Physical_V6 1.pdf` (26.7 MB) and `union-bar-menu.pdf`.
+  Upload a compressed copy under 20 MB.
 
 ## Next.js production preview: stale chunks after rebuilding
 

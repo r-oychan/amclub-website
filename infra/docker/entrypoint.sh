@@ -79,8 +79,44 @@ nginx -g 'daemon off;' &
 NGINX_PID=$!
 echo "==> All services running."
 
+# ── Blob host DNS refresh ─────────────────────────────────────
+# The static /uploads proxy_pass is resolved once, when nginx loads its
+# config, and kept forever. Azure can move a storage account to a new IP;
+# the old IP then answers every request with 404 AccountNotFound (prod,
+# 2026-11-09: ~10h of broken images/PDFs until a restart). So every
+# BLOB_DNS_CHECK_SECS we re-resolve the host via libc (the same path nginx
+# uses) and gracefully reload nginx when the address set changes, plus a
+# safety reload every BLOB_DNS_RELOAD_SECS regardless.
+BLOB_HOST="${STORAGE_ACCOUNT}.blob.core.windows.net"
+BLOB_DNS_CHECK_SECS="${BLOB_DNS_CHECK_SECS:-300}"
+BLOB_DNS_RELOAD_SECS="${BLOB_DNS_RELOAD_SECS:-86400}"
+resolve_blob() {
+    node -e "require('dns').lookup(process.argv[1], { all: true }, (e, a) => console.log(e ? '' : a.map((x) => x.address).sort().join(',')))" "$BLOB_HOST" 2>/dev/null
+}
+reload_nginx() {
+    echo "==> Reloading nginx ($1)"
+    nginx -s reload || echo "==> nginx reload failed"
+}
+BLOB_ADDR="$(resolve_blob)"
+echo "==> Blob host ${BLOB_HOST} → ${BLOB_ADDR:-unresolved}"
+LAST_CHECK=$(date +%s)
+LAST_RELOAD=$LAST_CHECK
+
 # ── Monitor processes ─────────────────────────────────────────
 while true; do
+    NOW=$(date +%s)
+    if [ "$STORAGE_ACCOUNT" != "unset" ] && [ $((NOW - LAST_CHECK)) -ge "$BLOB_DNS_CHECK_SECS" ]; then
+        LAST_CHECK=$NOW
+        ADDR="$(resolve_blob)"
+        if [ -n "$ADDR" ] && [ "$ADDR" != "$BLOB_ADDR" ]; then
+            reload_nginx "blob host ${BLOB_HOST} moved ${BLOB_ADDR:-unresolved} → ${ADDR}"
+            BLOB_ADDR="$ADDR"
+            LAST_RELOAD=$NOW
+        elif [ $((NOW - LAST_RELOAD)) -ge "$BLOB_DNS_RELOAD_SECS" ]; then
+            reload_nginx "daily blob DNS refresh"
+            LAST_RELOAD=$NOW
+        fi
+    fi
     if ! kill -0 "$STRAPI_PID" 2>/dev/null; then
         echo "==> Strapi exited unexpectedly"
         cleanup
