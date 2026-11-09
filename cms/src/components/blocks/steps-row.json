@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_blocks_steps_rows",
+  "info": {
+    "displayName": "Steps Row",
+    "icon": "bulletList",
+    "description": "Centered heading over a row of numbered steps (e.g. 'Get Started in 4 Easy Steps')."
+  },
+  "attributes": {
+    "heading": { "type": "string" },
+    "iconStyle": {
+      "type": "enumeration",
+      "enum": ["circle", "tile"],
+      "default": "circle"
+    },
+    "items": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.step-item"
+    }
+  }
+}

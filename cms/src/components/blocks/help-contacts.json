@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_blocks_help_contacts",
+  "info": {
+    "displayName": "Help Contacts",
+    "icon": "question",
+    "description": "Detail-page side section listing ways to get help (forms, chat, front desk, phone)."
+  },
+  "attributes": {
+    "heading": { "type": "string", "default": "Need Help?" },
+    "items": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.help-contact"
+    }
+  }
+}

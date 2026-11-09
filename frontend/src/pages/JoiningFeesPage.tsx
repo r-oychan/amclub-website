@@ -43,7 +43,7 @@ type StrapiSupplementaryCard = {
   secondaryCta?: StrapiLink | null;
 };
 
-interface StrapiJoiningFeesPage {
+export interface StrapiJoiningFeesPage {
   title?: string;
   individualHeading?: string;
   individualSubheading?: string;
@@ -238,12 +238,14 @@ function IndividualCardView({ card }: { card: PricedCard }) {
         </p>
       </div>
       <div className="flex flex-col" style={{ gap: '4px', marginTop: '4px' }}>
-        <p
-          className="text-text-dark/60 uppercase"
-          style={{ fontSize: '11.2px', fontWeight: 700, letterSpacing: '0.06em' }}
-        >
-          Breakdown
-        </p>
+        {card.breakdownLabel && (
+          <p
+            className="text-text-dark/60 uppercase"
+            style={{ fontSize: '11.2px', fontWeight: 700, letterSpacing: '0.06em' }}
+          >
+            {card.breakdownLabel}
+          </p>
+        )}
         {card.breakdown.map((line) => (
           <p key={line} className="text-text-dark" style={{ fontSize: '14.4px', lineHeight: '21px' }}>
             {line}
@@ -642,19 +644,9 @@ export function JoiningFeesView({ data }: { data: JoiningFeesData }) {
   );
 }
 
-export default function JoiningFeesPage() {
-  const [data, setData] = useState<JoiningFeesData>(JOINING_FEES_FALLBACK);
-  const [seo, setSeo] = useState<PageSeo | null>(null);
-  usePageSeo(seo);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const api = await fetchAPI<StrapiJoiningFeesPage>('/joining-fees-page');
-      if (cancelled || !api) return;
-      setSeo(api.seo ?? null);
+function normalizePage(api: StrapiJoiningFeesPage): JoiningFeesData {
       const fb = JOINING_FEES_FALLBACK;
-      setData({
+      return {
         individualHeading: pickStr(api.individualHeading, fb.individualHeading),
         individualSubheading: pickStr(api.individualSubheading, fb.individualSubheading),
         individualCtas: normalizeLinks(api.individualCtas, fb.individualCtas),
@@ -676,12 +668,27 @@ export default function JoiningFeesPage() {
           api.additionalNotes && api.additionalNotes.length > 0
             ? api.additionalNotes.map((n) => n.text)
             : fb.additionalNotes,
-      });
+      };
+}
+
+export default function JoiningFeesPage({ initialData }: { initialData?: { api: StrapiJoiningFeesPage } } = {}) {
+  const [data, setData] = useState<JoiningFeesData>(() => initialData ? normalizePage(initialData.api) : JOINING_FEES_FALLBACK);
+  const [seo, setSeo] = useState<PageSeo | null>(initialData?.api.seo ?? null);
+  usePageSeo(seo, !initialData);
+
+  useEffect(() => {
+    if (initialData) return;
+    let cancelled = false;
+    (async () => {
+      const api = await fetchAPI<StrapiJoiningFeesPage>('/joining-fees-page');
+      if (cancelled || !api) return;
+      setSeo(api.seo ?? null);
+      setData(normalizePage(api));
     })();
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [initialData]);
 
   return <JoiningFeesView data={data} />;
 }

@@ -1,0 +1,9 @@
+{
+  "collectionName": "components_shared_crawler_rules",
+  "info": { "displayName": "Crawler Rule", "description": "robots.txt directives for one crawler group" },
+  "attributes": {
+    "userAgent": { "type": "string", "required": true, "default": "*", "regex": "^[A-Za-z0-9_*.-]+$" },
+    "allowPaths": { "type": "text", "description": "One Allow path per line, starting with /." },
+    "disallowPaths": { "type": "text", "description": "One Disallow path per line, starting with /." }
+  }
+}

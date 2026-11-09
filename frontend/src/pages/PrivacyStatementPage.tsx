@@ -6,7 +6,7 @@ import { usePageSeo } from '../hooks/usePageSeo';
 import type { PageSeo } from '../lib/seo';
 import { PageFade } from '../components/shared/PageFade';
 
-interface PrivacyStatementData {
+export interface PrivacyStatementData {
   label?: string;
   title?: string;
   lastRevision?: string;
@@ -69,12 +69,15 @@ const LEGAL_COMPONENTS = {
   ),
 };
 
-export default function PrivacyStatementPage() {
-  const [data, setData] = useState<PrivacyStatementData | null>(null);
-  const [loaded, setLoaded] = useState(false);
-  usePageSeo(data?.seo);
+export interface PrivacyStatementInitialData { data: PrivacyStatementData }
+
+export default function PrivacyStatementPage({ initialData }: { initialData?: PrivacyStatementInitialData } = {}) {
+  const [data, setData] = useState<PrivacyStatementData | null>(initialData?.data ?? null);
+  const [loaded, setLoaded] = useState(Boolean(initialData));
+  usePageSeo(data?.seo, !initialData);
 
   useEffect(() => {
+    if (initialData) return;
     let cancelled = false;
     (async () => {
       const page = await fetchAPI<PrivacyStatementData>('/privacy-statement-page');
@@ -85,7 +88,7 @@ export default function PrivacyStatementPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [initialData]);
 
   if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
   if (!data?.body) {

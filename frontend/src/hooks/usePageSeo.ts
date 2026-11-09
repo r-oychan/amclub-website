@@ -7,9 +7,9 @@ import { applySeo, type PageSeo } from '../lib/seo';
  * defaults (applied by SeoManager on every route change) stay in place, and
  * blank fields fall back per-field to those defaults.
  */
-export function usePageSeo(seo: PageSeo | null | undefined): void {
+export function usePageSeo(seo: PageSeo | null | undefined, enabled = true): void {
   useEffect(() => {
-    if (!seo) return;
+    if (!enabled || !seo) return;
     void applySeo(seo);
-  }, [seo]);
+  }, [seo, enabled]);
 }

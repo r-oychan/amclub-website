@@ -27,7 +27,7 @@ interface StrapiOverlaySection {
   ctas?: StrapiLink[];
 }
 
-interface StrapiKidsPage {
+export interface StrapiKidsPage {
   title: string;
   hero?: { heading: string; subheading?: string; variant?: 'full' | 'compact'; backgroundImage?: StrapiMedia };
   hangout?: StrapiOverlaySection;
@@ -104,12 +104,15 @@ const overlayProps = (s?: StrapiOverlaySection) => {
   };
 };
 
-export default function KidsPage() {
-  const [data, setData] = useState<StrapiKidsPage | null>(null);
-  const [loaded, setLoaded] = useState(false);
-  usePageSeo(data?.seo ?? null);
+export interface KidsInitialData { data: StrapiKidsPage }
+
+export default function KidsPage({ initialData }: { initialData?: KidsInitialData } = {}) {
+  const [data, setData] = useState<StrapiKidsPage | null>(initialData?.data ?? null);
+  const [loaded, setLoaded] = useState(Boolean(initialData));
+  usePageSeo(data?.seo ?? null, !initialData);
 
   useEffect(() => {
+    if (initialData) return;
     let cancelled = false;
     (async () => {
       const page = await fetchAPI<StrapiKidsPage>('/kids-page');
@@ -118,7 +121,7 @@ export default function KidsPage() {
       setLoaded(true);
     })();
     return () => { cancelled = true; };
-  }, []);
+  }, [initialData]);
 
   if (!loaded) return <PageFade loaded={false}>{null}</PageFade>;
   if (!data) return <div className="min-h-screen flex items-center justify-center text-text-dark/70">Kids page content unavailable.</div>;

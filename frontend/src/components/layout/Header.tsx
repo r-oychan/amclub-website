@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Link, useLocation } from 'react-router';
-import { useHeaderData } from '../../hooks/useHeaderData';
+import { useLocation } from 'react-router';
+import { Link } from '../shared/site-link';
+import { useHeaderData, type HeaderData } from '../../hooks/useHeaderData';
 import type { NavItemConfig, NavChild } from '../../hooks/useHeaderData';
 
 function NavLink({ href, isExternal, className, style, onClick, children }: {
@@ -21,13 +22,13 @@ function NavLink({ href, isExternal, className, style, onClick, children }: {
   return <Link to={href} className={className} style={style} onClick={onClick}>{children}</Link>;
 }
 
-export function Header() {
+export function Header({ initialData }: { initialData?: HeaderData } = {}) {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const dropdownTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const location = useLocation();
-  const headerData = useHeaderData();
+  const headerData = useHeaderData(initialData);
 
   const { logoUrl, navItems, ctaButton } = headerData;
   const leftItems = navItems.slice(0, 4);
@@ -65,6 +66,14 @@ export function Header() {
       className="block py-2 text-[13.6px] font-body text-black hover:opacity-60 transition-opacity"
     >
       {link.label}
+      {link.badge && (
+        <span
+          className="inline-block ml-2 px-[7px] py-0.5 rounded-full bg-accent text-white uppercase align-[1px]"
+          style={{ fontSize: '10px', fontWeight: 700, lineHeight: 1.4, letterSpacing: '0.06em' }}
+        >
+          {link.badge}
+        </span>
+      )}
     </NavLink>
   );
 

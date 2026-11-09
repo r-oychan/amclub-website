@@ -17,6 +17,7 @@ const PUBLIC_FIND_TYPES = [
   // never listed here, so fresh environments 403'd them (caught on the uat
   // rebuild: public GET worked on dev, Forbidden on uat).
   'api::niche-group-membership-page.niche-group-membership-page',
+  'api::tac-connect-page.tac-connect-page',
   'api::reciprocal-clubs-page.reciprocal-clubs-page',
   'api::start-application-page.start-application-page',
   'api::advertise-with-us-page.advertise-with-us-page',

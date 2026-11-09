@@ -747,6 +747,43 @@ export interface ApiContactUsPageContactUsPage extends Struct.SingleTypeSchema {
   };
 }
 
+export interface ApiCrawlerSettingsCrawlerSettings
+  extends Struct.SingleTypeSchema {
+  collectionName: 'crawler_settings';
+  info: {
+    description: 'Published controls for robots.txt, sitemap.xml and llms.txt. URLs come from published page content.';
+    displayName: 'Global: Crawler Settings';
+    pluralName: 'crawler-settings-entries';
+    singularName: 'crawler-settings';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    allowIndexing: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    excludedPaths: Schema.Attribute.Text;
+    llmsEnabled: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    llmsGuidance: Schema.Attribute.Text;
+    llmsSummary: Schema.Attribute.Text;
+    llmsTitle: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::crawler-settings.crawler-settings'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    robotsRules: Schema.Attribute.Component<'shared.crawler-rule', true>;
+    sitemapEnabled: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiDiningPageDiningPage extends Struct.SingleTypeSchema {
   collectionName: 'dining_pages';
   info: {
@@ -2514,6 +2551,60 @@ export interface ApiStartApplicationPageStartApplicationPage
   };
 }
 
+export interface ApiTacConnectPageTacConnectPage
+  extends Struct.SingleTypeSchema {
+  collectionName: 'tac_connect_pages';
+  info: {
+    description: 'Content for /membership/tac-connect \u2014 rendered through VenueDetailPage layout';
+    displayName: 'Membership: TAC Connect Page';
+    pluralName: 'tac-connect-pages';
+    singularName: 'tac-connect-page';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    appDownload: Schema.Attribute.Component<'blocks.app-download', false>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    ctas: Schema.Attribute.Component<'shared.link', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 3;
+        },
+        number
+      >;
+    description: Schema.Attribute.RichText;
+    faqCategory: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::faq-category.faq-category'
+    >;
+    faqHeading: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Frequently Asked Questions'>;
+    features: Schema.Attribute.Component<'blocks.promo-card-grid', false>;
+    heading: Schema.Attribute.String;
+    helpContacts: Schema.Attribute.Component<'blocks.help-contacts', false>;
+    heroImage: Schema.Attribute.Media<'images'>;
+    label: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::tac-connect-page.tac-connect-page'
+    > &
+      Schema.Attribute.Private;
+    parentHref: Schema.Attribute.String;
+    parentLabel: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    seo: Schema.Attribute.Component<'shared.seo', false>;
+    steps: Schema.Attribute.Component<'blocks.steps-row', false>;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiTennisCoachTennisCoach extends Struct.CollectionTypeSchema {
   collectionName: 'tennis_coaches';
   info: {
@@ -3282,6 +3373,7 @@ declare module '@strapi/strapi' {
       'api::coach.coach': ApiCoachCoach;
       'api::committee-member.committee-member': ApiCommitteeMemberCommitteeMember;
       'api::contact-us-page.contact-us-page': ApiContactUsPageContactUsPage;
+      'api::crawler-settings.crawler-settings': ApiCrawlerSettingsCrawlerSettings;
       'api::dining-page.dining-page': ApiDiningPageDiningPage;
       'api::dining-promotion.dining-promotion': ApiDiningPromotionDiningPromotion;
       'api::dining-promotions-page.dining-promotions-page': ApiDiningPromotionsPageDiningPromotionsPage;
@@ -3317,6 +3409,7 @@ declare module '@strapi/strapi' {
       'api::site-config.site-config': ApiSiteConfigSiteConfig;
       'api::site-settings.site-settings': ApiSiteSettingsSiteSettings;
       'api::start-application-page.start-application-page': ApiStartApplicationPageStartApplicationPage;
+      'api::tac-connect-page.tac-connect-page': ApiTacConnectPageTacConnectPage;
       'api::tennis-coach.tennis-coach': ApiTennisCoachTennisCoach;
       'api::testimonial.testimonial': ApiTestimonialTestimonial;
       'api::venue.venue': ApiVenueVenue;

@@ -139,8 +139,12 @@ How it works (two cooperating pieces):
    `https://<account>.blob.core.windows.net/<container>/uploads/...`. The account +
    container are templated into the config at container start by `entrypoint.sh`
    (`envsubst '${STORAGE_ACCOUNT} ${STORAGE_CONTAINER_NAME}'` against
-   `default.conf.template`). A `resolver` + variable `proxy_pass` forces runtime DNS
-   resolution. The `media` container has public blob read, so no auth is forwarded.
+   `default.conf.template`). The `proxy_pass` is static (no `resolver` + variable,
+   which 502s in Container Apps), so nginx resolves the blob host once per config
+   load. `entrypoint.sh` re-resolves it every 5 min and runs `nginx -s reload` when
+   the address changes, plus once a day (`BLOB_DNS_CHECK_SECS`,
+   `BLOB_DNS_RELOAD_SECS`). The `media` container has public blob read, so no auth
+   is forwarded.
 
 The frontend doesn't need to know about the folder structure — every media field on
 the API returns the full URL string.
