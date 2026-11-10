@@ -375,7 +375,13 @@ nothing and falls back to "I don't have that in my knowledge base".
   (`400 content_too_large … Maximum allowed size is 20 MB`). The plugin only
   logs a `[elevenlabs-chatbot] file <name>: … failed` warning. Seen on prod for
   `Festive Guide 2026_Physical_V6 1.pdf` (26.7 MB) and `union-bar-menu.pdf`.
-  Upload a compressed copy under 20 MB.
+  **Fixed 2026-11-10:** PDFs over 20 MB are indexed as their extracted text
+  (`services/pdf-text.ts`, via `unpdf`), logged as `… over the 20 MB limit,
+  indexed N pages of extracted text instead`. Don't compress to get under the
+  limit: Ghostscript's `/ebook` preset flattened ~75% of the Festive Guide's
+  text into images. A page sync whose text is unchanged now still retries
+  attached files that never synced, so `POST /api/elevenlabs-chatbot/sync-entry`
+  picks up a previously failed PDF without editing the page.
 
 ## Next.js production preview: stale chunks after rebuilding
 
