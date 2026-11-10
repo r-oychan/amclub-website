@@ -29,10 +29,12 @@ const ABOUT_LINKS = [
   { label: 'Gallery', href: '/home-sub/gallery' },
   { label: 'Advertising & Sponsorships', href: '/home-sub/advertise-with-us' },
   { label: 'Contact Us', href: '/home-sub/contact-us' },
+  { label: 'Talk2Us!', href: 'https://amclub.jotform.com/form/talk2us', isExternal: true },
 ];
 
 const MEMBER_LINKS = [
   { label: 'Login', href: 'https://amclub-portal.iontone.com/#/login', isExternal: true },
+  { label: 'TAC Connect', href: '/membership/tac-connect' },
   { label: 'Reciprocal Clubs', href: '/membership/reciprocal-clubs' },
   { label: 'Refer a Friend', href: '/membership/referal' },
   { label: 'Niche Group Membership', href: '/membership/niche-group-membership' },
