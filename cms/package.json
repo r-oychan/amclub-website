@@ -14,7 +14,7 @@
     "upgrade": "npx @strapi/upgrade latest",
     "upgrade:dry": "npx @strapi/upgrade latest --dry",
     "sync:elevenlabs": "tsx scripts/sync-elevenlabs.ts",
-    "test:plugin": "tsc src/plugins/elevenlabs-chatbot/server/services/teamup.ts src/plugins/elevenlabs-chatbot/server/utils.ts src/plugins/elevenlabs-chatbot/server/policies/is-admin.ts src/plugins/elevenlabs-chatbot/server/policies/is-admin-or-token.ts --outDir .tmp/plugin-test --module commonjs --target es2022 --moduleResolution node --skipLibCheck --esModuleInterop && TEAMUP_TEST_BUILD=$PWD/.tmp/plugin-test node --test tests/*.test.mjs",
+    "test:plugin": "tsc src/plugins/elevenlabs-chatbot/server/services/teamup.ts src/plugins/elevenlabs-chatbot/server/services/pdf-text.ts src/plugins/elevenlabs-chatbot/server/utils.ts src/plugins/elevenlabs-chatbot/server/policies/is-admin.ts src/plugins/elevenlabs-chatbot/server/policies/is-admin-or-token.ts --outDir .tmp/plugin-test --module commonjs --target es2022 --moduleResolution node --skipLibCheck --esModuleInterop && TEAMUP_TEST_BUILD=$PWD/.tmp/plugin-test node --test tests/*.test.mjs",
     "test:discovery": "node --import tsx --test tests/discovery/discovery.test.mjs",
     "test:assistant-request": "node --import tsx --test tests/assistant-request/*.test.mjs"
   },
@@ -29,6 +29,7 @@
     "strapi-plugin-sso": "^1.0.8",
     "strapi-provider-upload-azure-storage": "^3.5.0",
     "styled-components": "^6.0.0",
+    "unpdf": "1.9.1",
     "upload-azure-folders": "file:providers/upload-azure-folders"
   },
   "devDependencies": {

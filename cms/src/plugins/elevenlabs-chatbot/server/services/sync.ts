@@ -20,6 +20,7 @@ import {
 import { buildDeepPopulate } from './populate';
 import { renderEntryMarkdown } from './markdown';
 import { harvestFiles, type HarvestedFile } from './harvest';
+import { ELEVENLABS_MAX_FILE_BYTES, extractPdfText, isPdf } from './pdf-text';
 
 type Strapi = {
   contentTypes: Record<string, { kind?: 'singleType' | 'collectionType'; info?: { singularName?: string } }>;
@@ -250,6 +251,10 @@ export async function syncEntry(strapi: Strapi, uid: string, documentId?: string
   const hash = sha256(markdown);
 
   if (existingRow && existingRow.contentHash === hash) {
+    // The page text is unchanged, but an attached file may have failed
+    // before (no log row) — retry those. Synced files return early on their
+    // own size/updatedAt hash, so this is cheap.
+    if (await syncAttachedFiles(strapi, uid, entry)) await refreshAgentKnowledgeBase(strapi);
     return { documentName: docName, status: 'skipped', documentId: existingRow.elDocumentId };
   }
 
@@ -336,7 +341,9 @@ export async function auditRagIndexes(
 
 // ── PDF / file-doc syncing ───────────────────────────────────────────
 
-async function syncAttachedFiles(strapi: Strapi, ownerUid: string, entry: Record<string, unknown>): Promise<void> {
+/** Returns true when any file doc was created or removed. */
+async function syncAttachedFiles(strapi: Strapi, ownerUid: string, entry: Record<string, unknown>): Promise<boolean> {
+  let changed = false;
   const files = await harvestFiles(strapi as never, ownerUid, entry);
   const ownerEntryId = (entry.id as number) ?? null;
   const ownerDocName = buildDocName(strapi, ownerUid, entry);
@@ -355,7 +362,7 @@ async function syncAttachedFiles(strapi: Strapi, ownerUid: string, entry: Record
     try {
       const name = buildFileDocName(strapi, ownerUid, entry, f);
       fileNamesAfter.add(name);
-      await syncOneFile(strapi, ownerUid, ownerEntryId, name, f);
+      if (await syncOneFile(strapi, ownerUid, ownerEntryId, name, f)) changed = true;
     } catch (err) {
       strapi.log.warn(`[${PLUGIN_ID}] file ${f.name}: ${(err as Error).message}`);
     }
@@ -373,7 +380,9 @@ async function syncAttachedFiles(strapi: Strapi, ownerUid: string, entry: Record
     try { await client.deleteDoc(strapi as never, row.elDocumentId); }
     catch (err) { strapi.log.warn(`[${PLUGIN_ID}] failed to drop orphan ${row.elDocumentId}: ${(err as Error).message}`); }
     await deleteLogRow(strapi, row.id);
+    changed = true;
   }
+  return changed;
 }
 
 async function syncOneFile(
@@ -382,10 +391,10 @@ async function syncOneFile(
   ownerEntryId: number | null,
   documentName: string,
   file: HarvestedFile,
-): Promise<void> {
+): Promise<boolean> {
   const fileHash = `${file.size}:${file.updatedAt}`;
   const existing = await getLogRowByName(strapi, documentName);
-  if (existing && existing.contentHash === fileHash) return;
+  if (existing && existing.contentHash === fileHash) return false;
 
   if (existing) {
     try { await client.deleteDoc(strapi as never, existing.elDocumentId); }
@@ -393,12 +402,28 @@ async function syncOneFile(
   }
 
   const buffer = await fetchUploadBuffer(file.url);
-  const created = await client.createFileDoc(strapi as never, {
-    file: buffer,
-    filename: file.name,
-    mime: file.mime,
-    name: documentName,
-  });
+  let created: { id: string };
+  let elDocType: 'file' | 'text' = 'file';
+  if (buffer.length > ELEVENLABS_MAX_FILE_BYTES) {
+    // ElevenLabs rejects files over 20 MB. Image-heavy PDFs (Festive Guide,
+    // 26.7 MB) still carry little text, so index that text instead.
+    if (!isPdf(file)) throw new Error(`${(buffer.length / 1e6).toFixed(1)} MB exceeds ElevenLabs' 20 MB file limit`);
+    const { pages, text } = await extractPdfText(buffer);
+    if (!text.replace(/## Page \d+/g, '').trim()) throw new Error(`${(buffer.length / 1e6).toFixed(1)} MB PDF over the 20 MB limit has no extractable text`);
+    created = await client.createTextDoc(strapi as never, {
+      name: documentName,
+      text: `# ${file.name}\n\nSource: ${publicFileUrl(strapi, file.url)}\n\n${text}`,
+    });
+    elDocType = 'text';
+    strapi.log.info(`[${PLUGIN_ID}] file ${file.name}: ${(buffer.length / 1e6).toFixed(1)} MB is over the 20 MB limit, indexed ${pages} pages of extracted text instead`);
+  } else {
+    created = await client.createFileDoc(strapi as never, {
+      file: buffer,
+      filename: file.name,
+      mime: file.mime,
+      name: documentName,
+    });
+  }
 
   await upsertLogRow(strapi, {
     sourceKind: 'media-file',
@@ -407,13 +432,18 @@ async function syncOneFile(
     mediaFileId: file.id,
     ownerContentType: ownerUid,
     ownerEntryId,
-    elDocType: 'file',
+    elDocType,
     elDocumentId: created.id,
     documentName,
     contentHash: fileHash,
     syncedAt: new Date().toISOString(),
   });
   await requestIndexSafe(strapi, created.id, documentName);
+  return true;
+}
+
+function publicFileUrl(strapi: Strapi, url: string): string {
+  return url.startsWith('http') ? url : `${getSiteUrl(strapi as never).replace(/\/$/, '')}${url}`;
 }
 
 async function fetchUploadBuffer(url: string): Promise<Buffer> {
