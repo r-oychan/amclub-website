@@ -57,7 +57,7 @@ const FAQ_CATEGORIES = [
   { name: 'Dining', description: 'Restaurants, reservations, and dining promotions.', displayOrder: 3 },
   { name: 'Events', description: 'Private events, room bookings, and club programmes.', displayOrder: 4 },
   { name: 'Kids', description: 'The Quad, kids parties, camps, and youth programmes.', displayOrder: 5 },
-  { name: 'General', description: 'Everything else — guests, parking, contact info.', displayOrder: 6 },
+  { name: 'General', description: 'Everything else — guests, parking, contact info.', displayOrder: 7 },
 ];
 
 // Each entry: [question, categorySlug, order, plainTextAnswer]
