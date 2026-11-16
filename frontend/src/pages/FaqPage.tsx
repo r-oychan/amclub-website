@@ -54,15 +54,6 @@ const enumNameMap: Record<string, string> = {
   general: 'General',
 };
 
-const enumDisplayOrder: Record<string, number> = {
-  membership: 1,
-  facilities: 2,
-  dining: 3,
-  events: 4,
-  kids: 5,
-  general: 6,
-};
-
 export interface FaqInitialData { page: StrapiFaqPage; categories: StrapiFaqCategory[]; items: StrapiFaqItem[] }
 
 export default function FaqPage({ initialData }: { initialData?: FaqInitialData } = {}) {
@@ -126,13 +117,9 @@ export default function FaqPage({ initialData }: { initialData?: FaqInitialData 
     groupMap.get(key)!.items.push(it);
   });
 
-  const groups = Array.from(groupMap.values())
-    .filter((g) => g.items.length > 0)
-    .sort((a, b) => {
-      const ai = enumDisplayOrder[a.key] ?? 999;
-      const bi = enumDisplayOrder[b.key] ?? 999;
-      return ai - bi;
-    });
+  // Map keeps insertion order: CMS categories first (already sorted by
+  // displayOrder), then any legacy-enum / uncategorised groups.
+  const groups = Array.from(groupMap.values()).filter((g) => g.items.length > 0);
 
   return (
     <PageFade loaded={loaded}>
