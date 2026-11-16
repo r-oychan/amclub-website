@@ -54,7 +54,7 @@ const FAQ_CATEGORY = {
   name: 'TAC Connect',
   slug: 'tac-connect',
   description: 'The TAC Connect member app and member portal — logging in, bookings and help.',
-  displayOrder: 7,
+  displayOrder: 6,
 };
 
 // [question, answer] — order follows the array.
