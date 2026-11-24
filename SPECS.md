@@ -137,6 +137,8 @@ Each row lists, for one route: the React page file, the React components it comp
 | Footer | `components/layout/Footer.tsx` | 🟢 single-type `footer` (`contact`, `columns` → `shared.footer-column`, `logo`) |
 | Chatbot | `components/chatbot/ChatbotWidget.tsx` | 🟢 single-type `site-settings` (boolean `chatbotEnabled`) + ElevenLabs runtime |
 
+The CMS sync includes links embedded in Strapi rich-text answers in the ElevenLabs knowledge base. In text chat, Eli gives the direct action link first and includes other verified routes to the same action, with relevant availability dates.
+
 ### Collections used across multiple pages
 
 | Collection | Used by | Key fields |
