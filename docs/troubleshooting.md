@@ -345,6 +345,8 @@ nothing and falls back to "I don't have that in my knowledge base".
 
 ## Chatbot KB: duplicate docs, quota exhaustion, missing content (July 2026)
 
+When Eli names a form but only suggests opening an app, compare the published FAQ link with the actual text in the attached ElevenLabs document's `/chunks` response. An index can succeed with the form label alone. The rich-text renderer must include the link destination. After deploying a renderer fix, sync the affected FAQ entry, verify the URL in its new index, and ask the original question in a fresh text session.
+
 - **Symptom:** `rag_limit_exceeded` when indexing; the agent's KB full of
   `am-club:<type>:id-<n>` docs in multiple generations (e.g. five copies of
   `footer:id-5..9:file:club-bylaws` holding ~1.2 MB of the ~2 MB account quota).

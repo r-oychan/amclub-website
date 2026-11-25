@@ -132,8 +132,7 @@ export function renderEntryMarkdown({ strapi, uid, entry, publicUrl }: RenderInp
       // Mirror the page: when htmlBody has content, it is the sole body.
       const htmlBody = entry.htmlBody as { html?: unknown } | null | undefined;
       if (name === 'body' && typeof htmlBody?.html === 'string' && htmlBody.html.trim()) continue;
-      // Strapi rich-text blocks → flatten paragraph children.
-      const flattened = flattenRichBlocks(value as Array<Record<string, unknown>>);
+      const flattened = flattenRichBlocks(value, publicUrl);
       if (flattened.trim()) {
         lines.push(`## ${humanise(name)}`, flattened, '');
       }
@@ -151,14 +150,28 @@ export function renderEntryMarkdown({ strapi, uid, entry, publicUrl }: RenderInp
   return md;
 }
 
-function flattenRichBlocks(nodes: Array<Record<string, unknown>>): string {
-  const out: string[] = [];
-  const walk = (n: Record<string, unknown>): void => {
-    if (typeof n.text === 'string') out.push(n.text);
-    if (Array.isArray(n.children)) for (const c of n.children as Array<Record<string, unknown>>) walk(c);
+interface RichNode {
+  type?: string;
+  text?: string;
+  url?: string;
+  children?: RichNode[];
+}
+
+function flattenRichBlocks(nodes: RichNode[], publicUrl?: string): string {
+  const render = (node: RichNode): string => {
+    if (typeof node.text === 'string') return node.text;
+    const text = (node.children ?? []).map(render).join(node.type === 'list' ? ' ' : '');
+    if (node.type !== 'link') return text;
+
+    const href = node.url?.trim();
+    if (!href || !URL.canParse(href, publicUrl)) return text;
+    const url = new URL(href, publicUrl);
+    if (!['http:', 'https:', 'mailto:', 'tel:'].includes(url.protocol)) return text;
+    const label = text.trim();
+    if (!label || label === url.href) return url.href;
+    return `[${label.replace(/[[\]\\]/g, '\\$&')}](${url.href})`;
   };
-  for (const n of nodes) walk(n);
-  return out.join(' ').replace(/\s+/g, ' ').trim();
+  return nodes.map(render).join(' ').replace(/\s+/g, ' ').trim();
 }
 
 function humanise(camel: string): string {
